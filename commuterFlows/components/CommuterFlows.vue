@@ -493,7 +493,7 @@ export default {
 <template lang="html">
     <ToolTemplate
         :title="$t(name)"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -502,9 +502,9 @@ export default {
         <template #toolBody>
             <div
                 id="CommuterFlows"
-                class="container"
+                class="commuter-flows-container"
             >
-                <div class="row section">
+                <div class="d-grid section">
                     <div class="col">
                         <div
                             v-if="active"
@@ -513,7 +513,7 @@ export default {
                             <select
                                 ref="select-district"
                                 v-model="currentDistrict"
-                                class="form-control"
+                                class="form-select"
                             >
                                 <option
                                     selected
@@ -535,12 +535,12 @@ export default {
                     </div>
                 </div>
                 <div v-if="lastDataset !== null">
-                    <div class="row section">
+                    <div class="d-grid section">
                         <div class="col">
                             <div class="form-group">
                                 <select
                                     v-model="currentCity"
-                                    class="form-control"
+                                    class="form-select"
                                 >
                                     <option
                                         selected
@@ -560,11 +560,11 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <div class="row section">
+                    <div class="d-grid section">
                         <div class="col" />
                     </div>
-                    <div class="row section">
-                        <div class="col-sm-12">
+                    <div class="d-grid section">
+                        <div class="d-grid">
                             <div class="form-check">
                                 <input
                                     id="idCaptionsChecked"
@@ -573,14 +573,14 @@ export default {
                                     type="checkbox"
                                 >
                                 <label
-                                    class="form-check-label"
+                                    class="col-form-label"
                                     for="idCaptionsChecked"
                                 >
                                     {{ translate("additional:modules.tools.CommuterFlows.checkName") }}
                                 </label>
                             </div>
                         </div>
-                        <div class="col-sm-12">
+                        <div class="d-grid">
                             <div class="form-check">
                                 <input
                                     id="idNumbersChecked"
@@ -589,14 +589,14 @@ export default {
                                     type="checkbox"
                                 >
                                 <label
-                                    class="form-check-label"
+                                    class="col-form-label"
                                     for="idNumbersChecked"
                                 >
                                     {{ translate("additional:modules.tools.CommuterFlows.checkNumber") }}
                                 </label>
                             </div>
                         </div>
-                        <div class="col-sm-12">
+                        <div class="d-grid">
                             <div class="form-check">
                                 <input
                                     id="idBeamsChecked"
@@ -605,63 +605,65 @@ export default {
                                     type="checkbox"
                                 >
                                 <label
-                                    class="form-check-label"
+                                    class="col-form-label"
                                     for="idBeamsChecked"
                                 >
                                     {{ translate("additional:modules.tools.CommuterFlows.checkBeams") }}
                                 </label>
                             </div>
                         </div>
-                        <div class="col-sm-6">
-                            <div class="form-check">
-                                <input
-                                    id="idAnimationChecked"
-                                    v-model="animationChecked"
-                                    class="form-check-input"
-                                    type="checkbox"
-                                >
-                                <label
-                                    class="form-check-label"
-                                    for="idAnimationChecked"
-                                >
-                                    {{ translate("additional:modules.tools.CommuterFlows.checkAnimation") }}
-                                </label>
+                        <div class="d-grid d-md-flex section">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input
+                                        id="idAnimationChecked"
+                                        v-model="animationChecked"
+                                        class="form-check-input"
+                                        type="checkbox"
+                                    >
+                                    <label
+                                        class="col-form-label"
+                                        for="idAnimationChecked"
+                                    >
+                                        {{ translate("additional:modules.tools.CommuterFlows.checkAnimation") }}
+                                    </label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div
-                                v-if="!isAnimationRunning"
-                                class="form-group pull-right"
-                            >
-                                <button
-                                    type="button"
-                                    class="btn btn-default btn-sm animationButton"
-                                    :disabled="!animationChecked"
-                                    @click="playAnimation"
+                            <div class="col-md-4 ms-auto">
+                                <div
+                                    v-if="!isAnimationRunning"
+                                    class="form-group float-end "
                                 >
-                                    <span class="glyphicon glyphicon-play" />
-                                    {{ translate("additional:modules.tools.CommuterFlows.buttonStart") }}
-                                </button>
-                            </div>
-                            <div
-                                v-else
-                                class="form-group pull-right"
-                            >
-                                <button
-                                    type="button"
-                                    class="btn btn-default btn-sm animationButton"
-                                    @click="stopAnimation"
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary btn-sm animationButton"
+                                        :disabled="!animationChecked"
+                                        @click="playAnimation"
+                                    >
+                                        <span /><i class="bi bi-play-fill" />
+                                        {{ translate("additional:modules.tools.CommuterFlows.buttonStart") }}
+                                    </button>
+                                </div>
+                                <div
+                                    v-else
+                                    class="form-group float-end"
                                 >
-                                    <span class="glyphicon glyphicon-stop" />
-                                    {{ translate("additional:modules.tools.CommuterFlows.buttonStop") }}
-                                </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary btn-sm animationButton"
+                                        @click="stopAnimation"
+                                    >
+                                        <span /><i class="bi bi-stop-fill" />
+                                        {{ translate("additional:modules.tools.CommuterFlows.buttonStop") }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row section">
+                    <div class="d-grid section">
                         <div class="col" />
                     </div>
-                    <div class="row section">
+                    <div class="d-grid d-md-flex section">
                         <div class="col-6 col-sm-6 tooltipWrapper">
                             <div
                                 class="form-check form-check-inline"
@@ -679,7 +681,7 @@ export default {
                                     value="out"
                                 >
                                 <label
-                                    class="form-check-label"
+                                    class="col-form-label"
                                     for="idOutChecked"
                                 >
                                     {{ translate("additional:modules.tools.CommuterFlows.selectOut") }}
@@ -709,7 +711,7 @@ export default {
                                     value="in"
                                 >
                                 <label
-                                    class="form-check-label"
+                                    class="col-form-label"
                                     for="idInChecked"
                                 >
                                     {{ translate("additional:modules.tools.CommuterFlows.selectIn") }}
@@ -723,12 +725,12 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="d-grid">
                         <div class="col">
                             <hr>
                         </div>
                     </div>
-                    <div class="row section">
+                    <div class="d-grid section">
                         <div
                             v-if="Array.isArray(lastDataset.featureList) && lastDataset.featureList.length"
                             class="col-sm-12 featureList"
@@ -765,71 +767,62 @@ export default {
                             {{ translate("additional:modules.tools.CommuterFlows.noDataset") }}
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="d-grid">
                         <div class="col">
                             <hr>
                         </div>
                     </div>
-                    <div class="row section">
-                        <div class="col-12 col-sm-4">
-                            <button
-                                type="button"
-                                class="btn btn-default btn-block"
-                                :disabled="lastDataset.len <= listChunk"
-                                @click="loadLess"
-                            >
-                                {{ translate("additional:modules.tools.CommuterFlows.buttonLess", {listChunk}) }}
-                                <span class="glyphicon glyphicon-arrow-up" />
-                            </button>
-                        </div>
-                        <div class="col-12 col-sm-4">
-                            <button
-                                type="button"
-                                class="btn btn-default btn-block"
-                                :disabled="lastDataset.len >= lastDataset.totalLength"
-                                @click="loadMore"
-                            >
-                                {{ translate("additional:modules.tools.CommuterFlows.buttonMore", {listChunk}) }}
-                                <span class="glyphicon glyphicon-arrow-down" />
-                            </button>
-                        </div>
-                        <div class="col-12 col-sm-4">
-                            <button
-                                type="button"
-                                class="btn btn-default btn-block"
-                                :disabled="lastDataset.len >= lastDataset.totalLength"
-                                @click="loadAll"
-                            >
-                                {{ translate("additional:modules.tools.CommuterFlows.buttonAll") }}
-                                <!--<span class="glyphicon glyphicon-arrow-right"></span>-->
-                            </button>
-                        </div>
+                    <div class="d-grid gap-2 d-md-block section buttons">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            :disabled="lastDataset.len <= listChunk"
+                            @click="loadLess"
+                        >
+                            {{ translate("additional:modules.tools.CommuterFlows.buttonLess", {listChunk}) }}
+                            <span /><i class="bi bi-arrow-up" />
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            :disabled="lastDataset.len >= lastDataset.totalLength"
+                            @click="loadMore"
+                        >
+                            {{ translate("additional:modules.tools.CommuterFlows.buttonMore", {listChunk}) }}
+                            <span /><i class="bi bi-arrow-down" />
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            :disabled="lastDataset.len >= lastDataset.totalLength"
+                            @click="loadAll"
+                        >
+                            {{ translate("additional:modules.tools.CommuterFlows.buttonAll") }}
+                        </button>
                     </div>
                     <div
                         v-if="metaVerPath"
-                        class="row section"
+                        class="d-grid section"
                     >
                         <div class="col-sm-12">
                             <a
                                 :href="metaVerPath"
                                 target="_blank"
-                                class="pull-right"
+                                class="float-end"
                             >
                                 {{ translate("additional:modules.tools.CommuterFlows.linkMoreInfo") }}
                             </a>
                         </div>
                     </div>
-                    <div class="row section">
-                        <div class="col-12 col-sm-12">
-                            <button
-                                type="button"
-                                class="btn btn-default btn-block"
-                                @click="resetAll"
-                            >
-                                <span class="glyphicon glyphicon-trash" />
-                                {{ translate("additional:modules.tools.CommuterFlows.buttonReset") }}
-                            </button>
-                        </div>
+                    <div class="d-grid mx-auto section">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            @click="resetAll"
+                        >
+                            <span /><i class="bi bi-trash" />
+                            {{ translate("additional:modules.tools.CommuterFlows.buttonReset") }}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -851,8 +844,11 @@ export default {
         }
     }
 
-    .container {
-        max-width: 340px;
+    .commuter-flows-container {
+        max-width: 400px;
+    }
+    .form-select {
+        font-size: 14px;
     }
     .section {
         .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-6, .col-sm-12 {
@@ -870,8 +866,9 @@ export default {
         margin-bottom: 10px;
         border-top: solid #ddd 1px;
     }
-    .form-check-label {
+    .col-form-label {
         padding-left: 4px;
+        padding-top: 0px;
     }
     .animationButton {
         width: 80px;
@@ -925,6 +922,9 @@ export default {
                 }
             }
         }
+    }
+    .buttons {
+        text-align: center;
     }
     .tooltipWrapper {
         position: relative;

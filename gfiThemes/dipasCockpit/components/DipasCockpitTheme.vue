@@ -1,4 +1,6 @@
 <script>
+import moment from "moment";
+
 export default {
     name: "DipasCockpitTheme",
     props: {
@@ -10,12 +12,21 @@ export default {
     computed: {
         attributes: function () {
             return this.feature.getMappedProperties();
+        },
+        dateStart: function () {
+            return moment(this.attributes.dateStart, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
+        },
+        dateEnd: function () {
+            return moment(this.attributes.dateEnd, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
         }
     },
     mounted () {
         if (document.getElementsByClassName("tool-window-vue").length) {
             document.querySelector(".tool-window-vue").style.borderRadius = "15px";
             document.querySelector(".tool-window-vue").style.border = "2px solid #003063";
+            document.querySelector(".tool-window-heading-title").style.paddingLeft = "15px";
+            document.querySelector(".tool-window-heading-title").style.fontFamily = "Roboto,sans-serif";
+            document.querySelector(".tool-window-heading-title").style.fontSize = "16px";
         }
         else if (document.getElementsByClassName("modal-content").length) {
             document.querySelector(".modal-content").style.borderRadius = "15px";
@@ -37,14 +48,19 @@ export default {
 
 <template>
     <div class="dipas-cockpit-theme">
-        <div class="dipas-cockpit-proceeding-status">
-            <span class="dipas-cockpit-location-icon">
-                <img
-                    :src="attributes.status_icon"
-                    alt="Icon for proceeding status"
-                >
+        <div class="dipas-cockpit-first-row">
+            <div class="dipas-cockpit-proceeding-status">
+                <span class="dipas-cockpit-location-icon">
+                    <img
+                        :src="attributes.status_icon"
+                        alt="Icon for proceeding status"
+                    >
+                </span>
+                <span class="dipas-cockpit-status-label">{{ attributes.status }}</span>
+            </div>
+            <span class="dipas-cockpit-dateRange">
+                {{ dateStart }} - {{ dateEnd }}
             </span>
-            <span>{{ attributes.status }}</span>
         </div>
         <div class="dipas-cockpit-title">
             {{ attributes.proceeding }}
@@ -58,7 +74,7 @@ export default {
         </div>
         <div class="dipas-cockpit-initiators">
             {{ $t("additional:addons.gfiThemes.dipasCockpit.initiators") }}:
-            {{ attributes.responsible }}
+            <span class="dipas-cockpit-responsible-list"> {{ attributes.responsible }} </span>
         </div>
         <a
             class="dipas-cockpit-proceedingLink"
@@ -96,7 +112,6 @@ export default {
 <style lang="scss">
 
 .vue-tool-content-body {
-    width: 90% !important;
     border-radius: 15px;
 }
 
@@ -105,7 +120,12 @@ export default {
      color: #212529;
      font-family: Roboto, sans-serif;
      padding-left: 24px;
-     border-left: 3px solid #E10019;
+     padding-right: 15px;
+
+    .dipas-cockpit-first-row {
+        display: flex;
+        flex-direction: row;
+    }
 
     .dipas-cockpit-proceeding-status {
         background-color: #003063;
@@ -119,6 +139,18 @@ export default {
                 height: 18px;
             }
         }
+
+        .dipas-cockpit-status-label {
+            position: relative;
+            top: 1px;
+        }
+    }
+
+    .dipas-cockpit-dateRange {
+        margin: 18px 10px;
+        font-size: 10px;
+        position: relative;
+        top: 1px;
     }
 
     .dipas-cockpit-title {
@@ -139,19 +171,25 @@ export default {
 
     .dipas-cockpit-description {
         margin-bottom: 26px;
-        font-size: 10px;
+        font-size: 14px;
     }
 
     .dipas-cockpit-initiators {
         font-size: 10px;
         margin-bottom: 8px;
+        display: inline-flex;
+
+        .dipas-cockpit-responsible-list {
+            padding-left: 5px;
+        }
     }
 
     a.dipas-cockpit-proceedingLink {
-        font-size: 12px;
+        font-size: 10px;
         color: #003063;
         text-decoration: underline;
         cursor: pointer;
+        display: block;
     }
 
     .dipas-cockpit-proceedingNumbers {
@@ -178,7 +216,7 @@ export default {
             height: 28px;
             max-width: 145px;
             overflow: hidden;
-            margin-left: 15px;
+            margin-left: 10px;
             cursor: pointer;
 
             img {

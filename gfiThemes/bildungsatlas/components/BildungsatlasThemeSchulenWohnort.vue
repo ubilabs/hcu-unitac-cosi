@@ -75,7 +75,8 @@ export default {
             numberOfStudentsInDistrictFormated: 0,
             statgeb_id: 0,
             stadtteil_name: "",
-            featureIds: []
+            featureIds: [],
+            infoText: ""
         };
     },
     computed: {
@@ -170,7 +171,7 @@ export default {
                 "featuresLoaded": this.getActiveSchoolLayer
             });
 
-            this.$el.querySelector(".gfi-info").innerHTML = this.parseTranslationInHtml(this.translate("additional:addons.gfiThemes.bildungsatlas.schulenWohnort.info." + themeType));
+            this.infoText = this.parseTranslationInHtml(this.translate("additional:addons.gfiThemes.bildungsatlas.schulenWohnort.info." + themeType));
         },
 
         /**
@@ -433,6 +434,7 @@ export default {
         <div
             v-if="isActiveTab('info')"
             class="gfi-info"
+            v-html="infoText"
         />
     </div>
 </template>

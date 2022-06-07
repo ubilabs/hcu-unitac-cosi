@@ -832,7 +832,7 @@ const DashboardTableModel = Tool.extend(/** @lends DashboardTableModel.prototype
             }
         });
         if (extent) {
-            Radio.trigger("Map", "zoomToExtent", extent, {padding: [20, 20, 20, 20]});
+            Radio.trigger("Map", "zoomToExtent", {extent: extent, options: {padding: [20, 20, 20, 20]}});
         }
     },
 

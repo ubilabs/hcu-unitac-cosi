@@ -38,7 +38,7 @@ For the Commuter Flows tool, many small things are made configurable to customiz
 |Name|Mandatory|Type|Default|Description|Expert|
 |----|-------------|---|-------|------------|------|
 |name|yes|String|Pendlerströme|The title of the tool or the entry in the tool list.|true|
-|glyphicon|yes|String|glyphicon glyphicon-transfer|The icon to use.|true|
+|icon|yes|String|bi-arrow-left-right|The icon to use.|true|
 |serviceURL|yes|String|""|The URL to the service to use.|true|
 |metaVerPath|no|String|""|A link to the metadata used. If specified, it will be displayed as a "More Information" link in the tool.|true|
 |blacklistedDistricts|no|String[]| [] |A list of counties or municipalities to ignore.|true|
@@ -78,7 +78,7 @@ For the Commuter Flows tool, many small things are made configurable to customiz
 #!json
 "CommuterFlows": {
     "name": "translate#additional:modules.tools.CommuterFlows.titleLabel",
-    "glyphicon": "glyphicon-transfer",
+    "icon": "bi-arrow-left-right",
     "metaVerPath": "https://metaver.de/trefferanzeige?docuuid=4FC611E9-DDA4-42E5-9EE9-F118BCBB2D89",
     "blacklistedDistricts": ["Bremen", "Berlin", "Kiel", "Hannover"],
     "serviceURL": "https://geodienste.hamburg.de/MRH_WFS_Pendlerstroeme_im_Tool",

@@ -3,7 +3,7 @@
         "tools": {
             "schoolRoutePlanning": {
                 "title": "School route",
-                "inputPlaceHolder": "Start address",
+                "inputLabel": "Start address",
                 "regionalPrimarySchool": "Regionally responsible primary school: ",
                 "selectSchool": "Select school",
                 "printRouteName": "Create PDF",

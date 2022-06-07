@@ -38,6 +38,9 @@
   "streetSmart": {
     "type": "tool"
   },
+  "hochWasserPrint": {
+    "type": "tool"
+  },
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
     "type": "gfiTheme"

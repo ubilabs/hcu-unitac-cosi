@@ -52,7 +52,7 @@ export default {
 <style lang="scss" scoped>
 @import "~/css/mixins.scss";
 
-span.glyphicon {
+span.bootstrap-icon {
     &:focus {
         @include primary_action_focus;
     }

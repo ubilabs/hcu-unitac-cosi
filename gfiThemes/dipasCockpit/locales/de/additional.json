@@ -3,10 +3,10 @@
         "gfiThemes": {
             "dipasCockpit": {
                 "themes": "Themen",
-                "initiators": "Initiator/en",
+                "initiators": "Absender",
                 "contributions": "Beiträge",
                 "comments": "Kommentare",
-                "documentation": "Dokumentationen"
+                "documentation": "Dokumentation"
             }
         }
     }

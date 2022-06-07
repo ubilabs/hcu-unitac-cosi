@@ -451,7 +451,7 @@ function initializeBrwAbfrageModel () {
                 feature.unset("geom_brw_grdstk");
                 // set polygon geometry as feature's geometry
                 feature.setGeometryName(geometryName);
-                store.dispatch("Map/highlightFeature", {type: "highlightPolygon", feature: feature});
+                store.dispatch("Maps/highlightFeature", {type: "highlightPolygon", feature: feature});
             };
             xhttp.onerror = event => {
                 Radio.trigger("Alert", "alert", "Datenabfrage fehlgeschlagen. (Technische Details: " + event.target.status);
