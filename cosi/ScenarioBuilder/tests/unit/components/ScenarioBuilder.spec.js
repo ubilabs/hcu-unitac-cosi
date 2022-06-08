@@ -12,6 +12,7 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import ScenarioManager from "../../../components/ScenarioManager.vue";
 import FeatureEditor from "../../../components/FeatureEditor.vue";
+import mockFeatureTypeDesc from "./mockFeatureTypeDesc.json";
 
 config.mocks.$t = key => key;
 Vue.use(Vuetify);
@@ -77,6 +78,7 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
         layerMap = {
             layerId: "1234",
             id: "Staatliche Schulen",
+            keyOfAttrName: "schulname",
             addressField: []
         };
 
@@ -84,7 +86,7 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
      * @returns {void}
      */
     async function fakeDescribeFeatureType () {
-        return [];
+        return mockFeatureTypeDesc;
     }
 
     /**
@@ -96,12 +98,10 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
 
         for (const field of desc) {
             this.valuesForFields = {
+                ...this.valuesForFields,
                 [field.name]: ["placeholder"]
             };
         }
-
-        console.log("running this");
-        console.log(this.valueForFields);
     }
 
     /**
@@ -148,7 +148,10 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
                         layerById: () => sinon.stub().returns({olLayer: layer}),
                         ol2DMap: () => ({
                             getLayers: () => ({getArray: sinon.stub()}),
-                            addEventListener: sinon.stub()
+                            addEventListener: sinon.stub(),
+                            removeEventListener: sinon.stub(),
+                            addInteraction: sinon.stub(),
+                            removeInteraction: sinon.stub()
                         }),
                         projectionCode: sinon.stub().returns("EPSG:25832")
                     },
@@ -158,7 +161,9 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
                     actions: {
                         removeHighlightFeature: () => sinon.stub(),
                         createLayer: () => {
-                            return Promise.resolve(new Layer());
+                            return Promise.resolve(new Layer({
+                                source: new Source()
+                            }));
                         }
                     }
                 },
@@ -189,7 +194,6 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
 
     it("should render Component", async () => {
         await factory.initialize();
-        // await wrapper.vm.$nextTick();
 
         expect(wrapper.find("#scenario-builder-wrapper").exists()).to.be.true;
         expect(wrapper.find("#scenario-builder-wrapper").html()).to.not.be.empty;
@@ -199,12 +203,14 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
 
     it("should add property fields when layer is selected", async () => {
         setStubs();
-        // await wrapper.setData({workingLayer: layerMap});
-        wrapper.vm.workingLayer = layerMap;
+        await factory.initialize();
+        await wrapper.setData({workingLayer: layerMap});
         await wrapper.vm.$nextTick();
 
-        console.log(wrapper.vm.valuesForFields);
-        console.log(wrapper.vm.featureTypeDescSorted);
-        console.log(wrapper.vm.workingLayer);
+        expect(wrapper.vm.workingLayer).to.deep.equal(layerMap);
+        expect(wrapper.vm.featureTypeDescSorted.optional).to.have.lengthOf(1);
+        expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(3);
+        expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(3);
+        expect(wrapper.vm.valuesForFields.schulname).to.deep.equal(["placeholder"]);
     });
 });

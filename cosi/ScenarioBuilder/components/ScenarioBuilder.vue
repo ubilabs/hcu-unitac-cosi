@@ -548,6 +548,7 @@ export default {
                                             <v-row
                                                 v-for="field in featureTypeDescSorted.optional"
                                                 :key="field.name"
+                                                class="optional-field"
                                                 :title="$t('additional:modules.tools.cosi.scenarioBuilder.optionalField')"
                                                 dense
                                             >
