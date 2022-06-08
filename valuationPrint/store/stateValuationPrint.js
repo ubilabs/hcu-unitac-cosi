@@ -15,7 +15,7 @@ const state = {
     id: "valuation",
     // defaults for config.json parameters
     name: "Wertermittlung",
-    glyphicon: "glyphicon-tasks",
+    icon: "bi-bar-chart-line-fill",
     renderToWindow: false,
     resizableWindow: true,
     isVisibleInMenu: true,

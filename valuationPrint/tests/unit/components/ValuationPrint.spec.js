@@ -1,13 +1,13 @@
 import {config, shallowMount} from "@vue/test-utils";
 import {expect} from "chai";
-import Valuation from "../../../components/ValuationPrint.vue";
+import ValuationPrint from "../../../components/ValuationPrint.vue";
 config.mocks.$t = key => key;
 
 describe("addons/valuation/components/ValuationPrint.vue", () => {
 
     const factory = {
         getShallowMount: (values = {}, isActive = false) => {
-            return shallowMount(Valuation, {
+            return shallowMount(ValuationPrint, {
                 data () {
                     return {
                         ...values
@@ -19,7 +19,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                     resizableWindow: () => true,
                     deactivateGFI: () => true,
                     active: () => isActive,
-                    glyphicon: () => "glyphicon-map"
+                    icon: () => "bi-bar-chart-line-fill"
                 }
             });
         }

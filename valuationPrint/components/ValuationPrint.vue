@@ -10,7 +10,7 @@ export default {
         ToolTemplate
     },
     computed: {
-        ...mapGetters("Tools/Valuation", Object.keys(getters))
+        ...mapGetters("Tools/ValuationPrint", Object.keys(getters))
     },
     created () {
         this.$on("close", () => {
@@ -18,7 +18,7 @@ export default {
         });
     },
     methods: {
-        ...mapMutations("Tools/Valuation", Object.keys(mutations))
+        ...mapMutations("Tools/ValuationPrint", Object.keys(mutations))
     }
 };
 </script>
@@ -26,7 +26,7 @@ export default {
 <template lang="html">
     <ToolTemplate
         :title="$t(name)"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
