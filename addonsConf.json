@@ -38,6 +38,9 @@
   "hochWasserPrint": {
     "type": "tool"
   },
+  "valuationPrint": {
+    "type": "tool"
+  },
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
     "type": "gfiTheme"
