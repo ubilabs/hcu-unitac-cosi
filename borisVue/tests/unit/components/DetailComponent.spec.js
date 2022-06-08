@@ -5,9 +5,6 @@ import BorisVue from "../../../store/indexBorisVue";
 import {expect} from "chai";
 import sinon from "sinon";
 
-import VectorLayer from "ol/layer/Vector.js";
-import VectorSource from "ol/source/Vector.js";
-
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
@@ -48,7 +45,6 @@ describe("ADDONS: addons/borisVue/components/DetailComponent.vue", () => {
                 configJson: mockConfigJson
             }
         });
-
         propsData = {
             feature: {},
             keys: ["entwicklungszustand"],
@@ -65,7 +61,7 @@ describe("ADDONS: addons/borisVue/components/DetailComponent.vue", () => {
 
     describe("Boris Detail Component template", () => {
         it("renders Detail Component", () => {
-            const wrapper = shallowMount(DetailComponent, {
+            wrapper = shallowMount(DetailComponent, {
                 store,
                 propsData: {...propsData, feature: {
                     get: (key) => {
@@ -74,28 +70,42 @@ describe("ADDONS: addons/borisVue/components/DetailComponent.vue", () => {
                 }},
                 localVue
             });
-
-            expect(wrapper.find("#detail-component").exists()).to.be.true;
+            expect(wrapper.find(".detail-component").exists()).to.be.true;
         });
-        it("not renders Detail Component if feature is empty", () => {
-            const wrapper = shallowMount(DetailComponent, {
+        it("does not render Detail Component if feature is empty", () => {
+            wrapper = shallowMount(DetailComponent, {
                 store,
                 propsData: {...propsData, feature: {}},
                 localVue
             });
 
-            expect(wrapper.find("#detail-component").exists()).to.be.false;
+            expect(wrapper.find(".detail-component").exists()).to.be.false;
         });
         it("test method getValue", () => {
-            const wrapper = shallowMount(DetailComponent, {
+            const data = {
+                strassenname: "Sesamstraße",
+                hausnummer: "10",
+                hausnummerzusatz: "abc"
+            };
+
+            wrapper = shallowMount(DetailComponent, {
                 store,
-                propsData: {...propsData, feature: {}},
+                propsData: {
+                    feature: {
+                        values: data,
+                        get: (key) => {
+                            return data[key];
+                        }
+                    },
+                    keys: ["strassenname", "hausnummer", "hausnummerzusatz"],
+                    label: "Adresse"
+                },
                 localVue
             });
-            // inka@vilma: method getValue testen ,mit mehreren keys
-            // const result = wrapper.vm.getValue();
-            // expect(result ...
+
+            const result = wrapper.vm.getValue();
+
+            expect(result).to.be.equal("Sesamstraße 10 abc");
         });
     });
-
 });

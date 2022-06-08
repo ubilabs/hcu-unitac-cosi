@@ -69,9 +69,8 @@ describe("ADDONS: addons/borisVue/components/FloorComponent.vue", () => {
     describe("Boris floor component template", () => {
 
         it("renders floor compponent", () => {
-            expect(wrapper.find("#floor-component").exists()).to.be.true;
+            expect(wrapper.find(".floor-component").exists()).to.be.true;
         });
-
         it("renders 'schichtwerte'", () => {
             wrapper = shallowMount(FloorComponent, {
                 store,
@@ -80,9 +79,17 @@ describe("ADDONS: addons/borisVue/components/FloorComponent.vue", () => {
                 }}}
             });
 
-            expect(wrapper.find(".floorvalue-part").exists()).to.be.true;
+            expect(wrapper.find(".floorvalue-part-I").exists()).to.be.true;
         });
-        // inka@vilma: hier fehlt noch das Testen des v-else Zweiges ohne Schichtwerte
-        // wichtig dabei: z.B. Object.values(feature)[2]: ist es sicher, dass index 2 in den values immer gefüllt ist oder kann es da zu einem Fehler kommen
+        it("does not render 'schichtwerte'", () => {
+            const feature = {key1: "euro"};
+
+            wrapper = shallowMount(FloorComponent, {
+                store,
+                propsData: {...propsData, feature: feature
+                }
+            });
+            expect(wrapper.find(".floorvalue-part-II").exists()).to.be.true;
+        });
     });
 });

@@ -28,7 +28,6 @@ export default {
          * @return {Array} filteredListWithoutStripes which is used to select by date
          */
         getFilterListWithoutStripes () {
-
             return this.filteredLayerList.filter(function (filteredLayer) {
                 return filteredLayer.attributes.name.indexOf("-stripes") === -1;
             });
@@ -215,7 +214,7 @@ export default {
                         <option
                             v-for="(model, index) in getFilterListWithoutStripes"
                             :key="index"
-                            :value="model"
+                            :value="model.attributes.name"
                         >
                             {{ model.attributes.name }}
                         </option>

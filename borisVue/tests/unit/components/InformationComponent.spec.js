@@ -52,8 +52,6 @@ describe("ADDONS: addons/borisVue/components/InformationComponent.vue", () => {
             title: "title",
             selectedBrwFeature: new VectorLayer({
                 source: new VectorSource(),
-                // inka@vilma: das habe ich eingefügt, damit die DetailComponent mit keys="['bezirk'] gerendert wird.
-                // Dafür muss in dem Test aber mount und nicht shallowMount benutzt werden, da dann die Kind-Komponenten auch gerendert werden
                 bezirk: "bezirk",
                 get: (key) => {
                     return key;
@@ -76,14 +74,14 @@ describe("ADDONS: addons/borisVue/components/InformationComponent.vue", () => {
 
     describe("Boris Information Component template", () => {
         it("renders Information Component", () => {
-            expect(wrapper.find("#information-component").exists()).to.be.true;
+            expect(wrapper.find(".information-component").exists()).to.be.true;
         });
 
         it("renders info part", () => {
             expect(wrapper.find(".information-info").exists()).to.be.true;
         });
 
-        it("renders lage part", () => {
+        it("renders position part", () => {
             wrapper = mount(InformationComponent, {
                 store,
                 propsData: {
@@ -92,13 +90,8 @@ describe("ADDONS: addons/borisVue/components/InformationComponent.vue", () => {
                 },
                 localVue
             });
-            // inka@vilma: ".information-lage"  finde ich nicht, schlägt fehl
-            // expect(wrapper.find(".information-lage").exists()).to.be.true;
-
-            // inka@vilma:
-            // 1.) siehe auch Kommentar in Zeile 55 ff
-            // 2.) detail-component als class, siehe Kommentar oben im PR
-            expect(wrapper.find("#detail-component").exists()).to.be.true;
+            expect(wrapper.find(".information-position").exists()).to.be.true;
+            expect(wrapper.find(".detail-component").exists()).to.be.true;
         });
     });
 });

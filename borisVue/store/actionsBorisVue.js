@@ -42,7 +42,6 @@ const actions = {
             center = rootState.urlParams && rootState.urlParams["Maps/center"],
             processFromParametricUrl = true;
 
-
         if (brwId && brwLayerName && center) {
             commit("setIsProcessFromParametricUrl", processFromParametricUrl);
             commit("setParamUrlParams", {
@@ -233,7 +232,7 @@ const actions = {
                 else {
                     commit("setBrwFeatures", feature);
                     dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
-                    dispatch("Map/setCenter", coordinate, {root: true});
+                    dispatch("Maps/setCenter", coordinate, {root: true});
                     dispatch("combineFeatureWithSelectedDate", feature);
                     commit("setSelectedPolygon", null);
                 }
