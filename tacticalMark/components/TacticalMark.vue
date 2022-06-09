@@ -159,11 +159,11 @@ export default {
             }
         }
     },
-    created () {
+    async created () {
         this.$on("close", this.close);
         this.interaction = "";
         this.selectedBtn = "";
-        this.layer = Radio.request("Map", "createLayerIfNotExists", "import_draw_layer");
+        this.layer = await Radio.request("Map", "createLayerIfNotExists", "import_draw_layer");
     },
     /**
      * Put initialize here if mounting occurs after config parsing
