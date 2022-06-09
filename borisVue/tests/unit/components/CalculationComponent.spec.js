@@ -99,7 +99,7 @@ describe("ADDONS: addons/borisVue/components/CalculationComponent.vue", () => {
             expect(wrapper.find(".input-part").exists()).to.be.true;
         });
 
-        it.only("triggers click", async () => {
+        it("triggers click", async () => {
             const questionElement = wrapper.find(".bi-question-circle-fill");
 
             questionElement.trigger("click");
