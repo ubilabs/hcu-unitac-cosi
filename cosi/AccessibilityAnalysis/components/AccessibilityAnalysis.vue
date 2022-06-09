@@ -341,7 +341,7 @@ export default {
         ...methods,
 
         tryUpdateIsochrones: function () {
-            if (this.mode === "region" && this.currentCoordinates) {
+            if (this.mode === "region" && this.currentCoordinates && this.dataSets.length > 0) {
                 const newCoordinates = this.getCoordinates(this.setByFeature);
 
                 if (!deepEqual(this.currentCoordinates.map(e=>[e[0], e[1]]), newCoordinates)) {
