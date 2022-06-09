@@ -151,7 +151,6 @@ export default {
         active (value) {
             if (value) {
                 this.setActive(value);
-                this.setFocusToFirstControl();
             }
             else {
                 this.resetCanvasCursor();
@@ -178,17 +177,6 @@ export default {
             addInteractionToMap: "addInteraction",
             removeInteractionFromMap: "removeInteraction"
         }),
-        /**
-         * Sets the focus to the first control
-         * @returns {void}
-         */
-        setFocusToFirstControl () {
-            this.$nextTick(() => {
-                if (this.$refs["select-drawtype"]) {
-                    this.$refs["select-drawtype"].focus();
-                }
-            });
-        },
         /**
          * call the setIcon function by changes in damage account
          * field to update the number with setted param dmaChg
@@ -591,9 +579,8 @@ export default {
                     </label>
                 </div>
                 <select
-                    ref="select-drawtype"
                     class="form-control input-sm"
-                    @change="selectIconCat($event);"
+                    @change="selectIconCat($event)"
                 >
                     <option
                         v-for="option in options"
@@ -2731,23 +2718,9 @@ export default {
         margin:0 auto;
         text-align: center;
     }
-    .download-container {
-        margin-top: 14px;
-    }
     .btn-secondary {
         float: right;
         width: 206px;
-    }
-    .tm-container {
-        display: grid;
-        grid-template-columns: auto auto auto;
-        padding: 5px 0;
-    }
-    .tm-item {
-        background-color: rgba(255, 255, 255, 0.8);
-        padding: 0px 1px;
-        font-size: 12px;
-        text-align: center;
     }
     button {
         border-radius: 3px;
@@ -2759,33 +2732,68 @@ export default {
         color: $black;
         border: 1px solid $secondary_table_style;
     }
-    .tm-btn {
-        border-radius: 3px;
-        background-color: $secondary_table_style;
-        color: $black;
-        padding: 2px;
-        font-size: 12px;
-        cursor: pointer;
-        text-align: center;
-        border: 1px solid #cdcdcd;
-        width: 206px;
+    .tm-container {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        padding: 5px 0;
+        .tm-item {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 0px 1px;
+            font-size: 12px;
+            text-align: center;
+            .tm-btn {
+                border-radius: 3px;
+                background-color: $secondary_table_style;
+                color: $black;
+                padding: 2px;
+                font-size: 12px;
+                cursor: pointer;
+                text-align: center;
+                border: 1px solid #cdcdcd;
+                width: 206px;
+                &:hover {
+                    background-color: $white;
+                    color: $black;
+                    border: 1px solid $secondary_table_style;
+                }
+                &:active {
+                    background-color: lighten($secondary_table_style, 15%);
+                }
+                .tm-btn-img {
+                    float: left;
+                }
+            }
+        }
     }
-    .tm-btn:hover {
-        background-color: $white;
-        color: $black;
-        border: 1px solid $secondary_table_style;
+    .form-horizontal {
+        .form-group {
+            label {
+                float: left;
+                padding-top: 6px;
+            }
+            > div {
+                float: left;
+            }
+        }
     }
-    .tm-btn:active {
-        background-color: lighten($secondary_table_style, 15%);
+    .downloadFile {
+        display: block;
     }
     .tool-window-vue {
-        max-width: 680px !important;
+        max-width: 680px;
     }
     #rsc {
         display: none;
     }
     #dma {
         display: none;
+        .tm-container {
+            .tm-item {
+                label {
+                    margin-bottom: 10px;
+                }
+            }
+        }
     }
     .checkbox {
         margin-top: 0;
