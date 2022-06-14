@@ -1,0 +1,12 @@
+{
+  "modules": {
+      "tools": {
+          "valuationPrint": {
+              "title": "Valuation",
+              "removeButton": "Remove",
+              "parcel": "Parcel:",
+              "district": "District:"
+          }
+        }
+    }
+}

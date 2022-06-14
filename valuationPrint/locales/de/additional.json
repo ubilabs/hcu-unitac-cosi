@@ -1,0 +1,12 @@
+{
+  "modules": {
+      "tools": {
+          "valuationPrint": {
+              "title": "Wertermittlung",
+              "removeButton": "Entfernen",
+              "parcel": "Flurstück:",
+              "district": "Gemarkung:"
+          }
+      }
+  }
+}

@@ -97,9 +97,9 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             wrapper.vm.select.getFeatures().push(features[0]);
             await wrapper.vm.$forceUpdate();
 
-            expect(wrapper.findAll(".list-inline-item").at(0).text()).to.be.equal("Flurstück:");
+            expect(wrapper.findAll(".list-inline-item").at(0).text()).to.be.equal("additional:modules.tools.valuationPrint.parcel");
             expect(wrapper.findAll(".list-inline-item").at(1).text()).to.be.equal("12345");
-            expect(wrapper.findAll(".list-inline-item").at(2).text()).to.be.equal("Gemarkung:");
+            expect(wrapper.findAll(".list-inline-item").at(2).text()).to.be.equal("additional:modules.tools.valuationPrint.district");
             expect(wrapper.findAll(".list-inline-item").at(3).text()).to.be.equal("ueberall");
         });
 

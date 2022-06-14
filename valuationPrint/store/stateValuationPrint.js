@@ -16,7 +16,7 @@ const state = {
     id: "valuation",
     parcelLayerId: "",
     // defaults for config.json parameters
-    name: "Wertermittlung",
+    name: "additional:modules.tools.valuationPrint.title",
     icon: "bi-bar-chart-line-fill",
     renderToWindow: false,
     resizableWindow: true,

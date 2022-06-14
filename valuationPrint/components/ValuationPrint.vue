@@ -125,13 +125,13 @@ export default {
                 >
                     <ul class="list-inline">
                         <li class="list-inline-item">
-                            Flurstück:
+                            {{ $t('additional:modules.tools.valuationPrint.parcel') }}
                         </li>
                         <li class="list-inline-item">
                             {{ feature.get("flstnrzae") }}
                         </li>
                         <li class="list-inline-item">
-                            Gemarkung:
+                            {{ $t('additional:modules.tools.valuationPrint.district') }}
                         </li>
                         <li class="list-inline-item">
                             {{ feature.get("gemarkung") }}
@@ -143,7 +143,7 @@ export default {
                             class="btn btn-primary btn-sm"
                             @click="removeFeature(feature)"
                         >
-                            Entfernen
+                            {{ $t('additional:modules.tools.valuationPrint.removeButton') }}
                         </button>
                     </div>
                     <hr>
