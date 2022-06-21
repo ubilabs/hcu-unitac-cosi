@@ -1,5 +1,6 @@
 <script>
 import {Fill, Stroke, Style} from "ol/style";
+import {getCenter as getCenterOfExtent} from "ol/extent";
 import getComponent from "../../../src/utils/getComponent";
 import getters from "../store/gettersValuationPrint";
 import Feature from "ol/Feature";
@@ -8,6 +9,7 @@ import mutations from "../store/mutationsValuationPrint";
 import {Select} from "ol/interaction";
 import {singleClick} from "ol/events/condition";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
+import {unionFeatures} from "../utils/unionFeatures";
 
 export default {
     name: "ValuationPrint",
@@ -80,6 +82,28 @@ export default {
         },
 
         /**
+         * Gets the required attributes from the feature and starts the valuation.
+         * @param {ol/Feature[]} featureList - An array of features.
+         * @returns {void}
+         */
+        startValuation (featureList) {
+            if (!Array.isArray(featureList) || !featureList.length) {
+                console.error(`startValuation: ${featureList} has to be a non empty array`);
+                return;
+            }
+
+            const feature = featureList.length > 1 ? unionFeatures(featureList) : featureList[0],
+                extent = feature.getGeometry().getExtent();
+
+            console.warn({
+                centerCoordinate: getCenterOfExtent(extent),
+                geometry: feature.getGeometry(),
+                extent
+            });
+        },
+
+
+        /**
          * Sets the style of the selected features depending on the activity of the select interaction.
          * If the interaction is active, all existing featurers are styled using the select interaction style.
          * If it is not, the layer style is used.
@@ -141,6 +165,13 @@ export default {
                         <button
                             type="button"
                             class="btn btn-primary btn-sm"
+                            @click="startValuation([feature])"
+                        >
+                            {{ $t('additional:modules.tools.valuationPrint.startButton') }}
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-sm"
                             @click="removeFeature(feature)"
                         >
                             {{ $t('additional:modules.tools.valuationPrint.removeButton') }}
@@ -148,6 +179,15 @@ export default {
                     </div>
                     <hr>
                 </div>
+                <template v-if="select.getFeatures().getArray().length > 1">
+                    <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        @click="startValuation(select.getFeatures().getArray())"
+                    >
+                        {{ $t('additional:modules.tools.valuationPrint.startButton') }}
+                    </button>
+                </template>
             </div>
         </template>
     </ToolTemplate>

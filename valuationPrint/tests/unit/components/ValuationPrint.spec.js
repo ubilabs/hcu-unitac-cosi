@@ -1,6 +1,7 @@
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import Feature from "ol/Feature";
+import Polygon from "ol/geom/Polygon";
 import {Select} from "ol/interaction";
 import sinon from "sinon";
 import ValuationPrint from "../../../components/ValuationPrint.vue";
@@ -16,11 +17,30 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
     const features = [
             new Feature({
                 flstnrzae: "12345",
-                gemarkung: "ueberall"
+                gemarkung: "ueberall",
+                geometry: new Polygon([[
+                    [574626.667, 5927656.188],
+                    [574624.441, 5927658.443],
+                    [574593.381, 5927689.913],
+                    [574603.175, 5927698.901],
+                    [574642.559, 5927658.998],
+                    [574646.74, 5927654.762],
+                    [574653.787, 5927647.622],
+                    [574644.331, 5927638.291],
+                    [574638.809, 5927643.886],
+                    [574626.667, 5927656.188]]])
             }),
             new Feature({
                 flstnrzae: "67890",
-                gemarkung: "nirgends"
+                gemarkung: "nirgends",
+                geometry: new Polygon([[
+                    [574729.649, 5927590.856],
+                    [574676.641, 5927642.08],
+                    [574690.16, 5927655.429],
+                    [574705.504, 5927640.191],
+                    [574711.97, 5927633.768],
+                    [574742.688, 5927603.26],
+                    [574729.649, 5927590.856]]])
             })
         ],
         mockMapActions = {
@@ -110,7 +130,32 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             wrapper.vm.select.getFeatures().push(features[1]);
             await wrapper.vm.$forceUpdate();
 
-            expect(wrapper.findAll("button")).to.be.lengthOf(2);
+            expect(wrapper.findAll("button").filter(button => {
+                return button.text() === "additional:modules.tools.valuationPrint.removeButton";
+            })).to.be.lengthOf(2);
+        });
+
+        it("should find one start button per feature and one for the merged feature", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.select.getFeatures().push(features[0]);
+            wrapper.vm.select.getFeatures().push(features[1]);
+            await wrapper.vm.$forceUpdate();
+
+            expect(wrapper.findAll("button").filter(button => {
+                return button.text() === "additional:modules.tools.valuationPrint.startButton";
+            })).to.be.lengthOf(3);
+        });
+
+        it("should find one start buttons if only one feature is available", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.select.getFeatures().push(features[0]);
+            await wrapper.vm.$forceUpdate();
+
+            expect(wrapper.findAll("button").filter(button => {
+                return button.text() === "additional:modules.tools.valuationPrint.startButton";
+            })).to.be.lengthOf(1);
         });
     });
 
@@ -127,6 +172,25 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             expect(spyRemoveFeature.calledOnce).to.be.true;
 
             spyRemoveFeature.restore();
+        });
+
+        it("should call startProcess if user click the start button", async () => {
+            const spyStartValuation = sinon.spy(ValuationPrint.methods, "startValuation"),
+                wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.select.getFeatures().push(features[0]);
+
+            wrapper.vm.select.getFeatures().push(features[1]);
+            await wrapper.vm.$forceUpdate();
+            await wrapper.findAll("button").wrappers.forEach(button => {
+                if (button.text() === "additional:modules.tools.valuationPrint.startButton") {
+                    button.trigger("click");
+                }
+            });
+
+            expect(spyStartValuation.calledThrice).to.be.true;
+
+            spyStartValuation.restore();
         });
     });
 
@@ -206,6 +270,38 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 expect(spyAddInteraction.calledOnce).to.be.true;
 
                 spyAddInteraction.restore();
+            });
+        });
+        describe("startValuation", () => {
+
+            beforeEach(function () {
+                sinon.spy(console, "error");
+            });
+
+            afterEach(function () {
+                console.error.restore();
+                sinon.restore();
+            });
+
+            it("hould throw an error if an wrong data type is passed", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                wrapper.vm.startValuation({});
+                wrapper.vm.startValuation(123);
+                wrapper.vm.startValuation(false);
+                wrapper.vm.startValuation(undefined);
+                wrapper.vm.startValuation(null);
+                wrapper.vm.startValuation("123");
+
+                expect(console.error.callCount).to.be.equal(6);
+            });
+
+            it("should throw no error", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                wrapper.vm.startValuation(features);
+
+                expect(console.error.callCount).to.be.equal(0);
             });
         });
     });

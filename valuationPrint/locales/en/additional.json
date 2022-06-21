@@ -4,6 +4,7 @@
           "valuationPrint": {
               "title": "Valuation",
               "removeButton": "Remove",
+              "startButton": "Start",
               "parcel": "Parcel:",
               "district": "District:"
           }

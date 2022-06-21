@@ -4,6 +4,7 @@
           "valuationPrint": {
               "title": "Wertermittlung",
               "removeButton": "Entfernen",
+              "startButton": "Starten",
               "parcel": "Flurstück:",
               "district": "Gemarkung:"
           }
