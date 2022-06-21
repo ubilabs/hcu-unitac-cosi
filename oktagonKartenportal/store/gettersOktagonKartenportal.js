@@ -6,6 +6,7 @@ const getters = {
     ...generateSimpleGetters(resetTreeState),
     /**
     * Creates the submit url
+    * @param {Object} state state Current state object of the store.
     * @param  {Object} submitObject contains the submit parameters
     * @returns {String} returns the submit url
     */
@@ -29,11 +30,10 @@ const getters = {
     },
     /**
     * Returns the parameter value
-    * @param {Object} result xml object.
-    * @param {String} property xml object.
+    * @param {Object} parameterObject contains the url parameter and the property which is asked.
     * @returns {String} returns the parmeter value
     */
-     getParameterValue: () => (parameterObject) => {
+    getParameterValue: () => (parameterObject) => {
         return parameterObject.result[parameterObject.property];
     },
     /**

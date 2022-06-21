@@ -33,7 +33,7 @@ describe("addons/oktagonKartenportal/components/OktagonKartenportal.vue", () => 
                             oktagonKartenportal:
                             {
                                 "name": "Oktagon",
-                                "icon": "bi-info-circle-fill",
+                                "icon": "bi-info-circle-fill"
                             }
                         }
                     }

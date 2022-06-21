@@ -52,7 +52,7 @@ export default {
         * @fires Sidebar#RadioTriggerSidebarToggle
         * @returns {void}
         */
-        onMapClick: async function (evt) {
+        async onMapClick (evt) {
             const coord = extractEventCoordinates(evt.coordinate);
 
             this.setCenter(coord);
@@ -74,7 +74,7 @@ export default {
         * Opens the submit url in the same window
         * @returns {void}
         */
-        onSubmit: async function () {
+        async onSubmit () {
             window.open(await this.submitURL, "_self");
         },
         /**
@@ -82,7 +82,7 @@ export default {
         * @param  {String} url contains the url
         * @returns {void}
         */
-        requestALKISWMS: function (url) {
+        requestALKISWMS (url) {
             axios({
                 method: "get",
                 url: url,
@@ -103,8 +103,8 @@ export default {
         */
         setFocusToFirstControl () {
             this.$nextTick(() => {
-                if (this.$refs["oktagonSubmitButton"]) {
-                    this.$refs["oktagonSubmitButton"].focus();
+                if (this.$refs.oktagonSubmitButton) {
+                    this.$refs.oktagonSubmitButton.focus();
                 }
             });
         }
@@ -129,7 +129,7 @@ export default {
             >
                 <table
                     v-if="Object.keys(submitObject).length > 0"
-                    class = "table table-condensed table-hover"
+                    class="table table-condensed table-hover"
                 >
                     <tbody>
                         <tr
@@ -148,18 +148,20 @@ export default {
             </div>
             <div class="form-group col-12">
                 <button
-                    id = "oktagonCloseButton"
+                    id="oktagonCloseButton"
                     type="button"
                     class="btn btn-default btn-sm"
-                    @click="close">
+                    @click="close"
+                >
                     Abbrechen
                 </button>
                 <button
-                    id = "oktagonSubmitButton"
-                    ref = "oktagonSubmitButton"
+                    id="oktagonSubmitButton"
+                    ref="oktagonSubmitButton"
                     type="button"
                     class="btn btn-primary btn-sm"
-                    @click="onSubmit">
+                    @click="onSubmit"
+                >
                     Senden
                 </button>
             </div>

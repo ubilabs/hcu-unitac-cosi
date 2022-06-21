@@ -32,14 +32,14 @@ export default {
     * @param {Object} result - The url parameters.
     * @returns {void}
     */
-    createAddress({dispatch, commit, getters}, result) {
-        let address = getters.getParameterValue({result: result, property: "STRASSE"}),
-        searchParams = {
+    createAddress ({dispatch, commit, getters}, result) {
+        const searchParams = {
             searchStreets: true
         };
+        let address = getters.getParameterValue({result: result, property: "STRASSE"});
 
         if (result?.HAUSNUMMER && result.HAUSNUMMER.length > 0) {
-            address += " "+ getters.getParameterValue({result: result, property: "HAUSNUMMER"});
+            address += " " + getters.getParameterValue({result: result, property: "HAUSNUMMER"});
             searchParams.searchAddress = true;
         }
         if (result?.ZUSATZ) {
@@ -55,7 +55,7 @@ export default {
     * @param {Object} response The wms response.
     * @returns {void}
     */
-    handleResponse ({dispatch ,getters}, response) {
+    handleResponse ({dispatch, getters}, response) {
         const result = response.find(element => element.name.toUpperCase() === getters.address);
 
         dispatch("zoomToAddress", result?.geometry?.coordinates);
@@ -112,7 +112,7 @@ export default {
     * @param  {Object} xml contains the response xml
     * @returns {void}
     */
-     parseXML ({getters, commit}, xml) {
+    parseXML ({getters, commit}, xml) {
         const xmlElements = Array.from(xml.getElementsByTagName("FIELDS")).length > 0 ? Array.from(xml.getElementsByTagName("FIELDS")) : Array.from(xml.getElementsByTagName("app:baubloecke")),
             submitObject = getters.submitObject;
 
@@ -137,8 +137,7 @@ export default {
     },
     /**
      * Starts the search via the MasterportalAPI
-     * @param {String} searchInput The search input.
-     * @param {Object} searchParams The search parameter.
+     * @param {Object} searchObject contains the search input and search parameter.
      * @returns {void}
      */
     startSearch ({dispatch}, searchObject) {
@@ -154,7 +153,7 @@ export default {
     },
     /**
     * Zooms the map to the address.
-    * @param {Object} data xml object.
+    * @param {Array} coordinates contains the coordinates.
     * @returns {void}
     */
     zoomToAddress ({dispatch}, coordinates) {

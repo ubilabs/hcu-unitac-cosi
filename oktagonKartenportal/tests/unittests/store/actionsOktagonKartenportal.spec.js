@@ -15,7 +15,7 @@ const {
 describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
     it("addCoordinatesToSubmitObject adds the coordinate parameters to the submit object ", done => {
         testAction(addCoordinatesToSubmitObject, [563661.6283001676, 5936589.223139428], {}, {}, [
-            {type: "setSubmitObject", payload: { KoordinateX: "563661,6283001676", KoordinateY: "5936589,223139428" }}
+            {type: "setSubmitObject", payload: {KoordinateX: "563661,6283001676", KoordinateY: "5936589,223139428"}}
         ], {submitObject: {}}, done);
     });
     it("alertWrongInputParameters triggers an alert for wrong input Parameters", done => {
@@ -30,15 +30,13 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
     describe("createAddress assembles the address from the URL parameters", function () {
         const getters = {
             getParameterValue: (paramObject) => {
-                if(paramObject.property === "STRASSE") {
+                if (paramObject.property === "STRASSE") {
                     return "OSTERSTRAßE";
                 }
-                else if(paramObject.property === "HAUSNUMMER") {
+                else if (paramObject.property === "HAUSNUMMER") {
                     return "12";
                 }
-                else if(paramObject.property === "ZUSATZ") {
-                    return "a";
-                }
+                return "a";
             }
         };
 
@@ -80,24 +78,23 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
     });
     it("handleResponse handles the wms response", done => {
         const response = [
-            {
-                name: "Osterstraße 12",
-                geometry: {
-                    type: "Point",
-                    coordinates: [
-                        "563677.371",
-                        "5936552.043"
-                    ]
+                {
+                    name: "Osterstraße 12",
+                    geometry: {
+                        type: "Point",
+                        coordinates: [
+                            "563677.371",
+                            "5936552.043"
+                        ]
+                    }
                 }
-            }
-        ],
+            ],
             getters = {
                 address: "OSTERSTRASSE 12"
             };
 
         testAction(handleResponse, response, {}, {}, [
-            {type: "zoomToAddress", payload: ["563677.371", "5936552.043"]
-            , dispatch: true}
+            {type: "zoomToAddress", payload: ["563677.371", "5936552.043"], dispatch: true}
         ], getters, done);
     });
     describe("initURLParameter reads the parameters and zooms the map accordingly", function () {
@@ -110,14 +107,14 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
                         return "";
                     },
                     getParameterValue: () => {
-                            return "HARBURG1";
+                        return "HARBURG1";
                     }
                 };
 
-            Object.defineProperty(window, 'location', {
-            value: {
-                search: url
-            }
+            Object.defineProperty(window, "location", {
+                value: {
+                    search: url
+                }
             });
 
             testAction(initURLParameter, {}, {}, {}, [
@@ -137,45 +134,45 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
                         return "HARBURG";
                     },
                     getParameterValue: () => {
-                            return "HARBURG";
+                        return "HARBURG";
                     }
                 };
 
-            Object.defineProperty(window, 'location', {
-            value: {
-                search: url
-            }
+            Object.defineProperty(window, "location", {
+                value: {
+                    search: url
+                }
             });
 
             testAction(initURLParameter, {}, {}, {}, [
                 {type: "setReturnURL", payload: "https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1%26tasktype=BG62%26selektor=LGV_HINTERGRUND%26key=KP_SrgmG94ays"},
                 {type: "ZoomTo/setZoomToGeometry", payload: districtFromUrl},
-                {type: "ZoomTo/zoomToFeatures", payload: undefined, dispatch: true}
+                {type: "ZoomTo/zoomToFeatures", payload: {}, dispatch: true}
             ], getters, done);
         });
         it("initURLParameter called with parameter strasse", done => {
             global.window = Object.create(window);
             const url = "?strasse=Osterstraße&rueckurl=https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1%26tasktype=BG62%26selektor=LGV_HINTERGRUND%26key=KP_SrgmG94ays";
 
-            Object.defineProperty(window, 'location', {
-            value: {
-                search: url
-            }
+            Object.defineProperty(window, "location", {
+                value: {
+                    search: url
+                }
             });
 
             testAction(initURLParameter, {}, {}, {}, [
                 {type: "setReturnURL", payload: "https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1%26tasktype=BG62%26selektor=LGV_HINTERGRUND%26key=KP_SrgmG94ays"},
-                {type: "createAddress", payload: { STRASSE: "OSTERSTRASSE"}, dispatch: true}
+                {type: "createAddress", payload: {STRASSE: "OSTERSTRASSE"}, dispatch: true}
             ], {}, done);
         });
         it("initURLParameter called with wrong parameter strasse", done => {
             global.window = Object.create(window);
             const url = "?strasse=Osterstra%C3%9Fe&hausnummer=12&rueckurl=https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1%26tasktype=BG62%26selektor=LGV_HINTERGRUND%26key=KP_SrgmG94ays";
 
-            Object.defineProperty(window, 'location', {
-            value: {
-                search: url
-            }
+            Object.defineProperty(window, "location", {
+                value: {
+                    search: url
+                }
             });
 
             testAction(initURLParameter, {}, {}, {}, [
@@ -185,7 +182,7 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
     });
     it("parseXML handles the wms response", done => {
         const parser = new DOMParser(),
-            xml = '<?xml version=\"1.0\" standalone=\"yes\" ?>"<FIELDS OID="118628" Identifikator="DEHHALKAV00007Kv" GemarkungLand="02" Gemarkungsnummer="0303" Flurstuecksnummer="1975" Flurstueckskennzeichen="020303___01975______" AmtlicheFlaeche="496" ObjektkoordinatenRechtswert="32563645.956" ObjektkoordinatenHochwert="5936578.834" KoordinatenReferenzSystem="ETRS89_UTM32" SchluesselGesamt="020303" Gemarkungsname="Eimsbüttel"/>',
+            xml = "<?xml version='1.0' standalone='yes' ?><FIELDS OID='118628' Identifikator='DEHHALKAV00007Kv' GemarkungLand='02' Gemarkungsnummer='0303' Flurstuecksnummer='1975' Flurstueckskennzeichen='020303___01975______' AmtlicheFlaeche='496' ObjektkoordinatenRechtswert='32563645.956' ObjektkoordinatenHochwert='5936578.834' KoordinatenReferenzSystem='ETRS89_UTM32' SchluesselGesamt='020303' Gemarkungsname='Eimsbüttel'/>",
             xmlDoc = parser.parseFromString(xml, "application/xml"),
             getters = {
                 submitObject: {
@@ -211,7 +208,7 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
                 Gemarkungsname: "Eimsbüttel",
                 Gemarkungsnummer: "0303",
                 Flurstuecksnummer: "1975"
-            }},
+            }}
         ], getters, done);
     });
     it("zoomToAddress zooms the map to the address", done => {
@@ -231,33 +228,3 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
         ], {}, done);
     });
 });
-
-
-    // describe("hasBezirk checks if input is in Config.zoomToGeometry.geometries and returns it in upperCase", function () {
-    //     it("hasBezirk called with undefined or null", function () {
-    //         model.hasBezirk(undefined);
-    //         model.hasBezirk(null);
-    //     });
-    //     it("hasBezirk returns the found destrict in upperCase from Config.js", function () {
-    //         Config.zoomToGeometry = {
-    //             geometries: [
-    //                 "BERGEDORF"
-    //             ]
-    //         };
-    //         expect(model.hasBezirk("Bergedorf")).to.equal("BERGEDORF");
-    //     });
-    // });
-    // describe("parseCoordinatesToFloat parses the input to float and returns an array with coordinates", function () {
-    //     it("parseCoordinatesToFloat returns an array with float coordinates", function () {
-    //         const inputArray = ["567773.340", "5933469.927"],
-    //             expextedOutput = [567773.34, 5933469.927];
-
-    //         expect(model.parseCoordinatesToFloat(inputArray)).to.deep.equal(expextedOutput);
-    //     });
-    //     it("hasBezirk called with undefined, null or empty string", function () {
-    //         model.parseCoordinatesToFloat(undefined);
-    //         model.parseCoordinatesToFloat(null);
-    //         model.parseCoordinatesToFloat("");
-    //     });
-    // });
-
