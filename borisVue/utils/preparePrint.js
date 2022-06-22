@@ -8,10 +8,8 @@ import SpecModel from "../../../src/modules/tools/print/utils/buildSpec.js";
  * @returns {void}
  */
 export async function preparePrint (getResponse) {
-    const visibleLayerList = store.state.Map.layerList.filter(function (layer) {
-            return layer.getVisible() === true;
-        }),
-        scale = store.state.Map.scale,
+    const layerIds = store.state.Maps.layerIds,
+        scale = store.state.Maps.scale,
         feature = state.selectedBrwFeature,
         selectedOption = state.selectedOption,
         defaultString = "",
@@ -61,15 +59,22 @@ export async function preparePrint (getResponse) {
                 },
                 "map": {
                     "dpi": 96,
-                    "projection": store.state.Map.projection.code_,
-                    "center": store.state.Map.center,
+                    "projection": store.state.Maps.projection.code_,
+                    "center": store.state.Maps.center,
                     "scale": scale
                 }
             }
         },
-        spec = SpecModel;
+        spec = SpecModel,
+        visibleLayerList = [];
+
     let printJob = {};
 
+    layerIds.forEach((id) => {
+        visibleLayerList.push(Radio.request("ModelList", "getModelsByAttributes", {id: id}));
+    });
+
+    console.log("visibleLayerList", visibleLayerList)
     store.dispatch("Tools/Print/activatePrintStarted", true, {root: true});
 
     spec.setAttributes(attributes);

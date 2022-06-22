@@ -4,6 +4,7 @@ import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
 import {getLayerModelsByAttributes, mapClickListener} from "../utils/RadioBridge";
 import WPS from "../../../src/api/wps";
+import mapCollection from "../../../src/core/maps/mapCollection";
 
 const actions = {
     /**
@@ -190,15 +191,15 @@ const actions = {
      * @param {Number[]} [center] center coordinate of faked gfi
      * @returns {void}
      */
-    requestGFI ({state, dispatch, rootGetters}, {event, processFromParametricUrl, center}) {
+    requestGFI ({state, dispatch}, {event, processFromParametricUrl, center}) {
         if (state.active) {
             const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
                 layerSource = selectedLayer.get("layer").getSource(),
                 coordinates = processFromParametricUrl ? center : event.coordinate,
-                map = processFromParametricUrl ? rootGetters["Maps/get2DMap"] : event.map,
+                map = processFromParametricUrl ? mapCollection.getMap("2D") : event.map,
                 mapView = map.getView(),
                 url = layerSource.getFeatureInfoUrl(coordinates, mapView.getResolution(), mapView.getProjection());
-
+                
             axios.get(url)
                 .then((response) => {
                     dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: coordinates});
@@ -277,13 +278,16 @@ const actions = {
         }
         urlParams = "typeName" + typeName + "&featureID=" + featureId;
 
+
         axios.get(url + "/HH_WFS_Bodenrichtwerte?service=WFS&version=1.1.0&request=GetFeature&" + urlParams)
             .then((response) =>{
                 const feature = new WFS().readFeature(response.data);
 
-                feature.unset("geom_brw_grdstk");
-                feature.setGeometryName(geometryName);
-                dispatch("MapMarker/placingPolygonMarker", feature, {root: true});
+                if (feature) {
+                    feature.unset("geom_brw_grdstk");
+                    feature.setGeometryName(geometryName);
+                    dispatch("MapMarker/placingPolygonMarker", feature, {root: true});
+                }
             })
             .catch((error) => {
                 console.error(error.message);
@@ -322,6 +326,7 @@ const actions = {
      * @return {void}
      */
     postFeatureRequestByBrwNumber ({dispatch}, {brwNumber, featureYear}) {
+        
         const typeName = parseInt(featureYear, 10) > 2008 ? "lgv_brw_zoniert_alle" : "lgv_brw_lagetypisch_alle",
             index = Config.layerConf.lastIndexOf("/"),
             url = Config.layerConf.substring(0, index),
