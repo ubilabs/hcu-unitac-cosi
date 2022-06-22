@@ -103,7 +103,7 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
             const url = "?bezirk=Harburg1&rueckurl=https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1%26tasktype=BG62%26selektor=LGV_HINTERGRUND%26key=KP_SrgmG94ays",
                 districtFromUrl = "HARBURG1",
                 getters = {
-                    hasBezirk: () => {
+                    hasDistrict: () => {
                         return "";
                     },
                     getParameterValue: () => {
@@ -118,7 +118,7 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
             });
 
             testAction(initURLParameter, {}, {}, {}, [
-                {type: "setReturnURL", payload: "https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1%26tasktype=BG62%26selektor=LGV_HINTERGRUND%26key=KP_SrgmG94ays"},
+                {type: "setReturnURL", payload: "https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1&tasktype=BG62&selektor=LGV_HINTERGRUND&key=KP_SrgmG94ays"},
                 {type: "Alerting/addSingleAlert", payload: "<strong>" + i18next.t("additional:modules.tools.oktagon.wrongDistrictName") + "</strong>"
                 + "<br>"
                 + "<small>" + i18next.t("additional:modules.tools.oktagon.wrongDistrictNameMessage") + districtFromUrl + ".</small>",
@@ -130,7 +130,7 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
             const url = "?bezirk=Harburg&rueckurl=https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1%26tasktype=BG62%26selektor=LGV_HINTERGRUND%26key=KP_SrgmG94ays",
                 districtFromUrl = "HARBURG",
                 getters = {
-                    hasBezirk: () => {
+                    hasDistrict: () => {
                         return "HARBURG";
                     },
                     getParameterValue: () => {
@@ -145,7 +145,7 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
             });
 
             testAction(initURLParameter, {}, {}, {}, [
-                {type: "setReturnURL", payload: "https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1%26tasktype=BG62%26selektor=LGV_HINTERGRUND%26key=KP_SrgmG94ays"},
+                {type: "setReturnURL", payload: "https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1&tasktype=BG62&selektor=LGV_HINTERGRUND&key=KP_SrgmG94ays"},
                 {type: "ZoomTo/setZoomToGeometry", payload: districtFromUrl},
                 {type: "ZoomTo/zoomToFeatures", payload: {}, dispatch: true}
             ], getters, done);
@@ -161,8 +161,8 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
             });
 
             testAction(initURLParameter, {}, {}, {}, [
-                {type: "setReturnURL", payload: "https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1%26tasktype=BG62%26selektor=LGV_HINTERGRUND%26key=KP_SrgmG94ays"},
-                {type: "createAddress", payload: {STRASSE: "OSTERSTRASSE"}, dispatch: true}
+                {type: "setReturnURL", payload: "https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1&tasktype=BG62&selektor=LGV_HINTERGRUND&key=KP_SrgmG94ays"},
+                {type: "createAddress", payload: {RUECKURL: "HTTPS://OKTAGON-DEV.STADT.HAMBURG.DE/G2VBPLUS/PORTALCALLBACK?MANDATOR=1&TASKTYPE=BG62&SELEKTOR=LGV_HINTERGRUND&KEY=KP_SRGMG94AYS", STRASSE: "OSTERSTRASSE"}, dispatch: true}
             ], {}, done);
         });
         it("initURLParameter called with wrong parameter strasse", done => {
@@ -176,7 +176,7 @@ describe("addons/oktagonKartenportal/store/actionsOktagonKartenportal", () => {
             });
 
             testAction(initURLParameter, {}, {}, {}, [
-                {type: "setReturnURL", payload: "https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1%26tasktype=BG62%26selektor=LGV_HINTERGRUND%26key=KP_SrgmG94ays"}
+                {type: "setReturnURL", payload: "https://oktagon-dev.stadt.hamburg.de/g2vbplus/portalcallback?mandator=1&tasktype=BG62&selektor=LGV_HINTERGRUND&key=KP_SrgmG94ays"}
             ], {}, done);
         });
     });

@@ -7,7 +7,9 @@
         "wrongDistrictName": "Der parametrisierte Aufruf des Portals ist leider fehlgeschlagen!",
         "wrongDistrictNameMessage": "Folgender Bezirk konnte nicht gefunden werden: ",
         "wrongAddressParameter": "Der parametrisierte Aufruf des Portals ist leider fehlgeschlagen!",
-        "wrongAddressParameterMessage": "Es konnte keine Adresse gefunden werde. Bitte prüfen Sie die Eingabeparameter."
+        "wrongAddressParameterMessage": "Es konnte keine Adresse gefunden werde. Bitte prüfen Sie die Eingabeparameter.",
+        "send": "Senden",
+        "cancel": "Abbrechen"
       }
     }
   }

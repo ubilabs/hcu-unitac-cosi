@@ -1,12 +1,10 @@
 <script>
 import {mapGetters, mapMutations, mapActions} from "vuex";
-import getters from "../store/gettersOktagonKartenportal";
 import mutations from "../store/mutationsOktagonKartenportal";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import getComponent from "../../../src/utils/getComponent";
 import {extractEventCoordinates} from "../../../src/utils/extractEventCoordinates";
 import findWhereJs from "../../../src/utils/findWhereJs";
-import axios from "axios";
 
 export default {
     name: "OktagonKartenportal",
@@ -14,7 +12,17 @@ export default {
         ToolTemplate
     },
     computed: {
-        ...mapGetters("Tools/OktagonKartenportal", Object.keys(getters))
+        ...mapGetters("Tools/OktagonKartenportal", [
+            "active",
+            "deactivateGFI",
+            "icon",
+            "layerIds",
+            "name",
+            "submitURL",
+            "resizableWindow",
+            "renderToWindow",
+            "submitObject",
+            "zoomLevel"])
     },
     mounted () {
         this.registerListener({type: "click", listener: this.onMapClick});
@@ -29,7 +37,7 @@ export default {
         ...mapMutations("Tools/OktagonKartenportal", Object.keys(mutations)),
         ...mapActions("Maps", ["setCenter", "setZoomLevel", "registerListener"]),
         ...mapActions("MapMarker", ["placingPointMarker"]),
-        ...mapActions("Tools/OktagonKartenportal", ["initURLParameter", "addCoordinatesToSubmitObject", "parseXML"]),
+        ...mapActions("Tools/OktagonKartenportal", ["requestALKISWMS", "initURLParameter", "addCoordinatesToSubmitObject", "parseXML"]),
         ...mapActions("Alerting", ["addSingleAlert"]),
 
         /**
@@ -78,26 +86,6 @@ export default {
             window.open(await this.submitURL, "_self");
         },
         /**
-        * Requests the ALKIS WMS and starts to parse the xml response
-        * @param  {String} url contains the url
-        * @returns {void}
-        */
-        requestALKISWMS (url) {
-            axios({
-                method: "get",
-                url: url,
-                responseType: "document"
-            }).then(response => {
-                this.parseXML(response.data);
-            }).catch(error => {
-                console.warn("The fetch of the data failed with the following error message: " + error);
-                this.addSingleAlert(
-                    "<strong>" + i18next.t("additional:modules.tools.oktagon.fetchFailed") + "</strong> <br>"
-                        + "<small>" + i18next.t("additional:modules.tools.oktagon.fetchFailedMessage") + "</small>"
-                );
-            });
-        },
-        /**
         * Sets the focus to the close.
         * @returns {void}
         */
@@ -117,7 +105,6 @@ export default {
         :title="$t(name)"
         :icon="icon"
         :active="active"
-        :show-in-sidebar="true"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
         :deactivate-gfi="deactivateGFI"
@@ -146,24 +133,28 @@ export default {
                     </tbody>
                 </table>
             </div>
-            <div class="form-group col-12">
-                <button
-                    id="oktagonCloseButton"
-                    type="button"
-                    class="btn btn-default btn-sm"
-                    @click="close"
-                >
-                    Abbrechen
-                </button>
-                <button
-                    id="oktagonSubmitButton"
-                    ref="oktagonSubmitButton"
-                    type="button"
-                    class="btn btn-primary btn-sm"
-                    @click="onSubmit"
-                >
-                    Senden
-                </button>
+            <div class="form-group form-group-sm row">
+                <div class="col-md-6">
+                    <button
+                        id="oktagonCloseButton"
+                        type="button"
+                        class="btn btn-secondary col-md-12"
+                        @click="close"
+                    >
+                        {{ $t("additional:modules.tools.oktagon.cancel") }}
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <button
+                        id="oktagonSubmitButton"
+                        ref="oktagonSubmitButton"
+                        type="button"
+                        class="btn btn-primary col-md-12"
+                        @click="onSubmit"
+                    >
+                        {{ $t("additional:modules.tools.oktagon.send") }}
+                    </button>
+                </div>
             </div>
         </template>
     </ToolTemplate>

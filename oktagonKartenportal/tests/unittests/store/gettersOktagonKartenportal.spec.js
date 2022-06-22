@@ -4,7 +4,7 @@ import getters from "../../../store/gettersOktagonKartenportal";
 const {
     createSubmitURL,
     getParameterValue,
-    hasBezirk
+    hasDistrict
 } = getters;
 
 describe("addons/oktagonKartenportal/store/gettersOktagonKartenportal", () => {
@@ -33,9 +33,9 @@ describe("addons/oktagonKartenportal/store/gettersOktagonKartenportal", () => {
 
         expect(getParameterValue()(parameterObject)).to.equals("OSTERSTRAßE");
     });
-    it("hasBezirk handels the Bezirk URL parameter", () => {
+    it("hasDistrict handels the Bezirk URL parameter", () => {
         const districtFromUrl = "HARBURG";
 
-        expect(hasBezirk()(districtFromUrl)).to.equals("HARBURG");
+        expect(hasDistrict()(districtFromUrl)).to.equals("HARBURG");
     });
 });

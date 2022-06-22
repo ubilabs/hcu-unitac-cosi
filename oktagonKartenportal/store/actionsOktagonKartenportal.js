@@ -1,5 +1,6 @@
 import {search} from "@masterportal/masterportalapi/src/searchAddress";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
+import axios from "axios";
 
 export default {
     /**
@@ -66,30 +67,21 @@ export default {
     * @returns {void}
     */
     initURLParameter ({dispatch, commit, getters}) {
-        const result = {};
-        let query = window.location.search.substring(1),
-            rueckURLParameter = "";
+        const result = {},
+            params = new URLSearchParams(window.location.search);
 
-        if (query.indexOf("rueckurl") > 0) {
-            rueckURLParameter = query.slice(query.indexOf("rueckurl"));
-            query = query.slice(0, query.indexOf("&rueckurl"));
-        }
-        query = query.toUpperCase();
-        query.split("&").forEach(function (keyValue) {
-            const item = keyValue.split("=");
-
-            result[item[0]] = decodeURIComponent(item[1]);
+        params.forEach(function (value, key) {
+            if (key === "rueckurl") {
+                commit("setReturnURL", value);
+            }
+            result[key.toUpperCase()] = decodeURIComponent(value.toUpperCase());
         });
-
-        if (rueckURLParameter.length > 0) {
-            commit("setReturnURL", rueckURLParameter.slice(rueckURLParameter.indexOf("=") + 1));
-        }
 
         if (result?.BEZIRK) {
             const districtFromUrl = getters.getParameterValue({result: result, property: "BEZIRK"});
             let districtNameToZoom = "";
 
-            districtNameToZoom = getters.hasBezirk(districtFromUrl);
+            districtNameToZoom = getters.hasDistrict(districtFromUrl);
             if (districtNameToZoom === "") {
                 dispatch("Alerting/addSingleAlert",
                     "<strong>" + i18next.t("additional:modules.tools.oktagon.wrongDistrictName") + "</strong>"
@@ -106,6 +98,8 @@ export default {
         else if (result?.STRASSE) {
             dispatch("createAddress", result);
         }
+
+
     },
     /**
     * Parses the xml response
@@ -136,6 +130,26 @@ export default {
         commit("setSubmitObject", submitObject);
     },
     /**
+    * Requests the ALKIS WMS and starts to parse the xml response
+    * @param  {String} url contains the url
+    * @returns {void}
+    */
+    requestALKISWMS ({dispatch}, url) {
+        axios({
+            method: "get",
+            url: url,
+            responseType: "document"
+        }).then(response => {
+            dispatch("parseXML", response.data);
+        }).catch(error => {
+            console.warn("The fetch of the data failed with the following error message: " + error);
+            dispatch("Alerting/addSingleAlert",
+                "<strong>" + i18next.t("additional:modules.tools.oktagon.fetchFailed") + "</strong> <br>"
+                + "<small>" + i18next.t("additional:modules.tools.oktagon.fetchFailedMessage") + "</small>"
+            );
+        });
+    },
+    /**
      * Starts the search via the MasterportalAPI
      * @param {Object} searchObject contains the search input and search parameter.
      * @returns {void}
@@ -159,13 +173,10 @@ export default {
     zoomToAddress ({dispatch}, coordinates) {
         const coordinatesArray = [];
 
-        if (coordinates && coordinates !== null) {
-
-            if (coordinates && Array.isArray(coordinates)) {
-                coordinates.forEach(coordinate => {
-                    coordinatesArray.push(parseFloat(coordinate));
-                });
-            }
+        if (coordinates && coordinates !== null && Array.isArray(coordinates)) {
+            coordinates.forEach(coordinate => {
+                coordinatesArray.push(parseFloat(coordinate));
+            });
 
             dispatch("Maps/setCenter", coordinatesArray, {root: true});
             dispatch("Maps/setZoomLevel", 9, {root: true});

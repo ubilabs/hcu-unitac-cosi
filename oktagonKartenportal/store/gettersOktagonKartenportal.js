@@ -11,7 +11,7 @@ const getters = {
     * @returns {String} returns the submit url
     */
     createSubmitURL: state => (submitObject) => {
-        let submitURL = state.returnURL.replaceAll("%26", "&");
+        let submitURL = state.returnURL;
 
         if (submitURL && submitURL.includes("?")) {
             submitURL += "&";
@@ -41,7 +41,7 @@ const getters = {
     * @param {String} districtFromUrl contains the "Bezirk" URL String.
     * @returns {void} returns the distirct string if it exists in config.
     */
-    hasBezirk: () => (districtFromUrl) => {
+    hasDistrict: () => (districtFromUrl) => {
         let geometries,
             districtNameToZoom = "";
 
