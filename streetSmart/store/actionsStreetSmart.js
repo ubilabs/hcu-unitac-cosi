@@ -69,6 +69,7 @@ const actions = {
                             const viewers = StreetSmartApi.getViewers();
 
                             viewers[0].toggle3DCursor(state.toggle3DCursor);
+                            viewers[0].toggleAddressesVisible(state.toggleAddressesVisible);
                         }
                         else {
                             dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.noData"), {root: true});
@@ -154,13 +155,11 @@ const actions = {
      * @param {Object} evt to get coordinates and rotation from
      * @returns {void}
      */
-    async moveAndRotateMarker ({state, dispatch, getters}, evt) {
+    async moveAndRotateMarker ({dispatch, getters}, evt) {
         await dispatch("MapMarker/placingPointMarker", evt.detail.recording.xyz, {root: true});
         dispatch("MapMarker/rotatePointMarker", evt.detail.recording.relativeYaw + getters.lastYaw, {root: true});
 
-        if (state.toggleAddressesVisible) {
-            Radio.trigger("MapView", "setCenter", [evt.detail.recording.xyz[0], evt.detail.recording.xyz[1]]);
-        }
+        Radio.trigger("MapView", "setCenter", [evt.detail.recording.xyz[0], evt.detail.recording.xyz[1]]);
     },
     /**
      * Rotates the mapMarker and remembers the last yaw.
@@ -169,14 +168,12 @@ const actions = {
      * @param {Object} evt to get rotation from
      * @returns {void}
      */
-    rotateMarker ({state, commit, dispatch}, evt) {
-        if (state.toggleAddressesVisible) {
-            const viewers = StreetSmartApi.getViewers(),
-                rt = viewers[0].getRecording();
+    rotateMarker ({commit, dispatch}, evt) {
+        const viewers = StreetSmartApi.getViewers(),
+            rt = viewers[0].getRecording();
 
-            dispatch("MapMarker/placingPointMarker", rt.xyz, {root: true});
-            commit("setLastCoordinates", rt.xyz);
-        }
+        dispatch("MapMarker/placingPointMarker", rt.xyz, {root: true});
+        commit("setLastCoordinates", rt.xyz);
 
         dispatch("MapMarker/rotatePointMarker", evt.detail.yaw, {root: true});
         commit("setLastYaw", evt.detail.yaw);

@@ -36,6 +36,7 @@ const state = {
     timeTravelVisible: false,
     toggle3DCursor: false,
     toggleAddressesVisible: false,
+    cycloLayerID: null,
     styleId: "defaultMapMarkerPoint",
     mapMarkerStyleId: "defaultMapMarkerPoint",
     lastCoordinates: [],
