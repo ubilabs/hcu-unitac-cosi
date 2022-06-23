@@ -16,7 +16,6 @@ const helpers = {
                 return feature.get("jahrgang") === year;
             });
         }
-
         return null;
     },
     /**
