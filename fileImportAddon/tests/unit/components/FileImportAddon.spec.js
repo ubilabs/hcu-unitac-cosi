@@ -20,7 +20,7 @@ describe("addons/fileImportAddon/components/FileImportAddon.vue", () => {
                             FileImportAddon:
                             {
                                 "title": "translate#addtional:menu.tools.fileImportAddon",
-                                "glyphicon": "glyphicon-resize-full",
+                                "icon": "bi-file-earmark-arrow-up-fill",
                                 "renderToWindow": true
                             }
                         }
