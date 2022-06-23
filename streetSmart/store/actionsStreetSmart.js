@@ -121,6 +121,9 @@ const actions = {
                     .then(
                         function () {
                             dispatch("onInitSuccess");
+                            if (state.cycloLayerID) {
+                                Radio.trigger("ModelList", "showModelInTree", state.cycloLayerID);
+                            }
                         }
                     ).catch(
                         function (reason) {
@@ -147,6 +150,9 @@ const actions = {
         StreetSmartApi.destroy({
             targetElement: document.getElementById("streetsmart")
         });
+        if (state.cycloLayerID) {
+            Radio.trigger("ModelList", "setModelAttributesById", state.cycloLayerID, {isSelected: false});
+        }
     },
     /**
      * Moves and rotates the mapMarker.
