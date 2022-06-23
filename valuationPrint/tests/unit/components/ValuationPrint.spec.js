@@ -283,7 +283,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 sinon.restore();
             });
 
-            it("hould throw an error if an wrong data type is passed", () => {
+            it("should throw an error if a wrong data type is passed", () => {
                 const wrapper = factory.getShallowMount({}, true);
 
                 wrapper.vm.startValuation({});
@@ -294,14 +294,6 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 wrapper.vm.startValuation("123");
 
                 expect(console.error.callCount).to.be.equal(6);
-            });
-
-            it("should throw no error", () => {
-                const wrapper = factory.getShallowMount({}, true);
-
-                wrapper.vm.startValuation(features);
-
-                expect(console.error.callCount).to.be.equal(0);
             });
         });
     });

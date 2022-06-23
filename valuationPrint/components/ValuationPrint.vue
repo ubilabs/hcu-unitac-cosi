@@ -10,11 +10,17 @@ import {Select} from "ol/interaction";
 import {singleClick} from "ol/events/condition";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import {unionFeatures} from "../utils/unionFeatures";
+import {runCrawler} from "../utils/collectFeatures.js";
 
 export default {
     name: "ValuationPrint",
     components: {
         ToolTemplate
+    },
+    data () {
+        return {
+            selectedFeatures: []
+        };
     },
     computed: {
         ...mapGetters("Tools/ValuationPrint", Object.keys(getters))
@@ -31,6 +37,7 @@ export default {
     },
     created () {
         this.setSelectInteraction();
+        this.selectedFeatures = this.select.getFeatures().getArray();
 
         this.$on("close", () => {
             this.setActive(false);
@@ -95,7 +102,7 @@ export default {
             const feature = featureList.length > 1 ? unionFeatures(featureList) : featureList[0],
                 extent = feature.getGeometry().getExtent();
 
-            console.warn({
+            runCrawler({
                 centerCoordinate: getCenterOfExtent(extent),
                 geometry: feature.getGeometry(),
                 extent
@@ -144,7 +151,7 @@ export default {
         >
             <div class="valuation-print">
                 <div
-                    v-for="feature in select.getFeatures().getArray()"
+                    v-for="feature in selectedFeatures"
                     :key="feature.get('flstnrzae')"
                 >
                     <ul class="list-inline">

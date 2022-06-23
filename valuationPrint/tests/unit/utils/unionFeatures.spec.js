@@ -68,7 +68,7 @@ describe("addons/valuationPrint/utils/unionFeatures.js", () => {
         expect(console.error.calledOnce).to.be.true;
     });
 
-    it("should throw an error if an wrong data type is passed", () => {
+    it("should throw an error if a wrong data type is passed", () => {
         unionFeatures({});
         unionFeatures(null);
         unionFeatures(undefined);

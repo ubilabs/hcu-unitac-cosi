@@ -1,5 +1,5 @@
 import {GeoJSON} from "ol/format";
-import {union} from "@turf/turf";
+import union from "@turf/union";
 
 /**
  * Takes a list of features and merge them to one feature.
