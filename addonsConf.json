@@ -36,6 +36,9 @@
   "streetSmart": {
     "type": "tool"
   },
+  "refugeeHomes": {
+    "type": "tool"
+  },
   "hochWasserPrint": {
     "type": "tool"
   },
