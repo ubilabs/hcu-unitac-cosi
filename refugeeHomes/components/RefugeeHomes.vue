@@ -5,6 +5,7 @@ import getComponent from "../../../src/utils/getComponent";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import getters from "../store/gettersRefugeeHomes";
 import mutations from "../store/mutationsRefugeeHomes";
+import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
 
 export default {
     name: "RefugeeHomes",
@@ -13,7 +14,6 @@ export default {
     },
     data () {
         return {
-            apiIsLoaded: false
         };
     },
     computed: {
@@ -25,9 +25,7 @@ export default {
         active (value) {
             if (value) {
                 this.$nextTick(() => {
-                    if (this.apiIsLoaded) {
-                        this.initApi();
-                    }
+                    this.requestRawLayerList();
                 });
             }
             else {
@@ -54,59 +52,63 @@ export default {
      * @returns {void}
      */
     created () {
+        this.$on("close", this.close);
         Backbone.Events.listenTo(Radio.channel("RefugeesTable"), {
-            "showAllFeatures": function () {
-                console.log("all");
+            "showAllFeatures": () => {
+                this.$store.commit("Tools/RefugeeHomes/setFeatures", []);
+                this.setActive(true);
             },
             "showFeaturesByBezirk": district => {
-                console.log(district);
+                this.filterFeaturesByBezirk(district);
+                this.setActive(true);
             }
 
         });
-        this.$on("close", this.close);
     },
 
     methods: {
         ...mapMutations("Tools/RefugeeHomes", Object.keys(mutations)),
+        ...mapMutations("addFeature"),
         ...mapActions("Tools/RefugeeHomes", [""]),
 
-              /**
+        /**
          * Ermittelt die Geometrie und zoomt auf Koordinate
          */
-         zoomStandort: function (id) {
+        zoomStandort: function (id) {
             var feature = _.findWhere(this.get("features"), {"id": id}),
                 geom = feature.geom;
 
             Radio.trigger("MapView", "setCenter", geom, 4);
-         },
+        },
 
-         /**
+        /**
          * Ermittelt die Geometrie und setzt den MapMarker
          */
-         selectStandort: function (id) {
+        selectStandort: function (id) {
             var feature = _.findWhere(this.get("features"), {"id": id}),
                 geom = feature.geom;
 
             Radio.trigger("MapMarker", "showMarker", geom);
-         },
+        },
 
-         /**
+        /**
           * Entfernt den MapMarker
           */
-         deselectStandort: function () {
+        deselectStandort: function () {
             Radio.trigger("MapMarker", "hideMarker");
-         },
+        },
 
         /**
          * Iteriert über die LayerIds und holt sich die entsprechenden Models aus der RawLayerList
          */
-        requestRawLayerModels: function () {
-            _.each(this.get("layerIds"), function (layerId) {
-                var model = Radio.request("RawLayerList", "getLayerWhere", {id: layerId}),
-                    getFeatureUrl = this.buildAndGetRequestUrl(model);
+        requestRawLayerList: function () {
+            this.layerIds.forEach((layerId) => {
+                const rawLayer = getLayerWhere({id: layerId}),
+                    getFeatureUrl = this.buildAndGetRequestUrl(rawLayer);
 
-                this.sendRequest(getFeatureUrl, this.parseFeatures);
-            }, this);
+                this.sendRequest(getFeatureUrl);
+            });
+
         },
 
         /**
@@ -114,18 +116,18 @@ export default {
          * @param  {String} url
          * @param  {function} successFunction
          */
-        sendRequest: function (url, successFunction) {
-            $.ajax({
-                url: Radio.request("Util", "getProxyURL", url),
-                context: this,
-                async: false,
+        sendRequest: function (url) {
+            axios({
+                url: url,
                 type: "GET",
-                success: successFunction,
-                timeout: 6000,
-                error: function () {
-                    Radio.trigger("Alert", "alert", url + " nicht erreichbar.");
-                }
-            });
+                timeout: 6000
+            }).then((response) => {
+                // console.log(response.data);
+                this.parseFeatures(response.data);
+            }).catch(
+                this.$store.dispatch("Alerting/addSingleAlert", url + i18next.t("common:modules.highlightFeaturesByAttribute.messages.requestFailed"), {root: true})
+                // Radio.trigger("Alert", "alert", url + " nicht erreichbar."
+            );
         },
 
         /**
@@ -133,10 +135,10 @@ export default {
          * @param  {Backbone.Model} model
          * @return {String}
          */
-        buildAndGetRequestUrl: function (model) {
-            var params = "?service=WFS&request=GetFeature&version=2.0.0&typeNames=",
-                url = model.get("url"),
-                featureType = model.get("featureType");
+        buildAndGetRequestUrl: function (rawLayer) {
+            const params = "?service=WFS&request=GetFeature&version=2.0.0&typeNames=",
+                url = rawLayer.url,
+                featureType = rawLayer.featureType;
 
             return url + params + featureType;
         },
@@ -146,45 +148,51 @@ export default {
          * @param  {XML} data
          */
         parseFeatures: function (data) {
-            var hits = $("wfs\\:member,member", data),
+            let xmlData = new DOMParser().parseFromString(data, "text/xml"),
+                hits = xmlData.getElementsByTagName("wfs:member"),
                 feature,
                 featureType,
                 element,
                 coordEle,
                 coord;
 
-            _.each(hits, function (hit) {
+            hits.forEach(hit => {
                 feature = {
-                    id: _.uniqueId()
+                    id: hit.childNodes[1].getAttribute("gml:id")
                 };
 
-                _.each(this.get("featureAttributes"), function (attr) {
-                    element = $(hit).find("app\\:" + attr + "," + attr)[0];
-                    if (_.isUndefined(element) === false) {
+                this.featureAttributes.forEach((attr) => {
+                    element = hit.getElementsByTagName("app:" + attr)[0];
+
+
+                    if (typeof element !== "undefined") {
                         if (attr === "pfad") {
-                            var pfadArray = $(element).text().split("|");
+                            const pfadArray = element.innerHTML.split("|");
 
                             feature[attr] = pfadArray;
                         }
                         else if (attr === "geom") {
-                            coordEle = $(element).find("gml\\:pos")[0];
-                            coord = $(coordEle).text().split(" ");
+                            coordEle = hit.getElementsByTagName("gml:pos")[0];
+                            coord = coordEle.innerHTML.split(" ");
 
                             feature[attr] = [parseFloat(coord[0]), parseFloat(coord[1])];
                         }
                         else {
-                            feature[attr] = $(element).text();
+                            feature[attr] = element.innerHTML;
                         }
+
+
+                        // else {
+                        //     feature[attr] = "DUMMY <a href='https://www.hamburg.de/contentblob/4594724/3696a6bc1f054a94eb559f274a8a9c04/data/flyer-notkestrasse.pdf' target='_blank'>Flyer </a>(PDF)";
+                        // }
+
+                        featureType = hit.childNodes[1].localName;
+                        feature.featureType = featureType;
+                        feature.imgSrc = this.$store.getters.imagePath + featureType + ".svg";
+                        this.$store.commit("Tools/RefugeeHomes/addFeature", feature);
                     }
-                    // else {
-                    //     feature[attr] = "DUMMY <a href='https://www.hamburg.de/contentblob/4594724/3696a6bc1f054a94eb559f274a8a9c04/data/flyer-notkestrasse.pdf' target='_blank'>Flyer </a>(PDF)";
-                    // }
-                }, this);
-                featureType = $(hit).children()[0].localName;
-                feature.featureType = featureType;
-                feature.imgSrc = Radio.request("Util", "getPath", Config.wfsImgPath) + featureType + ".svg";
-                this.get("features").push(feature);
-            }, this);
+                });
+            });
         },
 
         /**
@@ -194,27 +202,41 @@ export default {
          * @param  {String} value - Name des Bezirks
          */
         filterFeaturesByBezirk: function (value) {
-            var filteredFeatures = _.filter(this.get("features"), function (feature) {
-                return feature.bezirk.toUpperCase().trim() === value.toUpperCase().trim();
-            });
+            const filteredDistricts = this.features.filter(district => district.bezirk.toUpperCase().trim() === value.toUpperCase().trim()),
+                sortedFeatures = this.sortFeatures(filteredDistricts, this.ranking);
 
-            filteredFeatures = this.sortFeatures(filteredFeatures, this.get("ranking"));
-
-            this.setFilteredFeatures(filteredFeatures);
-            this.trigger("render");
-            Radio.trigger("ZoomToGeometry", "setIsRender", true);
-            Radio.trigger("ZoomToGeometry", "zoomToGeometry", value);
+            this.$store.commit("Tools/RefugeeHomes/addFilteredFeature", sortedFeatures);
+            // this.trigger("render");
+            //this.render();
+            /*  Radio.trigger("ZoomToGeometry", "setIsRender", true);
+            Radio.trigger("ZoomToGeometry", "zoomToGeometry", value); */
         },
         /**
-         *  Sorts features by given Ranking and bezirk and stadtteil
+         *  Sorts bezirk features by given Ranking and bezirk and stadtteil
          * @param {olFeatures} Features to be sorted
          * @param {ranking} ranking used as first sort criteria
          */
         sortFeatures: function (features, ranking) {
-            features = _.sortBy(features, function (obj) {
+            /* features = _.sortBy(features, function (obj) {
                 return [ranking.indexOf(obj.featureType.toLowerCase()), obj.stadtteil].join("_");
+            }); */
+
+
+            let sortFeatures = features;
+            /* sortFeatures = sortFeatures.sort(function(a, b) {
+                    var x = a["stadtteil"]; var y = b["stadtteil"];
+                    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+                });
+            console.log(sortFeatures); */
+
+            sortFeatures = sortFeatures.sort((a, b) => {
+                const aKey = Object.keys(a)[0],
+                    bKey = Object.keys(b)[0];
+
+                return ranking.indexOf(aKey) - ranking.indexOf(bKey);
             });
-            return features;
+
+            return sortFeatures;
         },
 
         /**
@@ -223,34 +245,17 @@ export default {
          * @return {[type]} [description]
          */
         sortAllFeatures: function () {
-            var features = this.sortFeatures(this.get("features"), this.getRanking());
+            const features = this.sortFeatures(this.get("features"), this.getRanking());
 
             this.setFilteredFeatures(features);
-            this.trigger("render");
+            /*   this.trigger("render");
             Radio.trigger("ZoomToGeometry", "setIsRender", false);
-            Radio.trigger("MapView", "resetView");
-        },
-
-        setFilteredFeatures: function (value) {
-            this.set("filteredFeatures", value);
-        },
-
-        getFeatures: function () {
-            return this.get("features");
-        },
-
-        getLayerIds: function () {
-            return this.get("layerIds");
-        },
-
-        getRanking: function () {
-            return this.get("ranking");
+            Radio.trigger("MapView", "resetView"); */
         },
 
         close () {
             const model = getComponent("refugeehomes");
 
-            this.destroyApi();
             this.setActive(false);
             if (model) {
                 model.set("isActive", false);
@@ -261,163 +266,165 @@ export default {
 
 </script>
 
+
 <template lang="html">
-    <div
-        v-if="active"
-        id="refugeeshome"
+    <ToolTemplate
+        :title="$t(name)"
+        :icon="icon"
+        :active="active"
+        :render-to-window="renderToWindow"
+        :resizable-window="resizableWindow"
+        :deactivate-gfi="deactivateGFI"
+        :initial-width="initialWidth"
     >
-        <h4 v-if="features.length === filteredFeatures.length">
-            Hamburg
-        </h4>
-        <h4 v-else>
-            Bezirk {{ filteredFeatures[0].bezirk }}
-        </h4>
-        <button
-            type="button"
-            class="close"
-            aria-label="Close"
-        >
-            <span
-                aria-hidden="true"
-            >
-                &times;
-            </span>
-        </button>
-        <ul
-            class="nav nav-pills nav-fill"
-        >
-            <li
-                class="nav-item"
-            >
-                <a
-                    class="nav-link active"
-                    href="#bestehendeStandorte"
-                >
-                    Bestehende Standorte
-                </a>
-            </li>
-            <li
-                class="nav-item"
-            >
-                <a
-                    class="nav-link"
-                    href="#geplanteStandorte"
-                >
-                    Geplante Standorte
-                </a>
-            </li>
-        </ul>
-        <div
-            class="tab-content"
-        >
+        <template #toolBody>
             <div
-                id="bestehendeStandorte"
-                class="tab-pane fade in active"
+                v-if="active"
+                id="refugeeshome"
             >
-                <table
-                    class="table table-striped"
+                <h4 v-if="features.length === filteredFeatures.length">
+                    Hamburg
+                </h4>
+                <h4 v-else>
+                    Bezirk {{ filteredFeatures[0].bezirk }}
+                </h4>
+                <ul
+                    class="nav nav-pills nav-fill"
                 >
-                    <thead>
-                        <tr>
-                            <th>Symbol</th>
-                            <th>Stadtteil</th>
-                            <th>Bezeichnung</th>
-                            <th>Pl&auml;tze</th>
-                            <th>Bemerkungen</th>
-                            <th>Anlagen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="(feature, idx) in filteredFeatures"
-                            v-if="feature.featureType.indexOf('geplant') === -1"
-                            id="feature.id"
-                            :key="`feature-${idx}`"
+                    <li
+                        class="nav-item"
+                    >
+                        <a
+                            class="nav-link active"
+                            href="#bestehendeStandorte"
                         >
-                            <td>
-                                <img
-                                    src="feature.imgSrc"
-                                    alt="featureimage"
-                                >
-                            </td>
-                            <td>{{ feature.stadtteil }}</td>
-                            <td>{{ feature.bezeichnung }}</td>
-                            <td>{{ feature.platzzahl }}</td>
-                            <td>{{ feature.bemerkung }}</td>
-                            <td
-                                v-for="(anlage, index) in filteredFeatures"
-                                :key="index"
-                            >
-                                <a
-                                    href="anlage"
-                                    target="_blank"
-                                >
-                                    Anlage {{ index + 1 }}
-                                </a>
-                                <br
-                                    v-if="feature.pfad.length > index + 1"
-                                >
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div
-                id="geplanteStandorte"
-                class="tab-pane fade"
-            >
-                <table
-                    class="table table-striped"
+                            Bestehende Standorte
+                        </a>
+                    </li>
+                    <li
+                        class="nav-item"
+                    >
+                        <a
+                            class="nav-link"
+                            href="#geplanteStandorte"
+                        >
+                            Geplante Standorte
+                        </a>
+                    </li>
+                </ul>
+                <div
+                    class="tab-content"
                 >
-                    <thead>
-                        <tr>
-                            <th>Symbol</th>
-                            <th>Stadtteil</th>
-                            <th>Bezeichnung</th>
-                            <th>Pl&auml;tze</th>
-                            <th>Bemerkungen</th>
-                            <th>Plan</th>
-                            <th>Anlagen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="(feature, idx) in filteredFeatures"
-                            v-if="feature.featureType.indexOf('geplant') !== -1"
-                            id="feature.id"
-                            :key="idx"
+                    <div
+                        id="bestehendeStandorte"
+                        class="tab-pane fade in active"
+                    >
+                        <table
+                            class="table table-striped"
                         >
-                            <td>
-                                <img
-                                    src="feature.imgSr"
-                                    alt="featureimage"
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Stadtteil</th>
+                                    <th>Bezeichnung</th>
+                                    <th>Pl&auml;tze</th>
+                                    <th>Bemerkungen</th>
+                                    <th>Anlagen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(feature, idx) in filteredFeatures"
+                                    v-if="feature.featureType.indexOf('geplant') === -1"
+                                    id="feature.id"
+                                    :key="`feature-${idx}`"
                                 >
-                            </td>
-                            <td>{{ feature.stadtteil }}</td>
-                            <td>{{ feature.bezeichnung }}</td>
-                            <td>{{ feature.platzzahl }}</td>
-                            <td>{{ feature.bemerkung }}</td>
-                            <td>{{ feature.geplante_inbetriebnahme }}</td>
-                            <td
-                                v-for="(anlage, index) in filteredFeatures"
-                                :key="index"
-                            >
-                                <a
-                                    href="anlage"
-                                    target="_blank"
+                                    <td>
+                                        <img
+                                            src="feature.imgSrc"
+                                            alt="featureimage"
+                                        >
+                                    </td>
+                                    <td>{{ feature.stadtteil }}</td>
+                                    <td>{{ feature.bezeichnung }}</td>
+                                    <td>{{ feature.platzzahl }}</td>
+                                    <td>{{ feature.bemerkung }}</td>
+                                    <td
+                                        v-for="(anlage, index) in filteredFeatures"
+                                        :key="index"
+                                    >
+                                        <a
+                                            href="anlage"
+                                            target="_blank"
+                                        >
+                                            Anlage {{ index + 1 }}
+                                        </a>
+                                        <br
+                                            v-if="feature.pfad.length > index + 1"
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div
+                        id="geplanteStandorte"
+                        class="tab-pane fade"
+                    >
+                        <table
+                            class="table table-striped"
+                        >
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Stadtteil</th>
+                                    <th>Bezeichnung</th>
+                                    <th>Pl&auml;tze</th>
+                                    <th>Bemerkungen</th>
+                                    <th>Plan</th>
+                                    <th>Anlagen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(feature, idx) in filteredFeatures"
+                                    v-if="feature.featureType.indexOf('geplant') !== -1"
+                                    id="feature.id"
+                                    :key="idx"
                                 >
-                                    Anlage {{ index + 1 }}
-                                </a>
-                                <br
-                                    v-if="feature.pfad.length > index + 1"
-                                >
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                    <td>
+                                        <img
+                                            src="feature.imgSr"
+                                            alt="featureimage"
+                                        >
+                                    </td>
+                                    <td>{{ feature.stadtteil }}</td>
+                                    <td>{{ feature.bezeichnung }}</td>
+                                    <td>{{ feature.platzzahl }}</td>
+                                    <td>{{ feature.bemerkung }}</td>
+                                    <td>{{ feature.geplante_inbetriebnahme }}</td>
+                                    <td
+                                        v-for="(anlage, index) in filteredFeatures"
+                                        :key="index"
+                                    >
+                                        <a
+                                            href="anlage"
+                                            target="_blank"
+                                        >
+                                            Anlage {{ index + 1 }}
+                                        </a>
+                                        <br
+                                            v-if="feature.pfad.length > index + 1"
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+        </template>
+    </ToolTemplate>
 </template>
 
 <style lang="scss" scoped>
