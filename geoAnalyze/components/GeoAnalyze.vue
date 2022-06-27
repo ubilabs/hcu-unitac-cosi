@@ -332,7 +332,7 @@ export default {
                     :results="result"
                 />
                 <hr>
-                <form>
+                <form class="d-flex justify-content-end">
                     <button
                         class="btn btn-primary"
                         type="button"
