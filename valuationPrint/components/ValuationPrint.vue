@@ -10,7 +10,10 @@ import {Select} from "ol/interaction";
 import {singleClick} from "ol/events/condition";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import {unionFeatures} from "../utils/unionFeatures";
-import {runCrawler} from "../utils/collectFeatures.js";
+import {createKnowledgeBase} from "../utils/createKnowledgeBase.js";
+import {createMapfishDialog} from "../utils/createMapfishDialog.js";
+import axios from "axios";
+import isObject from "../../../src/utils/isObject";
 
 export default {
     name: "ValuationPrint",
@@ -19,7 +22,8 @@ export default {
     },
     data () {
         return {
-            selectedFeatures: []
+            selectedFeatures: [],
+            parcelData: null
         };
     },
     computed: {
@@ -33,11 +37,45 @@ export default {
          */
         active (newValue) {
             this.select.setActive(newValue);
+        },
+
+        /**
+         * Starts process for the valuation.
+         * @returns {void}
+         */
+        parcelData () {
+            if (!isObject(this.config?.services)) {
+                console.error("No config found for services");
+                return;
+            }
+            else if (!isObject(this.config?.transformer)) {
+                console.error("No config found for transformer");
+                return;
+            }
+            createKnowledgeBase(this.parcelData, this.config.services, (message) => {
+                // this.addMessage(message, false);
+                console.warn("start", message);
+            }, (knowledgeBase) => {
+                const mapfishDialog = createMapfishDialog(knowledgeBase, this.config.transformer, this.defaultValue);
+
+                console.warn("mapfishDialog", mapfishDialog);
+            }, (errorMsg) => {
+                // this.addMessage(errorMsg, true);
+                console.error(errorMsg);
+            }, (error) => {
+                console.error(error);
+            });
         }
     },
     created () {
+        this.config = null;
+        this.select = null;
+        this.defaultValue = "n.v.";
+
+        this.setConfig();
         this.setSelectInteraction();
         this.selectedFeatures = this.select.getFeatures().getArray();
+
 
         this.$on("close", () => {
             this.setActive(false);
@@ -52,6 +90,7 @@ export default {
     methods: {
         ...mapMutations("Tools/ValuationPrint", Object.keys(mutations)),
         ...mapActions("Maps", ["addInteraction"]),
+        ...mapActions("Alerting", ["addSingleAlert"]),
 
         /**
          * Removes the passed feature from the collection where the select interaction will place the selected features.
@@ -62,6 +101,30 @@ export default {
             if (feature instanceof Feature) {
                 this.select.getFeatures().remove(feature);
             }
+        },
+
+        /**
+         * Gets the config for the valuation and sets it.
+         * @param {Function} onsuccess - Is called when the config is set.
+         * @returns {void}
+         */
+        setConfig () {
+            axios.get("config.valuation.json", {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(response => {
+                    this.config = response.data;
+                })
+                .catch(error => {
+                    console.error("Error: ", error);
+                    this.addSingleAlert({
+                        category: "error",
+                        content: "Could not load the config file config.valuation.json",
+                        displayClass: "error"
+                    });
+                });
         },
 
         /**
@@ -89,11 +152,11 @@ export default {
         },
 
         /**
-         * Gets the required attributes from the feature and starts the valuation.
+         * Gets the required attributes from the feature(s) and sets it.
          * @param {ol/Feature[]} featureList - An array of features.
          * @returns {void}
          */
-        startValuation (featureList) {
+        setParcelData (featureList) {
             if (!Array.isArray(featureList) || !featureList.length) {
                 console.error(`startValuation: ${featureList} has to be a non empty array`);
                 return;
@@ -102,11 +165,11 @@ export default {
             const feature = featureList.length > 1 ? unionFeatures(featureList) : featureList[0],
                 extent = feature.getGeometry().getExtent();
 
-            runCrawler({
+            this.parcelData = {
                 centerCoordinate: getCenterOfExtent(extent),
                 geometry: feature.getGeometry(),
                 extent
-            });
+            };
         },
 
 
@@ -172,7 +235,7 @@ export default {
                         <button
                             type="button"
                             class="btn btn-primary btn-sm"
-                            @click="startValuation([feature])"
+                            @click="setParcelData([feature])"
                         >
                             {{ $t('additional:modules.tools.valuationPrint.startButton') }}
                         </button>
@@ -186,11 +249,11 @@ export default {
                     </div>
                     <hr>
                 </div>
-                <template v-if="select.getFeatures().getArray().length > 1">
+                <template v-if="selectedFeatures.length > 1">
                     <button
                         type="button"
                         class="btn btn-primary btn-sm"
-                        @click="startValuation(select.getFeatures().getArray())"
+                        @click="setParcelData(select.getFeatures().getArray())"
                     >
                         {{ $t('additional:modules.tools.valuationPrint.startButton') }}
                     </button>

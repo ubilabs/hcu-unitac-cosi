@@ -75,6 +75,16 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             }
         };
 
+    let stubSetConfig;
+
+    before(function () {
+        stubSetConfig = sinon.stub(ValuationPrint.methods, "setConfig");
+    });
+
+    after(function () {
+        stubSetConfig.restore();
+    });
+
     describe("Component DOM", () => {
         it("should exist", () => {
             const wrapper = factory.getShallowMount();
@@ -174,8 +184,8 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             spyRemoveFeature.restore();
         });
 
-        it("should call startProcess if user click the start button", async () => {
-            const spyStartValuation = sinon.spy(ValuationPrint.methods, "startValuation"),
+        it("should call 'setParcelData' if user click the start button", async () => {
+            const spySetParcelData = sinon.spy(ValuationPrint.methods, "setParcelData"),
                 wrapper = factory.getShallowMount({}, true);
 
             wrapper.vm.select.getFeatures().push(features[0]);
@@ -188,9 +198,9 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 }
             });
 
-            expect(spyStartValuation.calledThrice).to.be.true;
+            expect(spySetParcelData.calledThrice).to.be.true;
 
-            spyStartValuation.restore();
+            spySetParcelData.restore();
         });
     });
 
@@ -204,6 +214,12 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 expect(spySetSelectInteraction.calledOnce).to.be.true;
 
                 spySetSelectInteraction.restore();
+            });
+
+            it("should call setConfig if the component is created", () => {
+                factory.getShallowMount({});
+
+                expect(stubSetConfig.called).to.be.true;
             });
         });
 
@@ -230,6 +246,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
             });
         });
+
         describe("removeFeature", () => {
             it("should remove a feature from the select interaction", () => {
                 const wrapper = factory.getShallowMount({}, true);
@@ -255,6 +272,30 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 expect(wrapper.vm.select.getFeatures().getArray()).to.be.lengthOf(2);
             });
         });
+
+        describe("setParcelData", () => {
+            it("should set the parcelData object", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                wrapper.vm.setParcelData([features[0]]);
+
+                expect(wrapper.vm.parcelData).to.have.all.keys("centerCoordinate", "geometry", "extent");
+            });
+
+            it("should not set the parcelData object", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                wrapper.vm.setParcelData(122);
+                wrapper.vm.setParcelData({});
+                wrapper.vm.setParcelData(true);
+                wrapper.vm.setParcelData(undefined);
+                wrapper.vm.setParcelData(null);
+                wrapper.vm.setParcelData([]);
+
+                expect(wrapper.vm.parcelData).to.be.null;
+            });
+        });
+
         describe("setSelectInteraction", () => {
             it("should set openlayers select interaction", () => {
                 const wrapper = factory.getShallowMount({}, true);
@@ -270,30 +311,6 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 expect(spyAddInteraction.calledOnce).to.be.true;
 
                 spyAddInteraction.restore();
-            });
-        });
-        describe("startValuation", () => {
-
-            beforeEach(function () {
-                sinon.spy(console, "error");
-            });
-
-            afterEach(function () {
-                console.error.restore();
-                sinon.restore();
-            });
-
-            it("should throw an error if a wrong data type is passed", () => {
-                const wrapper = factory.getShallowMount({}, true);
-
-                wrapper.vm.startValuation({});
-                wrapper.vm.startValuation(123);
-                wrapper.vm.startValuation(false);
-                wrapper.vm.startValuation(undefined);
-                wrapper.vm.startValuation(null);
-                wrapper.vm.startValuation("123");
-
-                expect(console.error.callCount).to.be.equal(6);
             });
         });
     });

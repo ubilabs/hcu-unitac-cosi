@@ -38,22 +38,16 @@ export function collectFeatures (parcel, config, service, onsuccess, onerror, ma
             propertyNames: config.propertyName
         };
 
-        wfsGetFeaturePOST(service.url, payload).then(response => {
+        wfsGetFeaturePOST(service.url, payload, onerror).then(response => {
             if (response) {
                 const parserWFS = new WFS(),
                     features = parserWFS.readFeatures(response);
 
-                if (features.length > 0) {
-                    onsuccess(features);
-                }
-                else {
-                    console.warn("No features found.");
-                    onerror();
-                }
+                onsuccess(features);
             }
-            else {
-                console.warn("Request failed.");
-                onerror();
+        }).catch(error => {
+            if (typeof onerror === "function") {
+                onerror(error);
             }
         });
     }
@@ -80,40 +74,13 @@ export function createFeatureByCoordinate (coordinate) {
  * @returns {Object} Represents a filter operater.
  */
 export function getFilter (geometry, geometryName, filterType, radius) {
+    if (!filterType) {
+        return undefined;
+    }
     const usedGeometry = radius ? bufferGeometry(geometry, radius) : geometry;
 
     if (filterType === "intersects") {
         return intersects(geometryName, usedGeometry);
     }
     return within(geometryName, usedGeometry);
-}
-
-/**
- * Temp
- * @param {Object} parcelData -
- * @param {String} projectionCode -
- * @returns {void}
- */
-export function runCrawler (parcelData, projectionCode) {
-    const service = {
-            "url": "https://geodienste.hamburg.de/HH_WFS_KitaEinrichtung",
-            "featureType": "KitaEinrichtungen",
-            "featureNS": "http://www.deegree.org/app"
-        },
-        service2 = {
-            "url": "https://geodienste.hamburg.de/HH_WFS_DOG",
-            "featureType": "Hauskoordinaten",
-            "featureNS": "http://www.adv-online.de/namespaces/adv/dog"
-        },
-        service3 = {
-            "url": "https://geodienste.hamburg.de/wfs_hvv",
-            "featureType": "geofoxdb_stations"
-        };
-
-    collectFeatures(parcelData, {"filter": "intersects", "geometryName": "geom"}, service3, (features) => console.warn(features), () => console.warn("error"), projectionCode);
-    collectFeatures(parcelData, {"filter": "intersects", "geometryName": "geom", "radius": 500}, service3, (features) => console.warn(features), () => console.warn("error"), projectionCode);
-    collectFeatures(parcelData, {"filter": "intersects", "geometryName": "geom", "radius": 500}, service, (features) => console.warn(features), () => console.warn("error"), projectionCode);
-    collectFeatures(parcelData, {"coordinate": [566690, 5934257]}, undefined, (features) => console.warn(features), () => console.warn("error"), projectionCode);
-    collectFeatures(parcelData, {"filter": "intersects", "geometryName": "geom"}, service, (features) => console.warn(features), () => console.warn("error"), projectionCode);
-    collectFeatures(parcelData, {"filter": "within", "geometryName": "position", "propertyName": ["hausnummer"]}, service2, (features) => console.warn(features), () => console.warn("error"), projectionCode);
 }

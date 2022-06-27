@@ -65,13 +65,19 @@ describe("addons/valuationPrint/utils/collectFeatures.js", () => {
         });
 
         it("should return a within filter", () => {
-            const filter = getFilter(feature.getGeometry(), "geom");
+            const filter = getFilter(feature.getGeometry(), "geom", "within");
 
             expect(filter.tagName_).to.be.equal("Within");
         });
+
+        it("should return undefined if no filter type is passed", () => {
+            const filter = getFilter(feature.getGeometry(), "geom");
+
+            expect(filter).to.be.undefined;
+        });
     });
 
-    describe("fetchFeatures", () => {
+    describe("collectFeatures", () => {
         it("should call onsuccess if a coorindate is given", () => {
             const onsuccess = sinon.spy();
 
@@ -80,6 +86,4 @@ describe("addons/valuationPrint/utils/collectFeatures.js", () => {
             expect(onsuccess.calledOnce).to.be.true;
         });
     });
-
-
 });
