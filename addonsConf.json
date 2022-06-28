@@ -3,7 +3,9 @@
   "boris": "bodenrichtwertabfrage/view.js",
   "formular": "view.js",
   "showParcelGFI": "showParcelGFI.js",
-  "verkehrsfunctions": "verkehrsfunctions.js",
+  "verkehrsfunctions": {
+    "type": "javascript"
+  },
   "fileImportAddon": {
     "type": "tool"
   },
