@@ -453,40 +453,43 @@ export default {
                 <li
                     value="infos"
                     class="nav-item"
-                    :class="{ active: isActiveTab('infos'), 'nav-item': true }"
                 >
                     <a
                         class="nav-link"
+                        :class="{ active: isActiveTab('infos'), 'nav-link': true }"
                         data-toggle="tab"
                         href="#infos"
                     >{{ infoLabel }}</a>
                 </li>
                 <li
                     value="day"
-                    :class="{ active: isActiveTab('day'), 'nav-item': true }"
+                    class="nav-item"
                 >
                     <a
                         class="nav-link"
+                        :class="{ active: isActiveTab('day'), 'nav-link': true }"
                         data-toggle="tab"
                         href="#day"
                     >{{ dayLabel }}</a>
                 </li>
                 <li
                     value="week"
-                    :class="{ active: isActiveTab('week'), 'nav-item': true }"
+                    class="nav-item"
                 >
                     <a
                         class="nav-link"
+                        :class="{ active: isActiveTab('week'), 'nav-link': true }"
                         data-toggle="tab"
                         href="#week"
                     >{{ weekLabel }}</a>
                 </li>
                 <li
                     value="year"
-                    :class="{ active: isActiveTab('year'), 'nav-item': true }"
+                    class="nav-item"
                 >
                     <a
                         class="nav-link"
+                        :class="{ active: isActiveTab('year'), 'nav-link': true }"
                         data-toggle="tab"
                         href="#year"
                     >{{ yearLabel }}</a>
