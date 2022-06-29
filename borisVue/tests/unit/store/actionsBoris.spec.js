@@ -7,6 +7,10 @@ import axios from "axios";
 import mapCollection from "../../../../../src/core/maps/mapCollection.js";
 import rawSources from "../../resources/rawSources";
 
+import {addProjection} from "ol/proj.js";
+import Projection from "ol/proj/Projection.js";
+
+
 describe("ADDONS: addons/borisVue/store/actionsBorisVue.js", () => {
     let commit,
         dispatch,
@@ -17,6 +21,15 @@ describe("ADDONS: addons/borisVue/store/actionsBorisVue.js", () => {
         error;
 
     before(() => {
+        const proj = new Projection({
+            code: "EPSG:25832",
+            units: "m",
+            axisOrientation: "enu",
+            global: false
+        });
+
+        addProjection(proj);
+
         map = {
             id: "ol",
             mode: "2D",
@@ -385,7 +398,7 @@ describe("ADDONS: addons/borisVue/store/actionsBorisVue.js", () => {
         });
     });
     describe("getFeatureRequestById", () => {
-        it.only("gets feature request by id", () => {
+        it("gets feature request by id", () => {
             Config.layerConf = "https://geodienste.hamburg.de/services-internet.json";
 
             const featureId = "APP_V_BRW_ZONEN_GEOM_FLAECHE_2022_1393260",
@@ -399,6 +412,8 @@ describe("ADDONS: addons/borisVue/store/actionsBorisVue.js", () => {
             expect(axiosStub.calledWith(url + "/HH_WFS_Bodenrichtwerte?service=WFS&version=1.1.0&request=GetFeature&" + urlParams)).to.be.true;
             // expect(dispatch.calledOnce).to.be.true;
             // @Inka: const feature = new WFS().readFeature(response.data); --> feature wird im Test nicht geloggt, im browser schon
+            // @Vilma: weil du das axios.get gemockt hast (sinon.stub), dann wird der originalCode nicht durchlaufen, sondern es wird einfach das zurückgegeben, was der axiosStub zurückliefert
+            // das kann man nicht testen
         });
     });
     describe("matchPolygonFeatureWithLanduse", () => {
@@ -487,11 +502,14 @@ describe("ADDONS: addons/borisVue/store/actionsBorisVue.js", () => {
             // @inka: warum funktioniert folgendes nicht?
             // expect(dispatch.calledOnce).to.be.true;
             // expect(dispatch.firstCall.args[0]).to.equal("handleGetFeatureResponse")
+            // @Vilma: weil du das axios.get gemockt hast (sinon.stub), dann wird der originalCode nicht durchlaufen, sondern es wird einfach das zurückgegeben, was der axiosStub zurückliefert
+            // das kann man nicht testen
         });
     });
     describe("handleGetFeatureResponse", () => {
         it("handles feature response", async () => {
             // @inka: wieso funktioniert es nicht?
+            // @vilma: addProjection fehlte im before des Tests
             const status = 200,
                 response = rawSources.featureRequestResponse,
                 year = 2022;
@@ -574,7 +592,7 @@ describe("ADDONS: addons/borisVue/store/actionsBorisVue.js", () => {
     describe("handleConvertResponse", () => {
         const response = rawSources.convertResponse;
 
-        it.only("handles convert response", () => {
+        it("handles convert response", () => {
             const status = 200;
 
             actions.handleConvertResponse({dispatch}, {response, status});
