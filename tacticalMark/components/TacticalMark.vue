@@ -151,7 +151,6 @@ export default {
         active (value) {
             if (value) {
                 this.setActive(value);
-                this.setFocusToFirstControl();
             }
             else {
                 this.resetCanvasCursor();
@@ -159,11 +158,11 @@ export default {
             }
         }
     },
-    created () {
+    async created () {
         this.$on("close", this.close);
         this.interaction = "";
         this.selectedBtn = "";
-        this.layer = Radio.request("Map", "createLayerIfNotExists", "import_draw_layer");
+        this.layer = await Radio.request("Map", "createLayerIfNotExists", "import_draw_layer");
     },
     /**
      * Put initialize here if mounting occurs after config parsing
@@ -178,17 +177,6 @@ export default {
             addInteractionToMap: "addInteraction",
             removeInteractionFromMap: "removeInteraction"
         }),
-        /**
-         * Sets the focus to the first control
-         * @returns {void}
-         */
-        setFocusToFirstControl () {
-            this.$nextTick(() => {
-                if (this.$refs["select-drawtype"]) {
-                    this.$refs["select-drawtype"].focus();
-                }
-            });
-        },
         /**
          * call the setIcon function by changes in damage account
          * field to update the number with setted param dmaChg
@@ -567,7 +555,7 @@ export default {
 <template lang="html">
     <ToolTemplate
         :title="$t(name)"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -591,9 +579,8 @@ export default {
                     </label>
                 </div>
                 <select
-                    ref="select-drawtype"
                     class="form-control input-sm"
-                    @change="selectIconCat($event);"
+                    @change="selectIconCat($event)"
                 >
                     <option
                         v-for="option in options"
@@ -2703,7 +2690,7 @@ export default {
                                 :download="file"
                             >
                                 <button
-                                    class="btn btn-sm btn-block btn-lgv-grey"
+                                    class="btn btn-sm btn-block btn-secondary"
                                     type="button"
                                     :disabled="disableFileDownload"
                                     @click="setDownloadFeatures"
@@ -2722,6 +2709,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "~variables";
+
     input[type="checkbox"] {
         margin-top: 0;
     }
@@ -2729,61 +2718,82 @@ export default {
         margin:0 auto;
         text-align: center;
     }
-    .download-container {
-        margin-top: 14px;
-    }
-    .btn-lgv-grey {
+    .btn-secondary {
         float: right;
         width: 206px;
+    }
+    button {
+        border-radius: 3px;
+        background-color: $secondary_table_style;
+        border: 1px solid $light_grey;
+    }
+    .button:hover {
+        background-color: $white;
+        color: $black;
+        border: 1px solid $secondary_table_style;
     }
     .tm-container {
         display: grid;
         grid-template-columns: auto auto auto;
         padding: 5px 0;
+        .tm-item {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 0px 1px;
+            font-size: 12px;
+            text-align: center;
+            .tm-btn {
+                border-radius: 3px;
+                background-color: $secondary_table_style;
+                color: $black;
+                padding: 2px;
+                font-size: 12px;
+                cursor: pointer;
+                text-align: center;
+                border: 1px solid #cdcdcd;
+                width: 206px;
+                &:hover {
+                    background-color: $white;
+                    color: $black;
+                    border: 1px solid $secondary_table_style;
+                }
+                &:active {
+                    background-color: lighten($secondary_table_style, 15%);
+                }
+                .tm-btn-img {
+                    float: left;
+                }
+            }
+        }
     }
-    .tm-item {
-        background-color: rgba(255, 255, 255, 0.8);
-        padding: 0px 1px;
-        font-size: 12px;
-        text-align: center;
+    .form-horizontal {
+        .form-group {
+            label {
+                float: left;
+                padding-top: 6px;
+            }
+            > div {
+                float: left;
+            }
+        }
     }
-    button {
-        border-radius: 3px;
-        background-color: #f2f2f2;
-        border: 1px solid #cdcdcd;
-    }
-    .button:hover {
-        background-color: #FFFFFF;
-        color: black;
-        border: 1px solid #e7e7e7;
-    }
-    .tm-btn {
-        border-radius: 3px;
-        background-color: #f2f2f2;
-        color: black;
-        padding: 2px;
-        font-size: 12px;
-        cursor: pointer;
-        text-align: center;
-        border: 1px solid #cdcdcd;
-        width: 206px;
-    }
-    .tm-btn:hover {
-        background-color: #FFFFFF;
-        color: black;
-        border: 1px solid #e7e7e7;
-    }
-    .tm-btn:active {
-        background-color: #e6e6e6;
+    .downloadFile {
+        display: block;
     }
     .tool-window-vue {
-        max-width: 680px !important;
+        max-width: 680px;
     }
     #rsc {
         display: none;
     }
     #dma {
         display: none;
+        .tm-container {
+            .tm-item {
+                label {
+                    margin-bottom: 10px;
+                }
+            }
+        }
     }
     .checkbox {
         margin-top: 0;

@@ -1,5 +1,4 @@
 import importLayers from "./addWMSRemotely.js";
-import mapCollection from "../../src/core/maps/mapCollection.js";
 
 Radio.channel("addLayerRemotely").on({
     /**
@@ -34,7 +33,7 @@ Radio.channel("addLayerRemotely").on({
         else {
             map?.removeLayer(layer);
 
-            Radio.request("ModelList", "removeModelsById", id);
+            Radio.trigger("ModelList", "removeModelsById", id);
             Radio.trigger("ModelList", "removeLayerById", id);
             Radio.trigger("Parser", "removeItem", id);
         }

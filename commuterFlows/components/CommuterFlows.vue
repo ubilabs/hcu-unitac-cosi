@@ -832,6 +832,7 @@ export default {
 
 <style lang="scss" scoped>
     @import "~/css/mixins.scss";
+    @import "~variables";
 
     #CommuterFlows {
         button {
@@ -864,7 +865,7 @@ export default {
     hr {
         margin-top: 10px;
         margin-bottom: 10px;
-        border-top: solid #ddd 1px;
+        border-top: solid $light_grey 1px;
     }
     .col-form-label {
         padding-left: 4px;
@@ -885,10 +886,10 @@ export default {
             padding: 0;
             margin: 0;
             tbody tr:nth-child(odd) {
-                background-color: #fdfdfd;
+                background-color: darken($white, 10%);
             }
             tbody tr:nth-child(odd) {
-                background-color: #f8f8f8;
+                background-color: darken($white, 20%);
             }
             tr {
                 width: 100%;
@@ -937,8 +938,8 @@ export default {
             z-index: 1;
             opacity: 1;
             border-radius: 4px;
-            border: solid 1px #000;
-            background-color: white;
+            border: solid 1px $black;
+            background-color: $white;
             padding: 5px;
         }
         .tooltipRight {

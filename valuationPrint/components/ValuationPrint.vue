@@ -1,0 +1,268 @@
+<script>
+import {Fill, Stroke, Style} from "ol/style";
+import {getCenter as getCenterOfExtent} from "ol/extent";
+import getComponent from "../../../src/utils/getComponent";
+import getters from "../store/gettersValuationPrint";
+import Feature from "ol/Feature";
+import {mapActions, mapGetters, mapMutations} from "vuex";
+import mutations from "../store/mutationsValuationPrint";
+import {Select} from "ol/interaction";
+import {singleClick} from "ol/events/condition";
+import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
+import {unionFeatures} from "../utils/unionFeatures";
+import {createKnowledgeBase} from "../utils/createKnowledgeBase.js";
+import {createMapfishDialog} from "../utils/createMapfishDialog.js";
+import axios from "axios";
+import isObject from "../../../src/utils/isObject";
+
+export default {
+    name: "ValuationPrint",
+    components: {
+        ToolTemplate
+    },
+    data () {
+        return {
+            selectedFeatures: [],
+            parcelData: null
+        };
+    },
+    computed: {
+        ...mapGetters("Tools/ValuationPrint", Object.keys(getters))
+    },
+    watch: {
+        /**
+         * Activates the select interaction if the tool is active, ohterwise it is deactivated.
+         * @param {Boolean} newValue - If the tool is active or not.
+         * @returns {void}
+         */
+        active (newValue) {
+            this.select.setActive(newValue);
+        },
+
+        /**
+         * Starts process for the valuation.
+         * @returns {void}
+         */
+        parcelData () {
+            if (!isObject(this.config?.services)) {
+                console.error("No config found for services");
+                return;
+            }
+            else if (!isObject(this.config?.transformer)) {
+                console.error("No config found for transformer");
+                return;
+            }
+            createKnowledgeBase(this.parcelData, this.config.services, (message) => {
+                // this.addMessage(message, false);
+                console.warn("start", message);
+            }, (knowledgeBase) => {
+                const mapfishDialog = createMapfishDialog(knowledgeBase, this.config.transformer, this.defaultValue);
+
+                console.warn("mapfishDialog", mapfishDialog);
+            }, (errorMsg) => {
+                // this.addMessage(errorMsg, true);
+                console.error(errorMsg);
+            }, (error) => {
+                console.error(error);
+            });
+        }
+    },
+    created () {
+        this.config = null;
+        this.select = null;
+        this.defaultValue = "n.v.";
+
+        this.setConfig();
+        this.setSelectInteraction();
+        this.selectedFeatures = this.select.getFeatures().getArray();
+
+
+        this.$on("close", () => {
+            this.setActive(false);
+            // The value "isActive" of the Backbone model is also set to false to change the CSS class in the menu (menu/desktop/tool/view.toggleIsActiveClass)
+            const model = getComponent(this.id);
+
+            if (model) {
+                model.set("isActive", false);
+            }
+        });
+    },
+    methods: {
+        ...mapMutations("Tools/ValuationPrint", Object.keys(mutations)),
+        ...mapActions("Maps", ["addInteraction"]),
+        ...mapActions("Alerting", ["addSingleAlert"]),
+
+        /**
+         * Removes the passed feature from the collection where the select interaction will place the selected features.
+         * @param {ol/Feature} feature - The feature to be removed.
+         * @returns {void}
+         */
+        removeFeature (feature) {
+            if (feature instanceof Feature) {
+                this.select.getFeatures().remove(feature);
+            }
+        },
+
+        /**
+         * Gets the config for the valuation and sets it.
+         * @param {Function} onsuccess - Is called when the config is set.
+         * @returns {void}
+         */
+        setConfig () {
+            axios.get("config.valuation.json", {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(response => {
+                    this.config = response.data;
+                })
+                .catch(error => {
+                    console.error("Error: ", error);
+                    this.addSingleAlert({
+                        category: "error",
+                        content: "Could not load the config file config.valuation.json",
+                        displayClass: "error"
+                    });
+                });
+        },
+
+        /**
+         * Sets the select interaction (non-reactive state), adds it a "change:active" listener and adds it to the map.
+         * @returns {void}
+         */
+        setSelectInteraction () {
+            this.select = new Select({
+                layers: (layer) => layer.get("id") === this.parcelLayerId,
+                style: new Style({
+                    fill: new Fill({
+                        color: "rgba(255,255,255,0)"
+                    }),
+                    stroke: new Stroke({
+                        color: "#de2d26",
+                        width: 5
+                    })
+                }),
+                addCondition: singleClick,
+                removeCondition: singleClick
+            });
+
+            this.select.on("change:active", this.styleSelectedFeatures);
+            this.addInteraction(this.select);
+        },
+
+        /**
+         * Gets the required attributes from the feature(s) and sets it.
+         * @param {ol/Feature[]} featureList - An array of features.
+         * @returns {void}
+         */
+        setParcelData (featureList) {
+            if (!Array.isArray(featureList) || !featureList.length) {
+                console.error(`startValuation: ${featureList} has to be a non empty array`);
+                return;
+            }
+
+            const feature = featureList.length > 1 ? unionFeatures(featureList) : featureList[0],
+                extent = feature.getGeometry().getExtent();
+
+            this.parcelData = {
+                centerCoordinate: getCenterOfExtent(extent),
+                geometry: feature.getGeometry(),
+                extent
+            };
+        },
+
+
+        /**
+         * Sets the style of the selected features depending on the activity of the select interaction.
+         * If the interaction is active, all existing featurers are styled using the select interaction style.
+         * If it is not, the layer style is used.
+         * @param {ol/Object.ObjectEvent} evt - OpenLayers Object Event.
+         * @param {String} evt.key - The name of the property whose value is changing.
+         * @param {ol/interaction/Select} evt.target - The event target. In this case the select interaction.
+         * @returns {void}
+         */
+        styleSelectedFeatures ({key, target}) {
+            const features = target.getFeatures();
+
+            if (target.get(key)) {
+                features.forEach(feature => {
+                    feature.setStyle(target.getStyle());
+                });
+            }
+            else {
+                features.forEach(feature => {
+                    feature.setStyle(false);
+                });
+            }
+        }
+    }
+};
+</script>
+
+<template lang="html">
+    <ToolTemplate
+        :title="$t(name)"
+        :icon="icon"
+        :active="active"
+        :render-to-window="renderToWindow"
+        :resizable-window="resizableWindow"
+    >
+        <template
+            v-if="active"
+            #toolBody
+        >
+            <div class="valuation-print">
+                <div
+                    v-for="feature in selectedFeatures"
+                    :key="feature.get('flstnrzae')"
+                >
+                    <ul class="list-inline">
+                        <li class="list-inline-item">
+                            {{ $t('additional:modules.tools.valuationPrint.parcel') }}
+                        </li>
+                        <li class="list-inline-item">
+                            {{ feature.get("flstnrzae") }}
+                        </li>
+                        <li class="list-inline-item">
+                            {{ $t('additional:modules.tools.valuationPrint.district') }}
+                        </li>
+                        <li class="list-inline-item">
+                            {{ feature.get("gemarkung") }}
+                        </li>
+                    </ul>
+                    <div class="mt-2">
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            @click="setParcelData([feature])"
+                        >
+                            {{ $t('additional:modules.tools.valuationPrint.startButton') }}
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            @click="removeFeature(feature)"
+                        >
+                            {{ $t('additional:modules.tools.valuationPrint.removeButton') }}
+                        </button>
+                    </div>
+                    <hr>
+                </div>
+                <template v-if="selectedFeatures.length > 1">
+                    <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        @click="setParcelData(select.getFeatures().getArray())"
+                    >
+                        {{ $t('additional:modules.tools.valuationPrint.startButton') }}
+                    </button>
+                </template>
+            </div>
+        </template>
+    </ToolTemplate>
+</template>
+
+<style lang="scss" scoped>
+
+</style>

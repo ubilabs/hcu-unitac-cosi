@@ -6,7 +6,7 @@ Radio.channel("GFI").on({
         store.commit("Maps/setGfiFeatures", null);
 
         const coordinate = attributes.coordinate,
-            layerList = store.getters["Maps/get2DMap"].getLayers().getArray(),
+            layerList = mapCollection.getMap("2D").getLayers().getArray(),
             resolution = store.getters["Maps/resolution"],
             projection = store.getters["Maps/projection"],
             foundLayer = layerList.find(function (layer) {

@@ -3,7 +3,6 @@ import getProxyUrl from "../../../src/utils/getProxyUrl";
 import BuildSpec from "./../utils/buildSpec";
 import omit from "../../../src/utils/omit";
 import actionsPrintInitialization from "./actions/actionsPrintInitialization";
-import getVisibleLayer from "./../utils/getVisibleLayer";
 
 export default {
 
@@ -64,9 +63,7 @@ export default {
      * @returns {void}
      */
     startPrint: async function ({state, dispatch}, print) {
-        getVisibleLayer(state.printMapMarker);
-
-        const visibleLayerList = state.visibleLayerList,
+        const printLayerList = state.printLayerList,
             attr = {
                 "layout": state.currentLayoutName,
                 "outputFilename": state.filename,
@@ -90,7 +87,7 @@ export default {
         if (state.isScaleAvailable) {
             spec.buildScale(state.currentScale);
         }
-        await spec.buildLayers(visibleLayerList);
+        await spec.buildLayers(printLayerList);
 
         spec = omit(spec, ["uniqueIdList"]);
         printJob = {

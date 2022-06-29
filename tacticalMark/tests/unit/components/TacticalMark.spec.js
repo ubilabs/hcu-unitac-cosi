@@ -31,7 +31,7 @@ describe("addons/tacticalMark/components/TacticalMark.vue", () => {
                             TacticalMark:
                                 {
                                     "name": "Taktischen Zeichen",
-                                    "glyphicon": "glyphicon-map-marker"
+                                    "icon": "bi-geo-fill"
                                 }
                         }
                     }

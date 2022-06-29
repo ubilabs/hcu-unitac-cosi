@@ -23,7 +23,7 @@ describe("addons/geoAnalyze/components/GeoAnalyze.vue", () => {
                     resizableWindow: () => false,
                     deactivateGFI: () => true,
                     active: () => isActive,
-                    glyphicon: () => "glyphicon-map"
+                    icon: () => "bi-list-task"
                 }
             });
         }

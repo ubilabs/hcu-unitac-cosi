@@ -7,7 +7,7 @@ const {
     active,
     id,
     name,
-    glyphicon,
+    icon,
     renderToWindow,
     resizableWindow,
     isVisibleInMenu,
@@ -25,8 +25,8 @@ describe("addons/vueAddon/store/gettersVueAddon", function () {
         it("returns the name default value from state", function () {
             expect(name(stateVueAddon)).to.be.equals("Simple Vue Addon");
         });
-        it("returns the glyphicon default value from state", function () {
-            expect(glyphicon(stateVueAddon)).to.equals("glyphicon-screenshot");
+        it("returns the icon default value from state", function () {
+            expect(icon(stateVueAddon)).to.equals("bi-bullseye");
         });
         it("returns the renderToWindow default value from state", function () {
             expect(renderToWindow(stateVueAddon)).to.be.true;

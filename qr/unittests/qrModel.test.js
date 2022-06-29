@@ -2,7 +2,6 @@ import {expect} from "chai";
 import QRModel from "@addons/qr/model.js";
 import Overlay from "ol/Overlay";
 import sinon from "sinon";
-import mapCollection from "../../../src/core/maps/mapCollection";
 
 describe("ADDON: QR-Code-Tool QRModel", function () {
     let model;

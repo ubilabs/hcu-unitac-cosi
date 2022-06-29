@@ -660,11 +660,12 @@ export default {
 
 <style lang="scss">
 @import "~/css/mixins.scss";
+@import "~variables";
 
 #tooltip-overlay {
     position: relative;
     background: $accent_active;
-    color: #fff;
+    color: $white;
     max-width: 200px;
     padding: 4px 8px;
 }
@@ -673,7 +674,7 @@ export default {
     position: relative;
     top: -20px;
     background: $accent_active;
-    color: #fff;
+    color: $white;
     max-width: 70px;
     padding: 4px 8px;
 }

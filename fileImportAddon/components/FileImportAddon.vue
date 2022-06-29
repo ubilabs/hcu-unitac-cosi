@@ -106,7 +106,7 @@ export default {
 <template lang="html">
     <ToolTemplate
         :title="$t('additional:modules.tools.fileImportAddon.title')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -195,6 +195,7 @@ export default {
 
 <style lang="scss" scoped>
     @import "~/css/mixins.scss";
+    @import "~variables";
 
     .h-seperator {
         margin:12px 0 12px 0;
@@ -209,7 +210,7 @@ export default {
     }
 
     .upload-button-wrapper {
-        color: #FFFFFF;
+        color: $white;
         background-color: $secondary_focus;
         display: block;
         text-align:center;
@@ -232,7 +233,7 @@ export default {
     }
 
     .drop-area-fake {
-        background-color: #FFFFFF;
+        background-color: $white;
         border-radius: 12px;
         border: 2px dashed $accent;
         padding:24px;
@@ -243,7 +244,7 @@ export default {
             border-color:transparent;
 
             p.caption {
-                color:#FFFFFF;
+                color:$white;
             }
         }
 

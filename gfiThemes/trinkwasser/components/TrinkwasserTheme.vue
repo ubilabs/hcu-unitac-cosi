@@ -132,7 +132,7 @@ export default {
 
     th {
         font-family: $font_family_accent;
-        background-color: #f2f2f2;
+        background-color: $secondary_table_style;
     }
 
     td.outerTable {

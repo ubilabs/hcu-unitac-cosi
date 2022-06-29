@@ -1,6 +1,6 @@
 {
   "name": "addons",
-  "version": "2.20.0",
+  "version": "2.22.2",
   "description": "Addons to the Masterportal of Landesbetrieb Geoinformation und Vermessung Freie und Hansestadt Hamburg",
   "license": "MIT",
   "repository": {
@@ -8,10 +8,11 @@
     "url": "https://bitbucket.org/geowerkstatt-hamburg/addons.git"
   },
   "scripts": {
-    "versionHotfix": "npm version patch && git push --tags",
-    "versionMinor": "npm version minor && git push --tags",
-    "versionMajor": "npm version major && git push --tags",
-    "postinstall": "cd cosi && npm install && cd .. && cd qr && npm install && cd .. && cd sdpDownload && npm install",
+    "versionHotfix": "npm version patch && npm run versionLatest && git push --tags -f",
+    "versionMinor": "npm version minor && npm run versionLatest && git push --tags -f",
+    "versionMajor": "npm version major && npm run versionLatest && git push --tags -f",
+    "versionLatest": "git tag latest -f",
+    "postinstall": "cd qr && npm install && cd .. && cd sdpDownload && npm install && cd .. && cd valuationPrint && npm install",
     "prePushHook": "cd .. && npm run prePushHook",
     "prepare": "husky install"
   },

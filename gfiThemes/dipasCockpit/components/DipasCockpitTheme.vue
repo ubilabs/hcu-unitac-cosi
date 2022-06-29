@@ -110,6 +110,7 @@ export default {
 
 
 <style lang="scss">
+@import "~variables";
 
 .vue-tool-content-body {
     border-radius: 15px;
@@ -117,7 +118,7 @@ export default {
 
 .dipas-cockpit-theme {
      max-width: 615px;
-     color: #212529;
+     color: $dark_grey;
      font-family: Roboto, sans-serif;
      padding-left: 24px;
      padding-right: 15px;
@@ -128,11 +129,11 @@ export default {
     }
 
     .dipas-cockpit-proceeding-status {
-        background-color: #003063;
+        background-color: $dark_blue;
         width: fit-content;
         padding: 6px 8px;
         margin: 10px 0px;
-        color:#FFFFFF;
+        color: $white;
 
         .dipas-cockpit-location-icon {
             img {
@@ -156,12 +157,12 @@ export default {
     .dipas-cockpit-title {
         font-size: 16px;
         font-weight: bold;
-        color: #003063;
+        color: $dark_blue;
     }
 
     .dipas-cockpit-themes {
         font-size: 14px;
-        color: #212529;
+        color: $dark_grey;
         margin: 3px 0px;
 
         span.dipas-cockpit-themes-key {
@@ -186,7 +187,7 @@ export default {
 
     a.dipas-cockpit-proceedingLink {
         font-size: 10px;
-        color: #003063;
+        color: $dark_blue;
         text-decoration: underline;
         cursor: pointer;
         display: block;
@@ -208,9 +209,9 @@ export default {
         .dipas-cockpit-document {
             font-size: 10px;
             font-weight: normal;
-            background-color: #003063;
+            background-color: $dark_blue;
             border-radius: 15px;
-            color: #FFFFFF;
+            color: $white;
             padding: 6px 15px;
             text-overflow: ellipsis;
             height: 28px;

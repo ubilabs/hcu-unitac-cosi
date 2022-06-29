@@ -4,7 +4,6 @@ import getComponent from "../../../src/utils/getComponent";
 import {mapActions, mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersHochWasserPrint";
 import mutations from "../store/mutationsHochWasserPrint";
-import mapCollection from "../../../src/core/maps/mapCollection";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import getVisibleLayer from "../utils/getVisibleLayer";
 import {Vector} from "ol/layer.js";
@@ -24,7 +23,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/HochWasserPrint", Object.keys(getters)),
-        ...mapGetters("Map", ["scales, size", "scale"]),
+        ...mapGetters("Maps", ["scales, size", "scale"]),
         currentScale: {
             get () {
                 return this.$store.state.Tools.HochWasserPrint.currentScale;
@@ -145,7 +144,7 @@ export default {
          * @param {event} event the click event
          * @returns {void}
          */
-        scaleChanged (event) {
+        async scaleChanged (event) {
             const scale = parseInt(event?.target?.value, 10),
                 resolution = {
                     "scale": scale,
@@ -157,7 +156,7 @@ export default {
             this.setIsScaleSelectedManually(true);
             this.getOptimalResolution(resolution);
             this.updateCanvasLayer();
-            mapCollection.getMap("ol", "2D").render();
+            await mapCollection.getMap("2D").render();
         },
         /**
          * Returns the "beautified" scale to be shown in the dropdown box
@@ -236,7 +235,8 @@ export default {
             const hwsMap = this.hwsLayer.find(element => {
                     return element.printId === val;
                 }),
-                visiblelayer = Radio.request("ModelList", "getModelsByAttributes", {isVisibleInMap: true});
+                visiblelayer = Radio.request("ModelList", "getModelsByAttributes", {isVisibleInMap: true}),
+                printLayerList = [];
 
             // because of a bug in mp we must deactivate all layers first. Otherwhile the layer order will be corrupted.
             visiblelayer.forEach(layer => {
@@ -250,7 +250,11 @@ export default {
                     if (layer) {
                         layer.setIsSelected(true);
                     }
+
+                    printLayerList.push(layer?.layer);
                 });
+
+                this.setPrintLayerList(printLayerList);
             }
         },
         /**
@@ -556,7 +560,7 @@ export default {
                         <div class="col-sm-6">
                             <button
                                 type="button"
-                                class="btn btn-lgv-grey btn-block preview"
+                                class="btn btn-secondary btn-block preview"
                                 @click="togglePrintButton"
                                 @keydown.enter="togglePrintButton"
                             >
@@ -566,7 +570,7 @@ export default {
                         <div class="col-sm-6">
                             <button
                                 type="button"
-                                class="btn btn-lgv-grey btn-block print"
+                                class="btn btn-secondary btn-block print"
                                 :disabled="printDisabled"
                                 @click="print"
                             >
@@ -581,6 +585,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "~variables";
+
 .tool-window .col-sm-4{
     text-align: center;
 }
@@ -624,7 +630,7 @@ export default {
         &.grey-icon {
             cursor: inherit;
             span {
-                color: #a5a5a5;
+                color: $light_grey;
             }
         }
     }
@@ -634,8 +640,8 @@ export default {
         width: 375px;
         top: 10px;
         z-index: 10;
-        background: #fff;
-        border: 1px solid #555;
+        background: $white;
+        border: 1px solid $dark_grey;
         padding: 5px;
     }
     .col-sm-4 {

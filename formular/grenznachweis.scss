@@ -1,4 +1,4 @@
-$color_1: #a94442;
+@import "~variables";
 
 .formularhead2 {
     padding-left: 4px;
@@ -13,7 +13,7 @@ $color_1: #a94442;
     margin-top: 10px;
 }
 .grenznachweiserrortext {
-    color: $color_1;
+    color: $light_red;
 }
 .grenznachweiszweck {
     padding-top: 5px;

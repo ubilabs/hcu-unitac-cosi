@@ -4,7 +4,7 @@
  * @property {Boolean} active if true, viewer will rendered
  * @property {String} id id of the viewer component
  * @property {String} name displayed as title (config-param)
- * @property {String} glyphicon icon next to title (config-param)
+ * @property {String} icon icon next to title (config-param)
  * @property {Boolean} renderToWindow if true, tool is rendered in a window, else in sidebar (config-param)
  * @property {Boolean} resizableWindow if true, window is resizable (config-param)
  * @property {Boolean} isVisibleInMenu if true, tool is selectable in menu (config-param)
@@ -21,7 +21,7 @@ const state = {
     active: false,
     id: "streetsmart",
     name: "additional:menu.tools.streetsmart",
-    glyphicon: "glyphicon-picture",
+    icon: "bi-camera-fill",
     renderToWindow: false,
     resizableWindow: true,
     isVisibleInMenu: true,

@@ -2,7 +2,6 @@
   "bauforum": "changeGUI/loader.js",
   "boris": "bodenrichtwertabfrage/view.js",
   "formular": "view.js",
-  "oktagonKartenportal": "oktagonLoader.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
   "fileImportAddon": {
@@ -39,6 +38,12 @@
     "type": "tool"
   },
   "hochWasserPrint": {
+    "type": "tool"
+  },
+  "valuationPrint": {
+    "type": "tool"
+  },
+  "oktagonKartenportal": {
     "type": "tool"
   },
   "bildungsatlas": {

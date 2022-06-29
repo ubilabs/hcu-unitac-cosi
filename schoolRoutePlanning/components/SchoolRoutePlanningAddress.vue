@@ -108,7 +108,7 @@ export default {
     li {
         &:hover, &:focus {
             cursor: pointer;
-            background-color: #e3e3e3;
+            background-color: $secondary;
         }
     }
 }
