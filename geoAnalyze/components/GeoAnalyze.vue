@@ -304,7 +304,7 @@ export default {
 <template lang="html">
     <ToolTemplate
         :title="$t(name)"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -332,9 +332,9 @@ export default {
                     :results="result"
                 />
                 <hr>
-                <form class="pull-right">
+                <form class="d-flex justify-content-end">
                     <button
-                        class="btn btn-secondary"
+                        class="btn btn-primary"
                         type="button"
                         @click="getAnalyzeData(geometry, true)"
                     >

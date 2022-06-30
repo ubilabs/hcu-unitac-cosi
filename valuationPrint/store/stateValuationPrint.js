@@ -12,7 +12,7 @@
  * @property {Boolean} deactivateGFI - Flag if tool should deactivate gfi.
  */
 const state = {
-    active: true,
+    active: false,
     id: "valuation",
     parcelLayerId: "",
     // defaults for config.json parameters
@@ -21,7 +21,7 @@ const state = {
     renderToWindow: false,
     resizableWindow: true,
     isVisibleInMenu: true,
-    deactivateGFI: true
+    deactivateGFI: false
 };
 
 export default state;

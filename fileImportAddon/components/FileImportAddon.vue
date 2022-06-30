@@ -106,7 +106,7 @@ export default {
 <template lang="html">
     <ToolTemplate
         :title="$t('additional:modules.tools.fileImportAddon.title')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
