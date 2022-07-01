@@ -61,9 +61,9 @@ export default {
                 console.warn("mapfishDialog", mapfishDialog);
             }, (errorMsg) => {
                 // this.addMessage(errorMsg, true);
-                console.error(errorMsg);
+                console.error("userError", errorMsg);
             }, (error) => {
-                console.error(error);
+                console.error("devError", error);
             });
         }
     },
