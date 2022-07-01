@@ -12,8 +12,58 @@ import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import {unionFeatures} from "../utils/unionFeatures";
 import {createKnowledgeBase} from "../utils/createKnowledgeBase.js";
 import {createMapfishDialog} from "../utils/createMapfishDialog.js";
+import {startPrintProcess} from "../utils/startPrintProcess.js";
 import axios from "axios";
 import isObject from "../../../src/utils/isObject";
+
+const mapfishDialogExample = {
+    "uniqueIdList": [],
+    "visibleLayerIds": ["717", "1933"],
+    "layout": "A4 Hochformat",
+    "attributes": {
+        "title": "Mein Titel",
+        "map": {
+            "dpi": 200,
+            "projection": "EPSG:25832",
+            "center": [565887.493742713, 5934231.082763315],
+            "scale": 1000,
+            "layers": [
+                {
+                    "baseURL": "https://geodienste.hamburg.de/wms_hvv",
+                    "opacity": 1,
+                    "type": "tiledwms",
+                    "layers": ["geofox_workspace:geofoxdb_stations"],
+                    "styles": ["geofox_stations"],
+                    "imageFormat": "image/png",
+                    "customParams": {
+                        "TRANSPARENT": "true",
+                        "DPI": 200
+                    },
+                    "tileSize": [512, 512]
+                },
+                {
+                    "baseURL": "https://geodienste.hamburg.de/HH_WMS_Geobasiskarten",
+                    "opacity": 1,
+                    "type": "tiledwms",
+                    "layers": ["M100000_farbig", "M60000_farbig", "M20000_farbig", "M5000_farbig", "M40000_farbig", "M125000_farbig", "M10000_farbig", "M2500_farbig"],
+                    "imageFormat": "image/png",
+                    "customParams": {
+                        "TRANSPARENT": "true",
+                        "DPI": 200
+                    },
+                    "tileSize": [512, 512]
+                }
+            ]
+        },
+        "scale": "1:1000",
+        "showGfi": false,
+        "gfi": {},
+        "showLegend": false,
+        "legend": {}
+    },
+    "outputFilename": "Ausdruck",
+    "outputFormat": "pdf"
+};
 
 export default {
     name: "ValuationPrint",
@@ -28,7 +78,8 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Tools/ValuationPrint", Object.keys(getters))
+        ...mapGetters("Tools/ValuationPrint", Object.keys(getters)),
+        ...mapGetters(["getRestServiceById"])
     },
     watch: {
         /**
@@ -59,9 +110,26 @@ export default {
                 const mapfishDialog = createMapfishDialog(knowledgeBase, this.config.transformer, this.defaultValue);
 
                 console.warn("mapfishDialog", mapfishDialog);
-            }, errorMsg => {
+                startPrintProcess(this.printUrl, this.printConfigPdf, mapfishDialogExample, (url, payload) => {
+                    this.addMessage("PDF wird erstellt.", false);
+                    return axios.post(url, payload);
+                },
+                () => {
+                    this.addMessage("Bitte warten ...", false);
+                },
+                (error) => {
+                    this.addMessage("Fehler ...", true);
+                    console.error(error);
+                },
+                (url) => {
+                    this.addMessage("PDF wurde erstellt: " + url);
+                    // this.addUrl(url);
+                    // startImageProcess();
+
+                });
+            }, (errorMsg) => {
                 this.addMessage(errorMsg, true);
-            }, error => {
+            }, (error) => {
                 console.error(error);
             });
         }
@@ -69,6 +137,8 @@ export default {
     created () {
         this.config = null;
         this.select = null;
+        this.printUrl = "";
+        this.printConfigPdf = "";
         this.defaultValue = "n.v.";
 
         this.setConfig();
@@ -104,6 +174,7 @@ export default {
 
         /**
          * Gets the config for the valuation and sets it.
+         * In addition, the print url is set from the config.
          * @param {Function} onsuccess - Is called when the config is set.
          * @returns {void}
          */
@@ -115,6 +186,8 @@ export default {
             })
                 .then(response => {
                     this.config = response.data;
+                    this.printUrl = this.getRestServiceById(response.data.settings.printServiceId).url;
+                    this.printConfigPdf = response.data.settings.printConfigPdf;
                 })
                 .catch(error => {
                     const message = "Could not load the config file config.valuation.json";
