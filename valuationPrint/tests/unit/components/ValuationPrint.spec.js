@@ -167,6 +167,33 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 return button.text() === "additional:modules.tools.valuationPrint.startButton";
             })).to.be.lengthOf(1);
         });
+
+        it("should not add an error class to the list entry if no error is added", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.select.getFeatures().push(features[0]);
+            wrapper.vm.addMessage("message", false);
+            await wrapper.vm.$forceUpdate();
+
+            expect(wrapper.find(".messageListError").exists()).to.be.false;
+        });
+        it("should add an error class to the list entry if an error is added", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.select.getFeatures().push(features[0]);
+            wrapper.vm.addMessage("message", true);
+            await wrapper.vm.$forceUpdate();
+
+            expect(wrapper.find(".messageListError").exists()).to.be.true;
+        });
+        it("should not show any message if no feature is selected", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.addMessage("message", true);
+            await wrapper.vm.$forceUpdate();
+
+            expect(wrapper.find(".messageListError").exists()).to.be.false;
+        });
     });
 
     describe("User Interactions", () => {
@@ -281,7 +308,6 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
                 expect(wrapper.vm.parcelData).to.have.all.keys("centerCoordinate", "geometry", "extent");
             });
-
             it("should not set the parcelData object", () => {
                 const wrapper = factory.getShallowMount({}, true);
 
@@ -293,6 +319,14 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 wrapper.vm.setParcelData([]);
 
                 expect(wrapper.vm.parcelData).to.be.null;
+            });
+            it("should reset the message list", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                wrapper.vm.addMessage("message");
+                wrapper.vm.setParcelData([features[0]]);
+
+                expect(wrapper.vm.messageList).to.be.an("array").that.is.empty;
             });
         });
 
@@ -311,6 +345,26 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 expect(spyAddInteraction.calledOnce).to.be.true;
 
                 spyAddInteraction.restore();
+            });
+        });
+
+        describe("addMessage", () => {
+            it("should initialize with an empty message list", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.messageList).to.be.an("array").that.is.empty;
+            });
+            it("should add a message to the messageList", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                wrapper.vm.addMessage("message");
+                expect(wrapper.vm.messageList).to.deep.equal([{message: "message", isError: false}]);
+            });
+            it("should add a message flaged as error to the messageList", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                wrapper.vm.addMessage("message", true);
+                expect(wrapper.vm.messageList).to.deep.equal([{message: "message", isError: true}]);
             });
         });
     });

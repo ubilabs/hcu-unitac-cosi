@@ -6,7 +6,8 @@
               "removeButton": "Entfernen",
               "startButton": "Starten",
               "parcel": "Flurstück:",
-              "district": "Gemarkung:"
+              "district": "Gemarkung:",
+              "messageListTitle": "Statusverlauf:"
           }
       }
   }

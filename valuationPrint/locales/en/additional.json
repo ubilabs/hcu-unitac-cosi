@@ -6,7 +6,8 @@
               "removeButton": "Remove",
               "startButton": "Start",
               "parcel": "Parcel:",
-              "district": "District:"
+              "district": "District:",
+              "messageListTitle": "Process:"
           }
         }
     }

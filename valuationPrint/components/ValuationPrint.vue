@@ -23,7 +23,8 @@ export default {
     data () {
         return {
             selectedFeatures: [],
-            parcelData: null
+            parcelData: null,
+            messageList: []
         };
     },
     computed: {
@@ -52,18 +53,16 @@ export default {
                 console.error("No config found for transformer");
                 return;
             }
-            createKnowledgeBase(this.parcelData, this.config.services, (message) => {
-                // this.addMessage(message, false);
-                console.warn("start", message);
-            }, (knowledgeBase) => {
+            createKnowledgeBase(this.parcelData, this.config.services, message => {
+                this.addMessage(message, false);
+            }, knowledgeBase => {
                 const mapfishDialog = createMapfishDialog(knowledgeBase, this.config.transformer, this.defaultValue);
 
                 console.warn("mapfishDialog", mapfishDialog);
-            }, (errorMsg) => {
-                // this.addMessage(errorMsg, true);
-                console.error("userError", errorMsg);
-            }, (error) => {
-                console.error("devError", error);
+            }, errorMsg => {
+                this.addMessage(errorMsg, true);
+            }, error => {
+                console.error(error);
             });
         }
     },
@@ -118,10 +117,13 @@ export default {
                     this.config = response.data;
                 })
                 .catch(error => {
+                    const message = "Could not load the config file config.valuation.json";
+
                     console.error("Error: ", error);
+                    this.addMessage(message, true);
                     this.addSingleAlert({
                         category: "error",
-                        content: "Could not load the config file config.valuation.json",
+                        content: message,
                         displayClass: "error"
                     });
                 });
@@ -161,10 +163,10 @@ export default {
                 console.error(`startValuation: ${featureList} has to be a non empty array`);
                 return;
             }
-
             const feature = featureList.length > 1 ? unionFeatures(featureList) : featureList[0],
                 extent = feature.getGeometry().getExtent();
 
+            this.messageList = [];
             this.parcelData = {
                 centerCoordinate: getCenterOfExtent(extent),
                 geometry: feature.getGeometry(),
@@ -195,6 +197,16 @@ export default {
                     feature.setStyle(false);
                 });
             }
+        },
+
+        /**
+         * Adds a new message to the GUI log.
+         * @param {String} message The message to add.
+         * @param {Boolean} [isError=false] A flag to indicate if this is an error.
+         * @returns {void}
+         */
+        addMessage (message, isError = false) {
+            this.messageList.unshift({message, isError});
         }
     }
 };
@@ -257,6 +269,23 @@ export default {
                     >
                         {{ $t('additional:modules.tools.valuationPrint.startButton') }}
                     </button>
+                    <hr>
+                </template>
+                <template v-if="selectedFeatures.length > 0">
+                    <div>
+                        <div class="messageListTitle">
+                            {{ $t('additional:modules.tools.valuationPrint.messageListTitle') }}
+                        </div>
+                        <div class="messageList">
+                            <div
+                                v-for="(messageObj, idx) in messageList"
+                                :key="idx + '_' + messageObj.message"
+                                :class="messageObj.isError ? 'messageListError' : ''"
+                            >
+                                {{ messageObj.message }}
+                            </div>
+                        </div>
+                    </div>
                 </template>
             </div>
         </template>
@@ -264,5 +293,12 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-
+    .messageList {
+        height: 300px;
+        overflow-y: auto;
+        border: 1px solid LightGray;
+    }
+    .messageList .messageListError {
+        color: Red;
+    }
 </style>
