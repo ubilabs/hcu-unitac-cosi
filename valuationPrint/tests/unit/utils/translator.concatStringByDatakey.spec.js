@@ -3,6 +3,7 @@ import sinon from "sinon";
 import {
     concatStringByDatakey,
     concatSingleDatakey,
+    findPossibleError,
     getDefaultOnEmptyResult,
     getFlippedKnowledgeBase,
     calcMaxArrayLength,
@@ -221,6 +222,42 @@ describe("addons/valuationPrint/utils/translator.concatStringByDatakey.js", () =
             expect(getDefaultOnEmptyResult("foo-{{datakey}}-bar", {datakey: "defaultDatakey"}, "defaultValue")).to.equal("defaultDatakey");
         });
     });
+    describe("findPossibleError", () => {
+        it("should return the error found in knowledgeBase at any structure point of datakeys", () => {
+            const knowledgeBase = {
+                    keyA: 0,
+                    keyB: 1,
+                    keyC: new Error("error"),
+                    keyD: 3
+                },
+                datakeys = ["keyA", "keyB", "keyC"];
+
+            expect(findPossibleError(knowledgeBase, datakeys)).to.be.an.instanceOf(Error);
+        });
+        it("should return no error if none is found in knowledgeBase at any structure point of datakeys", () => {
+            const knowledgeBase = {
+                    keyA: 0,
+                    keyB: 1,
+                    keyC: new Error("error"),
+                    keyD: 3
+                },
+                datakeys = ["keyA", "keyB", "keyD"];
+
+            expect(findPossibleError(knowledgeBase, datakeys)).to.not.be.an.instanceOf(Error);
+        });
+        it("should be able to handle string inputs", () => {
+            const knowledgeBase = {
+                    keyA: 0,
+                    keyB: 1,
+                    keyC: new Error("error"),
+                    keyD: 3
+                },
+                datakeys = "keyC";
+
+            expect(findPossibleError(knowledgeBase, datakeys)).to.be.an.instanceOf(Error);
+        });
+    });
+
     describe("concatSingleDatakey", () => {
         it("should create a string for a single datakey", () => {
             const knowledgeBase = {
@@ -290,6 +327,24 @@ describe("addons/valuationPrint/utils/translator.concatStringByDatakey.js", () =
                 expected = "foo 1 bar 2DELIMITORfoo defaultA bar 3DELIMITOR4 foobar 8 qrzDELIMITOR5 foobar 9 qrzDELIMITOR6 foobar defaultD qrzDELIMITOR7 foobar defaultD qrz";
 
             expect(concatStringByDatakey(knowledgeBase, datakey, defaults, "defaultValue", "DELIMITOR")).to.deep.equal(expected);
+        });
+        it("should return an error if an error is found at any point in knowledge base", () => {
+            const knowledgeBase = {
+                    a: [1],
+                    b: [2, 3],
+                    c: new Error("error"),
+                    d: [8, 9]
+                },
+                defaults = {
+                    "a": "defaultA",
+                    "d": "defaultD"
+                },
+                datakey = [
+                    "foo {{a}} bar {{b}}",
+                    "{{c}} foobar {{d}} qrz"
+                ];
+
+            expect(concatStringByDatakey(knowledgeBase, datakey, defaults, "defaultValue", "DELIMITOR")).to.be.an.instanceof(Error);
         });
     });
 });

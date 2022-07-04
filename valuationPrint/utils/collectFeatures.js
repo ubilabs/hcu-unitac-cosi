@@ -30,13 +30,14 @@ export function collectFeatures (parcel, config, service, onsuccess, onerror, ma
         onsuccess([feature]);
     }
     else {
-        const payload = {
-            featureNS: service.featureNS,
-            featureTypes: [service.featureType],
-            filter: getFilter(parcel.geometry, config.geometryName, config.filter, config.radius),
-            srsName: mapProjection,
-            propertyNames: config.propertyName
-        };
+        const propertyNames = config.propertyName.concat(config.geometryName),
+            payload = {
+                featureNS: service.featureNS,
+                featureTypes: [service.featureType],
+                filter: getFilter(parcel.geometry, config.geometryName, config.filter, config.radius),
+                srsName: mapProjection,
+                propertyNames
+            };
 
         wfsGetFeaturePOST(service.url, payload, onerror).then(response => {
             if (response) {

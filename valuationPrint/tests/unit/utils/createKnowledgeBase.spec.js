@@ -2,7 +2,7 @@ import {expect} from "chai";
 import Feature from "ol/Feature";
 import Polygon from "ol/geom/Polygon";
 import sinon from "sinon";
-import {createAttributesByFeatures, createKnowledgeBase} from "../../../utils/createKnowledgeBase.js";
+import {createAttributesByFeatures, addKnowledgeBaseError, createKnowledgeBase} from "../../../utils/createKnowledgeBase.js";
 
 describe("addons/valuationPrint/utils/createKnowledgeBase.js", () => {
     const features = [
@@ -47,6 +47,17 @@ describe("addons/valuationPrint/utils/createKnowledgeBase.js", () => {
                 flaeche: [12345, undefined],
                 temp: [undefined, undefined]
             });
+        });
+    });
+
+    describe("addKnowledgeBaseError", () => {
+        it("should add the given error to each key in knowledge base", () => {
+            const knowledgeBase = {},
+                propertyName = ["attrA", "attrB"],
+                expected = {"prefix.attrA": "error", "prefix.attrB": "error"};
+
+            addKnowledgeBaseError(knowledgeBase, "error", "prefix", propertyName);
+            expect(knowledgeBase).to.deep.equal(expected);
         });
     });
 

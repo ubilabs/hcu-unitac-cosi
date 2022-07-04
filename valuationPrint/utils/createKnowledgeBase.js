@@ -1,5 +1,6 @@
 import {collectFeatures} from "./collectFeatures.js";
 import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
+import nextFeatureByDistance from "./precompiler.nextFeatureByDistance.js";
 
 /**
  * Creates the knowledge base by the services config.
@@ -17,8 +18,8 @@ import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
  * @returns {void}
  */
 export function createKnowledgeBase (parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase = {}, idx = 0) {
-    const key = Object.keys(services)[idx],
-        config = services[key];
+    const prefix = Object.keys(services)[idx],
+        config = services[prefix];
 
     if (typeof config === "undefined") {
         onfinish(knowledgeBase);
@@ -32,7 +33,7 @@ export function createKnowledgeBase (parcelData, services, onstart, onfinish, on
     collectFeatures(parcelData, config, getLayerWhere({id: config.layerId}), features => {
         if (features.length === 0) {
             config.propertyName.forEach(attributeKey => {
-                knowledgeBase[key + "." + attributeKey] = undefined;
+                knowledgeBase[prefix + "." + attributeKey] = undefined;
             });
             createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
         }
@@ -43,21 +44,51 @@ export function createKnowledgeBase (parcelData, services, onstart, onfinish, on
             createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
         }
         else if (config?.precompiler?.type === "nextFeatureByDistance") {
-            createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+            nextFeatureByDistance(parcelData.centerCoordinate, features, config?.precompiler?.key, config?.propertyName, attributes => {
+                Object.entries(attributes).forEach(([attributeKey, attributeValue]) => {
+                    knowledgeBase[prefix + "." + attributeKey] = attributeValue;
+                });
+                createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+            }, error => {
+                onDevError(error);
+                onUserError(config?.onerror);
+                addKnowledgeBaseError(knowledgeBase, error, prefix, Array.isArray(config?.propertyName) ? config.propertyName.concat(config?.precompiler?.key) : [config?.precompiler?.key]);
+                createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+            });
         }
         else {
             const attributes = createAttributesByFeatures(features, config.propertyName);
 
             Object.entries(attributes).forEach(([attributeKey, attributeValue]) => {
-                knowledgeBase[key + "." + attributeKey] = attributeValue;
+                knowledgeBase[prefix + "." + attributeKey] = attributeValue;
             });
             createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
         }
     }, error => {
         onDevError(error);
         onUserError(config?.onerror);
+        addKnowledgeBaseError(knowledgeBase, error, prefix, config?.propertyName);
         createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
     });
+}
+
+/**
+ * Adds an error to the knowledge base.
+ * @param {Object} knowledgeBase={} - The knowledge base.
+ * @param {Error} error - The error object.
+ * @param {String} prefix - The prefix to use as part of the key.
+ * @param {String[]} propertyName - The attribute names to add the error to.
+ * @returns {void}
+ */
+export function addKnowledgeBaseError (knowledgeBase, error, prefix, propertyName) {
+    if (Array.isArray(propertyName)) {
+        propertyName.forEach(attrName => {
+            if (typeof attrName !== "string") {
+                return;
+            }
+            knowledgeBase[prefix + "." + attrName] = error;
+        });
+    }
 }
 
 /**

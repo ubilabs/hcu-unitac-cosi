@@ -7,9 +7,14 @@ import isObject from "../../../src/utils/isObject.js";
  * @param {String|Object} defaults If no value is found in the knowledge base instead of defaultValue, this string or object relation should be used.
  * @param {String|Object} defaultValue The default to use for any unset value that is not found in defaults.
  * @param {String} delimitor The separator to use for data sets in case of multiple value in the knowledge base, also the separator for arrays of datakeys.
- * @returns {String} A single string.
+ * @returns {String|Error} A single string or an error if errors where found for this concat in knowledgeBase.
  */
 function concatStringByDatakey (knowledgeBase, datakey, defaults, defaultValue, delimitor) {
+    const error = findPossibleError(knowledgeBase, datakey);
+
+    if (error instanceof Error) {
+        return error;
+    }
     let result = "";
 
     if (Array.isArray(datakey)) {
@@ -49,6 +54,32 @@ function concatSingleDatakey (knowledgeBase, datakey, defaults, defaultValue, de
     });
 
     return result;
+}
+
+/**
+ * Looks through the structure marked by datakeys in knowledge base, returns an error if any errors where found.
+ * @param {Object} knowledgeBase The knowledge base to get value from.
+ * @param {String|String[]} datakeys The format to construct the string from. May be an array of formats.
+ * @returns {Boolean|Error} false if no error was found, the error if any was found.
+ */
+function findPossibleError (knowledgeBase, datakeys) {
+    if (!Array.isArray(datakeys)) {
+        return findPossibleError(knowledgeBase, [datakeys]);
+    }
+    let error = false;
+
+    datakeys.forEach(datakey => {
+        const keys = getKeysFromDataKey(datakey),
+            len = keys.length;
+
+        for (let i = 0; i < len; i++) {
+            if (knowledgeBase[keys[i]] instanceof Error) {
+                error = knowledgeBase[keys[i]];
+                return;
+            }
+        }
+    });
+    return error;
 }
 
 /**
@@ -189,6 +220,7 @@ function mergeKnowledgeIntoDatakey (knowledgeBits, datakey) {
 export {
     concatStringByDatakey,
     concatSingleDatakey,
+    findPossibleError,
     getDefaultOnEmptyResult,
     getFlippedKnowledgeBase,
     calcMaxArrayLength,

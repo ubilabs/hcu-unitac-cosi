@@ -1,3 +1,5 @@
+import {concatStringByDatakey} from "./translator.concatStringByDatakey";
+
 /**
  * Creates the mapfish dialog from the transformer configuration and the knowledge base.
  * @param {Object} knowledgeBase - The knowledge base.
@@ -6,7 +8,8 @@
  * @returns {Object} The mapfish dialog.
  */
 export function createMapfishDialog (knowledgeBase, transformer, defaultValue) {
-    const mapfishDialog = {};
+    const mapfishDialog = {},
+        defaultDelimitor = ", ";
 
     Object.entries(transformer).forEach(([prefix, obj]) => {
         Object.entries(obj).forEach(([postfix, transformerConfig]) => {
@@ -20,16 +23,22 @@ export function createMapfishDialog (knowledgeBase, transformer, defaultValue) {
                 // mapfishDialog[prefix + "." + postfix] = getMapFixed(knowledgeBase[transformerConfig.datakey], transformerConfig.style, tranformerConfig.bbox, getServicesByLayerIds(layerIds));
             }
             else if (transformerConfig.type === "concat") {
-                // mapfishDialog[prefix + "." + postfix] = concatStringByDatakey(knowledgeBase, transformerConfig.datakey, transformerConfig.default, defaultValue, transformerConfig.delimitor);
+                const resultConcat = concatStringByDatakey(knowledgeBase, transformerConfig.datakey, transformerConfig.default, defaultValue, transformerConfig.delimitor ? transformerConfig.delimitor : defaultDelimitor);
+
+                if (!(resultConcat instanceof Error)) {
+                    mapfishDialog[prefix + "." + postfix] = resultConcat;
+                }
             }
             else if (transformerConfig.type === "iterator") {
-                if (knowledgeBase[transformerConfig.datakey] === undefined) {
-                    mapfishDialog[prefix + "." + postfix] = defaultValue;
-                }
-                else {
-                    knowledgeBase[transformerConfig.datakey].forEach((result, idx) => {
-                        mapfishDialog[prefix + "." + postfix + "." + idx] = typeof result !== "undefined" ? result : defaultValue;
-                    });
+                if (!(knowledgeBase[transformerConfig.datakey] instanceof Error) && typeof transformerConfig?.idx === "number") {
+                    for (let idx = 0; idx < transformerConfig.idx; idx++) {
+                        if (Array.isArray(knowledgeBase[transformerConfig.datakey]) && typeof knowledgeBase[transformerConfig.datakey][idx] !== "undefined") {
+                            mapfishDialog[prefix + "." + postfix + "." + idx] = knowledgeBase[transformerConfig.datakey][idx];
+                        }
+                        else {
+                            mapfishDialog[prefix + "." + postfix + "." + idx] = typeof transformerConfig?.default === "string" ? transformerConfig.default : defaultValue;
+                        }
+                    }
                 }
             }
             else {
