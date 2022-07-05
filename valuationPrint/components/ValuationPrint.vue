@@ -15,55 +15,8 @@ import {createMapfishDialog} from "../utils/createMapfishDialog.js";
 import {startPrintProcess} from "../utils/startPrintProcess.js";
 import axios from "axios";
 import isObject from "../../../src/utils/isObject";
-
-const mapfishDialogExample = {
-    "uniqueIdList": [],
-    "visibleLayerIds": ["717", "1933"],
-    "layout": "A4 Hochformat",
-    "attributes": {
-        "title": "Mein Titel",
-        "map": {
-            "dpi": 200,
-            "projection": "EPSG:25832",
-            "center": [565887.493742713, 5934231.082763315],
-            "scale": 1000,
-            "layers": [
-                {
-                    "baseURL": "https://geodienste.hamburg.de/wms_hvv",
-                    "opacity": 1,
-                    "type": "tiledwms",
-                    "layers": ["geofox_workspace:geofoxdb_stations"],
-                    "styles": ["geofox_stations"],
-                    "imageFormat": "image/png",
-                    "customParams": {
-                        "TRANSPARENT": "true",
-                        "DPI": 200
-                    },
-                    "tileSize": [512, 512]
-                },
-                {
-                    "baseURL": "https://geodienste.hamburg.de/HH_WMS_Geobasiskarten",
-                    "opacity": 1,
-                    "type": "tiledwms",
-                    "layers": ["M100000_farbig", "M60000_farbig", "M20000_farbig", "M5000_farbig", "M40000_farbig", "M125000_farbig", "M10000_farbig", "M2500_farbig"],
-                    "imageFormat": "image/png",
-                    "customParams": {
-                        "TRANSPARENT": "true",
-                        "DPI": 200
-                    },
-                    "tileSize": [512, 512]
-                }
-            ]
-        },
-        "scale": "1:1000",
-        "showGfi": false,
-        "gfi": {},
-        "showLegend": false,
-        "legend": {}
-    },
-    "outputFilename": "Ausdruck",
-    "outputFormat": "pdf"
-};
+import {getFixedMap} from "../utils/translator.getFixedMap.js";
+import {getWalkerMap} from "../utils/translator.getWalkerMap.js";
 
 export default {
     name: "ValuationPrint",
@@ -110,7 +63,7 @@ export default {
                 const mapfishDialog = createMapfishDialog(knowledgeBase, this.config.transformer, this.defaultValue);
 
                 console.warn("mapfishDialog", mapfishDialog);
-                startPrintProcess(this.printUrl, this.printConfigPdf, mapfishDialogExample, (url, payload) => {
+                startPrintProcess(this.printUrl, this.printConfigPdf, this.mapfishDialogExample, (url, payload) => {
                     this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfInTheMaking"));
                     return axios.post(url, payload);
                 },
@@ -143,7 +96,9 @@ export default {
         this.setConfig();
         this.setSelectInteraction();
         this.selectedFeatures = this.select.getFeatures().getArray();
-
+        this.fixedMap = [];
+        this.walkerMap = [];
+        this.mapfishDialogExample = null;
 
         this.$on("close", () => {
             this.setActive(false);
@@ -154,6 +109,76 @@ export default {
                 model.set("isActive", false);
             }
         });
+
+        this.fixedMap = getFixedMap([562111.627031682, 5938489.74765114], "EPSG:25832", 200, {
+            "pointSize": 4,
+            "color": [
+                228,
+                26,
+                28,
+                1
+            ]
+        }, [545114.80, 5914269.80, 591483.01, 5957132.28], [
+            "2426"
+        ]);
+
+        this.walkerMap = getWalkerMap([
+            [
+                [
+                    562877.0009836305,
+                    5940982.299269523
+                ],
+                [
+                    562839.9593369664,
+                    5941178.090830462
+                ],
+                [
+                    562765.8760436381,
+                    5941141.049183797
+                ],
+                [
+                    562797.626026493,
+                    5940982.299269523
+                ],
+                [
+                    562877.0009836305,
+                    5940982.299269523
+                ]
+            ]
+        ], [562821.4385136343, 5941080.195049992], "EPSG:25832", 200, {
+            "borderSize": 3,
+            "color": [
+                228,
+                26,
+                28,
+                1
+            ]
+        }, 20000, [
+            "453",
+            "2412",
+            "2413",
+            "2415"
+        ]);
+
+        this.mapfishDialogExample = {
+            "layout": "A4 Hochformat",
+            "attributes": {
+                "title": "Mein Titel",
+                "mapDef1": this.walkerMap,
+                "mapDef2": this.fixedMap,
+                "scale": "1:10000",
+                "showGfi": false,
+                "gfi": {
+
+                },
+                "showLegend": false,
+                "legend": {
+
+                }
+            },
+            "outputFilename": "Ausdruck",
+            "outputFormat": "pdf"
+        };
     },
     methods: {
         ...mapMutations("Tools/ValuationPrint", Object.keys(mutations)),
