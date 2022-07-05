@@ -30,7 +30,7 @@ export function collectFeatures (parcel, config, service, onsuccess, onerror, ma
         onsuccess([feature]);
     }
     else {
-        const propertyNames = config.propertyName.concat(config.geometryName),
+        const propertyNames = config.precompiler ? config.propertyName.concat(config.geometryName) : config.propertyName,
             payload = {
                 featureNS: service.featureNS,
                 featureTypes: [service.featureType],
