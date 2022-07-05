@@ -19,6 +19,7 @@ const mutations = {
     addFeature: (state, feature) => {
         if (feature) {
             state.features.push(feature);
+            state.filteredFeatures.push(feature);
         }
     },
     /**

@@ -6,6 +6,7 @@ import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import getters from "../store/gettersRefugeeHomes";
 import mutations from "../store/mutationsRefugeeHomes";
 import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
+import {isWebLink} from "../../../src/utils/urlHelper.js";
 
 export default {
     name: "RefugeeHomes",
@@ -14,6 +15,8 @@ export default {
     },
     data () {
         return {
+            hoverActive: true,
+            existingLocationActive: true
         };
     },
     computed: {
@@ -25,7 +28,7 @@ export default {
         active (value) {
             if (value) {
                 this.$nextTick(() => {
-                    this.requestRawLayerList();
+
                 });
             }
             else {
@@ -35,6 +38,11 @@ export default {
         clickCoordinate (newCoord, lastCoord) {
             if (newCoord !== lastCoord) {
                 this.setPosition(newCoord);
+            }
+        },
+        setTableMode (mode) {
+            if (this.existingLocationActive !== mode) {
+                this.existingLocationActive = mode;
             }
         },
         "markerPoint.values_.visible": function (visible) {
@@ -53,14 +61,18 @@ export default {
      */
     created () {
         this.$on("close", this.close);
+        this.requestRawLayerList();
         Backbone.Events.listenTo(Radio.channel("RefugeesTable"), {
             "showAllFeatures": () => {
                 this.$store.commit("Tools/RefugeeHomes/setFeatures", []);
+                this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
                 this.setActive(true);
             },
             "showFeaturesByBezirk": district => {
+                this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
                 this.filterFeaturesByBezirk(district);
                 this.setActive(true);
+                console.log(this.filteredFeatures);
             }
 
         });
@@ -70,6 +82,7 @@ export default {
         ...mapMutations("Tools/RefugeeHomes", Object.keys(mutations)),
         ...mapMutations("addFeature"),
         ...mapActions("Tools/RefugeeHomes", [""]),
+        isWebLink,
 
         /**
          * Ermittelt die Geometrie und zoomt auf Koordinate
@@ -103,6 +116,7 @@ export default {
          */
         requestRawLayerList: function () {
             this.layerIds.forEach((layerId) => {
+                console.log(layerId);
                 const rawLayer = getLayerWhere({id: layerId}),
                     getFeatureUrl = this.buildAndGetRequestUrl(rawLayer);
 
@@ -122,7 +136,7 @@ export default {
                 type: "GET",
                 timeout: 6000
             }).then((response) => {
-                // console.log(response.data);
+                console.log(response);
                 this.parseFeatures(response.data);
             }).catch(
                 this.$store.dispatch("Alerting/addSingleAlert", url + i18next.t("common:modules.highlightFeaturesByAttribute.messages.requestFailed"), {root: true})
@@ -151,7 +165,6 @@ export default {
             let xmlData = new DOMParser().parseFromString(data, "text/xml"),
                 hits = xmlData.getElementsByTagName("wfs:member"),
                 feature,
-                featureType,
                 element,
                 coordEle,
                 coord;
@@ -167,9 +180,11 @@ export default {
 
                     if (typeof element !== "undefined") {
                         if (attr === "pfad") {
+                            console.log('pfaaad');
                             const pfadArray = element.innerHTML.split("|");
 
-                            feature[attr] = pfadArray;
+
+                            feature[attr] = pfadArray[0];
                         }
                         else if (attr === "geom") {
                             coordEle = hit.getElementsByTagName("gml:pos")[0];
@@ -186,9 +201,8 @@ export default {
                         //     feature[attr] = "DUMMY <a href='https://www.hamburg.de/contentblob/4594724/3696a6bc1f054a94eb559f274a8a9c04/data/flyer-notkestrasse.pdf' target='_blank'>Flyer </a>(PDF)";
                         // }
 
-                        featureType = hit.childNodes[1].localName;
-                        feature.featureType = featureType;
-                        feature.imgSrc = this.$store.getters.imagePath + featureType + ".svg";
+                        feature.featureType = hit.childNodes[1].localName;
+                        feature.imgSrc = this.$store.getters.imagePath + feature.featureType + ".svg";
                         this.$store.commit("Tools/RefugeeHomes/addFeature", feature);
                     }
                 });
@@ -202,7 +216,7 @@ export default {
          * @param  {String} value - Name des Bezirks
          */
         filterFeaturesByBezirk: function (value) {
-            const filteredDistricts = this.features.filter(district => district.bezirk.toUpperCase().trim() === value.toUpperCase().trim()),
+            const filteredDistricts = this.features.filter(district => district.bezirk?.toUpperCase().trim() === value.toUpperCase().trim()),
                 sortedFeatures = this.sortFeatures(filteredDistricts, this.ranking);
 
             this.$store.commit("Tools/RefugeeHomes/addFilteredFeature", sortedFeatures);
@@ -253,10 +267,48 @@ export default {
             Radio.trigger("MapView", "resetView"); */
         },
 
+        /**
+         * sets/unsets the marker
+         * @param {Number[]} coords the coordinates to place the marker at
+         * @returns {void}
+         */
+        toggleMarker (coords, event) {
+            if (this.hoverActive) {
+                if (!Array.isArray(coords) || this.lastMarker === coords) {
+                    this.lastMarker = null;
+                    this.$store.dispatch("MapMarker/removePointMarker");
+                }
+                else {
+                    this.lastMarker = coords;
+                    this.$store.dispatch("MapMarker/placingPointMarker", coords);
+                }
+            }
+        },
+         /**
+         * sets/unsets the marker
+         * @param {Number[]} coords the coordinates to place the marker at
+         * @returns {void}
+         */
+        clickMarker () {
+            console.log('ffffffffffffff');
+             this.hoverActive = false;
+
+        },
+        /**
+         * sets/unsets the marker
+         * @param {Number[]} coords the coordinates to place the marker at
+         * @returns {void}
+         */
+        toggleOut () {
+            this.hoverActive = true;
+
+        },
+
         close () {
             const model = getComponent("refugeehomes");
 
             this.setActive(false);
+            this.$store.dispatch("MapMarker/removePointMarker");
             if (model) {
                 model.set("isActive", false);
             }
@@ -286,13 +338,14 @@ export default {
                     Hamburg
                 </h4>
                 <h4 v-else>
-                    Bezirk {{ filteredFeatures[0].bezirk }}
+                    Bezirk: {{ filteredFeatures[0][0].bezirk }}
                 </h4>
                 <ul
                     class="nav nav-pills nav-fill"
                 >
                     <li
                         class="nav-item"
+                        @click="setTableMode(true)
                     >
                         <a
                             class="nav-link active"
@@ -303,6 +356,7 @@ export default {
                     </li>
                     <li
                         class="nav-item"
+                        @click="setTableMode(false)"
                     >
                         <a
                             class="nav-link"
@@ -316,7 +370,7 @@ export default {
                     class="tab-content"
                 >
                     <div
-                        id="bestehendeStandorte"
+                        <!-- id="bestehendeStandorte" -->
                         class="tab-pane fade in active"
                     >
                         <table
@@ -329,19 +383,23 @@ export default {
                                     <th>Bezeichnung</th>
                                     <th>Pl&auml;tze</th>
                                     <th>Bemerkungen</th>
+                                    <th>Plan</th>
                                     <th>Anlagen</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr
-                                    v-for="(feature, idx) in filteredFeatures"
-                                    v-if="feature.featureType.indexOf('geplant') === -1"
+                            <tbody
+                            v-for="(feature, idx) in filteredFeatures[0]"
                                     id="feature.id"
-                                    :key="`feature-${idx}`"
+                                    :key="idx"
+                            >
+                                <tr
+                                    @click="clickMarker()"
+                                    @mouseover="toggleMarker(feature.geom)"
+                                    @mouseleave="toggleOut()"
                                 >
                                     <td>
                                         <img
-                                            src="feature.imgSrc"
+                                            :src="feature.imgSrc"
                                             alt="featureimage"
                                         >
                                     </td>
@@ -349,8 +407,19 @@ export default {
                                     <td>{{ feature.bezeichnung }}</td>
                                     <td>{{ feature.platzzahl }}</td>
                                     <td>{{ feature.bemerkung }}</td>
-                                    <td
-                                        v-for="(anlage, index) in filteredFeatures"
+                                    <td>
+                                           <a
+                                            v-if="isWebLink(feature.pfad)"
+                                            :href="feature.pfad"
+                                            target="_blank"
+                                            class="float-end"
+                                            >
+                                                Anlage<!-- {{ translate("additional:modules.tools.CommuterFlows.linkMoreInfo") }} -->
+                                            </a>
+                                    </td>
+                                       <!--  <a :href="{{ feature.pfad }}">Anlage</a></td> -->
+                                   <!--  <td
+                                        v-for="(anlage, index) in filteredFeatures[0]"
                                         :key="index"
                                     >
                                         <a
@@ -362,12 +431,14 @@ export default {
                                         <br
                                             v-if="feature.pfad.length > index + 1"
                                         >
-                                    </td>
+                                    </td> -->
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div
+</div>
+                  </div>
+                 <!--     <div
                         id="geplanteStandorte"
                         class="tab-pane fade"
                     >
@@ -422,12 +493,17 @@ export default {
                         </table>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </template>
     </ToolTemplate>
 </template>
 
 <style lang="scss" scoped>
+     @import "~variables";
+tbody tr:hover {
+  background-color: $light_grey;
+}
+
 #RefugeesTable {
     position: relative;
     height: 35%;

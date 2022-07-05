@@ -26,7 +26,7 @@ const state = {
     resizableWindow: true,
     isVisibleInMenu: true,
     deactivateGFI: true,
-    initialWidth: 500,
+    initialWidth: 600,
     layerIds: ["4553", "4554", "10964", "10965", "4556", "4557", "9097"],
     featureAttributes: ["bemerkung", "bezirk", "platzzahl", "stadtteil", "bezeichnung", "geplante_inbetriebnahme", "pfad", "geom"],
     features: [{stadtteil:"xx", bezeichnung:"x", platzzahl:"x", bemerkung:"x", geplante_inbetriebnahme:"x", id: 123, pfad:"start", featureType:"geplant"}],
