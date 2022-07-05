@@ -75,11 +75,13 @@ export default function getVectorlayerMapping (topicsConfig, path = ["Fachdaten"
 
     if (vectorlayerHierarchy) {
         // add a group for each folder in the hierarchy
-        for (const folder of vectorlayerHierarchy.Ordner) {
-            mapping.push({
-                group: folder.Titel,
-                layer: flattenFolderLayers(folder, condition)
-            });
+        if (Array.isArray(vectorlayerHierarchy.Ordner)) {
+            for (const folder of vectorlayerHierarchy.Ordner) {
+                mapping.push({
+                    group: folder.Titel,
+                    layer: flattenFolderLayers(folder, condition)
+                });
+            }
         }
 
         // assign the not grouped layers to the misc category

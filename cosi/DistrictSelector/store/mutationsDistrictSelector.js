@@ -28,12 +28,10 @@ const mutations = {
                 category: category,
                 value: category,
                 group: group,
-                statgebiet: true,
-                stadtteil: true,
-                bezirk: true,
                 valueType: valueType,
                 isTemp: isTemp,
-                calculation: calculation
+                calculation: calculation,
+                ...Object.fromEntries(state.districtLevels.map(districtLevel => [districtLevel.stats.keyOfAttrName, true]))
             });
         }
     },

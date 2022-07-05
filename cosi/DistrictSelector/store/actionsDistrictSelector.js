@@ -1,6 +1,6 @@
 import {WFS} from "ol/format.js";
 import {getFeaturePOST as wfsGetFeature} from "../../../../src/api/wfs/getFeature.js";
-import {prepareStatsFeatures, createStatFeaturesFromLTF} from "../utils/prepareStatsFeatures";
+import {parseFeatures} from "../utils/prepareStatsFeatures";
 import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
@@ -42,21 +42,8 @@ const actions = {
                         }),
                         olFeatures = wfsFormat.readFeatures(statFeatures);
 
-                    if (olFeatures.length > 0 && urls[j].search("prognose") === -1) {
-                        olFeatures.forEach(prepareStatsFeatures);
-
-                        // add statFeatures to district
-                        districts[i].statFeatures.push(...olFeatures);
-                        // store original data on the district as a copy
-                        districts[i].originalStatFeatures = olFeatures.map(f => f.clone());
-                    }
-                    else if (olFeatures.length > 0 && urls[j].search("prognose") !== -1) {
-                        const features = createStatFeaturesFromLTF(olFeatures, districtLevel.stats.keyOfAttrName);
-
-                        // add statFeatures to district
-                        districts[i].statFeatures.push(...features);
-                        // store original data on the district as a copy
-                        districts[i].originalStatFeatures.push(...features.map(f => f.clone()));
+                    if (olFeatures.length > 0) {
+                        parseFeatures(olFeatures, districts[i], districtLevel);
                     }
                     else {
                         dispatch("Alerting/addSingleAlert", {

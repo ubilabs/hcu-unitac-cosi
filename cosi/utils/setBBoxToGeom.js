@@ -87,7 +87,9 @@ export function setBBoxToGeom (bboxGeometry) {
  * @returns {void}
  */
 export function setBboxGeometryToLayer (itemList, bboxGeometry, app) {
-    const modelList = Radio.request("ModelList", "getCollection");
+    const
+        modelList = Radio.request("ModelList", "getCollection"),
+        crs = app?.$store.getters["Map/projectionCode"] || "EPSG:25832";
 
     itemList.forEach(function (item) {
         const model = modelList.get({id: item.id});
@@ -95,9 +97,9 @@ export function setBboxGeometryToLayer (itemList, bboxGeometry, app) {
         // layer already exists in the model list
         if (model) {
             const source = getClusterSource(model.layer);
-            let url = `${model.attributes.url}?service=WFS&version=${model.attributes.version}&request=GetFeature&typeName=${model.attributes.featureType}&srsName=EPSG:25832`;
+            let url = `${model.attributes.url}?service=WFS&version=${model.attributes.version}&request=GetFeature&typeName=${model.attributes.featureType}&srsName=${crs}`;
 
-            url += bboxGeometry ? `&bbox=${bboxGeometry.getExtent().toString()},EPSG:25832` : "";
+            url += bboxGeometry ? `&bbox=${bboxGeometry.getExtent().toString()},${crs}` : "";
 
             if (source) {
                 updateSource(source, bboxGeometry, url, item, app);

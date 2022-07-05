@@ -24,16 +24,16 @@ export async function prepareDistrictLevels (districtLevels, layerList) {
             districtLevel.layer = getLayerById(layerList, districtLevel.layerId);
             // the names of all avaible districts
             districtLevel.nameList = getNameList(districtLevel.layer, districtLevel.keyOfAttrName);
+            // all featureTypes for the WFS GetFeature request for the stats features
+            districtLevel.featureTypes = getFeatureTypes(districtLevel.stats.baseUrl, districtLevel.stats.featureTypes);
             // property names for the WFS GetFeature request for the stats features, without geometry
             if (!districtLevel.propertyNameList) {
-                const propertyNameList = await getPropertyNameList(districtLevel.stats.baseUrl);
+                const propertyNameList = await getPropertyNameList(districtLevel.stats.baseUrl, districtLevel.featureTypes);
 
                 if (!districtLevel.propertyNameList) {
                     districtLevel.propertyNameList = propertyNameList;
                 }
             }
-            // all featureTypes for the WFS GetFeature request for the stats features
-            districtLevel.featureTypes = getFeatureTypes(districtLevel.stats.baseUrl);
             // all districts at this level
             districtLevel.districts = getDistricts(districtLevel);
             // at this point the features of the layer are probably not yet loaded,
@@ -139,9 +139,10 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
 /**
  * Returns a list of all feature types for the given WFS sources (urls).
  * @param {String[]} urls - The urls of the WFS`s.
+ * @param {Array.<String[]>} typeNames - The feature types for each url if provided.
  * @returns {Array.<String[]>} The feature types for each url.
  */
-export function getFeatureTypes (urls) {
+export function getFeatureTypes (urls, typeNames) {
     if (!Array.isArray(urls)) {
         console.error(`prepareDistrictLevels.getFeatureTypes: ${urls} has to be defined and an array.`);
         return [];
@@ -149,9 +150,11 @@ export function getFeatureTypes (urls) {
     const featureTypes = [];
 
     for (let i = 0; i < urls.length; i++) {
-        featureTypes[i] = getLayerList().reduce((typeNames, layer) => {
-            return layer?.url === urls[i] ? [...typeNames, layer.featureType] : typeNames;
-        }, []);
+        featureTypes[i] = Array.isArray(typeNames?.[i]) ?
+            typeNames[i] :
+            getLayerList().reduce((_typeNames, layer) => {
+                return layer?.url === urls[i] ? [..._typeNames, layer.featureType] : _typeNames;
+            }, []);
     }
 
     return featureTypes;
@@ -205,9 +208,10 @@ export function getNameList (layer, keyOfAttrName) {
 /**
  * Returns a list of all property names for the given WFS sources (urls), without geometries.
  * @param {String[]} urls - The urls of the WFS`s.
+ * @param {Array.<String[]>} [typeNames] - The feature types for each url if provided.
  * @returns {Promise<Array.<String[]>>} The property name for each url.
  */
-export async function getPropertyNameList (urls) {
+export async function getPropertyNameList (urls, typeNames) {
     if (!Array.isArray(urls)) {
         console.error(`prepareDistrictLevels.getPropertyNameList: ${urls} has to be defined and an array.`);
         return [];
@@ -217,7 +221,15 @@ export async function getPropertyNameList (urls) {
     for (let i = 0; i < urls.length; i++) {
         propertyNameList[i] = [];
 
-        const layer = getLayerList().find(rawlayer => rawlayer.url === urls[i]);
+        const layer = getLayerList().find(rawlayer => {
+            if (rawlayer.url === urls[i]) {
+                if (Array.isArray(typeNames?.[i])) {
+                    return rawlayer.featureType === typeNames?.[i][0];
+                }
+                return true;
+            }
+            return false;
+        });
 
         if (layer) {
             // get the property names by the 'DescribeFeatureType' request
@@ -235,7 +247,6 @@ export async function getPropertyNameList (urls) {
         }
 
     }
-
     return propertyNameList;
 }
 
