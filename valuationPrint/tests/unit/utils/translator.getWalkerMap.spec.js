@@ -44,110 +44,110 @@ describe("addons/valuationPrint/utils/translator.getWalkerMap.js", () => {
             expect(getWalkerMap("string").projection).to.equal("EPSG:25832");
             expect(getWalkerMap("string").center).to.be.an("array").with.length(0);
         });
-    });
 
-    it("should return the map configuration with configured and default value", () => {
-        const config = {
-            "coordinates": [
-                [
+        it("should return the map configuration with configured and default value", () => {
+            const config = {
+                "coordinates": [
                     [
-                        562877.0009836305,
-                        5940982.299269523
-                    ],
-                    [
-                        562839.9593369664,
-                        5941178.090830462
-                    ],
-                    [
-                        562765.8760436381,
-                        5941141.049183797
-                    ],
-                    [
-                        562797.626026493,
-                        5940982.299269523
-                    ],
-                    [
-                        562877.0009836305,
-                        5940982.299269523
+                        [
+                            562877.0009836305,
+                            5940982.299269523
+                        ],
+                        [
+                            562839.9593369664,
+                            5941178.090830462
+                        ],
+                        [
+                            562765.8760436381,
+                            5941141.049183797
+                        ],
+                        [
+                            562797.626026493,
+                            5940982.299269523
+                        ],
+                        [
+                            562877.0009836305,
+                            5940982.299269523
+                        ]
                     ]
-                ]
-            ],
-            "center": [
-                561968.7521088345,
-                5939653.913689158
-            ],
-            "projection": "EPSG:1234",
-            "style": {
-                "borderSize": 4,
-                "color": [
-                    228,
-                    26,
-                    28,
-                    1
-                ]
-            },
-            "scale": 20000,
-            "layerIds": [
-                "2426"
-            ]
-        };
-
-        expect(getWalkerMap(config.coordinates, config.center, config.projection, undefined, config.style, config.scale, config.LayerIds).dpi).to.equal(200);
-        expect(getWalkerMap(config.coordinates, config.center, config.projection, undefined, config.style, config.scale, config.LayerIds).scale).to.equal(20000);
-        expect(getWalkerMap(config.coordinates, config.center, config.projection, undefined, config.style, config.scale, config.LayerIds).center).to.deep.equal([561968.7521088345, 5939653.913689158]);
-        expect(getWalkerMap(config.coordinates, config.center, config.projection, undefined, config.style, config.scale, config.LayerIds).projection).to.equal("EPSG:1234");
-    });
-
-    it("should return the map configuration with configured value", () => {
-        const config = {
-            "coordinates": [
-                [
-                    [
-                        562877.0009836305,
-                        5940982.299269523
-                    ],
-                    [
-                        562839.9593369664,
-                        5941178.090830462
-                    ],
-                    [
-                        562765.8760436381,
-                        5941141.049183797
-                    ],
-                    [
-                        562797.626026493,
-                        5940982.299269523
-                    ],
-                    [
-                        562877.0009836305,
-                        5940982.299269523
+                ],
+                "center": [
+                    561968.7521088345,
+                    5939653.913689158
+                ],
+                "projection": "EPSG:1234",
+                "style": {
+                    "borderSize": 4,
+                    "color": [
+                        228,
+                        26,
+                        28,
+                        1
                     ]
+                },
+                "scale": 20000,
+                "layerIds": [
+                    "2426"
                 ]
-            ],
-            "center": [
-                561968.7521088345,
-                5939653.913689158
-            ],
-            "projection": "EPSG:1234",
-            "dpi": 72,
-            "style": {
-                "borderSize": 4,
-                "color": [
-                    228,
-                    26,
-                    28,
-                    1
-                ]
-            },
-            "scale": 20000,
-            "layerIds": [
-                "2426"
-            ]
-        };
+            };
 
-        expect(getWalkerMap(config.coordinates, config.center, config.projection, config.dpi, config.style, config.scale, config.LayerIds).dpi).to.equal(72);
-        expect(getWalkerMap(config.coordinates, config.center, config.projection, config.dpi, config.style, config.scale, config.LayerIds).scale).to.equal(20000);
-        expect(getWalkerMap(config.coordinates, config.center, config.projection, config.dpi, config.style, config.scale, config.LayerIds).center).to.deep.equal([561968.7521088345, 5939653.913689158]);
-        expect(getWalkerMap(config.coordinates, config.center, config.projection, config.dpi, config.style, config.scale, config.LayerIds).projection).to.equal("EPSG:1234");
+            expect(getWalkerMap(config.coordinates, config.center, config.projection, undefined, config.style, config.scale, config.LayerIds).dpi).to.equal(200);
+            expect(getWalkerMap(config.coordinates, config.center, config.projection, undefined, config.style, config.scale, config.LayerIds).scale).to.equal(20000);
+            expect(getWalkerMap(config.coordinates, config.center, config.projection, undefined, config.style, config.scale, config.LayerIds).center).to.deep.equal([561968.7521088345, 5939653.913689158]);
+            expect(getWalkerMap(config.coordinates, config.center, config.projection, undefined, config.style, config.scale, config.LayerIds).projection).to.equal("EPSG:1234");
+        });
+
+        it("should return the map configuration with configured value", () => {
+            const config = {
+                "coordinates": [
+                    [
+                        [
+                            562877.0009836305,
+                            5940982.299269523
+                        ],
+                        [
+                            562839.9593369664,
+                            5941178.090830462
+                        ],
+                        [
+                            562765.8760436381,
+                            5941141.049183797
+                        ],
+                        [
+                            562797.626026493,
+                            5940982.299269523
+                        ],
+                        [
+                            562877.0009836305,
+                            5940982.299269523
+                        ]
+                    ]
+                ],
+                "center": [
+                    561968.7521088345,
+                    5939653.913689158
+                ],
+                "projection": "EPSG:1234",
+                "dpi": 72,
+                "style": {
+                    "borderSize": 4,
+                    "color": [
+                        228,
+                        26,
+                        28,
+                        1
+                    ]
+                },
+                "scale": 20000,
+                "layerIds": [
+                    "2426"
+                ]
+            };
+
+            expect(getWalkerMap(config.coordinates, config.center, config.projection, config.dpi, config.style, config.scale, config.LayerIds).dpi).to.equal(72);
+            expect(getWalkerMap(config.coordinates, config.center, config.projection, config.dpi, config.style, config.scale, config.LayerIds).scale).to.equal(20000);
+            expect(getWalkerMap(config.coordinates, config.center, config.projection, config.dpi, config.style, config.scale, config.LayerIds).center).to.deep.equal([561968.7521088345, 5939653.913689158]);
+            expect(getWalkerMap(config.coordinates, config.center, config.projection, config.dpi, config.style, config.scale, config.LayerIds).projection).to.equal("EPSG:1234");
+        });
     });
 });

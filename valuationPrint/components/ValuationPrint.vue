@@ -16,7 +16,7 @@ import {startPrintProcess} from "../utils/startPrintProcess.js";
 import axios from "axios";
 import isObject from "../../../src/utils/isObject";
 import {getFixedMap} from "../utils/translator.getFixedMap.js";
-import {getWalkerMap} from "../utils/translator.getWalkerMap.js";
+import {getProportionMap} from "../utils/translator.getProportionMap.js";
 
 export default {
     name: "ValuationPrint",
@@ -122,7 +122,7 @@ export default {
             "2426"
         ]);
 
-        this.walkerMap = getWalkerMap([
+        this.proportionMap = getProportionMap([
             [
                 [
                     562877.0009836305,
@@ -145,7 +145,12 @@ export default {
                     5940982.299269523
                 ]
             ]
-        ], [562821.4385136343, 5941080.195049992], "EPSG:25832", 200, {
+        ], [
+            562765.8760436381,
+            5940982.299269523,
+            562877.0009836305,
+            5941178.090830462
+        ], "EPSG:25832", 200, {
             "borderSize": 3,
             "color": [
                 228,
@@ -153,7 +158,7 @@ export default {
                 28,
                 1
             ]
-        }, 20000, [
+        }, 0.33, [
             "453",
             "2412",
             "2413",
@@ -164,7 +169,7 @@ export default {
             "layout": "A4 Hochformat",
             "attributes": {
                 "title": "Mein Titel",
-                "mapDef1": this.walkerMap,
+                "mapDef1": this.proportionMap,
                 "mapDef2": this.fixedMap,
                 "scale": "1:10000",
                 "showGfi": false,
