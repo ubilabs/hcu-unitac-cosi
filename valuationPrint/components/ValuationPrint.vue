@@ -111,25 +111,24 @@ export default {
 
                 console.warn("mapfishDialog", mapfishDialog);
                 startPrintProcess(this.printUrl, this.printConfigPdf, mapfishDialogExample, (url, payload) => {
-                    this.addMessage("PDF wird erstellt.", false);
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfInTheMaking"));
                     return axios.post(url, payload);
                 },
                 () => {
-                    this.addMessage("Bitte warten ...", false);
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pleaseWait"));
                 },
-                (error) => {
-                    this.addMessage("Fehler ...", true);
+                error => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfError"), true);
                     console.error(error);
                 },
-                (url) => {
-                    this.addMessage("PDF wurde erstellt: " + url);
-                    // this.addUrl(url);
+                url => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfSuccess"));
+                    this.addUrl(url);
                     // startImageProcess();
-
                 });
-            }, (errorMsg) => {
+            }, errorMsg => {
                 this.addMessage(errorMsg, true);
-            }, (error) => {
+            }, error => {
                 console.error(error);
             });
         }
@@ -280,6 +279,15 @@ export default {
          */
         addMessage (message, isError = false) {
             this.messageList.unshift({message, isError});
+        },
+
+        /**
+         * Adds another url to the url list for downloding pdf and images.
+         * @param {String} url the url to display
+         * @returns {void}
+         */
+        addUrl (url) {
+            console.warn(url);
         }
     }
 };

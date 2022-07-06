@@ -7,7 +7,11 @@
               "startButton": "Start",
               "parcel": "Parcel:",
               "district": "District:",
-              "messageListTitle": "Process:"
+              "messageListTitle": "Process:",
+              "pdfInTheMaking": "PDF is in progress.",
+              "pleaseWait": "Please wait ...",
+              "pdfError": "PDF failed ...",
+              "pdfSuccess": "PDF is ready."
           }
         }
     }
