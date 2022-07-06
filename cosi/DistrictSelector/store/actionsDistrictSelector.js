@@ -130,9 +130,33 @@ const actions = {
         commit("setLoadend", false);
         await Vue.nextTick();
         commit("setLoadend", true);
-    }
+    },
+
+    /**
+     * Loads the mapping of statistical categories from the configured path
+     * Defaults to the mapping.json for Hamburg, "/addons/cosi/assets/mapping.json"
+     * @param {Object} state - the DistrictSelector store state
+     * @param {String} path - the path to load from
+     * @returns {void}
+     */
+    async loadMapping ({state, commit}) {
+        const path = state.mappingPath;
+
+        if (path) {
+            console.log(path);
+            const
+                req = await fetch(path),
+                mapping = await req.json();
+
+            console.log(req);
+
+            commit("setMappingInit", mapping);
+
+            console.log(state.mappingInit);
+        }
+
+        commit("resetMapping");
+    },
 };
 
 export default actions;
-
-

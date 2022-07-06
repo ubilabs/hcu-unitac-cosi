@@ -1,6 +1,5 @@
 import {generateSimpleMutations} from "../../../../src/app-store/utils/generators";
 import stateDistrictSelector from "./stateDistrictSelector";
-import MappingJson from "../../assets/mapping.json";
 
 const mutations = {
     /**
@@ -53,7 +52,7 @@ const mutations = {
      * @returns {void}
      */
     resetMapping ({state}) {
-        state.mapping = MappingJson;
+        state.mapping = state.mappingInit;
     }
 };
 

@@ -149,6 +149,7 @@ export default {
         this.selectedLevelId = this.districtLevels[0].layerId;
         this.setNonReactiveData();
         this.initializeAdditionalInfoLayers();
+        this.loadMapping();
     },
     mounted () {
         /**
