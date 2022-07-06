@@ -4,7 +4,12 @@
   "formular": "view.js",
   "oktagonKartenportal": "oktagonLoader.js",
   "showParcelGFI": "showParcelGFI.js",
-  "verkehrsfunctions": "verkehrsfunctions.js",
+  "verkehrsfunctions": {
+    "type": "javascript"
+  },
+  "fileImportAddon": {
+    "type": "tool"
+  },
   "cosiFileImport": {
     "path": "cosi/cosiFileImport",
     "type": "tool"
@@ -76,6 +81,9 @@
     "path":"gfiThemes/activeCityMaps",
     "type": "gfiTheme"
   },
+  "valuationPrint": {
+    "type": "tool"
+  },
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
     "type": "gfiTheme"
@@ -86,6 +94,10 @@
   },
   "dipas": {
     "path":"gfiThemes/dipas",
+    "type": "gfiTheme"
+  },
+  "dipasCockpit": {
+    "path":"gfiThemes/dipasCockpit",
     "type": "gfiTheme"
   },
   "flaecheninfo": {
@@ -143,6 +155,10 @@
   "AreaSelector": {
     "path": "cosi/AreaSelector",
     "type": "tool"
+  },
+  "obliqueControl": {
+    "path":"controls/obliqueControl",
+    "type": "control"
   },
   "addLayerRemotely": "addLayerRemotely.js",
   "qr": "view.js"

@@ -3,12 +3,12 @@ import {getWmsFeaturesByMimeType} from "../../src/api/gfi/getWmsFeaturesByMimeTy
 
 Radio.channel("GFI").on({
     "layerAtPosition": async function (layerId, attributes) {
-        store.commit("Map/setGfiFeatures", null);
+        store.commit("Maps/setGfiFeatures", null);
 
         const coordinate = attributes.coordinate,
-            layerList = store.getters["Map/layerList"],
-            resolution = store.getters["Map/resolution"],
-            projection = store.getters["Map/projection"],
+            layerList = mapCollection.getMap("2D").getLayers().getArray(),
+            resolution = store.getters["Maps/resolution"],
+            projection = store.getters["Maps/projection"],
             foundLayer = layerList.find(function (layer) {
                 return layer.get("id") === layerId;
             }),
@@ -26,7 +26,7 @@ Radio.channel("GFI").on({
             });
 
         store.commit("Tools/Gfi/setActive", true);
-        store.commit("Map/setClickCoord", [coordinate[0], coordinate[1]]);
-        store.commit("Map/setGfiFeatures", [targetFeature]);
+        store.commit("Maps/setClickCoordinate", [coordinate[0], coordinate[1]]);
+        store.commit("Maps/setGfiFeatures", [targetFeature]);
     }
 });

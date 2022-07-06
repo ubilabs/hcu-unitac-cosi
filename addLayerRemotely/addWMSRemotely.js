@@ -1,6 +1,6 @@
 import {WMSCapabilities} from "ol/format.js";
 import {intersects} from "ol/extent";
-import {transform as transformCoord, getProjection} from "masterportalapi/src/crs";
+import {transform as transformCoord, getProjection} from "@masterportal/masterportalapi/src/crs";
 import axios from "axios";
 import store from "../../src/app-store";
 
@@ -34,7 +34,7 @@ export default function importLayers (url, layersToLoad, folderName, zoomTo) {
                     version = capability?.version,
                     checkVersion = isVersionEnabled(version),
                     currentExtent = Radio.request("Parser", "getPortalConfig")?.mapView?.extent,
-                    projection = store.getters["Map/projection"].code_;
+                    projection = store.getters["Maps/projection"].code_;
 
                 let checkExtent = getIfInExtent(capability, currentExtent, projection),
                     uniqueId = "external_",
@@ -75,7 +75,7 @@ export default function importLayers (url, layersToLoad, folderName, zoomTo) {
                     });
                 }
                 if (zoomTo) {
-                    Radio.trigger("Map", "zoomToExtent", checkExtent);
+                    Radio.trigger("Map", "zoomToExtent", {extent: checkExtent});
                 }
 
                 Radio.trigger("ModelList", "closeAllExpandedFolder");

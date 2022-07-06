@@ -162,17 +162,16 @@ export default {
 </script>
 
 <template>
-    <div class="table">
-        <table class="table-responsive table-striped table-condensed table-bordered text-nowrap">
+    <div class="table-container">
+        <table class="table table-striped table-bordered text-nowrap">
             <thead>
                 <tr>
-                    <th class="th-first-col">
+                    <th>
                         {{ tableTitle }}
                     </th>
                     <th
                         v-for="(value, datetime) in getFirstDataset(apiData)"
                         :key="datetime"
-                        class="th-rest-cols"
                     >
                         {{ setColTitle(datetime) }}
                     </th>
@@ -183,7 +182,7 @@ export default {
                     v-for="(dataObjFlat, idx) in getFlatApiData(apiData)"
                     :key="idx"
                 >
-                    <td class="td-first-col">
+                    <td>
                         {{ setRowTitle(dataObjFlat.key, getFirstKeyOfObject(dataObjFlat.dataset)) }} {{ setStarAtDay(Object.keys(dataObjFlat.dataset)) }}
                     </td>
                     <td
@@ -199,32 +198,39 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-    div.table {
-        margin-top: 5px;
-        margin-bottom: 10px;
-        overflow: auto;
-        text-align: center;
-        tbody > tr > td {
+.table-container {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    overflow: auto;
+    text-align: center;
+
+    table {
+        margin-bottom: 0;
+
+        th,td {
+            padding: 0.3125rem;
+        }
+
+        td {
             min-width: 50px;
+
+            &:first-of-type {
+                text-align: left;
+            }
+
             &:first-child {
                 font-weight: bold;
             }
         }
+
+        th {
+            vertical-align: middle;
+            font-size: 13px;
+
+            &:first-of-type {
+                font-size: 16px;
+            }
+        }
     }
-    .table-responsive {
-        margin-bottom: 0px;
-    }
-    .th-first-col {
-        text-align: center;
-        vertical-align: middle;
-        font-size: 16px;
-    }
-    .th-rest-cols {
-        text-align: center;
-        vertical-align: middle;
-        font-size: 13px;
-    }
-    .td-first-col {
-        text-align: left;
-    }
+}
 </style>

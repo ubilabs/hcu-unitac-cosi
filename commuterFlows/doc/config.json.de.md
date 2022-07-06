@@ -40,7 +40,7 @@ Für das Werkzeug Pendlerströme sind viele Kleinigkeiten konfigurierbar gemacht
 |Name|Verpflichtend|Typ|Default|Beschreibung|Expert|
 |----|-------------|---|-------|------------|------|
 |name|ja|String|Pendlerströme|Der Titel des Werkzeuges bzw. der Eintrag in der Werkzeugliste|true|
-|glyphicon|ja|String|glyphicon glyphicon-transfer|Das zu verwendende Icon.|true|
+|icon|ja|String|bi-arrow-left-right|Das zu verwendende Icon.|true|
 |serviceURL|ja|String|""|Die URL zum zu verwendenden Service.|true|
 |metaVerPath|nein|String|""|Ein Link zu den genutzten Metadaten. Wenn angegeben wird er als Link "Weitere Informationen" im Werkzeug angezeigt.|true|
 |blacklistedDistricts|nein|String[]| [] |Eine Liste zu ignorierender Landkreise oder Gemeinden.|true|
@@ -80,7 +80,7 @@ Für das Werkzeug Pendlerströme sind viele Kleinigkeiten konfigurierbar gemacht
 #!json
 "CommuterFlows": {
     "name": "translate#additional:modules.tools.CommuterFlows.titleLabel",
-    "glyphicon": "glyphicon-transfer",
+    "icon": "bi-arrow-left-right",
     "metaVerPath": "https://metaver.de/trefferanzeige?docuuid=4FC611E9-DDA4-42E5-9EE9-F118BCBB2D89",
     "blacklistedDistricts": ["Bremen", "Berlin", "Kiel", "Hannover"],
     "serviceURL": "https://geodienste.hamburg.de/MRH_WFS_Pendlerstroeme_im_Tool",

@@ -18,7 +18,7 @@ describe("addons/vueAddon/components/VueAddon.vue", () => {
                         VueAddon:
                             {
                                 "name": "translate#additional:modules.tools.vueAddon.title",
-                                "glyphicon": "glyphicon-th-list"
+                                "icon": "bi-bullseye"
                             }
                     }
                 }

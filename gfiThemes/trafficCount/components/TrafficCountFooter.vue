@@ -423,7 +423,7 @@ export default {
             tbody {
                 tr {
                     &:nth-of-type(odd){
-                        background-color: #ffffff;
+                        background-color: $white;
                     }
                     td {
                         border-top: none;

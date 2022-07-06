@@ -145,28 +145,26 @@ export default {
 <template>
     <div class="schulinfo">
         <div class="schulinfo-head">
-            <div
-                class="btn-group btn-group-sm"
-            >
+            <div class="btn-group btn-group-sm">
                 <button
                     v-for="category in assignedFeatureProperties"
                     :key="category.name"
                     :value="category.name"
-                    class="btn btn-default"
+                    class="btn btn-outline-dark"
                     :class="{'btn-select': category.isSelected}"
                     @click="toggleSelectedCategory"
                 >
                     {{ category.name }}
                 </button>
-                <div class="favorite-container">
-                    <template v-for="component in importedComponents">
-                        <component
-                            :is="component"
-                            :key="'favorite-' + component.name"
-                            :feature="feature"
-                        />
-                    </template>
-                </div>
+            </div>
+            <div class="favorite-container">
+                <template v-for="component in importedComponents">
+                    <component
+                        :is="component"
+                        :key="'favorite-' + component.name"
+                        :feature="feature"
+                    />
+                </template>
             </div>
         </div>
         <div class="schulinfo-content">
@@ -228,8 +226,8 @@ export default {
 
 <style lang="scss" scoped>
 @import "~/css/mixins.scss";
+@import "~variables";
 
-$color_1: #fff;
 $color_2: #fec44f;
 $background_color_1: rgba(227, 227, 227, 0.5);
 $background_color_2: rgba(0,0,0,.5);
@@ -246,13 +244,15 @@ $background_color_2: rgba(0,0,0,.5);
         font-size: 13px;
     }
     .schulinfo-head {
+        display: inline-block;
         padding: 8px 0;
         background-color: $background_color_1;
         position: relative;
     }
     .btn-group-sm {
+        display: block;
         font-size: 12px;
-        .btn-default {
+        .btn-outline-dark {
             margin: 4px;
             &:focus {
                 @include primary_action_focus;
@@ -269,18 +269,19 @@ $background_color_2: rgba(0,0,0,.5);
         top: 5px;
         font-size: 0;
     }
+    // NOTE: This class gets added to the button once it is selected
     .btn-select {
-        color: $color_1;
+        color: $white;
         background-color: $background_color_2;
     }
     table {
         border-top: 1px solid rgb(229,229,229);
     }
-    .glyphicon {
+    .bootstrap-icon {
         font-size: 28px;
-        padding: 0 2px;
+        margin: 0.35em 4px 0;
     }
-    .glyphicon-star {
+    .star-fill {
         color: $color_2;
     }
 }

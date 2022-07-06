@@ -1,4 +1,3 @@
-import addGeoJSON from "../../src/utils/addGeoJSON.js";
 import importLayers from "./addWMSRemotely.js";
 
 Radio.channel("addLayerRemotely").on({
@@ -11,15 +10,32 @@ Radio.channel("addLayerRemotely").on({
      * @param {String} styleId StyleId of the layer which needs to be the same as the one in the style array inside the geojson
      * @param {String} folderName Name of the folder in the layer tree
      * @param {Object} gfiAttributes Attributes to be shown in the GFI
+     * @param {Boolean} zoomTo Flag if the map should zoom to the extent of the layer
+     * @param {Number} clusterDistance distance in which features will be clustured if set
+     * @param {String} gfiTheme name of the gfiTheme
      * @returns {void}
      */
-    "addGeoJson": async function ({name, id, geoJSON, styleId, folderName, gfiAttributes}) {
+    "addGeoJson": async function ({name, id, geoJSON, styleId, folderName, gfiAttributes, zoomTo = true, clusterDistance = undefined, gfiTheme = "default"}) {
 
-        const treeType = Radio.request("Parser", "getTreeType");
-        let parentID = "";
+        const treeType = Radio.request("Parser", "getTreeType"),
+            map = mapCollection.getMap("2D"),
+            layer = map ? map.getLayers().getArray().find(l => {
+                return l.get("id") === id;
+            }) : undefined;
+        let parentID = "",
+            geojsonLayer = {};
 
-        if (geoJSON?.styles) {
-            Radio.trigger("StyleList", "addToStyleList", geoJSON.styles);
+        if (!layer) {
+            if (geoJSON?.styles) {
+                Radio.trigger("StyleList", "addToStyleList", geoJSON.styles);
+            }
+        }
+        else {
+            map?.removeLayer(layer);
+
+            Radio.trigger("ModelList", "removeModelsById", id);
+            Radio.trigger("ModelList", "removeLayerById", id);
+            Radio.trigger("Parser", "removeItem", id);
         }
 
         if (treeType === "custom" || treeType === "default") {
@@ -36,14 +52,19 @@ Radio.channel("addLayerRemotely").on({
             parentID = "tree";
         }
 
-        addGeoJSON(name, id, geoJSON, styleId, parentID, gfiAttributes);
+        geojsonLayer = returnGeoJSONLayerObject(name, id, geoJSON, styleId, parentID, gfiAttributes, clusterDistance, gfiTheme);
+
+        Radio.trigger("Parser", "addItem", geojsonLayer);
+        Radio.trigger("ModelList", "addModelsByAttributes", {id: id});
         Radio.trigger("ModelList", "renderTree");
 
         if (treeType === "light") {
             Radio.trigger("ModelList", "refreshLightTree");
         }
 
-        Radio.trigger("Map", "zoomToFilteredFeatures", getFeatureIds(id), id);
+        if (zoomTo) {
+            Radio.trigger("Map", "zoomToFilteredFeatures", getFeatureIds(id), id);
+        }
     },
     /**
      * Adds a WMS through the remote interface
@@ -79,9 +100,66 @@ function getFeatureIds (layerId) {
         featureArray.push(feature.getId());
     });
 
+    if (featureArray.length < 1 && layer.getSource()?.getSource()?.getFeatures().length) {
+        layer.getSource().getSource().getFeatures().forEach(f => {
+            featureArray.push(f.getId());
+        });
+    }
+
     return featureArray;
 }
 
-export {getFeatureIds};
+/**
+ * Returns a geojson layer object.
+ *
+ * @param {String} name The name of the layer (can be selected alphanumerically).
+ * @param {String} id The Id of the layer (can be selected alphanumerically, but should be unique).
+ * @param {(String | object)} geojson A valid GeoJSON. If no crs is defined in the JSON, EPSG:4326 is assumed.
+ * @param {String} styleId Id for the styling of the features; should correspond to a style from the style.json.
+ * @param {String} parentId Id for the correct position of the layer in the layertree.
+ * @param {String} [gfiAttributes] Attributes to be shown when clicking on the feature using the GFI tool.
+ * @param {Number} clusterDistance Distance in which point features are clustered. Undefined if no clusters are to be used.
+ * @param {String} gfiTheme name of the gfiTheme
+ * @returns {Object} Object of geojson layer
+*/
+function returnGeoJSONLayerObject (name, id, geojson, styleId, parentId, gfiAttributes = "showAll", clusterDistance = undefined, gfiTheme = "default") {
+    const layer = {
+        type: "layer",
+        name: name,
+        id: id,
+        typ: "GeoJSON",
+        geojson: geojson,
+        transparent: true,
+        minScale: "0",
+        maxScale: "500000",
+        gfiAttributes: gfiAttributes,
+        layerAttribution: "nicht vorhanden",
+        legendURL: "",
+        isBaseLayer: false,
+        isSelected: true,
+        isVisibleInTree: true,
+        cache: false,
+        datasets: [],
+        urlIsVisible: true,
+        gfiTheme: gfiTheme
+    };
+
+    if (styleId !== undefined) {
+        layer.styleId = styleId;
+    }
+    if (parentId !== undefined) {
+        layer.parentId = parentId;
+    }
+    if (clusterDistance !== undefined) {
+        layer.clusterDistance = clusterDistance;
+    }
+
+    return layer;
+}
+
+export {
+    getFeatureIds,
+    returnGeoJSONLayerObject
+};
 
 

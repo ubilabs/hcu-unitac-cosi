@@ -17,7 +17,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/StreetSmart", Object.keys(getters)),
-        ...mapGetters("Map", ["clickCoord"]),
+        ...mapGetters("Maps", ["clickCoordinate"]),
         ...mapGetters("MapMarker", ["markerPoint"])
     },
     watch: {
@@ -33,7 +33,7 @@ export default {
                 this.close();
             }
         },
-        clickCoord (newCoord, lastCoord) {
+        clickCoordinate (newCoord, lastCoord) {
             if (newCoord !== lastCoord) {
                 this.setPosition(newCoord);
             }
@@ -81,7 +81,7 @@ export default {
 <template lang="html">
     <ToolTemplate
         :title="$t(name)"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -124,5 +124,20 @@ export default {
 }
 #sidebarloader.loader-is-loading {
     display:block;
+}
+</style>
+
+<style lang="scss">
+.expandable-navbar {
+    display: flex;
+    align-items: start;
+    .navbar-nav {
+        flex-direction: row;
+        width: auto !important;
+    }
+    .navbar-right {
+        display: flex;
+        justify-content: end;
+    }
 }
 </style>

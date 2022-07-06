@@ -42,7 +42,7 @@ const actions = {
      */
     setPosition ({state, commit, dispatch, rootGetters}, evt) {
         if (state.active && evt) {
-            const projection = rootGetters["Map/ol2DMap"].getView().getProjection().getCode(),
+            const projection = rootGetters["Maps/getView"].getProjection().getCode(),
                 coordinates = [evt[0], evt[1]];
 
             try {
@@ -56,7 +56,7 @@ const actions = {
                         srs: projection,
                         panoramaViewer: {
                             replace: true,
-                            timeTravelVisible: false,
+                            timeTravelVisible: state.timeTravelVisible,
                             closable: false,
                             // Show green recording dots
                             recordingsVisible: true
@@ -65,6 +65,11 @@ const actions = {
                     then(result => {
                         if (result && result[0]) {
                             commit("setLastCoordinates", coordinates);
+
+                            const viewers = StreetSmartApi.getViewers();
+
+                            viewers[0].toggle3DCursor(state.toggle3DCursor);
+                            viewers[0].toggleAddressesVisible(state.toggleAddressesVisible);
                         }
                         else {
                             dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.noData"), {root: true});
@@ -94,7 +99,7 @@ const actions = {
      */
     initApi ({state, dispatch, getters, rootGetters}) {
         const service = rootGetters.getRestServiceById(state.serviceId),
-            projection = rootGetters["Map/ol2DMap"].getView().getProjection().getCode(),
+            projection = rootGetters["Maps/getView"].getProjection().getCode(),
             locale = getters.currentLocale;
 
         if (service) {
@@ -103,7 +108,7 @@ const actions = {
                 username: service.params.username,
                 password: service.params.password,
                 apiKey: service.params.apiKey,
-                srs: projection,
+                srs: service.params.srs ? service.params.srs : projection,
                 locale: locale ? locale : service.params.locale
             };
 
@@ -116,6 +121,9 @@ const actions = {
                     .then(
                         function () {
                             dispatch("onInitSuccess");
+                            if (state.cycloLayerID) {
+                                Radio.trigger("ModelList", "showModelInTree", state.cycloLayerID);
+                            }
                         }
                     ).catch(
                         function (reason) {
@@ -142,6 +150,9 @@ const actions = {
         StreetSmartApi.destroy({
             targetElement: document.getElementById("streetsmart")
         });
+        if (state.cycloLayerID) {
+            Radio.trigger("ModelList", "setModelAttributesById", state.cycloLayerID, {isSelected: false});
+        }
     },
     /**
      * Moves and rotates the mapMarker.
@@ -153,6 +164,8 @@ const actions = {
     async moveAndRotateMarker ({dispatch, getters}, evt) {
         await dispatch("MapMarker/placingPointMarker", evt.detail.recording.xyz, {root: true});
         dispatch("MapMarker/rotatePointMarker", evt.detail.recording.relativeYaw + getters.lastYaw, {root: true});
+
+        Radio.trigger("MapView", "setCenter", [evt.detail.recording.xyz[0], evt.detail.recording.xyz[1]]);
     },
     /**
      * Rotates the mapMarker and remembers the last yaw.
@@ -162,6 +175,12 @@ const actions = {
      * @returns {void}
      */
     rotateMarker ({commit, dispatch}, evt) {
+        const viewers = StreetSmartApi.getViewers(),
+            rt = viewers[0].getRecording();
+
+        dispatch("MapMarker/placingPointMarker", rt.xyz, {root: true});
+        commit("setLastCoordinates", rt.xyz);
+
         dispatch("MapMarker/rotatePointMarker", evt.detail.yaw, {root: true});
         commit("setLastYaw", evt.detail.yaw);
     },
@@ -214,7 +233,7 @@ const actions = {
         dispatch("addListener");
         commit("setMapMarkerStyleId", rootState.MapMarker.pointStyleId);
         commit("MapMarker/setPointStyleId", state.styleId, {root: true});
-        dispatch("setPosition", rootGetters["Map/ol2DMap"].getView().getCenter());
+        dispatch("setPosition", rootGetters["Maps/getView"].getCenter());
     }
 };
 

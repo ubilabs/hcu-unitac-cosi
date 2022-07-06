@@ -1,4 +1,3 @@
-import { Radio } from "backbone";
 import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../src/utils/uniqueId.js";
 
@@ -208,7 +207,6 @@ function addLayerToTree (layerName, layerId, features) {
 
     Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "importedData");
     Radio.trigger("ModelList", "closeAllExpandedFolder");
-    console.log(Radio.request("Modellist", "getModelByAttributes", {id: layerId}));
 }
 
 export default {
