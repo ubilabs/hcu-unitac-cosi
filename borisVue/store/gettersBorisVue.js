@@ -17,11 +17,24 @@ const getters = {
      * @return {String} returns the landuse of the selected feature
      */
     findLanduseByBrwId () {
-        const landuseList = state.selectedPolygon.get("nutzungsart"),
-            brwId = state.paramUrlParams.brwId,
-            foundLanduse = landuseList.find(landuse => landuse.richtwertnummer === brwId);
+        if (state.selectedPolygon !== undefined) {
+            const landuseList = state.selectedPolygon.get("nutzungsart"),
+                brwId = state.paramUrlParams.brwId,
+                // foundLanduse = landuseList.find(landuse => landuse.richtwertnummer === brwId);
+                // @inka: so?
+                foundLanduse = landuseList.find((landuse) => {
+                    if (landuse.richtwertnummer === brwId) {
+                        return landuse;
+                    }
+                    console.warn("The parameter \"brwId\" in the URL might be wrong.");
+                    return undefined;
+                });
 
-        return foundLanduse.nutzungsart;
+            if (foundLanduse !== undefined) {
+                return foundLanduse.nutzungsart;
+            }
+        }
+        return undefined;
     },
     /**
      * Sets the name of the active layer as date

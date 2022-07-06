@@ -54,6 +54,7 @@ const actions = {
             dispatch("Maps/setCenter", center, {root: true});
             dispatch("requestGFI", {undefined, processFromParametricUrl, center});
         }
+        // @inka: soll das rein?
         // console.warn("To be able to perform a BORIS query directly, the parameters \"brwId\",  \"brwLayerName\" and \"center\" must be set in the URL");
     },
     /**
@@ -176,11 +177,25 @@ const actions = {
      */
     selectLayerByName ({state, commit}, selectedLayerName) {
         const layerList = state.filteredLayerList.filter(layer => layer.get("isNeverVisibleInTree") === true),
-            selectedLayer = layerList.find(layer => layer.get("name") === selectedLayerName);
+            // selectedLayer = layerList.find(layer => layer.get("name") === selectedLayerName);
 
-        selectedLayer.set("isVisibleInMap", true);
-        selectedLayer.set("isSelected", true);
-        commit("setSelectedLayer", selectedLayer);
+            // @inka: ist es richtig hier auch die if schleife davor zu setzen? ansonsten typeError wenn in der urlParam ein falscher
+            // unvollständiger brwlayername eingegeben wird
+            // ist mir im Zusammenhang mit dem getter-test: findLanduseByBrwId aufgefallen
+            // das gleiche dann für toggle stripes layer und so weiter?
+            // also überall wo "layer.get(""attributename"")" verwendet wird, sollte überprüft werden, ob layer nicht undefined ist, richtig?
+            selectedLayer = layerList.find((layer) => {
+                if (layer.get("name") === selectedLayerName) {
+                    return layer;
+                }
+                return undefined;
+            });
+
+        if (selectedLayer !== undefined) {
+            selectedLayer.set("isVisibleInMap", true);
+            selectedLayer.set("isSelected", true);
+            commit("setSelectedLayer", selectedLayer);
+        }
     },
     /**
      * Sends a get feature info request to the currently selected layer
@@ -199,7 +214,7 @@ const actions = {
                 map = processFromParametricUrl ? mapCollection.getMap("2D") : event.map,
                 mapView = map.getView(),
                 url = layerSource.getFeatureInfoUrl(coordinates, mapView.getResolution(), mapView.getProjection());
-                
+
             axios.get(url)
                 .then((response) => {
                     dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: coordinates});
@@ -326,7 +341,6 @@ const actions = {
      * @return {void}
      */
     postFeatureRequestByBrwNumber ({dispatch}, {brwNumber, featureYear}) {
-        
         const typeName = parseInt(featureYear, 10) > 2008 ? "lgv_brw_zoniert_alle" : "lgv_brw_lagetypisch_alle",
             index = Config.layerConf.lastIndexOf("/"),
             url = Config.layerConf.substring(0, index),
@@ -400,7 +414,7 @@ const actions = {
      */
     getDateByActiveLayerName ({state}) {
         let date = "";
-        const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true);
+        const selectedLayer = state.filteredLayerList.find(layer => layer?.get("isSelected") === true);
 
         if (selectedLayer) {
             date = selectedLayer.get("name");
@@ -437,7 +451,6 @@ const actions = {
 
         commit("setSelectedBrwFeature", feature);
         dispatch("sendWpsConvertRequest", state);
-        // helpers.sendWpsConvertRequest({state});
 
         return feature;
     },

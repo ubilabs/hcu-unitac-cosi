@@ -410,10 +410,6 @@ describe("ADDONS: addons/borisVue/store/actionsBorisVue.js", () => {
 
             actions.getFeatureRequestById({dispatch}, {featureId, featureYear});
             expect(axiosStub.calledWith(url + "/HH_WFS_Bodenrichtwerte?service=WFS&version=1.1.0&request=GetFeature&" + urlParams)).to.be.true;
-            // expect(dispatch.calledOnce).to.be.true;
-            // @Inka: const feature = new WFS().readFeature(response.data); --> feature wird im Test nicht geloggt, im browser schon
-            // @Vilma: weil du das axios.get gemockt hast (sinon.stub), dann wird der originalCode nicht durchlaufen, sondern es wird einfach das zurückgegeben, was der axiosStub zurückliefert
-            // das kann man nicht testen
         });
     });
     describe("matchPolygonFeatureWithLanduse", () => {
@@ -499,17 +495,11 @@ describe("ADDONS: addons/borisVue/store/actionsBorisVue.js", () => {
 
             actions.postFeatureRequestByBrwNumber({dispatch}, {brwNumber, featureYear});
             expect(axiosStub.calledWith("post", "https://geodienste.hamburg.de/HH_WFS_Bodenrichtwerte", wfsString, {"Content-Type": "text/xml"}));
-            // @inka: warum funktioniert folgendes nicht?
-            // expect(dispatch.calledOnce).to.be.true;
-            // expect(dispatch.firstCall.args[0]).to.equal("handleGetFeatureResponse")
-            // @Vilma: weil du das axios.get gemockt hast (sinon.stub), dann wird der originalCode nicht durchlaufen, sondern es wird einfach das zurückgegeben, was der axiosStub zurückliefert
-            // das kann man nicht testen
         });
     });
     describe("handleGetFeatureResponse", () => {
         it("handles feature response", async () => {
-            // @inka: wieso funktioniert es nicht?
-            // @vilma: addProjection fehlte im before des Tests
+
             const status = 200,
                 response = rawSources.featureRequestResponse,
                 year = 2022;
