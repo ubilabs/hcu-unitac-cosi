@@ -21,7 +21,7 @@ const state = {
     deactivateGFI: false,
     // DIPAS properties
     pollingInterval: 120000,
-    baseUrl: "https://beteiligung.hamburg/dipas/drupal/dipas-pds/projects",
+    baseUrl: "https://beteiligung.hamburg/drupal/dipas-pds/projects",
     readmeUrl: {
         "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dipas.en.md",
         "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dipas.de.md"

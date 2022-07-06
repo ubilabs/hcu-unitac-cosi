@@ -4,7 +4,7 @@ import CosiFileImportComponent from "../../../components/CosiFileImport.vue";
 import CosiFileImport from "../../../store/indexCosiFileImport";
 import {expect} from "chai";
 import sinon from "sinon";
-import * as crs from "masterportalapi/src/crs";
+import * as crs from "@masterportal/masterportalapi/src/crs";
 import Vuetify from "vuetify";
 import Vue from "vue";
 
