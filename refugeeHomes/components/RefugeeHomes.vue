@@ -16,35 +16,44 @@ export default {
     data () {
         return {
             hoverActive: true,
-            existingLocationActive: true
+            existingLocationActive: true,
+            allFeatures: true
         };
     },
     computed: {
         ...mapGetters("Tools/RefugeeHomes", Object.keys(getters)),
         ...mapGetters("Maps", ["clickCoordinate"]),
-        ...mapGetters("MapMarker", ["markerPoint"])
+        ...mapGetters("MapMarker", ["markerPoint"]),
+        selectedFeatures: function () {
+            let showFeatures;
+            if (this.allFeatures === true){
+                console.log(this.features);
+                showFeatures=this.features
+            }else{
+                showFeatures=this.filteredFeatures[0]
+            }
+            if (this.existingLocationActive === true) {
+                return showFeatures?.filter(function (el) {
+                    return el.featureType.indexOf("geplant") === -1;
+                });
+            }
+            return showFeatures?.filter(function (el) {
+                return el.featureType.indexOf("geplant") !== -1;
+            });
+        }
     },
     watch: {
         active (value) {
             if (value) {
-                this.$nextTick(() => {
+            /*   this.$nextTick(() => {
 
-                });
+                }); */
             }
             else {
                 this.close();
             }
-        },
-        clickCoordinate (newCoord, lastCoord) {
-            if (newCoord !== lastCoord) {
-                this.setPosition(newCoord);
-            }
-        },
-        setTableMode (mode) {
-            if (this.existingLocationActive !== mode) {
-                this.existingLocationActive = mode;
-            }
-        },
+        }
+        /* ,
         "markerPoint.values_.visible": function (visible) {
             if (this.active && visible) {
                 const features = this.markerPoint.getSource().getFeatures();
@@ -53,7 +62,7 @@ export default {
                     this.setPosition(features[0].getGeometry().getCoordinates());
                 }
             }
-        }
+        } */
     },
     /**
      * Created hook: Creates event listener for legacy Radio calls (to be removed sometimes).
@@ -66,13 +75,16 @@ export default {
             "showAllFeatures": () => {
                 this.$store.commit("Tools/RefugeeHomes/setFeatures", []);
                 this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
+                this.allFeatures = true;
                 this.setActive(true);
             },
             "showFeaturesByBezirk": district => {
+                this.allFeatures = false;
                 this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
                 this.filterFeaturesByBezirk(district);
                 this.setActive(true);
-                console.log(this.filteredFeatures);
+                this.$store.commit("ZoomTo/setZoomToGeometry", district, {root: true});
+                this.$store.dispatch("ZoomTo/zoomToFeatures", {}, {root: true});
             }
 
         });
@@ -81,42 +93,41 @@ export default {
     methods: {
         ...mapMutations("Tools/RefugeeHomes", Object.keys(mutations)),
         ...mapMutations("addFeature"),
-        ...mapActions("Tools/RefugeeHomes", [""]),
         isWebLink,
 
         /**
          * Ermittelt die Geometrie und zoomt auf Koordinate
          */
-        zoomStandort: function (id) {
+        /* zoomStandort: function (id) {
             var feature = _.findWhere(this.get("features"), {"id": id}),
                 geom = feature.geom;
 
             Radio.trigger("MapView", "setCenter", geom, 4);
-        },
+        }, */
 
         /**
          * Ermittelt die Geometrie und setzt den MapMarker
          */
-        selectStandort: function (id) {
+        /* selectStandort: function (id) {
             var feature = _.findWhere(this.get("features"), {"id": id}),
                 geom = feature.geom;
 
             Radio.trigger("MapMarker", "showMarker", geom);
-        },
+        }, */
 
         /**
           * Entfernt den MapMarker
           */
-        deselectStandort: function () {
+       /*  deselectStandort: function () {
             Radio.trigger("MapMarker", "hideMarker");
-        },
+        }, */
 
         /**
          * Iteriert über die LayerIds und holt sich die entsprechenden Models aus der RawLayerList
          */
         requestRawLayerList: function () {
             this.layerIds.forEach((layerId) => {
-                console.log(layerId);
+                //console.log(layerId);
                 const rawLayer = getLayerWhere({id: layerId}),
                     getFeatureUrl = this.buildAndGetRequestUrl(rawLayer);
 
@@ -136,7 +147,6 @@ export default {
                 type: "GET",
                 timeout: 6000
             }).then((response) => {
-                console.log(response);
                 this.parseFeatures(response.data);
             }).catch(
                 this.$store.dispatch("Alerting/addSingleAlert", url + i18next.t("common:modules.highlightFeaturesByAttribute.messages.requestFailed"), {root: true})
@@ -180,11 +190,9 @@ export default {
 
                     if (typeof element !== "undefined") {
                         if (attr === "pfad") {
-                            console.log('pfaaad');
                             const pfadArray = element.innerHTML.split("|");
 
-
-                            feature[attr] = pfadArray[0];
+                            feature[attr] = pfadArray;
                         }
                         else if (attr === "geom") {
                             coordEle = hit.getElementsByTagName("gml:pos")[0];
@@ -254,25 +262,23 @@ export default {
         },
 
         /**
-         * Sortiert alle Features nach Stadtteil + Straße
-         * Triggert das Event "render"
-         * @return {[type]} [description]
+         * sorts all features according district and street name
+         * @returns {void}
          */
         sortAllFeatures: function () {
-            const features = this.sortFeatures(this.get("features"), this.getRanking());
+            const features = this.sortFeatures(this.features, this.ranking);
 
-            this.setFilteredFeatures(features);
+            this.$store.commit("Tools/RefugeeHomes/addFeature", features);
             /*   this.trigger("render");
             Radio.trigger("ZoomToGeometry", "setIsRender", false);
             Radio.trigger("MapView", "resetView"); */
         },
-
         /**
          * sets/unsets the marker
          * @param {Number[]} coords the coordinates to place the marker at
          * @returns {void}
          */
-        toggleMarker (coords, event) {
+        toggleMarker (coords) {
             if (this.hoverActive) {
                 if (!Array.isArray(coords) || this.lastMarker === coords) {
                     this.lastMarker = null;
@@ -284,38 +290,38 @@ export default {
                 }
             }
         },
-         /**
-         * sets/unsets the marker
-         * @param {Number[]} coords the coordinates to place the marker at
-         * @returns {void}
-         */
-        clickMarker () {
-            console.log('ffffffffffffff');
-             this.hoverActive = false;
+        /**
+        * Control the hover visibility of the map marker
+        * @param {Boolean} mode to control the hover visibility of the map marker
+        * @returns {void}
+        */
+        markerControl (mode, coords) {
+            this.hoverActive = mode;
+            if (!mode) {
+                this.$store.dispatch("Maps/setCenter", coords);
+                this.$store.dispatch("Maps/setZoomLevel", 4);
+            }
 
         },
         /**
-         * sets/unsets the marker
-         * @param {Number[]} coords the coordinates to place the marker at
+         * Closing behaviour of the tool
          * @returns {void}
          */
-        toggleOut () {
-            this.hoverActive = true;
-
-        },
-
         close () {
-            const model = getComponent("refugeehomes");
-
             this.setActive(false);
+            this.$store.dispatch("Maps/resetView");
             this.$store.dispatch("MapMarker/removePointMarker");
+            this.$store.commit("ZoomTo/setZoomToGeometry", "", {root: true});
+            this.$store.dispatch("ZoomTo/zoomToFeatures", {}, {root: true});
+
+            const model = getComponent(this.$store.state.Tools.RefugeeHomes);
+
             if (model) {
                 model.set("isActive", false);
             }
         }
     }
 };
-
 </script>
 
 
@@ -345,10 +351,12 @@ export default {
                 >
                     <li
                         class="nav-item"
-                        @click="setTableMode(true)
+                        @click="existingLocationActive=true"
+                        @keydown="existingLocationActive=true"
                     >
                         <a
-                            class="nav-link active"
+                            class="nav-link"
+                            :class="{ active: existingLocationActive}"
                             href="#bestehendeStandorte"
                         >
                             Bestehende Standorte
@@ -356,10 +364,12 @@ export default {
                     </li>
                     <li
                         class="nav-item"
-                        @click="setTableMode(false)"
+                        @click="existingLocationActive=false"
+                        @keydown="existingLocationActive=false"
                     >
                         <a
                             class="nav-link"
+                            :class="{ active: !existingLocationActive}"
                             href="#geplanteStandorte"
                         >
                             Geplante Standorte
@@ -369,10 +379,7 @@ export default {
                 <div
                     class="tab-content"
                 >
-                    <div
-                        <!-- id="bestehendeStandorte" -->
-                        class="tab-pane fade in active"
-                    >
+                    <div>
                         <table
                             class="table table-striped"
                         >
@@ -383,19 +390,26 @@ export default {
                                     <th>Bezeichnung</th>
                                     <th>Pl&auml;tze</th>
                                     <th>Bemerkungen</th>
-                                    <th>Plan</th>
+                                    <th
+
+                                        v-if="existingLocationActive === false"
+                                    >
+                                        Plan
+                                    </th>
                                     <th>Anlagen</th>
                                 </tr>
                             </thead>
                             <tbody
-                            v-for="(feature, idx) in filteredFeatures[0]"
-                                    id="feature.id"
-                                    :key="idx"
+                                v-for="(feature, idx) in selectedFeatures"
+                                id="feature.id"
+                                :key="idx"
                             >
                                 <tr
-                                    @click="clickMarker()"
+                                    @click="markerControl(false,feature.geom)"
                                     @mouseover="toggleMarker(feature.geom)"
-                                    @mouseleave="toggleOut()"
+                                    @focusin="toggleMarker(feature.geom)"
+                                    @mouseleave="markerControl(true)"
+                                    @focusout="toggleMarker(feature.geom)"
                                 >
                                     <td>
                                         <img
@@ -407,18 +421,32 @@ export default {
                                     <td>{{ feature.bezeichnung }}</td>
                                     <td>{{ feature.platzzahl }}</td>
                                     <td>{{ feature.bemerkung }}</td>
-                                    <td>
-                                           <a
-                                            v-if="isWebLink(feature.pfad)"
-                                            :href="feature.pfad"
-                                            target="_blank"
-                                            class="float-end"
-                                            >
-                                                Anlage<!-- {{ translate("additional:modules.tools.CommuterFlows.linkMoreInfo") }} -->
-                                            </a>
+                                    <td
+                                        v-if="existingLocationActive === false"
+                                    >
+                                        {{ feature.geplante_inbetriebnahme }}
                                     </td>
-                                       <!--  <a :href="{{ feature.pfad }}">Anlage</a></td> -->
-                                   <!--  <td
+                                    <td
+                                        v-if="isWebLink(feature.pfad)"
+                                    >
+                                        <div
+                                            v-for="(doc, id) in feature.pfad"
+                                            :key="id"
+                                        >
+                                            <a
+                                                :href="feature.pfad[id]"
+                                                target="_blank"
+                                                class="float-end"
+                                            >
+                                                Anlage {{ id + 1 }}<!-- {{ translate("additional:modules.tools.CommuterFlows.linkMoreInfo") }} -->
+                                            </a>
+                                            <br
+                                                v-if="id > 0"
+                                            >
+                                        </div>
+                                    </td>
+                                    <!--  <a :href="{{ feature.pfad }}">Anlage</a></td> -->
+                                    <!--  <td
                                         v-for="(anlage, index) in filteredFeatures[0]"
                                         :key="index"
                                     >
@@ -436,9 +464,9 @@ export default {
                             </tbody>
                         </table>
                     </div>
-</div>
-                  </div>
-                 <!--     <div
+                </div>
+            </div>
+            <!--     <div
                         id="geplanteStandorte"
                         class="tab-pane fade"
                     >
@@ -502,6 +530,7 @@ export default {
      @import "~variables";
 tbody tr:hover {
   background-color: $light_grey;
+  cursor: pointer;
 }
 
 #RefugeesTable {

@@ -17,10 +17,13 @@ const mutations = {
      * @returns {void}
      */
     addFeature: (state, feature) => {
-        if (feature) {
+        if (feature && feature !== []) {
             state.features.push(feature);
-            state.filteredFeatures.push(feature);
         }
+        if (feature === []) {
+            state.features = [];
+        }
+
     },
     /**
      * Add parsed and sorted features from WFS to the feature array.
@@ -29,8 +32,11 @@ const mutations = {
      * @returns {void}
      */
     addFilteredFeature: (state, feature) => {
-        if (feature) {
+        if (feature && feature !== []) {
             state.filteredFeatures.push(feature);
+        }
+        if (feature === []) {
+            state.filteredFeatures = [];
         }
     }
 
