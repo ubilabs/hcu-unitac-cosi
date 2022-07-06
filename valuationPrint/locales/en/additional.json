@@ -1,0 +1,18 @@
+{
+  "modules": {
+      "tools": {
+          "valuationPrint": {
+              "title": "Valuation",
+              "removeButton": "Remove",
+              "startButton": "Start",
+              "parcel": "Parcel:",
+              "district": "District:",
+              "messageListTitle": "Process:",
+              "pdfInTheMaking": "PDF is in progress.",
+              "pleaseWait": "Please wait ...",
+              "pdfError": "PDF failed ...",
+              "pdfSuccess": "PDF is ready."
+          }
+        }
+    }
+}
