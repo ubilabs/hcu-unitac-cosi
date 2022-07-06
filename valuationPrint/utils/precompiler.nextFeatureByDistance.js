@@ -1,6 +1,5 @@
 import {getCenter as getCenterOfExtent} from "ol/extent";
 import LineString from "ol/geom/LineString";
-import {getLength} from "ol/sphere";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 
 
@@ -47,7 +46,7 @@ export default function nextFeatureByDistance (coordinate, features, knowledgeBa
         const extent = feature.getGeometry().getExtent(),
             featureCenter = getCenterOfExtent(extent),
             line = new LineString([featureCenter, coordinate]),
-            distance = getLength(line);
+            distance = line.getLength();
 
         if (closestDistance === false || distance < closestDistance) {
             closestFeature = feature;
