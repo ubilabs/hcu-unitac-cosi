@@ -27,7 +27,8 @@ export default {
         return {
             selectedFeatures: [],
             parcelData: null,
-            messageList: []
+            messageList: [],
+            urlList: []
         };
     },
     computed: {
@@ -76,7 +77,7 @@ export default {
                 },
                 url => {
                     this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfSuccess"));
-                    this.addUrl(url);
+                    this.addUrl(url, this.$t("additional:modules.tools.valuationPrint.report"));
                     // startImageProcess();
                 });
             }, errorMsg => {
@@ -269,6 +270,7 @@ export default {
                 extent = feature.getGeometry().getExtent();
 
             this.messageList = [];
+            this.urlList = [];
             this.parcelData = {
                 centerCoordinate: getCenterOfExtent(extent),
                 geometry: feature.getGeometry(),
@@ -313,11 +315,15 @@ export default {
 
         /**
          * Adds another url to the url list for downloding pdf and images.
-         * @param {String} url the url to display
+         * @param {String} url - The url.
+         * @param {String} name - The name to display.
          * @returns {void}
          */
-        addUrl (url) {
-            console.warn(url);
+        addUrl (url, name) {
+            this.urlList.push({
+                link: url,
+                name: name ? name : url
+            });
         }
     }
 };
@@ -337,79 +343,128 @@ export default {
         >
             <div class="valuation-print">
                 <div
-                    v-for="feature in selectedFeatures"
-                    :key="feature.get('flstnrzae')"
+                    v-if="selectedFeatures.length > 0"
+                    class="card"
                 >
-                    <ul class="list-inline">
-                        <li class="list-inline-item">
-                            {{ $t('additional:modules.tools.valuationPrint.parcel') }}
-                        </li>
-                        <li class="list-inline-item">
-                            {{ feature.get("flstnrzae") }}
-                        </li>
-                        <li class="list-inline-item">
-                            {{ $t('additional:modules.tools.valuationPrint.district') }}
-                        </li>
-                        <li class="list-inline-item">
-                            {{ feature.get("gemarkung") }}
-                        </li>
-                    </ul>
-                    <div class="mt-2">
-                        <button
-                            type="button"
-                            class="btn btn-primary btn-sm"
-                            @click="setParcelData([feature])"
-                        >
-                            {{ $t('additional:modules.tools.valuationPrint.startButton') }}
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-primary btn-sm"
-                            @click="removeFeature(feature)"
-                        >
-                            {{ $t('additional:modules.tools.valuationPrint.removeButton') }}
-                        </button>
+                    <div class="card-header">
+                        {{ $t('additional:modules.tools.valuationPrint.parcelListTitle') }}
                     </div>
-                    <hr>
-                </div>
-                <template v-if="selectedFeatures.length > 1">
-                    <button
-                        type="button"
-                        class="btn btn-primary btn-sm"
-                        @click="setParcelData(select.getFeatures().getArray())"
-                    >
-                        {{ $t('additional:modules.tools.valuationPrint.startButton') }}
-                    </button>
-                    <hr>
-                </template>
-                <template v-if="selectedFeatures.length > 0">
-                    <div>
-                        <div class="messageListTitle">
-                            {{ $t('additional:modules.tools.valuationPrint.messageListTitle') }}
+                    <div class="card-body">
+                        <div class="card-text">
+                            <div
+                                v-for="feature in selectedFeatures"
+                                :key="feature.get('flstnrzae')"
+                            >
+                                <ul class="list-inline">
+                                    <li class="list-inline-item">
+                                        {{ $t('additional:modules.tools.valuationPrint.parcel') }}
+                                    </li>
+                                    <li class="list-inline-item">
+                                        {{ feature.get("flstnrzae") }}
+                                    </li>
+                                    <li class="list-inline-item">
+                                        {{ $t('additional:modules.tools.valuationPrint.district') }}
+                                    </li>
+                                    <li class="list-inline-item">
+                                        {{ feature.get("gemarkung") }}
+                                    </li>
+                                </ul>
+                                <div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-sm"
+                                        @click="setParcelData([feature])"
+                                    >
+                                        {{ $t('additional:modules.tools.valuationPrint.startButton') }}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-sm"
+                                        @click="removeFeature(feature)"
+                                    >
+                                        {{ $t('additional:modules.tools.valuationPrint.removeButton') }}
+                                    </button>
+                                </div>
+                                <hr v-if="selectedFeatures.length > 1">
+                            </div>
+                            <template v-if="selectedFeatures.length > 1">
+                                <button
+                                    type="button"
+                                    class="btn btn-primary btn-sm"
+                                    @click="setParcelData(select.getFeatures().getArray())"
+                                >
+                                    {{ $t('additional:modules.tools.valuationPrint.startButton') }}
+                                </button>
+                            </template>
                         </div>
-                        <div class="messageList">
+                    </div>
+                </div>
+                <div
+                    v-if="messageList.length > 0"
+                    class="card mt-3"
+                >
+                    <div class="card-header">
+                        {{ $t('additional:modules.tools.valuationPrint.messageListTitle') }}
+                    </div>
+                    <div class="card-body">
+                        <div class="card-text">
                             <div
                                 v-for="(messageObj, idx) in messageList"
                                 :key="idx + '_' + messageObj.message"
-                                :class="messageObj.isError ? 'messageListError' : ''"
+                                :class="messageObj.isError ? 'messageListError' : 'messageListEntry'"
                             >
                                 {{ messageObj.message }}
                             </div>
                         </div>
                     </div>
-                </template>
+                </div>
+                <div
+                    v-if="urlList.length > 0"
+                    class="card mt-3"
+                >
+                    <div class="card-header">
+                        {{ $t('additional:modules.tools.valuationPrint.urlListTitle') }}
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <ul class="list-unstyled">
+                                <li
+                                    v-for="(url, idx) in urlList"
+                                    :key="idx + '_' + url.name"
+                                    class="urlListEntry"
+                                >
+                                    <a :href="url.link">{{ url.name }}</a>
+                                </li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
             </div>
         </template>
     </ToolTemplate>
 </template>
 
 <style lang="scss" scoped>
-    .messageList {
-        height: 300px;
-        overflow-y: auto;
-        border: 1px solid LightGray;
+    button {
+        font-size: 1em;
     }
-    .messageList .messageListError {
+
+    h6 {
+        margin-bottom: 1rem;
+    }
+
+    .messageListError {
         color: Red;
     }
+
+    .card-body {
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 0.8em 0.8rem;
+    }
+
+    .list-inline, .list-unstyled {
+        margin-bottom: 0;
+    }
+
 </style>

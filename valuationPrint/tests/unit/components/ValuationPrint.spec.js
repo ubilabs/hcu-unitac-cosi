@@ -177,6 +177,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
             expect(wrapper.find(".messageListError").exists()).to.be.false;
         });
+
         it("should add an error class to the list entry if an error is added", async () => {
             const wrapper = factory.getShallowMount({}, true);
 
@@ -186,13 +187,27 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
             expect(wrapper.find(".messageListError").exists()).to.be.true;
         });
-        it("should not show any message if no feature is selected", async () => {
+
+        it("should not show any message if no message is added", async () => {
             const wrapper = factory.getShallowMount({}, true);
 
-            wrapper.vm.addMessage("message", true);
+            expect(wrapper.find(".messageListError").exists()).to.be.false;
+            expect(wrapper.find(".messageListEntry").exists()).to.be.false;
+        });
+
+        it("should add an url to the list entry if an url is added", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.addUrl({url: "url", name: "name"});
             await wrapper.vm.$forceUpdate();
 
-            expect(wrapper.find(".messageListError").exists()).to.be.false;
+            expect(wrapper.find(".urlListEntry").exists()).to.be.true;
+        });
+
+        it("should not show any url if no url is added", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            expect(wrapper.find(".urlListEntry").exists()).to.be.false;
         });
     });
 
