@@ -1,0 +1,17 @@
+{
+    "menu": {
+        "tools":{
+            "obliqueViewer": "Schrägluftbilder"
+        }
+    },
+    "modules": {
+        "tools": {
+            "obliqueViewer": {
+                "title": "Schrägluftbilder",
+                "noData": "Für diese Position sind keine Panoramadaten verfügbar. Die Markierung wird auf die letzte Position zurückgesetzt.",
+                "createViewFailed": "Die Erstellung der Panorama-Ansicht ist fehlgeschlagen.",
+                "createViewFailedMoreInfo": "Die Panorama-Ansicht kann nicht angezeigt werden. Details dazu finden Sie in  der Entwickler-Konsole."
+            }
+        }
+    }
+}
