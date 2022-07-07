@@ -1,61 +1,26 @@
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import Feature from "ol/Feature";
-import {Point, Polygon} from "ol/geom";
 import {Circle as CircleStyle, Fill, Stroke, Style} from "ol/style";
 
 /**
- * Gets the layer from point feature
- * @param {Object} style the style for feature
- * @param {Number[]} coordinates The geo coordination
- * @param {String} type The feature type point or polygon
- * @returns {ol/layer/Layer} The created layer with feature and style
+ * Creates a vector layer and adds the given feature.
+ * @param {Object} styleConfig - The style config for the layer.
+ * @param {ol/Feature} feature - The feature.
+ * @param {String} type - The type of the feature geometry.
+ * @returns {ol/layer/Vector} The created vector layer with feature and style.
  */
-function getFeatureLayer (style, coordinates, type) {
-    let featureLayer = {},
-        layerName = "";
-
-    if (Array.isArray(coordinates) && coordinates.length) {
-        coordinates.forEach(coordinate => {
-            layerName += coordinate + "_";
-        });
-
-        featureLayer = new VectorLayer({
-            id: layerName,
-            name: layerName,
-            source: new VectorSource()
-        });
-
-        if (type === "point") {
-            setPointFeatureToLayer(featureLayer, coordinates);
-            featureLayer.setStyle(getPointStyle(style));
-        }
-        else {
-            setPolygonFeatureToLayer(featureLayer, coordinates);
-            featureLayer.setStyle(getPolygonStyle(style));
-        }
-    }
-
-    return featureLayer;
-}
-
-/**
- * Setting the layer feature
- * @param {ol/Layer} layer the created layer
- * @param {Number[]} coordinates The geo coordination
- * @returns {void}
- */
-function setPointFeatureToLayer (layer, coordinates) {
-    const feature = new Feature({
-        geometry: new Point(coordinates)
+function getFeatureLayer (styleConfig, feature, type) {
+    return new VectorLayer({
+        style: type === "point" ? getPointStyle(styleConfig) : getPolygonStyle(styleConfig),
+        source: new VectorSource({
+            features: [feature]
+        })
     });
-
-    layer.getSource().addFeature(feature);
 }
 
 /**
- * Setting the layer style
- * @param {Object} styleConfig the style for point feature
+ * Gets a style for a point feature.
+ * @param {Object} styleConfig - The config for the style.
  * @returns {ol/Style} The feature style.
  */
 function getPointStyle (styleConfig) {
@@ -76,24 +41,9 @@ function getPointStyle (styleConfig) {
     });
 }
 
-
 /**
- * Setting the layer feature
- * @param {ol/Layer} layer the created layer
- * @param {Number[]} coordinates The geo coordination
- * @returns {void}
- */
-function setPolygonFeatureToLayer (layer, coordinates) {
-    const feature = new Feature({
-        geometry: new Polygon(coordinates)
-    });
-
-    layer.getSource().addFeature(feature);
-}
-
-/**
- * Setting the layer style
- * @param {Object} styleConfig the style for point feature
+ * Gets a style for a multipolygon feature.
+ * @param {Object} styleConfig - The config for the style.
  * @returns {ol/Style} The feature style.
  */
 function getPolygonStyle (styleConfig) {

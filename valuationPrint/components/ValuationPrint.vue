@@ -17,6 +17,7 @@ import axios from "axios";
 import isObject from "../../../src/utils/isObject";
 import {getFixedMap} from "../utils/translator.getFixedMap.js";
 import {getProportionMap} from "../utils/translator.getProportionMap.js";
+import {MultiPolygon} from "ol/geom";
 
 export default {
     name: "ValuationPrint",
@@ -33,6 +34,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/ValuationPrint", Object.keys(getters)),
+        ...mapGetters("Maps", ["projection"]),
         ...mapGetters(["getRestServiceById"])
     },
     watch: {
@@ -47,9 +49,14 @@ export default {
 
         /**
          * Starts process for the valuation.
+         * @param {Object} parcel - The parcel data.
+         * @param {Number[]} parcel.center - The parcel center.
+         * @param {ol/extent} parcel.extent - The extent of the parcel.
+         * @param {ol/Feature} parcel.feature - The ol feature of the parcel.
+         * @param {ol/geom/Polygon} parcel.geometry - The geometry of the parcel.
          * @returns {void}
          */
-        parcelData () {
+        parcelData (parcel) {
             if (!isObject(this.config?.services)) {
                 console.error("No config found for services");
                 return;
@@ -58,10 +65,10 @@ export default {
                 console.error("No config found for transformer");
                 return;
             }
-            createKnowledgeBase(this.parcelData, this.config.services, message => {
+            createKnowledgeBase(parcel, this.config.services, this.projection.getCode(), message => {
                 this.addMessage(message, false);
             }, knowledgeBase => {
-                const mapfishDialog = createMapfishDialog(knowledgeBase, this.config.transformer, this.defaultValue);
+                const mapfishDialog = createMapfishDialog(knowledgeBase, this.config.transformer, this.defaultValue, this.projection.getCode());
 
                 console.warn("mapfishDialog", mapfishDialog);
                 startPrintProcess(this.printUrl, this.printConfigPdf, this.mapfishDialogExample, (url, payload) => {
@@ -84,7 +91,7 @@ export default {
                 this.addMessage(errorMsg, true);
             }, error => {
                 console.error(error);
-            });
+            }, {parcel});
         }
     },
     created () {
@@ -111,7 +118,7 @@ export default {
             }
         });
 
-        this.fixedMap = getFixedMap([562111.627031682, 5938489.74765114], "EPSG:25832", 200, {
+        this.fixedMap = getFixedMap([562111.627031682, 5938489.74765114], "EPSG:25832", {
             "pointSize": 4,
             "color": [
                 228,
@@ -121,37 +128,42 @@ export default {
             ]
         }, [545114.80, 5914269.80, 591483.01, 5957132.28], [
             "2426"
-        ]);
+        ]
+        );
 
-        this.proportionMap = getProportionMap([
-            [
+        const f = new Feature({
+            geometry: new MultiPolygon([[
                 [
-                    562877.0009836305,
-                    5940982.299269523
-                ],
-                [
-                    562839.9593369664,
-                    5941178.090830462
-                ],
-                [
-                    562765.8760436381,
-                    5941141.049183797
-                ],
-                [
-                    562797.626026493,
-                    5940982.299269523
-                ],
-                [
-                    562877.0009836305,
-                    5940982.299269523
+                    [
+                        562877.0009836305,
+                        5940982.299269523
+                    ],
+                    [
+                        562839.9593369664,
+                        5941178.090830462
+                    ],
+                    [
+                        562765.8760436381,
+                        5941141.049183797
+                    ],
+                    [
+                        562797.626026493,
+                        5940982.299269523
+                    ],
+                    [
+                        562877.0009836305,
+                        5940982.299269523
+                    ]
                 ]
-            ]
-        ], [
+            ]])
+        });
+
+        this.proportionMap = getProportionMap(f, [
             562765.8760436381,
             5940982.299269523,
             562877.0009836305,
             5941178.090830462
-        ], "EPSG:25832", 200, {
+        ], "EPSG:25832", {
             "borderSize": 3,
             "color": [
                 228,
@@ -272,9 +284,10 @@ export default {
             this.messageList = [];
             this.urlList = [];
             this.parcelData = {
-                centerCoordinate: getCenterOfExtent(extent),
-                geometry: feature.getGeometry(),
-                extent
+                center: getCenterOfExtent(extent),
+                extent,
+                feature,
+                geometry: feature.getGeometry()
             };
         },
 

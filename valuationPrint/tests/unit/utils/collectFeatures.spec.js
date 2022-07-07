@@ -81,7 +81,7 @@ describe("addons/valuationPrint/utils/collectFeatures.js", () => {
         it("should call onsuccess if a coorindate is given", () => {
             const onsuccess = sinon.spy();
 
-            collectFeatures({}, {coordinate: [574729.649, 5927590.856]}, undefined, onsuccess);
+            collectFeatures({}, {coordinate: [574729.649, 5927590.856]}, "EPSG:25832", undefined, onsuccess);
 
             expect(onsuccess.calledOnce).to.be.true;
         });

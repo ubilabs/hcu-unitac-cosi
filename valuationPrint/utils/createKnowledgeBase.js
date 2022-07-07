@@ -7,10 +7,12 @@ import {nextGroupedFeaturesByDistance} from "./precompiler.nextGroupedFeaturesBy
 /**
  * Creates the knowledge base by the services config.
  * @param {Object} parcelData - The parcel.
- * @param {Number[]} parcelData.centerCoordinate - The center of the parcel extent.
+ * @param {Number[]} parcelData.center - The center of the parcel extent.
  * @param {ol/extent} parcelData.extent - The extent of the parcel.
+ * @param {ol/Feature} parcel.feature - The ol feature of the parcel.
  * @param {ol/geom/Polygon} parcelData.geometry - The geometry of the parcel.
  * @param {Object} services - The services config for the valuation.
+ * @param {String} mapProjection - The EPSG-Code of the current map projection.
  * @param {Function} onstart - A function that is called when the knowledge base creation starts.
  * @param {Function} onfinish - A function that is called when the knowledge base is created.
  * @param {Function} onUserError - Error function.
@@ -19,7 +21,7 @@ import {nextGroupedFeaturesByDistance} from "./precompiler.nextGroupedFeaturesBy
  * @param {Number} [idx=0] - The index.
  * @returns {void}
  */
-export function createKnowledgeBase (parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase = {}, idx = 0) {
+export function createKnowledgeBase (parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase = {}, idx = 0) {
     const prefix = Object.keys(services)[idx],
         config = services[prefix];
 
@@ -32,16 +34,16 @@ export function createKnowledgeBase (parcelData, services, onstart, onfinish, on
         onstart(config?.onstart);
     }
 
-    collectFeatures(parcelData, config, getLayerWhere({id: config.layerId}), features => {
+    collectFeatures(parcelData, config, mapProjection, getLayerWhere({id: config.layerId}), features => {
         if (features.length === 0) {
             config.propertyName.forEach(attributeKey => {
                 knowledgeBase[prefix + "." + attributeKey] = undefined;
             });
-            createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+            createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
         }
         else if (config?.precompiler?.type === "allFeaturesByDuration") {
             allFeaturesByDuration(
-                parcelData.centerCoordinate,
+                parcelData.center,
                 features,
                 config.precompiler.durationKey,
                 config.precompiler.distanceKey,
@@ -52,39 +54,39 @@ export function createKnowledgeBase (parcelData, services, onstart, onfinish, on
                     Object.entries(attributes).forEach(([attributeKey, attributeValue]) => {
                         knowledgeBase[prefix + "." + attributeKey] = attributeValue;
                     });
-                    createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+                    createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
                 }, error => {
                     onDevError(error);
                     onUserError(config.onerror);
                     addKnowledgeBaseError(knowledgeBase, error, prefix, Array.isArray(config.propertyName) ? config.propertyName.concat(config.precompiler.key) : [config.precompiler.key]);
-                    createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+                    createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
                 }
             );
         }
         else if (config?.precompiler?.type === "nextGroupedFeaturesByDistance") {
-            nextGroupedFeaturesByDistance(parcelData.centerCoordinate, features, config.precompiler.key, config.precompiler.propertyName, config.precompiler.delimitor, config.propertyName, attributes => {
+            nextGroupedFeaturesByDistance(parcelData.center, features, config.precompiler.key, config.precompiler.propertyName, config.precompiler.delimitor, config.propertyName, attributes => {
                 Object.entries(attributes).forEach(([attributeKey, attributeValue]) => {
                     knowledgeBase[prefix + "." + attributeKey] = attributeValue;
                 });
-                createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+                createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
             }, error => {
                 onDevError(error);
                 onUserError(config.onerror);
                 addKnowledgeBaseError(knowledgeBase, error, prefix, Array.isArray(config.propertyName) ? config.propertyName.concat(config.precompiler.key) : [config.precompiler.key]);
-                createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+                createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
             });
         }
         else if (config?.precompiler?.type === "nextFeatureByDistance") {
-            nextFeatureByDistance(parcelData.centerCoordinate, features, config.precompiler.key, config.propertyName, attributes => {
+            nextFeatureByDistance(parcelData.center, features, config.precompiler.key, config.propertyName, attributes => {
                 Object.entries(attributes).forEach(([attributeKey, attributeValue]) => {
                     knowledgeBase[prefix + "." + attributeKey] = attributeValue;
                 });
-                createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+                createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
             }, error => {
                 onDevError(error);
                 onUserError(config.onerror);
                 addKnowledgeBaseError(knowledgeBase, error, prefix, Array.isArray(config.propertyName) ? config.propertyName.concat(config.precompiler.key) : [config.precompiler.key]);
-                createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+                createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
             });
         }
         else {
@@ -93,13 +95,13 @@ export function createKnowledgeBase (parcelData, services, onstart, onfinish, on
             Object.entries(attributes).forEach(([attributeKey, attributeValue]) => {
                 knowledgeBase[prefix + "." + attributeKey] = attributeValue;
             });
-            createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+            createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
         }
     }, error => {
         onDevError(error);
         onUserError(config?.onerror);
         addKnowledgeBaseError(knowledgeBase, error, prefix, config?.propertyName);
-        createKnowledgeBase(parcelData, services, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+        createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
     });
 }
 

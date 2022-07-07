@@ -1,30 +1,29 @@
-import store from "../../../src/app-store";
 import {buildLayers} from "./parseLayerForMapfish";
 import getPrintedLayers from "./getPrintedLayers";
 import {getFeatureLayer} from "./createVectorLayer";
 
 /**
  * Gets the map configuration with a proportional bounding box as proportion map type for mapfish in jasper.
- * @param {Number[]} coordinates The geo coordination
+ * @param {ol/Feature} feature - The parcel feature.
  * @param {Number[]} extent The extent coordinates of parcel as feature
  * @param {String} projection the projection
- * @param {String} dpi the dpi for resolution
  * @param {Object} style the style for point feature
  * @param {Number} proportion the proportion of the parcel in the map
  * @param {String[]} LayerIds the layer id
+ * @param {Number} [dpi=200] the dpi for resolution
  * @returns {Object} The map configuration in object
  */
-function getProportionMap (coordinates, extent, projection, dpi, style, proportion, LayerIds) {
+function getProportionMap (feature, extent, projection, style, proportion, LayerIds, dpi = 200) {
     const mapConfig = {},
         defaultBbox = [545114.80, 5914269.80, 591483.01, 5957132.28];
     let originLayers = [];
 
-    mapConfig.dpi = typeof dpi === "number" ? dpi : 200;
-    mapConfig.projection = typeof projection === "string" ? projection : store.getters["Maps/projection"].getCode();
+    mapConfig.dpi = dpi;
+    mapConfig.projection = projection;
     mapConfig.bbox = Array.isArray(extent) && extent.length === 4 ? getBoundingBox(extent, proportion) : defaultBbox;
     mapConfig.layers = [];
 
-    originLayers.push(getFeatureLayer(style, coordinates));
+    originLayers.push(getFeatureLayer(style, feature));
     originLayers = originLayers.concat(getPrintedLayers(LayerIds));
 
     buildLayers(originLayers).then(parsedLayers => {

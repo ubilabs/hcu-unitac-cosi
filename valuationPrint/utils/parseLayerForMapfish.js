@@ -3,8 +3,8 @@ import store from "../../../src/app-store";
 
 /**
  * Parses the layers into mapfisch format
- * @param {ol.layer[]} layerList the layers in an Array list
- * @returns {ol.layer[]} the parsed layers in an Array for mapfish
+ * @param {ol/layer[]} layerList the layers in an Array list
+ * @returns {ol/layer[]} the parsed layers in an Array for mapfish
  */
 async function buildLayers (layerList) {
     const layers = [],
