@@ -663,7 +663,6 @@ function initializeBrwAbfrageModel () {
                 requestObj = this.setObjectAttribute(requestObj, "ZStrLage", brw.get("zStrassenLage"), "string");
             }
             if (wpsTimeout && Object.keys(wpsTimeout).length > 0) {
-                console.log("WPSTIMEOUT", wpsTimeout)
                 requestObj = Object.assign(requestObj, wpsTimeout);
             }
 

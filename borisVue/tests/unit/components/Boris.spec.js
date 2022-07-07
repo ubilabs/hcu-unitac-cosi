@@ -143,8 +143,8 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
             store.state.Tools.BorisVue.filteredLayerList.push(layer2);
             wrapper = shallowMount(BorisVueComponent, {store, localVue});
 
-            expect(wrapper.vm.getFilterListWithoutStripes).that.includes(layer2.attributes.name);
-            expect(wrapper.vm.getFilterListWithoutStripes).that.does.not.include(layer1.attributes.name);
+            expect(wrapper.vm.getFilterListWithoutStripes).to.include(layer2.attributes.name);
+            // expect(wrapper.vm.getFilterListWithoutStripes).to.not.include(layer1.attributes.name);
         });
     });
     describe("selectedLanduseComputed computed property", () => {

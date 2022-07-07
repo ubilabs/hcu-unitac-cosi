@@ -25,7 +25,7 @@ const helpers = {
      * @param  {Object} wpsTimeout timeout attribute for wps from the state
      * @returns {String} Object for POST-request
      */
-    convert: function (brw, wpsTimeout) {
+    convert: function ({brw, wpsTimeout}) {
         const requestObj = {};
         let richtwert = brw.get("richtwert_euro").replace(".", "").replace(",", ".");
 

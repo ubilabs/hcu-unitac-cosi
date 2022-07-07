@@ -262,10 +262,9 @@ describe("ADDONS: addons/borisVue/store/actionsBorisVue.js", () => {
     });
     describe("checkBrwFeature", () => {
         it("brw feature is already available", async () => {
-            const brwFeatures = {},
-                year = "2019";
+            const year = "2019";
 
-            await actions.checkBrwFeature({state, dispatch, commit}, {brwFeatures, year});
+            await actions.checkBrwFeature({state, dispatch, commit}, {brwFeatures: state.filteredLayerList, year});
             expect(commit.calledThrice).to.be.true;
             expect(commit.firstCall.args[0]).to.equal("setSelectedPolygon");
             expect(commit.firstCall.args[1]).to.equal(null);

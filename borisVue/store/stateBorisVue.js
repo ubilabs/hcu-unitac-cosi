@@ -42,7 +42,7 @@ const state = {
     renderToWindow: false,
     resizableWindow: true,
     initialWidth: 620,
-    initialWidthMobile: 200,
+    initialWidthMobile: 240,
     isVisibleInMenu: true,
     deactivateGFI: false,
     filteredLayerList: [],

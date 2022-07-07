@@ -1,7 +1,7 @@
 <script>
 import Tool from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
-// import getters from "../store/gettersBorisVue";
+import getters from "../store/gettersBorisVue";
 import mutations from "../store/mutationsBorisVue";
 import InformationComponent from "./InformationComponent.vue";
 import CalculationComponent from "./CalculationComponent.vue";
@@ -20,9 +20,9 @@ export default {
         FloorComponent
     },
     computed: {
-        // ...mapGetters("Tools/BorisVue", Object.keys(getters)),
+        ...mapGetters("Tools/BorisVue", Object.keys(getters)),
         // @inka: sind das jetzt zu viele oder passt es so?
-        ...mapGetters("Tools/BorisVue", ["active", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue"]),
+        // ...mapGetters("Tools/BorisVue", ["active", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options"]),
         ...mapGetters("Tools/Print", ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]),
         ...mapGetters(["mobile"]),
         /**
@@ -202,13 +202,13 @@ export default {
                 id="boris"
                 class="content"
             >
-                <div class="form-group col-12 first">
+                <div class="py-1">
                     <span>{{ $t("additional:modules.tools.boris.labelSelectYear") }}</span>
                 </div>
-                <div class="form-group col-12">
+                <div>
                     <select
                         id="brwLayerSelect"
-                        class="form-control"
+                        class="form-select"
                         @change="handleSelectBRWYear($event.target.value)"
                     >
                         <option
@@ -222,7 +222,7 @@ export default {
                 </div>
                 <div
                     v-if="isAreaLayer === true"
-                    class="form-check"
+                    class="form-check pt-2"
                 >
                     <input
                         id="showStripes"
@@ -243,16 +243,14 @@ export default {
                         @keydown.enter="toggleInfoText('1')"
                     />
                     <div v-if="Object.values(textIds).includes('1')">
-                        <div class="col-12 info-text">
+                        <div class="pt-2">
                             <span>{{ $t("additional:modules.tools.boris.toggleStripesLayerInfo") }}</span>
-                            <br>
-                            <br>
                         </div>
                     </div>
                 </div>
                 <div
                     v-if="selectedPolygon === null"
-                    class="form-group col-12"
+                    class="pt-3"
                 >
                     <span
                         id="selectPolygonText"
@@ -262,13 +260,13 @@ export default {
                 </div>
                 <div
                     v-else
-                    class="form-group col-12 first"
+                    class="pt-3"
                 >
                     <span>{{ $t("additional:modules.tools.boris.labelSelectUse") }}</span>
                     <select
                         id="landuseSelect"
                         v-model="selectedLanduseComputed"
-                        class="form-control"
+                        class="form-select mt-1"
                     >
                         <option
                             value=""
@@ -288,63 +286,43 @@ export default {
                 </div>
                 <div
                     v-if="Object.keys(selectedBrwFeature).length !== 0"
-                    class="form-group col-12 first info-container"
                 >
-                    {{ $t("additional:modules.tools.boris.referenceNumber") }}: {{ selectedBrwFeature.get("richtwertnummer") }}
+                    <div class="pt-2">
+                        {{ $t("additional:modules.tools.boris.referenceNumber") }}: {{ selectedBrwFeature.get("richtwertnummer") }}
+                    </div>
                     <hr>
                     <div
-                        class="d-flex "
-                        role="group"
+                        class="d-flex mb-2"
                     >
-                        <div
-                            class="flex-fill"
-                            role="group"
-                        >
-                            <button
-                                class="btn bi-info-circle-fill w-100"
-                                :class="(buttonValue === 'info') ? 'btn-default' : 'btn-active'"
-                                value="info"
-                                :title="$t('additional:modules.tools.boris.detailInformation.title')"
-                                @click="setButtonValue($event.target.value)"
-                            />
-                        </div>
-                        <div
-                            class="flex-fill"
-                            role="group"
-                        >
-                            <button
-                                class="btn bi-geo-alt-fill w-100"
-                                :class="(buttonValue === 'lage') ? 'btn-default' : 'btn-active'"
-                                value="lage"
-                                :title="$t('additional:modules.tools.boris.locationDescription.title')"
-                                @click="setButtonValue($event.target.value)"
-                            />
-                        </div>
-                        <div
-                            class="flex-fill bd-highlight"
-                            role="group"
-                        >
-                            <button
-                                class="btn bi-currency-euro w-100"
-                                :class="(buttonValue === 'euro') ? 'btn-default' : 'btn-active'"
-                                value="euro"
-                                :title="$t('additional:modules.tools.boris.landCalculation.title')"
-                                @click="setButtonValue($event.target.value)"
-                            />
-                        </div>
-                        <div
+                        <button
+                            class="btn btn-primary bi-info-circle-fill col me-1"
+                            :class="(buttonValue === 'info') ? 'btn-primary' : 'btn-active'"
+                            value="info"
+                            :title="$t('additional:modules.tools.boris.detailInformation.title')"
+                            @click="setButtonValue($event.target.value)"
+                        />
+                        <button
+                            class="btn btn-primary bi-geo-alt-fill col me-1"
+                            :class="(buttonValue === 'lage') ? 'btn-primary' : 'btn-active'"
+                            value="lage"
+                            :title="$t('additional:modules.tools.boris.locationDescription.title')"
+                            @click="setButtonValue($event.target.value)"
+                        />
+                        <button
+                            class="btn btn-primary bi-currency-euro col "
+                            :class="(buttonValue === 'euro') ? 'btn-primary' : 'btn-active'"
+                            value="euro"
+                            :title="$t('additional:modules.tools.boris.landCalculation.title')"
+                            @click="setButtonValue($event.target.value)"
+                        />
+                        <button
                             v-if="selectedBrwFeature.get('schichtwert')"
-                            class="flex-fill bd-highlight"
-                            role="group"
-                        >
-                            <button
-                                class="btn bi-list-ul w-100"
-                                :class="(buttonValue === 'liste') ? 'btn-default' : 'btn-active'"
-                                value="liste"
-                                :title="$t('additional:modules.tools.boris.floorValues.title')"
-                                @click="setButtonValue($event.target.value)"
-                            />
-                        </div>
+                            class="btn btn-primary bi-list-ul col ms-1"
+                            :class="(buttonValue === 'liste') ? 'btn-primary' : 'btn-active'"
+                            value="liste"
+                            :title="$t('additional:modules.tools.boris.floorValues.title')"
+                            @click="setButtonValue($event.target.value)"
+                        />
                     </div>
                     <div v-if="buttonValue === 'info'">
                         <InformationComponent
@@ -441,7 +419,7 @@ export default {
                                 {{ convertedBrw }} €/m²
                                 <div
                                     v-if="Object.values(textIds).includes('6')"
-                                    class="help"
+                                    class="help pt-2"
                                 >
                                     <span v-html="$t('additional:modules.tools.boris.landCalculation.calculatedLandValueInfo')" />
                                 </div>
@@ -457,7 +435,7 @@ export default {
                                 </div>
                                 <div
                                     v-if="Object.values(textIds).includes('6')"
-                                    class="help"
+                                    class="help pt-2"
                                 >
                                     <span v-html="$t('additional:modules.tools.boris.landCalculation.calculatedLandValueInfo')" />
                                 </div>
@@ -480,7 +458,7 @@ export default {
                     </button>
                     <div
                         v-if="printStarted"
-                        class="form-group pt-20"
+                        class="pt-2"
                     >
                         <div class="progress">
                             <div
@@ -500,32 +478,10 @@ export default {
 
 
 <style lang="scss" scoped>
-.content {
-        .first{
-            padding-top: 5px;
-        }
-        .form-group {
-            >label {
-                float: left;
-                width: 75%;
-            }
-        }
-        .form-check{
-            padding-left: 15px;
-            padding-bottom: 15px;
-        }
-    };
-.btn-default {
-    background-color: rgb(231, 223, 223);
-}
-.btn-active {
-    border-style: solid;
-    border-width: 0.5px;
-    border-color: lightgrey;
-}
+@import "~variables";
 ::v-deep dt {
-    background-color: rgba(227, 227, 227, 0.5);
-    font-family: "UniversNextW04-620CondB", "Arial Narrow", Arial, sans-serif;
+    background-color: $secondary_table_style;
+    font-family: $font_family_accent;
     padding: 8px;
 };
 ::v-deep dd{

@@ -87,7 +87,7 @@ export default {
             </dt>
             <dd>
                 <select
-                    class="form-control"
+                    class="form-select"
                     @change="handleChange($event, subject)"
                 >
                     <option
@@ -101,11 +101,9 @@ export default {
                 </select>
                 <div
                     v-if="Object.values(textIds).includes(textId)"
-                    class="help"
+                    class="help pt-2"
                 >
-                    <br>
                     <span v-html="text" />
-                    <br>
                 </div>
             </dd>
         </div>
@@ -132,10 +130,9 @@ export default {
                 </label>
                 <div
                     v-if="Object.values(textIds).includes(textId)"
-                    class="help"
+                    class="help pt-2"
                 >
                     <span v-html="text" />
-                    <br>
                 </div>
             </dd>
         </div>
