@@ -585,6 +585,7 @@ function initializeBrwAbfrageModel () {
          */
         getConvertObject: function (brw) {
             const wpsTimeout = this.get("wpsTimeout");
+            console.log("1", wpsTimeout)
             let requestObj = {},
                 richtwert = brw.get("richtwert_euro").replace(".", "").replace(",", "."); // unpunctuate Wert für WPS
 
@@ -662,6 +663,7 @@ function initializeBrwAbfrageModel () {
                 requestObj = this.setObjectAttribute(requestObj, "ZStrLage", brw.get("zStrassenLage"), "string");
             }
             if (wpsTimeout && Object.keys(wpsTimeout).length > 0) {
+                console.log("WPSTIMEOUT", wpsTimeout)
                 requestObj = Object.assign(requestObj, wpsTimeout);
             }
 

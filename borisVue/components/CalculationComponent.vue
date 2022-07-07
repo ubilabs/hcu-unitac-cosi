@@ -73,7 +73,10 @@ export default {
 
 <template>
     <div id="calculation-component">
-        <div class="select-part" v-if="type === 'select'">
+        <div
+            v-if="type === 'select'"
+            class="select-part"
+        >
             <dt>
                 <span>{{ title }}</span>
                 <span
@@ -106,7 +109,10 @@ export default {
                 </div>
             </dd>
         </div>
-        <div class="input-part" v-else>
+        <div
+            v-else
+            class="input-part"
+        >
             <dt>
                 <span>{{ title }}</span>
                 <span

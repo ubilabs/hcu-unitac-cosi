@@ -7,6 +7,8 @@
  * @property {String} glyphicon - icon next to the title
  * @property {Boolean} renderToWindow - if true, tool is rendered in a window, else in sidebar (config-param)
  * @property {Boolean} resizableWindow - if true, window is resizable (config-param)
+ * @property {Number} initialWidth: Initial width the sidebar when opening
+ * @property {Number} initialWidthMobile: Initial mobile width of the sidebar when opening
  * @property {Boolean} isVisibleInMenu - if true, tool is selectable in menu (config-param)
  * @property {Boolean} deactivateGFI - flag if tool should deactivate gfi (config-param)
  * @property {Object} filteredLayerList - list of wms layers without the stripes layers
@@ -27,6 +29,7 @@
  * @property {Object} positionsToStreet - list of positions to streets that are options for the Conversion to Individual Property
  * @property {String} selectedOption - is the selected option of building designs oder positions to street
  * @property {String} wpsId - the id of the used web processing service
+ * @property {Object} wpsTimeout - timeout attribute for wps which is used in the fme process
  * @property {String} fmwProcess - the FME process triggered via the WPS
  */
 
@@ -37,7 +40,9 @@ const state = {
     name: "common:menu.tools.borisVue",
     icon: "bi-vinyl",
     renderToWindow: false,
-    resizableWindow: false,
+    resizableWindow: true,
+    initialWidth: 620,
+    initialWidthMobile: 200,
     isVisibleInMenu: true,
     deactivateGFI: false,
     filteredLayerList: [],
@@ -58,6 +63,12 @@ const state = {
     positionsToStreet: ["F Frontlage", "E Ecklage", "P Pfeifenstielgrundstück", "H Hinterlage (in 2. Reihe durch Wegerecht erschlossen)"],
     selectedOption: "",
     wpsId: "1001",
+    wpsTimeout: {
+        "tm_ttl": {
+            "dataType": "integer",
+            "value": 50
+        }
+    },
     fmwProcess: "BRWConvert.fmw"
 };
 

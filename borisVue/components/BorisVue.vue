@@ -1,14 +1,14 @@
 <script>
 import Tool from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
-import getters from "../store/gettersBorisVue";
+// import getters from "../store/gettersBorisVue";
 import mutations from "../store/mutationsBorisVue";
 import InformationComponent from "./InformationComponent.vue";
 import CalculationComponent from "./CalculationComponent.vue";
 import FloorComponent from "./FloorComponent.vue";
 import {preparePrint} from "../utils/preparePrint.js";
 import axios from "axios";
-import {getLayerModelsByAttributes} from "../utils/RadioBridge";
+import {getLayerModelByAttributes} from "../utils/RadioBridge";
 
 
 export default {
@@ -20,7 +20,9 @@ export default {
         FloorComponent
     },
     computed: {
-        ...mapGetters("Tools/BorisVue", Object.keys(getters)),
+        // ...mapGetters("Tools/BorisVue", Object.keys(getters)),
+        // @inka: sind das jetzt zu viele oder passt es so?
+        ...mapGetters("Tools/BorisVue", ["active", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue"]),
         ...mapGetters("Tools/Print", ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]),
         ...mapGetters(["mobile"]),
         /**
@@ -165,11 +167,7 @@ export default {
          */
         close () {
             this.setActive(false);
-
-            // TODO replace trigger when Menu is migrated
-            // set the backbone model to active false for changing CSS class in menu (menu/desktop/tool/view.toggleIsActiveClass)
-            // else the menu-entry for this tool is always highlighted
-            const layer = getLayerModelsByAttributes({id: this.$store.state.Tools.BorisVue.id});
+            const layer = getLayerModelByAttributes({id: this.$store.state.Tools.BorisVue.id});
 
             if (layer) {
                 layer.set("isActive", false);
@@ -195,6 +193,8 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
+        :initial-width="initialWidth"
+        :initial-width-mobile="initialWidthMobile"
     >
         <template #toolBody>
             <div
@@ -304,6 +304,7 @@ export default {
                                 class="btn bi-info-circle-fill w-100"
                                 :class="(buttonValue === 'info') ? 'btn-default' : 'btn-active'"
                                 value="info"
+                                :title="$t('additional:modules.tools.boris.detailInformation.title')"
                                 @click="setButtonValue($event.target.value)"
                             />
                         </div>
@@ -315,6 +316,7 @@ export default {
                                 class="btn bi-geo-alt-fill w-100"
                                 :class="(buttonValue === 'lage') ? 'btn-default' : 'btn-active'"
                                 value="lage"
+                                :title="$t('additional:modules.tools.boris.locationDescription.title')"
                                 @click="setButtonValue($event.target.value)"
                             />
                         </div>
@@ -326,6 +328,7 @@ export default {
                                 class="btn bi-currency-euro w-100"
                                 :class="(buttonValue === 'euro') ? 'btn-default' : 'btn-active'"
                                 value="euro"
+                                :title="$t('additional:modules.tools.boris.landCalculation.title')"
                                 @click="setButtonValue($event.target.value)"
                             />
                         </div>
@@ -338,6 +341,7 @@ export default {
                                 class="btn bi-list-ul w-100"
                                 :class="(buttonValue === 'liste') ? 'btn-default' : 'btn-active'"
                                 value="liste"
+                                :title="$t('additional:modules.tools.boris.floorValues.title')"
                                 @click="setButtonValue($event.target.value)"
                             />
                         </div>
@@ -530,5 +534,6 @@ export default {
 }
 ::v-deep h4 {
     font-size: 1rem;
+    padding: 10px 0px;
 }
 </style>

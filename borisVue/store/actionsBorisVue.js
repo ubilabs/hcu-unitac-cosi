@@ -459,7 +459,7 @@ const actions = {
      * @returns {void}
      */
     sendWpsConvertRequest ({dispatch, state}) {
-        const data = helpers.convert({brw: state.selectedBrwFeature});
+        const data = helpers.convert(state.selectedBrwFeature, state.wpsTimeout);
 
         WPS.wpsRequest(state.wpsId, state.fmwProcess, data, (response, status) => dispatch("handleConvertResponse", {response, status}));
     },
