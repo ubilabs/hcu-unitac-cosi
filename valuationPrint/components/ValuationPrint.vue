@@ -18,6 +18,7 @@ import isObject from "../../../src/utils/isObject";
 import {getFixedMap} from "../utils/translator.getFixedMap.js";
 import {getProportionMap} from "../utils/translator.getProportionMap.js";
 import {MultiPolygon} from "ol/geom";
+import moment from "moment";
 
 export default {
     name: "ValuationPrint",
@@ -68,10 +69,17 @@ export default {
             createKnowledgeBase(parcel, this.config.services, this.projection.getCode(), message => {
                 this.addMessage(message, false);
             }, knowledgeBase => {
-                const mapfishDialog = createMapfishDialog(knowledgeBase, this.config.transformer, this.defaultValue, this.projection.getCode());
+                const mapfishDialog = createMapfishDialog(
+                    parcel,
+                    knowledgeBase,
+                    this.config.transformer,
+                    this.defaultValue,
+                    this.projection.getCode(),
+                    this.getFilenameOfPDF(this.selectedFeatures, this.fileprefix, moment().format("YYYY-MM-DD__HH-mm-ss"))
+                );
 
                 console.warn("mapfishDialog", mapfishDialog);
-                startPrintProcess(this.printUrl, this.printConfigPdf, this.mapfishDialogExample, (url, payload) => {
+                startPrintProcess(this.printUrl, this.pdfAppId, mapfishDialog, (url, payload) => {
                     this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfInTheMaking"));
                     return axios.post(url, payload);
                 },
@@ -91,15 +99,16 @@ export default {
                 this.addMessage(errorMsg, true);
             }, error => {
                 console.error(error);
-            }, {parcel});
+            });
         }
     },
     created () {
         this.config = null;
         this.select = null;
         this.printUrl = "";
-        this.printConfigPdf = "";
-        this.defaultValue = "n.v.";
+        this.pdfAppId = "";
+        this.defaultValue = "";
+        this.fileprefix = "";
 
         this.setConfig();
         this.setSelectInteraction();
@@ -229,7 +238,9 @@ export default {
                 .then(response => {
                     this.config = response.data;
                     this.printUrl = this.getRestServiceById(response.data.settings.printServiceId).url;
-                    this.printConfigPdf = response.data.settings.printConfigPdf;
+                    this.pdfAppId = response.data.settings.pdfAppId;
+                    this.defaultValue = response.data.settings.defaultValue;
+                    this.fileprefix = response.data.settings.fileprefix;
                 })
                 .catch(error => {
                     const message = "Could not load the config file config.valuation.json";
@@ -337,6 +348,29 @@ export default {
                 link: url,
                 name: name ? name : url
             });
+        },
+
+        /**
+         * Returns the filename of the pdf, taking into account the currently selected parcels.
+         * @param {ol/Feature[]} features The features to create the filename for.
+         * @param {String} [fileprefix=""] The prefix to use for the filename.
+         * @param {String} [timestamp=""] A timestamp to use for better ui.
+         * @returns {String} The current filname.
+         */
+        getFilenameOfPDF (features, fileprefix = "", timestamp = "") {
+            if (!Array.isArray(features)) {
+                return "unknown";
+            }
+            let flstnrzae = "";
+
+            features.forEach(feature => {
+                if (flstnrzae) {
+                    flstnrzae += "-";
+                }
+                flstnrzae += feature.get("flstnrzae");
+            });
+
+            return fileprefix + "__" + timestamp + "__" + flstnrzae;
         }
     }
 };

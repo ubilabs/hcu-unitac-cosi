@@ -47,87 +47,69 @@ describe("addons/valuationPrint/utils/translator.getProportionMap.js", () => {
     afterEach(sinon.restore);
 
     describe("getProportionMap", () => {
-        // it("should return the default map configuration", () => {
-        //     expect(getProportionMap(undefined).dpi).to.equal(200);
-        //     expect(getProportionMap(undefined).bbox).to.deep.equal([545114.80, 5914269.80, 591483.01, 5957132.28]);
-        //     expect(getProportionMap(undefined).projection).to.equal("EPSG:25832");
-
-        //     expect(getProportionMap(null).dpi).to.equal(200);
-        //     expect(getProportionMap(null).bbox).to.deep.equal([545114.80, 5914269.80, 591483.01, 5957132.28]);
-        //     expect(getProportionMap(null).projection).to.equal("EPSG:25832");
-
-        //     expect(getProportionMap([]).dpi).to.equal(200);
-        //     expect(getProportionMap([]).bbox).to.deep.equal([545114.80, 5914269.80, 591483.01, 5957132.28]);
-        //     expect(getProportionMap([]).projection).to.equal("EPSG:25832");
-
-        //     expect(getProportionMap(true).dpi).to.equal(200);
-        //     expect(getProportionMap(true).bbox).to.deep.equal([545114.80, 5914269.80, 591483.01, 5957132.28]);
-        //     expect(getProportionMap(true).projection).to.equal("EPSG:25832");
-
-        //     expect(getProportionMap("string").dpi).to.equal(200);
-        //     expect(getProportionMap("string").bbox).to.deep.equal([545114.80, 5914269.80, 591483.01, 5957132.28]);
-        //     expect(getProportionMap("string").projection).to.equal("EPSG:25832");
-        // });
-
         it("should return the map configuration with configured and default value", () => {
             const config = {
-                "coordinates": feature,
-                "extent": [
-                    562765.8760436381,
-                    5940982.299269523,
-                    562877.0009836305,
-                    5941178.090830462
-                ],
-                "projection": "EPSG:1234",
-                "style": {
-                    "borderSize": 4,
-                    "color": [
-                        228,
-                        26,
-                        28,
-                        1
+                    "coordinates": feature,
+                    "extent": [
+                        562765.8760436381,
+                        5940982.299269523,
+                        562877.0009836305,
+                        5941178.090830462
+                    ],
+                    "projection": "EPSG:1234",
+                    "style": {
+                        "borderSize": 4,
+                        "color": [
+                            228,
+                            26,
+                            28,
+                            1
+                        ]
+                    },
+                    "proportion": 0.33,
+                    "layerIds": [
+                        "2426"
                     ]
                 },
-                "proportion": 0.33,
-                "layerIds": [
-                    "2426"
-                ]
-            };
+                result = getProportionMap(config.coordinates, config.extent, config.projection, config.style, config.proportion, config.layerIds, undefined);
 
-            expect(getProportionMap(config.coordinates, config.extent, config.projection, config.style, config.proportion, config.layerIds, undefined).dpi).to.equal(200);
-            expect(getProportionMap(config.coordinates, config.extent, config.projection, config.style, config.proportion, config.layerIds, undefined).projection).to.equal("EPSG:1234");
-            expect(getProportionMap(config.coordinates, config.extent, config.projection, config.style, config.proportion, config.layerIds, undefined).bbox).to.deep.equal([562653.0673924336, 5940783.541169781, 562989.809634835, 5941376.848930203]);
+            expect(result).to.be.an("object").that.is.not.empty;
+            expect(result.dpi).to.equal(200);
+            expect(result.projection).to.equal("EPSG:1234");
+            expect(result.bbox).to.deep.equal([562653.0673924336, 5940783.541169781, 562989.809634835, 5941376.848930203]);
         });
 
         it("should return the map configuration with configured value", () => {
             const config = {
-                "coordinates": feature,
-                "extent": [
-                    562765.8760436381,
-                    5940982.299269523,
-                    562877.0009836305,
-                    5941178.090830462
-                ],
-                "projection": "EPSG:1234",
-                "dpi": 72,
-                "style": {
-                    "borderSize": 4,
-                    "color": [
-                        228,
-                        26,
-                        28,
-                        1
+                    "coordinates": feature,
+                    "extent": [
+                        562765.8760436381,
+                        5940982.299269523,
+                        562877.0009836305,
+                        5941178.090830462
+                    ],
+                    "projection": "EPSG:1234",
+                    "dpi": 72,
+                    "style": {
+                        "borderSize": 4,
+                        "color": [
+                            228,
+                            26,
+                            28,
+                            1
+                        ]
+                    },
+                    "proportion": 0.33,
+                    "layerIds": [
+                        "2426"
                     ]
                 },
-                "proportion": 0.33,
-                "layerIds": [
-                    "2426"
-                ]
-            };
+                result = getProportionMap(config.coordinates, config.extent, config.projection, config.style, config.proportion, config.layerIds, config.dpi);
 
-            expect(getProportionMap(config.coordinates, config.center, config.projection, config.style, config.proportion, config.layerIds, config.dpi).dpi).to.equal(72);
-            expect(getProportionMap(config.coordinates, config.center, config.projection, config.style, config.proportion, config.layerIds, config.dpi).projection).to.equal("EPSG:1234");
-            expect(getProportionMap(config.coordinates, config.extent, config.projection, config.style, config.proportion, config.layerIds, undefined).bbox).to.deep.equal([562653.0673924336, 5940783.541169781, 562989.809634835, 5941376.848930203]);
+            expect(result).to.be.an("object").that.is.not.empty;
+            expect(result.dpi).to.equal(72);
+            expect(result.projection).to.equal("EPSG:1234");
+            expect(result.bbox).to.deep.equal([562653.0673924336, 5940783.541169781, 562989.809634835, 5941376.848930203]);
         });
     });
 

@@ -45,33 +45,6 @@ describe("addons/valuationPrint/utils/translator.getWalkerMap.js", () => {
     afterEach(sinon.restore);
 
     describe("getWalkerMap", () => {
-        it("should return the default map configuration", () => {
-            // expect(getWalkerMap(undefined).dpi).to.equal(200);
-            // expect(getWalkerMap(undefined).scale).to.equal(20000);
-            // expect(getWalkerMap(undefined).projection).to.equal("EPSG:25832");
-            // expect(getWalkerMap(undefined).center).to.be.an("array").with.length(0);
-
-            // expect(getWalkerMap(null).dpi).to.equal(200);
-            // expect(getWalkerMap(null).scale).to.equal(20000);
-            // expect(getWalkerMap(null).projection).to.equal("EPSG:25832");
-            // expect(getWalkerMap(null).center).to.be.an("array").with.length(0);
-
-            // expect(getWalkerMap([]).dpi).to.equal(200);
-            // expect(getWalkerMap([]).scale).to.equal(20000);
-            // expect(getWalkerMap([]).projection).to.equal("EPSG:25832");
-            // expect(getWalkerMap([]).center).to.be.an("array").with.length(0);
-
-            // expect(getWalkerMap(true).dpi).to.equal(200);
-            // expect(getWalkerMap(true).scale).to.equal(20000);
-            // expect(getWalkerMap(true).projection).to.equal("EPSG:25832");
-            // expect(getWalkerMap(true).center).to.be.an("array").with.length(0);
-
-            // expect(getWalkerMap("string").dpi).to.equal(200);
-            // expect(getWalkerMap("string").scale).to.equal(20000);
-            // expect(getWalkerMap("string").projection).to.equal("EPSG:25832");
-            // expect(getWalkerMap("string").center).to.be.an("array").with.length(0);
-        });
-
         it("should return the map configuration with configured and default value", () => {
             const config = {
                 "coordinates": feature,

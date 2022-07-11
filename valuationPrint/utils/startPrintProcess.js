@@ -36,7 +36,7 @@ function fetchStatus (url, ref, onwait, onerror, onfinish) {
         if (response.data.status === "running" || response.data.status === "waiting") {
             setTimeout(() => {
                 fetchStatus(url, ref, onwait, onerror, onfinish);
-            }, "500");
+            }, 1000);
         }
         else if (response.data.status === "finished") {
             const downloadUrl = url + "report/" + ref;

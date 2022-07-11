@@ -268,6 +268,12 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
     });
 
     describe("Methods", () => {
+        describe("getFilenameOfPDF", () => {
+            const wrapper = factory.getShallowMount({});
+
+            expect(wrapper.vm.getFilenameOfPDF([features[0], features[1]], "prefix", "2022-07-11__10-31-22")).to.equal("prefix__2022-07-11__10-31-22__12345-67890");
+        });
+
         describe("styleSelectedFeatures", () => {
             it("should style the features with the select interaction style if the interaction is active", () => {
                 const wrapper = factory.getShallowMount({});

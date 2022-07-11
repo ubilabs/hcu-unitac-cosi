@@ -10,11 +10,11 @@ import {Point} from "ol/geom";
  * @param {String} projection the projection
  * @param {Object} style the style for point feature
  * @param {Number[]} bbox the bounding box coordinates
- * @param {String[]} LayerIds the layer id
+ * @param {String[]} layerIds the layer id
  * @param {Number} [dpi=200] the dpi for resolution
  * @returns {Object} The map configuration in object
  */
-function getFixedMap (coordinate, projection, style, bbox, LayerIds, dpi = 200) {
+function getFixedMap (coordinate, projection, style, bbox, layerIds, dpi = 200) {
     const mapConfig = {},
         defaultBbox = [545114.80, 5914269.80, 591483.01, 5957132.28],
         feature = new Feature({
@@ -28,7 +28,7 @@ function getFixedMap (coordinate, projection, style, bbox, LayerIds, dpi = 200) 
     mapConfig.layers = [];
 
     originLayers.push(getFeatureLayer(style, feature, "point"));
-    originLayers = originLayers.concat(getPrintedLayers(LayerIds));
+    originLayers = originLayers.concat(getPrintedLayers(layerIds));
 
     buildLayers(originLayers).then(parsedLayers => {
         mapConfig.layers = parsedLayers;

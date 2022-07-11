@@ -9,11 +9,11 @@ import {getFeatureLayer} from "./createVectorLayer";
  * @param {String} projection the projection
  * @param {Object} style the style for point feature
  * @param {Number} proportion the proportion of the parcel in the map
- * @param {String[]} LayerIds the layer id
+ * @param {String[]} layerIds the layer id
  * @param {Number} [dpi=200] the dpi for resolution
  * @returns {Object} The map configuration in object
  */
-function getProportionMap (feature, extent, projection, style, proportion, LayerIds, dpi = 200) {
+function getProportionMap (feature, extent, projection, style, proportion, layerIds, dpi = 200) {
     const mapConfig = {},
         defaultBbox = [545114.80, 5914269.80, 591483.01, 5957132.28];
     let originLayers = [];
@@ -24,7 +24,7 @@ function getProportionMap (feature, extent, projection, style, proportion, Layer
     mapConfig.layers = [];
 
     originLayers.push(getFeatureLayer(style, feature));
-    originLayers = originLayers.concat(getPrintedLayers(LayerIds));
+    originLayers = originLayers.concat(getPrintedLayers(layerIds));
 
     buildLayers(originLayers).then(parsedLayers => {
         mapConfig.layers = parsedLayers;
