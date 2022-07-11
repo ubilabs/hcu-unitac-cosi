@@ -30,6 +30,9 @@ export function collectFeatures (parcel, config, mapProjection, service, onsucce
 
         onsuccess([feature]);
     }
+    else if (config.filter === "equalTo") {
+        onsuccess([parcel.feature]);
+    }
     else {
         const propertyNames = config.precompiler ? config.propertyName.concat(config.geometryName) : config.propertyName,
             payload = {

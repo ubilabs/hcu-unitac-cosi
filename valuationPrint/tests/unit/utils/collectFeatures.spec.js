@@ -85,5 +85,13 @@ describe("addons/valuationPrint/utils/collectFeatures.js", () => {
 
             expect(onsuccess.calledOnce).to.be.true;
         });
+
+        it("should call onsuccess if a equalTo filter is given", () => {
+            const onsuccess = sinon.spy();
+
+            collectFeatures({}, {filter: "equalTo"}, undefined, undefined, onsuccess);
+
+            expect(onsuccess.calledOnce).to.be.true;
+        });
     });
 });
