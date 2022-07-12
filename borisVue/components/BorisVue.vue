@@ -1,7 +1,6 @@
 <script>
 import Tool from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
-import getters from "../store/gettersBorisVue";
 import mutations from "../store/mutationsBorisVue";
 import InformationComponent from "./InformationComponent.vue";
 import CalculationComponent from "./CalculationComponent.vue";
@@ -20,11 +19,12 @@ export default {
         FloorComponent
     },
     computed: {
-        ...mapGetters("Tools/BorisVue", Object.keys(getters)),
         // @inka: sind das jetzt zu viele oder passt es so?
-        // ...mapGetters("Tools/BorisVue", ["active", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options"]),
+        ...mapGetters("Tools/BorisVue", ["active", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options"]),
         ...mapGetters("Tools/Print", ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]),
-        ...mapGetters(["mobile"]),
+        ...mapGetters({
+            isMobile: "mobile"
+        }),
         /**
          * Gets a list of layers without the stripes-layers
          * @return {Array} filteredListWithoutStripes which is used to select by date
@@ -94,6 +94,13 @@ export default {
                 link.href = this.fileDownloadUrl;
                 link.click();
             }
+        },
+        isMobile () {
+            if (this.isMobile) {
+                this.setRenderToWindow(true);
+                return;
+            }
+            this.setRenderToWindow(false);
         }
     },
     created () {
@@ -102,6 +109,9 @@ export default {
     },
     mounted () {
         this.$nextTick(() => {
+            if (this.isMobile) {
+                this.setRenderToWindow(true);
+            }
             this.handleUrlParameters();
         });
     },

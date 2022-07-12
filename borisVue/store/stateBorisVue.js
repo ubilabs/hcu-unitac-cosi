@@ -4,7 +4,7 @@
  * @property {Boolean} active - if true, Boris will be rendered
  * @property {String} id - id of Boris component
  * @property {String} name - displayed as the title
- * @property {String} glyphicon - icon next to the title
+ * @property {String} icon - icon next to the title
  * @property {Boolean} renderToWindow - if true, tool is rendered in a window, else in sidebar (config-param)
  * @property {Boolean} resizableWindow - if true, window is resizable (config-param)
  * @property {Number} initialWidth: Initial width the sidebar when opening
