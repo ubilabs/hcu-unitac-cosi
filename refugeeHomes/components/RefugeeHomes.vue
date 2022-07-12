@@ -17,52 +17,49 @@ export default {
         return {
             hoverActive: true,
             existingLocationActive: true,
-            allFeatures: true
+            allFeatures: null,
+            selectedFeatures: []
         };
     },
     computed: {
         ...mapGetters("Tools/RefugeeHomes", Object.keys(getters)),
-        ...mapGetters("Maps", ["clickCoordinate"]),
-        ...mapGetters("MapMarker", ["markerPoint"]),
-        selectedFeatures: function () {
-            let showFeatures;
-            if (this.allFeatures === true){
-                console.log(this.features);
-                showFeatures=this.features
-            }else{
-                showFeatures=this.filteredFeatures[0]
-            }
-            if (this.existingLocationActive === true) {
-                return showFeatures?.filter(function (el) {
-                    return el.featureType.indexOf("geplant") === -1;
-                });
-            }
-            return showFeatures?.filter(function (el) {
-                return el.featureType.indexOf("geplant") !== -1;
-            });
-        }
+        ...mapGetters("Maps", ["getLayers"]),
+        ...mapGetters("MapMarker", ["markerPoint"])
     },
     watch: {
         active (value) {
-            if (value) {
-            /*   this.$nextTick(() => {
-
-                }); */
-            }
-            else {
+            if (!value) {
                 this.close();
             }
-        }
-        /* ,
-        "markerPoint.values_.visible": function (visible) {
-            if (this.active && visible) {
-                const features = this.markerPoint.getSource().getFeatures();
-
-                if (features && features[0]) {
-                    this.setPosition(features[0].getGeometry().getCoordinates());
-                }
+        },
+        allFeatures (value) {
+            if (value) {
+                this.selectedFeatures = this.sortFeatures(this.features, this.ranking);
             }
-        } */
+            else {
+                this.selectedFeatures = this.filteredFeatures[0];
+            }
+        },
+        existingLocationActive (value) {
+            let currentFeatures;
+
+            if (this.allFeatures) {
+                currentFeatures = this.sortFeatures(this.features, this.ranking);
+            }
+            else {
+                currentFeatures = this.filteredFeatures[0];
+            }
+            if (value) {
+                this.selectedFeatures = currentFeatures?.filter(function (el) {
+                    return el.featureType.indexOf("geplant") === -1;
+                });
+            }
+            else {
+                this.selectedFeatures = currentFeatures?.filter(function (el) {
+                    return el.featureType.indexOf("geplant") !== -1;
+                });
+            }
+        }
     },
     /**
      * Created hook: Creates event listener for legacy Radio calls (to be removed sometimes).
@@ -73,18 +70,18 @@ export default {
         this.requestRawLayerList();
         Backbone.Events.listenTo(Radio.channel("RefugeesTable"), {
             "showAllFeatures": () => {
-                this.$store.commit("Tools/RefugeeHomes/setFeatures", []);
-                this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
                 this.allFeatures = true;
                 this.setActive(true);
+                this.removeHighlightLayer();
             },
             "showFeaturesByBezirk": district => {
-                this.allFeatures = false;
                 this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
                 this.filterFeaturesByBezirk(district);
-                this.setActive(true);
+                this.allFeatures = false;
                 this.$store.commit("ZoomTo/setZoomToGeometry", district, {root: true});
                 this.$store.dispatch("ZoomTo/zoomToFeatures", {}, {root: true});
+                this.setActive(true);
+                this.removeHighlightLayer();
             }
 
         });
@@ -92,42 +89,16 @@ export default {
 
     methods: {
         ...mapMutations("Tools/RefugeeHomes", Object.keys(mutations)),
-        ...mapMutations("addFeature"),
+        ...mapActions("Maps", ["removeAllHighlightedFeatures"]),
         isWebLink,
 
-        /**
-         * Ermittelt die Geometrie und zoomt auf Koordinate
-         */
-        /* zoomStandort: function (id) {
-            var feature = _.findWhere(this.get("features"), {"id": id}),
-                geom = feature.geom;
-
-            Radio.trigger("MapView", "setCenter", geom, 4);
-        }, */
 
         /**
-         * Ermittelt die Geometrie und setzt den MapMarker
-         */
-        /* selectStandort: function (id) {
-            var feature = _.findWhere(this.get("features"), {"id": id}),
-                geom = feature.geom;
-
-            Radio.trigger("MapMarker", "showMarker", geom);
-        }, */
-
-        /**
-          * Entfernt den MapMarker
-          */
-       /*  deselectStandort: function () {
-            Radio.trigger("MapMarker", "hideMarker");
-        }, */
-
-        /**
-         * Iteriert über die LayerIds und holt sich die entsprechenden Models aus der RawLayerList
+         * Iterates over layerIds, creates the url and executes the wfs request.
+         * @returns {void}
          */
         requestRawLayerList: function () {
             this.layerIds.forEach((layerId) => {
-                //console.log(layerId);
                 const rawLayer = getLayerWhere({id: layerId}),
                     getFeatureUrl = this.buildAndGetRequestUrl(rawLayer);
 
@@ -137,9 +108,22 @@ export default {
         },
 
         /**
-         * Führt den WFS-GetFeature Request aus
-         * @param  {String} url
-         * @param  {function} successFunction
+         * Checks for highlighting layer from zoomTo and removes it.
+         * @returns {void}
+         */
+        removeHighlightLayer: function () {
+            this.getLayers.forEach(item => {
+                if (item.get("name") === undefined) {
+                    mapCollection.getMap("2D").removeLayer(item);
+                }
+            });
+
+        },
+
+        /**
+         * Checks for highlighting layer from zoomTo and removes it.
+         * @param {String} url url for the wfs request
+         * @returns {void}
          */
         sendRequest: function (url) {
             axios({
@@ -155,9 +139,9 @@ export default {
         },
 
         /**
-         * Stellt die Url für den WFS-GetFeature Request zusammen und gibt sie zurück
-         * @param  {Backbone.Model} model
-         * @return {String}
+         * Builds the wfs request from layer information.
+         * @param {Object} rawLayer wfs layer
+         * @returns {String} wfs query string
          */
         buildAndGetRequestUrl: function (rawLayer) {
             const params = "?service=WFS&request=GetFeature&version=2.0.0&typeNames=",
@@ -168,13 +152,36 @@ export default {
         },
 
         /**
-         * Holt sich die benötigten Attribute aus dem XML
-         * @param  {XML} data
+         * Sets the image height depending on the number of seats of a location for image manipulation
+         * @param {Object} feature wfs feature
+         * @param {Integer} seatNumbers number of capacity of a location
+         * @returns {void}
+         */
+        scaleImages: function (feature, seatNumbers) {
+            if (seatNumbers === 0) {
+                feature.imgHeight = 30;
+            }
+            else if (seatNumbers < 100) {
+                feature.imgHeight = 20;
+            }
+            else if (seatNumbers >= 250) {
+                feature.imgHeight = 30;
+            }
+            else {
+                feature.imgHeight = 25;
+            }
+        },
+
+        /**
+         * Parses the xml data
+         * @param {XML} data xml data
+         * @returns {void}
          */
         parseFeatures: function (data) {
-            let xmlData = new DOMParser().parseFromString(data, "text/xml"),
-                hits = xmlData.getElementsByTagName("wfs:member"),
-                feature,
+            const xmlData = new DOMParser().parseFromString(data, "text/xml"),
+                hits = xmlData.getElementsByTagName("wfs:member");
+
+            let feature,
                 element,
                 coordEle,
                 coord;
@@ -186,7 +193,6 @@ export default {
 
                 this.featureAttributes.forEach((attr) => {
                     element = hit.getElementsByTagName("app:" + attr)[0];
-
 
                     if (typeof element !== "undefined") {
                         if (attr === "pfad") {
@@ -204,16 +210,12 @@ export default {
                             feature[attr] = element.innerHTML;
                         }
 
-
-                        // else {
-                        //     feature[attr] = "DUMMY <a href='https://www.hamburg.de/contentblob/4594724/3696a6bc1f054a94eb559f274a8a9c04/data/flyer-notkestrasse.pdf' target='_blank'>Flyer </a>(PDF)";
-                        // }
-
                         feature.featureType = hit.childNodes[1].localName;
                         feature.imgSrc = this.$store.getters.imagePath + feature.featureType + ".svg";
-                        this.$store.commit("Tools/RefugeeHomes/addFeature", feature);
+                        this.scaleImages(feature, feature.platzzahl);
                     }
                 });
+                this.$store.commit("Tools/RefugeeHomes/addFeature", feature);
             });
         },
 
@@ -223,15 +225,12 @@ export default {
          * Triggert das Event "render"
          * @param  {String} value - Name des Bezirks
          */
-        filterFeaturesByBezirk: function (value) {
-            const filteredDistricts = this.features.filter(district => district.bezirk?.toUpperCase().trim() === value.toUpperCase().trim()),
+        filterFeaturesByBezirk: async function (value) {
+            const filteredDistricts = this.features?.filter(district => district?.bezirk?.toUpperCase().trim() === value.toUpperCase().trim()),
                 sortedFeatures = this.sortFeatures(filteredDistricts, this.ranking);
 
             this.$store.commit("Tools/RefugeeHomes/addFilteredFeature", sortedFeatures);
-            // this.trigger("render");
-            //this.render();
-            /*  Radio.trigger("ZoomToGeometry", "setIsRender", true);
-            Radio.trigger("ZoomToGeometry", "zoomToGeometry", value); */
+            this.selectedFeatures = this.filteredFeatures[0];
         },
         /**
          *  Sorts bezirk features by given Ranking and bezirk and stadtteil
@@ -239,40 +238,25 @@ export default {
          * @param {ranking} ranking used as first sort criteria
          */
         sortFeatures: function (features, ranking) {
-            /* features = _.sortBy(features, function (obj) {
-                return [ranking.indexOf(obj.featureType.toLowerCase()), obj.stadtteil].join("_");
-            }); */
+            let sortFeatures = [],
+                sortFeaturesByAttribute = [];
 
+            sortFeaturesByAttribute = features.sort((a,b) => a.stadtteil -b.stadtteil)
 
-            let sortFeatures = features;
-            /* sortFeatures = sortFeatures.sort(function(a, b) {
-                    var x = a["stadtteil"]; var y = b["stadtteil"];
-                    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+           ranking.forEach(rankingName => {
+           sortFeaturesByAttribute.forEach(element => {
+
+                    if (element.featureType === rankingName){
+                        sortFeatures.push(element)
+                    }
                 });
-            console.log(sortFeatures); */
 
-            sortFeatures = sortFeatures.sort((a, b) => {
-                const aKey = Object.keys(a)[0],
-                    bKey = Object.keys(b)[0];
-
-                return ranking.indexOf(aKey) - ranking.indexOf(bKey);
             });
+
 
             return sortFeatures;
         },
 
-        /**
-         * sorts all features according district and street name
-         * @returns {void}
-         */
-        sortAllFeatures: function () {
-            const features = this.sortFeatures(this.features, this.ranking);
-
-            this.$store.commit("Tools/RefugeeHomes/addFeature", features);
-            /*   this.trigger("render");
-            Radio.trigger("ZoomToGeometry", "setIsRender", false);
-            Radio.trigger("MapView", "resetView"); */
-        },
         /**
          * sets/unsets the marker
          * @param {Number[]} coords the coordinates to place the marker at
@@ -290,6 +274,7 @@ export default {
                 }
             }
         },
+
         /**
         * Control the hover visibility of the map marker
         * @param {Boolean} mode to control the hover visibility of the map marker
@@ -311,8 +296,7 @@ export default {
             this.setActive(false);
             this.$store.dispatch("Maps/resetView");
             this.$store.dispatch("MapMarker/removePointMarker");
-            this.$store.commit("ZoomTo/setZoomToGeometry", "", {root: true});
-            this.$store.dispatch("ZoomTo/zoomToFeatures", {}, {root: true});
+            this.removeHighlightLayer();
 
             const model = getComponent(this.$store.state.Tools.RefugeeHomes);
 
@@ -340,7 +324,7 @@ export default {
                 v-if="active"
                 id="refugeeshome"
             >
-                <h4 v-if="features.length === filteredFeatures.length">
+                <h4 v-if="allFeatures">
                     Hamburg
                 </h4>
                 <h4 v-else>
@@ -414,6 +398,7 @@ export default {
                                     <td>
                                         <img
                                             :src="feature.imgSrc"
+                                            :height="feature.imgHeight"
                                             alt="featureimage"
                                         >
                                     </td>

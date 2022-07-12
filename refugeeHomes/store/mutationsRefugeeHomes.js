@@ -17,11 +17,8 @@ const mutations = {
      * @returns {void}
      */
     addFeature: (state, feature) => {
-        if (feature && feature !== []) {
+        if (feature) {
             state.features.push(feature);
-        }
-        if (feature === []) {
-            state.features = [];
         }
 
     },
@@ -32,11 +29,8 @@ const mutations = {
      * @returns {void}
      */
     addFilteredFeature: (state, feature) => {
-        if (feature && feature !== []) {
+        if (feature) {
             state.filteredFeatures.push(feature);
-        }
-        if (feature === []) {
-            state.filteredFeatures = [];
         }
     }
 
