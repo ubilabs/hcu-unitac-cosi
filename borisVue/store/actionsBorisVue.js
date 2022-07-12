@@ -108,37 +108,8 @@ const actions = {
      * @param {String} selectedLayerName name of the selected layer
      * @returns {void}
      */
-    handleSelectBRWYear ({state, dispatch}, selectedLayerName) {
+    handleSelectBRWYear ({dispatch}, selectedLayerName) {
         dispatch("switchLayer", selectedLayerName);
-        dispatch("checkBrwFeature", {brwFeatures: state.brwFeatures, year: selectedLayerName.split(".")[2]});
-    },
-    /**
-     * Checks if a brw Feature is already available
-     * @param {Object} checkBrwFeature.state the state
-     * @param {Object} checkBrwFeature.dispatch the dispatch
-     * @param {Object} checkBrwFeature.commit the commit
-     * @param {ol.Feature[]} brwFeatures list of all available brw features
-     * @param {String} year selected brw year
-     * @returns {void}
-     */
-    async checkBrwFeature ({state, dispatch, commit}, {brwFeatures, year}) {
-        if (brwFeatures !== undefined) {
-            const brwFeatureByYear = await helpers.findBrwFeatureByYear({features: state.selectedBrwFeature, year});
-
-            if (brwFeatureByYear === undefined) {
-                commit("setSelectedPolygon", null);
-                commit("setBrwFeatures", []);
-                commit("setSelectedBrwFeature", {});
-                dispatch("MapMarker/removePointMarker", null, {root: true});
-            }
-            else {
-                dispatch("combineFeatureWithSelectedDate", brwFeatureByYear);
-            }
-
-        }
-        else {
-            commit("setSelectedPolygon", null);
-        }
     },
     /**
      * Shows or hides the old view of brw in stripes

@@ -130,7 +130,7 @@ export default {
         ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
         preparePrint,
         /**
-         * Checks if file to print is ready to be printed
+         * Toggles info text if clicked on info icon
          * @param {String} id the textId to toggle the right info text for the intended element
          * @returns {void}
          */

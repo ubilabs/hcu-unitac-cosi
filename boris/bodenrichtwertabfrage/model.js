@@ -476,6 +476,7 @@ function initializeBrwAbfrageModel () {
                     store.dispatch("MapMarker/removePointMarker");
                 }
                 else {
+                    console.log("brwFeatureByYear defined", brwFeature)
                     this.handleNewFeature(brwFeature);
                 }
             }

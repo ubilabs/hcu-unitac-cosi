@@ -260,38 +260,6 @@ describe("ADDONS: addons/borisVue/store/actionsBorisVue.js", () => {
             expect(dispatch.firstCall.args[1]).to.equal(selectedLayerName);
         });
     });
-    describe("checkBrwFeature", () => {
-        it("brw feature is already available", async () => {
-            const year = "2019";
-
-            await actions.checkBrwFeature({state, dispatch, commit}, {brwFeatures: state.filteredLayerList, year});
-            expect(commit.calledThrice).to.be.true;
-            expect(commit.firstCall.args[0]).to.equal("setSelectedPolygon");
-            expect(commit.firstCall.args[1]).to.equal(null);
-            expect(commit.secondCall.args[0]).to.equal("setBrwFeatures");
-            expect(commit.secondCall.args[1]).to.deep.equal([]);
-            expect(commit.thirdCall.args[0]).to.equal("setSelectedBrwFeature");
-            expect(commit.thirdCall.args[1]).to.deep.equal({});
-            expect(dispatch.calledOnce).to.be.true;
-        });
-        // to do: brwFeature by year: when is it defined? im alten boris wenn fläche ausgewählt wird und das Jahr gewechselt, hab ich abgeändert)
-        // betrifft auch die action: combineFeatureWithSelectedDate
-        // it.only("brw feature and brwFeatureByYear is already available", async () => {
-        //     const brwFeatures = {},
-        //         year = "2019";
-
-        //     await actions.checkBrwFeature({state, dispatch, commit}, {brwFeatures, year});
-        // })
-        it("brwFeature is not available yet", async () => {
-            const brwFeatures = undefined,
-                year = "2022";
-
-            await actions.checkBrwFeature({state, dispatch, commit}, {brwFeatures, year});
-            expect(commit.calledOnce).to.be.true;
-            expect(commit.firstCall.args[0]).to.equal("setSelectedPolygon");
-            expect(commit.firstCall.args[1]).to.equal(null);
-        });
-    });
     describe("toggleStripesLayer", () => {
 
         it("show stripes layer", () => {
