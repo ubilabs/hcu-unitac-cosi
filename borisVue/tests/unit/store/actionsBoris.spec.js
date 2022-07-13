@@ -250,16 +250,6 @@ describe("ADDONS: addons/borisVue/store/actionsBorisVue.js", () => {
             expect(commit.thirdCall.args[1]).to.equal(true);
         });
     });
-    describe("handleSelectBRWYear", () => {
-        it("handles layer selection by date", () => {
-            const selectedLayerName = "31.12.2019";
-
-            actions.handleSelectBRWYear({state, dispatch}, selectedLayerName);
-            expect(dispatch.calledTwice).to.be.true;
-            expect(dispatch.firstCall.args[0]).to.equal("switchLayer");
-            expect(dispatch.firstCall.args[1]).to.equal(selectedLayerName);
-        });
-    });
     describe("toggleStripesLayer", () => {
 
         it("show stripes layer", () => {

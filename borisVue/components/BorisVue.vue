@@ -20,7 +20,7 @@ export default {
     },
     computed: {
         // @inka: sind das jetzt zu viele oder passt es so?
-        ...mapGetters("Tools/BorisVue", ["active", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options"]),
+        ...mapGetters("Tools/BorisVue", ["active", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon","selectedLayerName", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options", "isProcessFromParametricUrl", "paramUrlParams"]),
         ...mapGetters("Tools/Print", ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]),
         ...mapGetters({
             isMobile: "mobile"
@@ -44,6 +44,14 @@ export default {
             },
             set (value) {
                 this.setSelectedLanduse(value);
+            }
+        },
+        selectedLayerNameComputed: {
+            get () {
+                return this.selectedLayerName;
+            },
+            set (value) {
+                this.setSelectedLayerName(value);
             }
         }
     },
@@ -118,7 +126,7 @@ export default {
     methods: {
         ...mapActions("Tools/BorisVue", [
             "initialize",
-            "handleSelectBRWYear",
+            "switchLayer",
             "toggleStripesLayer",
             "handleUrlParameters",
             "matchPolygonFeatureWithLanduse",
@@ -218,8 +226,9 @@ export default {
                 <div>
                     <select
                         id="brwLayerSelect"
+                        v-model="selectedLayerNameComputed"
                         class="form-select"
-                        @change="handleSelectBRWYear($event.target.value)"
+                        @change="switchLayer($event.target.value)"
                     >
                         <option
                             v-for="(model, index) in getFilterListWithoutStripes"

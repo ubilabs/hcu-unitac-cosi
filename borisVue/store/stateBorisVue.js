@@ -49,7 +49,7 @@ const state = {
     isAreaLayer: true,
     isStripesLayer: false,
     selectedLayer: null,
-    selectedLayerName: null,
+    selectedLayerName: "01.01.2022",
     textIds: [],
     selectedPolygon: null,
     selectedLanduse: "",

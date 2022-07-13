@@ -51,6 +51,7 @@ const actions = {
                 center: center});
 
             dispatch("switchLayer", brwLayerName);
+            commit("setSelectedLayerName", brwLayerName);
             dispatch("Maps/setCenter", center, {root: true});
             dispatch("requestGFI", {undefined, processFromParametricUrl, center});
         }
@@ -77,17 +78,18 @@ const actions = {
      * @param {String} selectedLayerName name of the selected layer
      * @returns {void}
      */
-    switchLayer ({state, dispatch, commit}, selectedLayerName) {
-        const selectedLayer = state.filteredLayerList.filter(function (layer) {
+    switchLayer ({rootState, state, dispatch, commit}, selectedLayerName) {
+        const previousSelectedLayer = state.filteredLayerList.filter(function (layer) {
             return layer.get("isSelected") === true;
         });
 
-        selectedLayer.forEach(layer => {
+        previousSelectedLayer.forEach(layer => {
             layer.set("isVisibleInMap", false);
             layer.set("isSelected", false);
         });
-        dispatch("selectLayerByName", selectedLayerName);
 
+        dispatch("selectLayerByName", selectedLayerName);
+        commit("setSelectedLayerName", selectedLayerName);
         commit("setSelectedBrwFeature", {});
         dispatch("MapMarker/removePolygonMarker", null, {root: true});
         dispatch("MapMarker/removePointMarker", null, {root: true});
@@ -100,16 +102,6 @@ const actions = {
             commit("setIsAreaLayer", false);
             dispatch("toggleStripesLayer", false);
         }
-    },
-    /**
-     * Handles layer selection by date
-     * @param {Object} handleSelectBRWYear.state the state
-     * @param {Object} handleSelectBRWYear.dispatch the dispatch
-     * @param {String} selectedLayerName name of the selected layer
-     * @returns {void}
-     */
-    handleSelectBRWYear ({dispatch}, selectedLayerName) {
-        dispatch("switchLayer", selectedLayerName);
     },
     /**
      * Shows or hides the old view of brw in stripes
