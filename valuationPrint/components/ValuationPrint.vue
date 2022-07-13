@@ -16,6 +16,7 @@ import {startPrintProcess} from "../utils/startPrintProcess.js";
 import axios from "axios";
 import isObject from "../../../src/utils/isObject";
 import moment from "moment";
+import upperFirst from "../../../src/utils/upperFirst";
 
 export default {
     name: "ValuationPrint",
@@ -76,8 +77,7 @@ export default {
                 );
 
                 setTimeout(() => {
-                    console.warn("mapfishDialog", mapfishDialog);
-                    startPrintProcess(this.printUrl, this.pdfAppId, mapfishDialog, (url, payload) => {
+                    startPrintProcess(this.printUrl, "pdf", this.pdfAppId, mapfishDialog, (url, payload) => {
                         this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfInTheMaking"));
                         return axios.post(url, payload);
                     },
@@ -87,11 +87,12 @@ export default {
                     error => {
                         this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfError"), true);
                         console.error(error);
+                        this.startImageProcess();
                     },
                     url => {
                         this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfSuccess"));
                         this.addUrl(url, this.$t("additional:modules.tools.valuationPrint.report"));
-                        // startImageProcess();
+                        this.startImageProcess();
                     });
                 }, 0);
             }, errorMsg => {
@@ -106,6 +107,7 @@ export default {
         this.select = null;
         this.printUrl = "";
         this.pdfAppId = "";
+        this.imageAppId = "";
         this.defaultValue = "";
         this.fileprefix = "";
 
@@ -155,6 +157,7 @@ export default {
                     this.config = response.data;
                     this.printUrl = this.getRestServiceById(response.data.settings.printServiceId).url;
                     this.pdfAppId = response.data.settings.pdfAppId;
+                    this.imageAppId = response.data.settings.imageAppId;
                     this.defaultValue = response.data.settings.defaultValue;
                     this.fileprefix = response.data.settings.fileprefix;
                 })
@@ -218,6 +221,49 @@ export default {
             };
         },
 
+        /**
+         * Starts the process for the images to print.
+         * @param {Number} [idx=0] - The index.
+         * @returns {void}
+         */
+        startImageProcess (idx = 0) {
+            const imageName = Object.keys(this.config.images[idx])[0],
+                mapfishDialog = createMapfishDialog(
+                    this.parcelData,
+                    {},
+                    this.config.images[idx],
+                    this.defaultValue,
+                    this.projection.getCode(),
+                    this.getFilenameOfPDF(this.selectedFeatures, imageName, moment().format("YYYY-MM-DD__HH-mm-ss"))
+                );
+
+            mapfishDialog.attributes.map = mapfishDialog.attributes[imageName + ".map"];
+            delete mapfishDialog.attributes[imageName + ".map"];
+
+            setTimeout(()=> {
+                startPrintProcess(this.printUrl, "png", this.imageAppId, mapfishDialog, (url, payload) => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.imageInTheMaking", {imageName: upperFirst(imageName)}), false);
+                    return axios.post(url, payload);
+                },
+                () => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pleaseWait"), false);
+                },
+                (error) => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.imageError", {imageName: upperFirst(imageName)}), true);
+                    console.error(error);
+                    if (this.config.images[idx + 1]) {
+                        this.startImageProcess(idx + 1);
+                    }
+                },
+                (url) => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.imageSuccess", {imageName: upperFirst(imageName)}), false);
+                    this.addUrl(url, upperFirst(imageName));
+                    if (this.config.images[idx + 1]) {
+                        this.startImageProcess(idx + 1);
+                    }
+                });
+            }, 0);
+        },
 
         /**
          * Sets the style of the selected features depending on the activity of the select interaction.

@@ -14,7 +14,10 @@
               "pleaseWait": "Please wait ...",
               "pdfError": "PDF failed ...",
               "pdfSuccess": "PDF is ready.",
-              "report": "Report"
+              "report": "Report",
+              "imageInTheMaking": "{{imageName}} is in progress.",
+              "imageSuccess": "{{imageName}} is ready.",
+              "imageError": "{{imageName}} failed."
           }
         }
     }

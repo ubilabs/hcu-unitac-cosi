@@ -58,17 +58,8 @@ export function createMapfishDialog (parcel, knowledgeBase, transformer, default
     });
 
     return {
-        uniqueIdList: [],
-        visibleLayerIds: ["453"],
         layout: "A4 Hochformat",
-        attributes: Object.assign({
-            scale: "1:10000",
-            showGfi: false,
-            gfi: {},
-            showLegend: false,
-            legend: {}
-        }, mapfishDialog),
-        outputFilename,
-        outputFormat: "pdf"
+        attributes: mapfishDialog,
+        outputFilename
     };
 }
