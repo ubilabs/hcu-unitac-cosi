@@ -1,9 +1,9 @@
 import Vuex from "vuex";
-import {config, shallowMount, createLocalVue} from "@vue/test-utils";
-import StreetSmartComponent from "../../../components/StreetSmart.vue";
-import StreetSmart from "../../../store/indexStreetSmart";
 import {expect} from "chai";
 import sinon from "sinon";
+import {config, shallowMount, createLocalVue} from "@vue/test-utils";
+import ObliqueViewerComponent from "../../../components/ObliqueViewer.vue";
+import ObliqueViewer from "../../../store/indexObliqueViewer";
 
 const localVue = createLocalVue();
 
@@ -12,30 +12,34 @@ config.mocks.$t = key => key;
 
 describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
     const mockConfigJson = {
-        Portalconfig: {
-            menu: {
-                tools: {
-                    children: {
-                        streetSmart: {
-                            name: "translate#additional:menu.tools.obliqueViewer",
-                            glyphicon: "glyphicon-picture",
-                            streetsmartAPIVersion: "v22.2",
-                            reactVersion: "16.13.0"
+            Portalconfig: {
+                menu: {
+                    tools: {
+                        children: {
+                            obliqueViewer: {
+                                "name": "translate#additional:modules.tools.obliqueViewer.title",
+                                "icon": "bi-image",
+                                "styleId": "obliqueViewer",
+                                "isVisibleInMenu": false
+                            }
                         }
                     }
                 }
             }
-        }
-    };
-    let store, wrapper, destroyApiOrig, initApiOrig, setPositionOrig;
+        },
+        mockMapMarkerActions = {
+            removePointMarker: sinon.stub()
+        };
+    let store, wrapper;
 
     beforeEach(() => {
-        destroyApiOrig = StreetSmart.actions.destroyApi;
-        StreetSmart.actions.destroyApi = sinon.stub();
-        initApiOrig = StreetSmart.actions.initApi;
-        StreetSmart.actions.initApi = sinon.stub();
-        setPositionOrig = StreetSmart.actions.setPosition;
-        StreetSmart.actions.setPosition = sinon.stub();
+        global.MutationObserver = {
+            constructor: () => sinon.stub(),
+            disconnect: () => sinon.stub(),
+            observe: () => sinon.stub()
+        };
+
+        ObliqueViewer.actions.setObliqueViewerURL = sinon.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -43,88 +47,57 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
                 Tools: {
                     namespaced: true,
                     modules: {
-                        StreetSmart
+                        ObliqueViewer
                     }
                 },
                 Maps: {
                     namespaced: true,
                     getters: {
-                        clickCoordinate: () => [100, 200]
+                        clickCoordinate: () => sinon.spy(),
+                        initialCenter: () => [565874, 5934140]
+                    },
+                    actions: {
+                        registerListener: sinon.stub(),
+                        unregisterListener: sinon.stub()
                     }
                 },
                 MapMarker: {
                     namespaced: true,
-                    getters: {
-                        markerPoint: () => sinon.spy()
+                    actions: mockMapMarkerActions,
+                    mutations: {
+                        setPointStyleId: () => sinon.spy()
                     }
                 }
             },
             state: {
                 configJson: mockConfigJson
+            },
+            getters: {
+                mobile: () => false
             }
         });
+
+        store.commit("Tools/ObliqueViewer/setActive", true);
+        wrapper = shallowMount(ObliqueViewerComponent, {store, localVue});
     });
     afterEach(function () {
         sinon.restore();
-        // set back to original functions, else next test actionsStreetSmart.spec.js fails
-        StreetSmart.actions.destroyApi = destroyApiOrig;
-        StreetSmart.actions.initApi = initApiOrig;
-        StreetSmart.actions.setPosition = setPositionOrig;
         if (wrapper) {
             wrapper.destroy();
         }
     });
 
-    it("renders the StreetSmart", () => {
-        store.state.Tools.StreetSmart.active = true;
-        wrapper = shallowMount(StreetSmartComponent, {store, localVue});
+    describe("ObliqueViewer.vue methods", () => {
+        it("close sets active to false", async () => {
+            expect(store.state.Tools.ObliqueViewer.active).to.be.true;
+            wrapper.vm.close();
+            await wrapper.vm.$nextTick();
 
-        expect(wrapper.find("#streetsmart").exists()).to.be.true;
-    });
-
-    it("do not render the StreetSmart if not active", () => {
-        store.state.Tools.StreetSmart.active = false;
-        wrapper = shallowMount(StreetSmartComponent, {store, localVue});
-
-        expect(wrapper.find("#streetsmart").exists()).to.be.false;
-    });
-
-    it("if active is set to false destroyApi should be called", async () => {
-        store.state.Tools.StreetSmart.active = true;
-        wrapper = shallowMount(StreetSmartComponent, {store, localVue});
-
-        store.commit("Tools/StreetSmart/setActive", false);
-        await wrapper.vm.$nextTick();
-        expect(wrapper.find("#streetsmart").exists()).to.be.false;
-        expect(StreetSmart.actions.destroyApi.calledOnce).to.be.true;
-    });
-    it("if active is set to true initApi should be called", async () => {
-        store.state.Tools.StreetSmart.active = false;
-        wrapper = shallowMount(StreetSmartComponent, {store, localVue});
-
-        wrapper.vm.apiIsLoaded = true;
-        store.commit("Tools/StreetSmart/setActive", true);
-        await wrapper.vm.$nextTick();
-        expect(wrapper.find("#streetsmart").exists()).to.be.true;
-        expect(StreetSmart.actions.initApi.calledOnce).to.be.true;
-    });
-    it("if active is set to true, but api loading has not finished: initApi should not be called", async () => {
-        store.state.Tools.StreetSmart.active = false;
-        wrapper = shallowMount(StreetSmartComponent, {store, localVue});
-
-        wrapper.vm.apiIsLoaded = false;
-        store.commit("Tools/StreetSmart/setActive", true);
-        await wrapper.vm.$nextTick();
-        expect(wrapper.find("#streetsmart").exists()).to.be.true;
-        expect(StreetSmart.actions.initApi.notCalled).to.be.true;
-    });
-
-    it("test watch on clickCoordinate should call action setPosition", async () => {
-        store.state.Tools.StreetSmart.active = true;
-        wrapper = shallowMount(StreetSmartComponent, {store, localVue});
-
-        expect(wrapper.find("#streetsmart").exists()).to.be.true;
-        wrapper.vm.$options.watch.clickCoordinate.call(wrapper.vm, [10, 20]);
-        expect(StreetSmart.actions.setPosition.calledOnce).to.be.true;
+            expect(store.state.Tools.ObliqueViewer.active).to.be.false;
+            expect(wrapper.find("#obliqueIframe").exists()).to.be.false;
+        });
+        it("renders the ObliqueViewer", () => {
+            expect(wrapper.find("#obliqueIframe").exists()).to.be.true;
+        });
     });
 });

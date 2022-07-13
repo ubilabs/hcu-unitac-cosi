@@ -3,7 +3,6 @@ import Vue from "vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getComponent from "../../../src/utils/getComponent";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
-import getters from "../store/gettersObliqueViewer";
 import mutationsObliqueViewer from "../store/mutationsObliqueViewer";
 import iframeResize from "../node_modules/iframe-resizer/js/iframeResizer";
 
@@ -12,7 +11,7 @@ Vue.directive("resize", {
         el.addEventListener("load", () => iframeResize(value, el));
     },
     unbind: function (el) {
-        el.iFrameResizer.removeListeners();
+        el?.iFrameResizer?.removeListeners();
     }
 });
 
@@ -22,8 +21,21 @@ export default {
         ToolTemplate
     },
     computed: {
-        ...mapGetters("Tools/ObliqueViewer", Object.keys(getters)), // nur die die genutzt werden
-        ...mapGetters("Maps", ["center", "initialCenter", "clickCoordinate"])
+        ...mapGetters("Tools/ObliqueViewer", [
+            "active",
+            "deactivateGFI",
+            "defaultMapMarkerStyleId",
+            "icon",
+            "initialWidth",
+            "name",
+            "obliqueViewerURL",
+            "renderToWindow",
+            "resizableWindow"
+        ]),
+        ...mapGetters("Maps", ["clickCoordinate", "initialCenter"]),
+        ...mapGetters({
+            isMobile: "mobile"
+        })
     },
     watch: {
         active (value) {
@@ -34,7 +46,16 @@ export default {
             }
         },
         clickCoordinate (value) {
-            this.setObliqueView(value.coordinate);
+            if (this.active === true) {
+                this.setObliqueView(value.coordinate);
+            }
+        },
+        isMobile (value) {
+            if (value) {
+                this.setRenderToWindow(value);
+                return;
+            }
+            this.setRenderToWindow(value);
         }
     },
     created () {
@@ -44,13 +65,22 @@ export default {
         this.$nextTick(() => {
             this.setObliqueViewerURL(this.initialCenter);
             this.initObliqueView();
+            if (this.isMobile) {
+                this.setRenderToWindow(this.isMobile);
+            }
         });
     },
     methods: {
         ...mapMutations("Tools/ObliqueViewer", Object.keys(mutationsObliqueViewer)),
+        ...mapMutations("MapMarker", ["setPointStyleId"]),
         ...mapActions("Tools/ObliqueViewer", ["initObliqueView", "setObliqueView", "setObliqueViewerURL"]),
         ...mapActions("MapMarker", ["removePointMarker"]),
+        ...mapActions("Maps", ["unregisterListener"]),
 
+        /**
+        * Hides the sidebar. Removes the MapMarker
+        * @returns {void}
+        */
         close () {
             const model = getComponent("obliqueViewer");
 
@@ -58,6 +88,9 @@ export default {
             if (model) {
                 model.set("isActive", false);
             }
+
+            this.unregisterListener({type: "click", listener: "setClickCoordinate", listenerType: "commit"});
+            this.setPointStyleId(this.defaultMapMarkerStyleId);
             this.removePointMarker();
         }
     }

@@ -42,7 +42,6 @@ export default {
 
         /**
         * Hides the sidebar.
-        * @fires Sidebar#RadioTriggerSidebarToggle
         * @returns {void}
         */
         close () {
