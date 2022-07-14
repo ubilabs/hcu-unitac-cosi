@@ -30,7 +30,7 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
         mockMapMarkerActions = {
             removePointMarker: sinon.stub()
         };
-    let store, wrapper;
+    let store, wrapper, setObliqueViewOrig, initObliqueViewOrig, setRenderToWindowOrig;
 
     beforeEach(() => {
         global.MutationObserver = {
@@ -38,6 +38,13 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
             disconnect: () => sinon.stub(),
             observe: () => sinon.stub()
         };
+
+        setObliqueViewOrig = ObliqueViewer.actions.setObliqueView;
+        ObliqueViewer.actions.setObliqueView = sinon.stub();
+        initObliqueViewOrig = ObliqueViewer.actions.initObliqueView;
+        ObliqueViewer.actions.initObliqueView = sinon.stub();
+        setRenderToWindowOrig = ObliqueViewer.mutations.setRenderToWindow;
+        ObliqueViewer.mutations.setRenderToWindow = sinon.stub();
 
         ObliqueViewer.actions.setObliqueViewerURL = sinon.stub();
 
@@ -53,7 +60,7 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
                 Maps: {
                     namespaced: true,
                     getters: {
-                        clickCoordinate: () => sinon.spy(),
+                        clickCoordinate: () => [100, 200],
                         initialCenter: () => [565874, 5934140]
                     },
                     actions: {
@@ -82,11 +89,47 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
     });
     afterEach(function () {
         sinon.restore();
+        ObliqueViewer.actions.setObliqueView = setObliqueViewOrig;
+        ObliqueViewer.actions.initObliqueView = initObliqueViewOrig;
+        ObliqueViewer.mutations.setRenderToWindow = setRenderToWindowOrig;
         if (wrapper) {
             wrapper.destroy();
         }
     });
+    describe("ObliqueViewer.vue watcher", () => {
+        it("test watch on clickCoordinate should call action setObliqueView", async () => {
+            store.state.Tools.ObliqueViewer.active = true;
+            wrapper = shallowMount(ObliqueViewerComponent, {store, localVue});
 
+            expect(wrapper.find("#obliqueIframe").exists()).to.be.true;
+            wrapper.vm.$options.watch.clickCoordinate.call(wrapper.vm, [10, 20]);
+            expect(ObliqueViewer.actions.setObliqueView.calledOnce).to.be.true;
+        });
+        it("test watch on active should call action setObliqueView", async () => {
+            store.state.Tools.ObliqueViewer.active = true;
+            wrapper = shallowMount(ObliqueViewerComponent, {store, localVue});
+
+            expect(wrapper.find("#obliqueIframe").exists()).to.be.true;
+            wrapper.vm.$options.watch.active.call(wrapper.vm, true);
+            expect(ObliqueViewer.actions.initObliqueView.calledOnce).to.be.true;
+        });
+        it("test watch on isMobile should call mutation setRenderToWindow if isMobile is false", async () => {
+            store.state.Tools.ObliqueViewer.active = true;
+            wrapper = shallowMount(ObliqueViewerComponent, {store, localVue});
+
+            expect(wrapper.find("#obliqueIframe").exists()).to.be.true;
+            wrapper.vm.$options.watch.isMobile.call(wrapper.vm, false);
+            expect(ObliqueViewer.mutations.setRenderToWindow.calledOnce).to.be.true;
+        });
+        it("test watch on isMobile should call mutation setRenderToWindow if isMoblie is true", async () => {
+            store.state.Tools.ObliqueViewer.active = true;
+            wrapper = shallowMount(ObliqueViewerComponent, {store, localVue});
+
+            expect(wrapper.find("#obliqueIframe").exists()).to.be.true;
+            wrapper.vm.$options.watch.isMobile.call(wrapper.vm, true);
+            expect(ObliqueViewer.mutations.setRenderToWindow.calledOnce).to.be.true;
+        });
+    });
     describe("ObliqueViewer.vue methods", () => {
         it("close sets active to false", async () => {
             expect(store.state.Tools.ObliqueViewer.active).to.be.true;
