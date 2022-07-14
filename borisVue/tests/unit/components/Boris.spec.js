@@ -137,7 +137,7 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
                 }
             };
 
-        it("getFilterListWithoutStripes includes & does not include layer without stripes", () => {
+        it.only("getFilterListWithoutStripes includes & does not include layer without stripes", () => {
             store.state.Tools.BorisVue.active = true;
             store.state.Tools.BorisVue.filteredLayerList.push(layer1);
             store.state.Tools.BorisVue.filteredLayerList.push(layer2);

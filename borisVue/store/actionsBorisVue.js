@@ -78,7 +78,7 @@ const actions = {
      * @param {String} selectedLayerName name of the selected layer
      * @returns {void}
      */
-    switchLayer ({rootState, state, dispatch, commit}, selectedLayerName) {
+    switchLayer ({state, dispatch, commit}, selectedLayerName) {
         const previousSelectedLayer = state.filteredLayerList.filter(function (layer) {
             return layer.get("isSelected") === true;
         });

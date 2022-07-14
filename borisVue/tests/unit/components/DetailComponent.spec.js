@@ -60,6 +60,12 @@ describe("ADDONS: addons/borisVue/components/DetailComponent.vue", () => {
     });
 
     describe("Boris Detail Component template", () => {
+        const data = {
+            strassenname: "Sesamstraße",
+            hausnummer: "10",
+            hausnummerzusatz: "abc"
+        };
+
         it("renders Detail Component", () => {
             wrapper = shallowMount(DetailComponent, {
                 store,
@@ -82,12 +88,6 @@ describe("ADDONS: addons/borisVue/components/DetailComponent.vue", () => {
             expect(wrapper.find(".detail-component").exists()).to.be.false;
         });
         it("test method getValue", () => {
-            const data = {
-                strassenname: "Sesamstraße",
-                hausnummer: "10",
-                hausnummerzusatz: "abc"
-            };
-
             wrapper = shallowMount(DetailComponent, {
                 store,
                 propsData: {
