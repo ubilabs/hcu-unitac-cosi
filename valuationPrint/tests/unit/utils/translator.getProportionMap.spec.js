@@ -76,7 +76,7 @@ describe("addons/valuationPrint/utils/translator.getProportionMap.js", () => {
             expect(result).to.be.an("object").that.is.not.empty;
             expect(result.dpi).to.equal(200);
             expect(result.projection).to.equal("EPSG:1234");
-            expect(result.bbox).to.deep.equal([562653.0673924336, 5940783.541169781, 562989.809634835, 5941376.848930203]);
+            expect(result.bbox).to.deep.equal([562524.784633423, 5940783.541169781, 563118.0923938458, 5941376.848930203]);
         });
 
         it("should return the map configuration with configured value", () => {
@@ -109,7 +109,7 @@ describe("addons/valuationPrint/utils/translator.getProportionMap.js", () => {
             expect(result).to.be.an("object").that.is.not.empty;
             expect(result.dpi).to.equal(72);
             expect(result.projection).to.equal("EPSG:1234");
-            expect(result.bbox).to.deep.equal([562653.0673924336, 5940783.541169781, 562989.809634835, 5941376.848930203]);
+            expect(result.bbox).to.deep.equal([562524.784633423, 5940783.541169781, 563118.0923938458, 5941376.848930203]);
         });
     });
 
@@ -123,9 +123,9 @@ describe("addons/valuationPrint/utils/translator.getProportionMap.js", () => {
 
         it("should return the bounding box with proportion 0.33", () => {
             const bbox = [
-                562653.0673924336,
+                562524.784633423,
                 5940783.541169781,
-                562989.809634835,
+                563118.0923938458,
                 5941376.848930203
             ];
 
@@ -143,21 +143,21 @@ describe("addons/valuationPrint/utils/translator.getProportionMap.js", () => {
 
         it("should return the bounding box with the configured proportion", () => {
             expect(getBoundingBox(extent, 0.2)).to.deep.equal([
-                562543.6261636532,
+                562331.9596112855,
                 5940590.7161476435,
-                563099.2508636154,
+                563310.917415983,
                 5941569.673952341
             ]);
             expect(getBoundingBox(extent, 0.5)).to.deep.equal([
-                562710.3135736419,
+                562625.6469526947,
                 5940884.403489053,
-                562932.5634536268,
+                563017.2300745738,
                 5941275.986610932
             ]);
             expect(getBoundingBox(extent, 0.8)).to.deep.equal([
-                562751.9854261391,
+                562699.0687880472,
                 5940957.825324405,
-                562890.8916011296,
+                562943.8082392216,
                 5941202.56477558
             ]);
         });
