@@ -275,6 +275,22 @@ describe("addons/valuationPrint/utils/translator.concatStringByDatakey.js", () =
 
             expect(concatSingleDatakey(knowledgeBase, datakey, defaults, "defaultValue", "DELIMITOR")).to.deep.equal(expected);
         });
+        it("should create a string with unique entries", () => {
+            const knowledgeBase = {
+                    a: [1, 1, 1],
+                    b: [2, 2, 2, 3],
+                    c: [4, 4, 4, 5, 6, 7],
+                    d: [8, 8, 8, 9]
+                },
+                datakey = "foo {{a}} bar {{b}} baz {{c}} foobar {{d}} qrz",
+                defaults = {
+                    "a": "defaultA",
+                    "d": "defaultD"
+                },
+                expected = "foo 1 bar 2 baz 4 foobar 8 qrzDELIMITORfoo defaultA bar 3 baz 5 foobar 9 qrzDELIMITORfoo defaultA bar defaultValue baz 6 foobar defaultD qrzDELIMITORfoo defaultA bar defaultValue baz 7 foobar defaultD qrz";
+
+            expect(concatSingleDatakey(knowledgeBase, datakey, defaults, "defaultValue", "DELIMITOR")).to.deep.equal(expected);
+        });
     });
     describe("concatStringByDatakey", () => {
         it("should create a complex string from a single datakey", () => {

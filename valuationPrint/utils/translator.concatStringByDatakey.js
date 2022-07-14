@@ -43,17 +43,14 @@ function concatStringByDatakey (knowledgeBase, datakey, defaults, defaultValue, 
  */
 function concatSingleDatakey (knowledgeBase, datakey, defaults, defaultValue, delimitor) {
     const keys = getKeysFromDataKey(datakey),
-        knowledgeFlip = getFlippedKnowledgeBase(knowledgeBase, keys, defaults, defaultValue);
-    let result = "";
+        knowledgeFlip = getFlippedKnowledgeBase(knowledgeBase, keys, defaults, defaultValue),
+        result = new Set();
 
     knowledgeFlip.forEach(knowledgeBits => {
-        if (result) {
-            result += delimitor;
-        }
-        result += mergeKnowledgeIntoDatakey(knowledgeBits, datakey);
+        result.add(mergeKnowledgeIntoDatakey(knowledgeBits, datakey));
     });
 
-    return result;
+    return [...result].join(delimitor);
 }
 
 /**
