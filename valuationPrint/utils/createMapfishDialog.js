@@ -33,7 +33,7 @@ export function createMapfishDialog (parcel, knowledgeBase, transformer, default
                 mapfishDialog[prefix + "." + postfix] = getFixedMap(parcel?.center, mapProjection, transformerConfig.style, transformerConfig.bbox, transformerConfig.layerIds);
             }
             else if (transformerConfig.type === "concat") {
-                const resultConcat = concatStringByDatakey(knowledgeBase, transformerConfig.datakey, transformerConfig.default, defaultValue, transformerConfig.delimitor ? transformerConfig.delimitor : defaultDelimitor);
+                const resultConcat = concatStringByDatakey(knowledgeBase, transformerConfig.datakey, transformerConfig.default, defaultValue, transformerConfig.delimitor ? transformerConfig.delimitor : defaultDelimitor, transformerConfig.options);
 
                 if (!(resultConcat instanceof Error)) {
                     mapfishDialog[prefix + "." + postfix] = resultConcat;
