@@ -41,6 +41,12 @@ export function createMapfishDialog (parcel, knowledgeBase, transformer, default
             }
             else if (transformerConfig.type === "iterator") {
                 if (!(knowledgeBase[transformerConfig.datakey] instanceof Error) && typeof transformerConfig?.idx === "number") {
+                    if (typeof knowledgeBase[transformerConfig.datakey] !== "undefined" && knowledgeBase[transformerConfig.datakey].length > transformerConfig.idx) {
+                        const diffLength = knowledgeBase[transformerConfig.datakey].length - transformerConfig.idx + 1;
+
+                        knowledgeBase[transformerConfig.datakey].splice(transformerConfig.idx);
+                        knowledgeBase[transformerConfig.datakey][transformerConfig.idx - 1] = typeof transformerConfig.warning !== "undefined" ? diffLength + transformerConfig.warning : "";
+                    }
                     for (let idx = 0; idx < transformerConfig.idx; idx++) {
                         if (Array.isArray(knowledgeBase[transformerConfig.datakey]) && typeof knowledgeBase[transformerConfig.datakey][idx] !== "undefined") {
                             mapfishDialog[prefix + "." + postfix + "." + idx] = knowledgeBase[transformerConfig.datakey][idx];
