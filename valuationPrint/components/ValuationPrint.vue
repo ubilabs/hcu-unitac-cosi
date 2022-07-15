@@ -454,26 +454,28 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-    button {
-        font-size: 1em;
-    }
+@import "~variables";
 
-    h6 {
-        margin-bottom: 1rem;
-    }
+button {
+    font-size: 13px;
+}
 
-    .messageListError {
-        color: Red;
-    }
+h6 {
+    margin-bottom: 13px;
+}
 
-    .card-body {
-        max-height: 300px;
-        overflow-y: auto;
-        padding: 0.8em 0.8rem;
-    }
+.messageListError {
+    color: $danger;
+}
 
-    .list-inline, .list-unstyled {
-        margin-bottom: 0;
-    }
+.card-body {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 13px;
+}
+
+.list-inline, .list-unstyled {
+    margin-bottom: 0;
+}
 
 </style>
