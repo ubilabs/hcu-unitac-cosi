@@ -442,7 +442,10 @@ export default {
                                     :key="idx + '_' + url.name"
                                     class="urlListEntry"
                                 >
-                                    <a :href="url.link">{{ url.name }}</a>
+                                    <a
+                                        :href="url.link"
+                                        target="_blank"
+                                    >{{ url.name }}</a>
                                 </li>
                             </ul>
                         </p>
