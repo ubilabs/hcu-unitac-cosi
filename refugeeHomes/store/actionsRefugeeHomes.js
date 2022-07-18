@@ -1,220 +1,124 @@
-import loadPackage from "../utils/loadPackage";
+import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
+import axios from "axios";
+
 const actions = {
-
     /**
-     * Loads StreetSmartApi and react in the given versions. They are loaded by appending a script tag to head tag and not by package.json.
-     * React is loaded this way, because only the production version works with StreetSmartApi.
-     * StreetSmartApi is loaded this way, because it is not a npm package.
-     * Versions of them are taken from state.
-     * @param {Function} callback  called, if all libs are loaded
+     * Iterates over layerIds, creates the url and executes the wfs request.
+     * @param {Object} getters vuex element
+     * @param {Object} dispatch vuex element
      * @returns {void}
      */
-    loadPackages ({state}, callback) {
-        const urlStreetsmartAPI = `https://streetsmart.cyclomedia.com/api/v${state.streetsmartAPIVersion}/StreetSmartApi.js`,
-            urlReact = `https://unpkg.com/react@${state.reactVersion}/umd/react.production.min.js`,
-            urlReactDom = `https://unpkg.com/react-dom@${state.reactVersion}/umd/react-dom.production.min.js`;
+    requestRawLayerList ({getters, dispatch}) {
+        getters.layerIds.forEach(async (layerId) => {
+            const rawLayer = getLayerWhere({id: layerId}),
+                getFeatureUrl = await dispatch("buildAndGetRequestUrl", rawLayer);
 
-        try {
-            loadPackage(urlReact)
-                .then(() => loadPackage(urlReactDom))
-                .then(() => loadPackage(urlStreetsmartAPI))
-                .then(() => {
-                    if (callback) {
-                        return callback();
-                    }
-                    return null;
-                })
-                .catch((err) => console.error("loading of package failed:", err));
-        }
-        catch (err) {
-            console.error("loading of package failed:", err);
-        }
+            dispatch("sendRequest", getFeatureUrl);
+        });
+
     },
+
     /**
-     * Sets the coordinates of the event to panorama-viewer and sets mapMarker to map.
-     * @param {Object} param.state the state
-     * @param {Object} param.commit the commit
-     * @param {Object} param.dispatch the dispatch
-     * @param {Object} param.rootGetters the rootGetters
-     * @param {Object} evt contains coordinates
-     * @see {@link https://www.cyclomedia.com/de/api-dokumentation }
+     * Checks for highlighting layer from zoomTo and removes it.
+     * @param {Object} dispatch vuex element
+     * @param {String} url url for the wfs request
      * @returns {void}
      */
-    setPosition ({state, commit, dispatch, rootGetters}, evt) {
-        if (state.active && evt) {
-            const projection = rootGetters["Maps/getView"].getProjection().getCode(),
-                coordinates = [evt[0], evt[1]];
-
-            try {
-                dispatch("MapMarker/placingPointMarker", coordinates, {root: true});
-                StreetSmartApi.open(
-                    {
-                        coordinate: coordinates
-                    },
-                    {
-                        viewerType: [StreetSmartApi.ViewerType.PANORAMA],
-                        srs: projection,
-                        panoramaViewer: {
-                            replace: true,
-                            timeTravelVisible: false,
-                            closable: false,
-                            // Show green recording dots
-                            recordingsVisible: true
-                        }
-                    }).
-                    then(result => {
-                        if (result && result[0]) {
-                            commit("setLastCoordinates", coordinates);
-                        }
-                        else {
-                            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.noData"), {root: true});
-                            dispatch("MapMarker/placingPointMarker", state.lastCoordinates, {root: true});
-                        }
-                    }
-                    ).catch(reason => {
-                        console.warn("Error opening panorama viewer: " + reason);
-                        dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailed"), {root: true});
-                    }
-                    );
-            }
-            catch (e) {
-                console.error("Create streetSmart view failed: ", e);
-                dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailed"), {root: true});
-            }
-        }
+    sendRequest ({dispatch}, url) {
+        axios({
+            url: url,
+            type: "GET",
+            timeout: 6000
+        }).then((response) => {
+            dispatch("parseFeatures", response.data);
+        }).catch(
+            dispatch("Alerting/addSingleAlert", url + i18next.t("additional:modules.tools.refugeehomes.requestAlert"), {root: true})
+        );
     },
+
     /**
-     * Initializes the StreetSmartApi Panorama viewer.
-     * @param {Object} param.state the state
-     * @param {Object} param.commit the commit
-     * @param {Object} param.dispatch the dispatch
-     * @param {Object} param.rootGetters the rootGetters
-     * @see {@link https://www.cyclomedia.com/de/api-dokumentation }
+     * Builds the wfs request from layer information.
+     * @param {Object} state vuex element
+     * @param {Object} rawLayer wfs layer
+     * @returns {String} wfs query string
+     */
+    buildAndGetRequestUrl (state, rawLayer) {
+        const params = "?service=WFS&request=GetFeature&version=2.0.0&typeNames=",
+            url = rawLayer.url,
+            featureType = rawLayer.featureType;
+
+        return url + params + featureType;
+    },
+
+    /**
+     * Parses the xml data
+     * @param {Object} commit vuex element
+     * @param {XML} data xml data
      * @returns {void}
      */
-    initApi ({state, dispatch, getters, rootGetters}) {
-        const service = rootGetters.getRestServiceById(state.serviceId),
-            projection = rootGetters["Maps/getView"].getProjection().getCode(),
-            locale = getters.currentLocale;
+    parseFeatures: function ({getters, dispatch, commit, rootGetters}, data) {
+        const xmlData = new DOMParser().parseFromString(data, "text/xml"),
+            hits = xmlData.getElementsByTagName("wfs:member");
 
-        if (service) {
-            const options = {
-                targetElement: document.getElementById("streetsmart"),
-                username: service.params.username,
-                password: service.params.password,
-                apiKey: service.params.apiKey,
-                srs: service.params.srs ? service.params.srs : projection,
-                locale: locale ? locale : service.params.locale
+        let feature,
+            element,
+            coordEle,
+            coord;
+
+        hits.forEach(hit => {
+            feature = {
+                id: hit.childNodes[1].getAttribute("gml:id")
             };
 
-            if (typeof StreetSmartApi === "undefined") {
-                console.warn("Cannot start Streetsmart-View. StreetSmartApi is not available.");
-                dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailedMoreInfo"), {root: true});
-            }
-            else {
-                StreetSmartApi.init(options)
-                    .then(
-                        function () {
-                            dispatch("onInitSuccess");
-                        }
-                    ).catch(
-                        function (reason) {
-                            console.warn("Failed to create component(s) through API: " + reason);
-                            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailedMoreInfo"), {root: true});
-                        }
-                    );
-            }
+            getters.featureAttributes.forEach((attr) => {
+                element = hit.getElementsByTagName("app:" + attr)[0];
+
+                if (typeof element !== "undefined") {
+                    if (attr === "pfad") {
+                        const pfadArray = element.innerHTML.split("|");
+
+                        feature[attr] = pfadArray;
+                    }
+                    else if (attr === "geom") {
+                        coordEle = hit.getElementsByTagName("gml:pos")[0];
+                        coord = coordEle.innerHTML.split(" ");
+
+                        feature[attr] = [parseFloat(coord[0]), parseFloat(coord[1])];
+                    }
+                    else {
+                        feature[attr] = element.innerHTML;
+                    }
+
+                    feature.featureType = hit.childNodes[1].localName;
+                    feature.imgSrc = rootGetters.imagePath + feature.featureType + ".svg";
+                }
+            });
+            dispatch("scaleImages", feature);
+            commit("addFeature", feature);
+        });
+    },
+    /**
+     * Sets the image height depending on the number of seats of a location for image manipulation
+     * @param {Object} context vuex element
+     * @param {Object} feature wfs feature
+     * @returns {void}
+     */
+    scaleImages (context, feature) {
+        const seatNumbers = feature.platzzahl;
+
+        if (seatNumbers === 0) {
+            feature.imgHeight = 30;
+        }
+        else if (seatNumbers < 100) {
+            feature.imgHeight = 20;
+        }
+        else if (seatNumbers >= 250) {
+            feature.imgHeight = 30;
         }
         else {
-            console.warn("Cannot start Streetsmart-View. No service in rest-services found for serviceId ", state.serviceId);
-            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.streetsmart.createViewFailedMoreInfo"), {root: true});
+            feature.imgHeight = 25;
         }
-    },
-    /**
-     * Destroys the StreetSmartApi Panorama viewer and removes mapMarker from map.
-     * @param {Object} param.dispatch the dispatch
-     * @returns {void}
-     */
-    destroyApi ({state, dispatch, commit}) {
-        dispatch("MapMarker/removePointMarker", null, {root: true});
-        commit("MapMarker/setPointStyleId", state.mapMarkerStyleId, {root: true});
-        dispatch("removeListener");
-        StreetSmartApi.destroy({
-            targetElement: document.getElementById("streetsmart")
-        });
-    },
-    /**
-     * Moves and rotates the mapMarker.
-     * @param {Object} param.dispatch the dispatch
-     * @param {Object} param.getters the getters
-     * @param {Object} evt to get coordinates and rotation from
-     * @returns {void}
-     */
-    async moveAndRotateMarker ({dispatch, getters}, evt) {
-        await dispatch("MapMarker/placingPointMarker", evt.detail.recording.xyz, {root: true});
-        dispatch("MapMarker/rotatePointMarker", evt.detail.recording.relativeYaw + getters.lastYaw, {root: true});
-    },
-    /**
-     * Rotates the mapMarker and remembers the last yaw.
-     * @param {Object} param.commit the commit
-     * @param {Object} param.dispatch the dispatch
-     * @param {Object} evt to get rotation from
-     * @returns {void}
-     */
-    rotateMarker ({commit, dispatch}, evt) {
-        dispatch("MapMarker/rotatePointMarker", evt.detail.yaw, {root: true});
-        commit("setLastYaw", evt.detail.yaw);
-    },
-    /**
-     * Adds listener to panorama viewer.
-     * @param {Object} param.dispatch the dispatch
-     * @returns {void}
-     */
-    addListener ({dispatch}) {
-        StreetSmartApi.on(StreetSmartApi.Events.viewer.VIEWER_ADDED, viewerEvent => {
-            viewerEvent.detail.viewer.on(StreetSmartApi.Events.panoramaViewer.RECORDING_CLICK, function (e) {
-                dispatch("moveAndRotateMarker", e);
-            });
-            viewerEvent.detail.viewer.on(StreetSmartApi.Events.panoramaViewer.VIEW_CHANGE, function (e) {
-                dispatch("rotateMarker", e);
-            });
-            viewerEvent.detail.viewer.on(StreetSmartApi.Events.panoramaViewer.TILE_LOAD_ERROR, function (e) {
-                console.warn(e);
-            });
-        });
-    },
-    /**
-     * Removes listener from panorama viewer.
-     * @param {Object} param.dispatch the dispatch
-     * @returns {void}
-     */
-    removeListener ({dispatch}) {
-        if (typeof StreetSmartApi !== "undefined" && typeof StreetSmartApi.on === "function") {
-            StreetSmartApi.on(StreetSmartApi.Events.viewer.VIEWER_ADDED, viewerEvent => {
-                viewerEvent.detail.viewer.off(StreetSmartApi.Events.panoramaViewer.RECORDING_CLICK, function (e) {
-                    dispatch("moveAndRotateMarker", e);
-                });
-                viewerEvent.detail.viewer.off(StreetSmartApi.Events.panoramaViewer.VIEW_CHANGE, function (e) {
-                    dispatch("rotateMarker", e);
-                });
-                viewerEvent.detail.viewer.off(StreetSmartApi.Events.panoramaViewer.TILE_LOAD_ERROR, function (e) {
-                    console.warn(e);
-                });
-            });
-        }
-    },
-    /**
-     * Is called if initilization of StreetSmartApi was successful.
-     * Adds listeners and sets maps center as position in panorama viewer.
-     * @param {Object} param.dispatch the dispatch
-     * @param {Object} param.rootGetters the rootGetters
-     * @returns {void}
-     */
-    onInitSuccess ({state, dispatch, commit, rootGetters, rootState}) {
-        dispatch("addListener");
-        commit("setMapMarkerStyleId", rootState.MapMarker.pointStyleId);
-        commit("MapMarker/setPointStyleId", state.styleId, {root: true});
-        dispatch("setPosition", rootGetters["Maps/getView"].getCenter());
+        return feature;
     }
 };
 
