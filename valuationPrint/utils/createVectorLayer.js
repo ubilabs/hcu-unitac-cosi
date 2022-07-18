@@ -10,8 +10,9 @@ import {Circle as CircleStyle, Fill, Stroke, Style} from "ol/style";
  * @returns {ol/layer/Vector} The created vector layer with feature and style.
  */
 function getFeatureLayer (styleConfig, feature, type) {
+    feature.setStyle(type === "point" ? getPointStyle(styleConfig) : getPolygonStyle(styleConfig));
+
     return new VectorLayer({
-        style: type === "point" ? getPointStyle(styleConfig) : getPolygonStyle(styleConfig),
         source: new VectorSource({
             features: [feature]
         })
