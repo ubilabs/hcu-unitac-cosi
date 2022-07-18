@@ -8,10 +8,11 @@ import {WFS} from "ol/format";
 /**
  * Creates a feature with the given coordinate or requests features via a service.
  * @param {Object} parcel - The parcel.
- * @param {Number[]} parcel.center - The parcel center.
- * @param {ol/extent} parcel.extent - The extent of the parcel.
- * @param {ol/Feature} parcel.feature - The ol feature of the parcel.
- * @param {ol/geom/Polygon} parcel.geometry - The geometry of the parcel.
+ * @param {Number[]} parcel.center - The parcel (possible merged) center.
+ * @param {ol/extent} parcel.extent - The extent of the parcel (possible merged) .
+ * @param {ol/Feature} parcel.feature - The ol feature of the parcel (possible merged).
+ * @param {ol/Feature[]} parcel.featureList - All features of the selected parcels.
+ * @param {ol/geom/Polygon} parcel.geometry - The geometry of the parcel (possible merged).
  * @param {Object} config - Crawler config.
  * @param {Number[]} [config.coordinate] - A coordinate from which a feature is created.
  * @param {String} [config.filter] - Controls which filter is used (e.g. "intersects", "within"). Only used if no coordinate is specified.
@@ -31,7 +32,7 @@ export function collectFeatures (parcel, config, mapProjection, service, onsucce
         onsuccess([feature]);
     }
     else if (config.filter === "equalTo") {
-        onsuccess([parcel.feature]);
+        onsuccess(parcel.featureList);
     }
     else {
         const propertyNames = config.precompiler ? config.propertyName.concat(config.geometryName) : config.propertyName,

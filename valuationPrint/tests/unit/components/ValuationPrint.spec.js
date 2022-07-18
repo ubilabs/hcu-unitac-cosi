@@ -327,7 +327,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
                 wrapper.vm.setParcelData([features[0]]);
 
-                expect(wrapper.vm.parcelData).to.have.all.keys("center", "geometry", "extent", "feature");
+                expect(wrapper.vm.parcelData).to.have.all.keys("center", "geometry", "extent", "feature", "featureList");
             });
             it("should not set the parcelData object", () => {
                 const wrapper = factory.getShallowMount({}, true);

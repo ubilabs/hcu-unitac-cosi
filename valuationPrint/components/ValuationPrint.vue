@@ -217,6 +217,7 @@ export default {
                 center: getCenterOfExtent(extent),
                 extent,
                 feature,
+                featureList,
                 geometry: feature.getGeometry()
             };
         },
