@@ -19,7 +19,6 @@ export default {
         FloorComponent
     },
     computed: {
-        // @inka: sind das jetzt zu viele oder passt es so?
         ...mapGetters("Tools/BorisVue", ["active", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLayerName", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options", "isProcessFromParametricUrl", "paramUrlParams"]),
         ...mapGetters("Tools/Print", ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]),
         ...mapGetters({
@@ -104,11 +103,7 @@ export default {
             }
         },
         isMobile () {
-            if (this.isMobile) {
-                this.setRenderToWindow(true);
-                return;
-            }
-            this.setRenderToWindow(false);
+            this.setRenderToWindow(this.isMobile);
         }
     },
     created () {

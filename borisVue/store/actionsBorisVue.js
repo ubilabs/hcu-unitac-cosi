@@ -55,8 +55,7 @@ const actions = {
             dispatch("Maps/setCenter", center, {root: true});
             dispatch("requestGFI", {undefined, processFromParametricUrl, center});
         }
-        // @inka: soll das rein?
-        // console.warn("To be able to perform a BORIS query directly, the parameters \"brwId\",  \"brwLayerName\" and \"center\" must be set in the URL");
+        console.warn("To be able to perform a BORIS query directly, the parameters \"brwId\",  \"brwLayerName\" and \"center\" must be set in the URL");
     },
     /**
      * Simulates landuse selection when parametric URL is being used
@@ -140,13 +139,6 @@ const actions = {
      */
     selectLayerByName ({state, commit}, selectedLayerName) {
         const layerList = state.filteredLayerList.filter(layer => layer.get("isNeverVisibleInTree") === true),
-            // selectedLayer = layerList.find(layer => layer.get("name") === selectedLayerName);
-
-            // @inka: ist es richtig hier auch die if schleife davor zu setzen? ansonsten typeError wenn in der urlParam ein falscher
-            // unvollständiger brwlayername eingegeben wird
-            // ist mir im Zusammenhang mit dem getter-test: findLanduseByBrwId aufgefallen
-            // das gleiche dann für toggle stripes layer und so weiter?
-            // also überall wo "layer.get(""attributename"")" verwendet wird, sollte überprüft werden, ob layer nicht undefined ist, richtig?
             selectedLayer = layerList.find((layer) => {
                 if (layer.get("name") === selectedLayerName) {
                     return layer;

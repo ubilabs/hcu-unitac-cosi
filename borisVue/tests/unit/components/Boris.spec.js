@@ -63,10 +63,10 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
                                 printStarted: () => sinon.stub(),
                                 progressWidth: () => sinon.stub()}
                         }
-                    },
-                    getters: {mobile: () => false}
+                    }
                 }
             },
+            getters: {mobile: () => false},
             state: {
                 configJson: mockConfigJson
             }
@@ -137,14 +137,14 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
                 }
             };
 
-        it.only("getFilterListWithoutStripes includes & does not include layer without stripes", () => {
+        it("getFilterListWithoutStripes includes & does not include layer without stripes", () => {
             store.state.Tools.BorisVue.active = true;
             store.state.Tools.BorisVue.filteredLayerList.push(layer1);
             store.state.Tools.BorisVue.filteredLayerList.push(layer2);
             wrapper = shallowMount(BorisVueComponent, {store, localVue});
 
-            expect(wrapper.vm.getFilterListWithoutStripes).to.include(layer2.attributes.name);
-            // expect(wrapper.vm.getFilterListWithoutStripes).to.not.include(layer1.attributes.name);
+            expect(wrapper.vm.getFilterListWithoutStripes).to.have.lengthOf(1);
+            expect(wrapper.vm.getFilterListWithoutStripes[0]).to.deep.equal(layer2);
         });
     });
     describe("selectedLanduseComputed computed property", () => {
