@@ -73,7 +73,7 @@ export default {
                     this.config.transformer,
                     this.defaultValue,
                     this.projection.getCode(),
-                    this.getFilenameOfPDF(this.selectedFeatures, this.fileprefix, moment().format("YYYY-MM-DD__HH-mm-ss"))
+                    this.getFilenameOfPDF(parcel.featureList, this.fileprefix, moment().format("YYYY-MM-DD__HH-mm-ss"))
                 );
 
                 setTimeout(() => {
@@ -235,7 +235,7 @@ export default {
                     this.config.images[idx],
                     this.defaultValue,
                     this.projection.getCode(),
-                    this.getFilenameOfPDF(this.selectedFeatures, imageName, moment().format("YYYY-MM-DD__HH-mm-ss"))
+                    this.getFilenameOfPDF(this.parcelData.featureList, imageName, moment().format("YYYY-MM-DD__HH-mm-ss"))
                 );
 
             mapfishDialog.attributes.map = mapfishDialog.attributes[imageName + ".map"];
