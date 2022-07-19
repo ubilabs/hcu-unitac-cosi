@@ -86,12 +86,68 @@ describe("boris helper functions", () => {
         expect(STAG).to.deep.equal(STAGVALUE);
         expect(ZBEIT).to.deep.equal(ZBEITVALUE);
     });
-    // it.only("convert with empty brw object", () => {
-    //     const brw = {},
-    //         STAG = helpers.convert({brw});
+    it("getSW", () => {
+        const values = {
+                schichtwert: {
+                    normschichtwert_laden: "21.000,00",
+                    normschichtwert_ladenDM: "",
+                    normschichtwert_laden_text: "Normierter Bodenrichtwert für Geschäftshäuser (Ergeschoss-Anteil)"
+                }
+            },
+            feature = {
+                values_: values,
+                get: (key) => {
+                    return values[key];
+                }
+            },
+            getSWFunction = helpers.getSW(feature);
 
-    //     console.log("STAG", STAG);
+        expect(getSWFunction).equal(values.schichtwert);
 
-    // });
+    });
+    it("getSW without schichtwert", () => {
+        const values = {},
+            feature = {
+                values_: values,
+                get: (key) => {
+                    return values[key];
+                }
+            },
+            getSWFunction = helpers.getSW(feature);
+
+        expect(getSWFunction).to.deep.equal(null);
+    });
+    it("parseSW", () =>{
+        const values = {
+                jahrgang: "2022",
+                schichtwert: {
+                    normschichtwert_laden: "21000.00",
+                    normschichtwert_ladenDM: "",
+                    normschichtwert_laden_text: "Normierter Bodenrichtwert für Geschäftshäuser (Ergeschoss-Anteil)"
+                }
+            },
+            feature = {
+                values_: values,
+                get: (key) => {
+                    return values[key];
+                }
+            },
+            parseSW = helpers.parseSW({feature});
+
+        expect(parseSW.normschichtwert_laden).to.equal("21.000,00");
+    });
+    it("parseSW without sw", () => {
+        const values = {
+                jahrgang: "2022"
+            },
+            feature = {
+                values_: values,
+                get: (key) => {
+                    return values[key];
+                }
+            },
+            parseSW = helpers.parseSW({feature});
+
+        expect(parseSW).to.equal(null);
+    });
 });
-

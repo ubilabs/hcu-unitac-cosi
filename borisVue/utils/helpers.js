@@ -32,7 +32,6 @@ const helpers = {
         if (richtwert.match(/,/) && richtwert.match(/\./)) {
             richtwert = richtwert.replace(".", "").replace(",", ".");
         }
-
         requestObj.BRW = {
             dataType: "float",
             value: richtwert
@@ -205,7 +204,6 @@ const helpers = {
             requestObj.tm_ttl = wpsTimeout.tm_ttl;
         }
         return requestObj;
-
     },
     /**
      * Gets the attribute 'schichtwert' (floorValue) from the selectedBrwFeature
