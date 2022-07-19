@@ -3,7 +3,7 @@ import store from "../../../src/app-store";
 
 /**
  * Parses the layers into mapfisch format
- * @param {ol/layer[]} layerList the layers in an Array list
+ * @param {[ol/layer, opacity]} layerList the printed layer and its opacity in an Array list
  * @returns {ol/layer[]} the parsed layers in an Array for mapfish
  */
 async function buildLayers (layerList) {
@@ -14,9 +14,14 @@ async function buildLayers (layerList) {
         for (const layer of layerList) {
             const printLayers = [];
 
-            printLayers.push(await BuildSpec.buildLayerType(layer, currentResolution));
+            if (!Array.isArray(layer) || layer.length !== 2) {
+                return [];
+            }
+
+            printLayers.push(await BuildSpec.buildLayerType(layer[0], currentResolution));
             printLayers.forEach(printLayer => {
                 if (typeof printLayer !== "undefined") {
+                    printLayer.opacity = layer[1];
                     layers.push(printLayer);
                 }
 

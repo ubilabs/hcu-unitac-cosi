@@ -27,7 +27,7 @@ function getFixedMap (coordinate, projection, style, bbox, layerIds, dpi = 200) 
     mapConfig.bbox = Array.isArray(bbox) && bbox.length === 4 ? bbox : defaultBbox;
     mapConfig.layers = [];
 
-    originLayers.push(getFeatureLayer(style, feature, "point"));
+    originLayers.push([getFeatureLayer(style, feature, "point"), 1]);
     originLayers = originLayers.concat(getPrintedLayers(layerIds));
 
     buildLayers(originLayers).then(parsedLayers => {

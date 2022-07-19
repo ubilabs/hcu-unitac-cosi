@@ -23,7 +23,7 @@ function getProportionMap (feature, extent, projection, style, proportion, layer
     mapConfig.bbox = Array.isArray(extent) && extent.length === 4 ? getBoundingBox(extent, proportion) : defaultBbox;
     mapConfig.layers = [];
 
-    originLayers.push(getFeatureLayer(style, feature));
+    originLayers.push([getFeatureLayer(style, feature), 1]);
     originLayers = originLayers.concat(getPrintedLayers(layerIds));
 
     buildLayers(originLayers).then(parsedLayers => {

@@ -24,7 +24,7 @@ function getWalkerMap (feature, center, projection, style, scale, layerIds, dpi 
     mapConfig.center = Array.isArray(center) ? center : [];
     mapConfig.layers = [];
 
-    originLayers.push(getFeatureLayer(style, feature));
+    originLayers.push([getFeatureLayer(style, feature), 1]);
     originLayers = originLayers.concat(getPrintedLayers(layerIds));
 
     buildLayers(originLayers).then(parsedLayers => {
