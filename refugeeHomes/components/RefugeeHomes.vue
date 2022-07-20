@@ -108,7 +108,7 @@ export default {
         },
 
         /**
-         * Filters the lsit according the district name and Sorts the table entries according the ranking list and district number
+         * Filters the list according the district name and Sorts the table entries according the ranking list and district number
          * @param  {String} name - name of the district
          * @returns {void}
          */
