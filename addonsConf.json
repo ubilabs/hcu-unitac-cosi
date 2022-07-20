@@ -1,6 +1,5 @@
 {
   "bauforum": "changeGUI/loader.js",
-  "boris": "bodenrichtwertabfrage/view.js",
   "formular": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": "verkehrsfunctions.js",
