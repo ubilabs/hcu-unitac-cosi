@@ -36,8 +36,8 @@
 
 const state = {
     active: false,
-    id: "borisVue",
-    name: "common:menu.tools.borisVue",
+    id: "boris",
+    name: "common:menu.tools.boris",
     icon: "bi-vinyl",
     renderToWindow: false,
     resizableWindow: true,

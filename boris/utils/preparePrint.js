@@ -1,4 +1,4 @@
-import state from "../store/stateBorisVue";
+import state from "../store/stateBoris";
 import store from "../../../src/app-store/index";
 import SpecModel from "../../../src/modules/tools/print/utils/buildSpec.js";
 

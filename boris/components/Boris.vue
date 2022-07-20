@@ -1,7 +1,8 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import Tool from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
-import mutations from "../store/mutationsBorisVue";
+import mutations from "../store/mutationsBoris";
 import InformationComponent from "./InformationComponent.vue";
 import CalculationComponent from "./CalculationComponent.vue";
 import FloorComponent from "./FloorComponent.vue";
@@ -11,7 +12,7 @@ import {getLayerModelByAttributes} from "../utils/RadioBridge";
 
 
 export default {
-    name: "BorisVue",
+    name: "Boris",
     components: {
         Tool,
         InformationComponent,
@@ -19,7 +20,7 @@ export default {
         FloorComponent
     },
     computed: {
-        ...mapGetters("Tools/BorisVue", ["active", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLayerName", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options", "isProcessFromParametricUrl", "paramUrlParams"]),
+        ...mapGetters("Tools/Boris", ["active", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLayerName", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options", "isProcessFromParametricUrl", "paramUrlParams"]),
         ...mapGetters("Tools/Print", ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]),
         ...mapGetters({
             isMobile: "mobile"
@@ -119,7 +120,7 @@ export default {
         });
     },
     methods: {
-        ...mapActions("Tools/BorisVue", [
+        ...mapActions("Tools/Boris", [
             "initialize",
             "switchLayer",
             "toggleStripesLayer",
@@ -130,7 +131,7 @@ export default {
             "simulateLanduseSelect",
             "sendWpsConvertRequest"
         ]),
-        ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
+        ...mapMutations("Tools/Boris", Object.keys(mutations)),
         preparePrint,
         /**
          * Toggles info text if clicked on info icon
@@ -180,7 +181,7 @@ export default {
          */
         close () {
             this.setActive(false);
-            const layer = getLayerModelByAttributes({id: this.$store.state.Tools.BorisVue.id});
+            const layer = getLayerModelByAttributes({id: this.$store.state.Tools.Boris.id});
 
             if (layer) {
                 layer.set("isActive", false);

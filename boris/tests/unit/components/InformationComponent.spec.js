@@ -1,7 +1,7 @@
 import Vuex from "vuex";
 import {config, shallowMount, mount, createLocalVue} from "@vue/test-utils";
 import InformationComponent from "../../../components/InformationComponent.vue";
-import BorisVue from "../../../store/indexBorisVue";
+import Boris from "../../../store/indexBoris";
 import {expect} from "chai";
 import sinon from "sinon";
 import VectorLayer from "ol/layer/Vector.js";
@@ -13,14 +13,14 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
-describe("ADDONS: addons/borisVue/components/InformationComponent.vue", () => {
+describe("ADDONS: addons/boris/components/InformationComponent.vue", () => {
     const mockConfigJson = {
         Portalconfig: {
             menu: {
                 tools: {
                     children: {
-                        borisVue: {
-                            "name": "common:menu.tools.borisVue",
+                        boris: {
+                            "name": "common:menu.tools.boris",
                             "icon": "bi-vinyl",
                             "active": true,
                             "renderToWindow": false
@@ -39,7 +39,7 @@ describe("ADDONS: addons/borisVue/components/InformationComponent.vue", () => {
                 Tools: {
                     namespaced: true,
                     modules: {
-                        BorisVue
+                        Boris
                     }
                 }
             },

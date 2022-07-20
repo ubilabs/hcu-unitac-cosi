@@ -1,7 +1,7 @@
 import Vuex from "vuex";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
-import BorisVueComponent from "../../../components/BorisVue.vue";
-import BorisVue from "../../../store/indexBorisVue";
+import BorisComponent from "../../../components/Boris.vue";
+import Boris from "../../../store/indexBoris";
 import {expect} from "chai";
 import sinon from "sinon";
 
@@ -11,14 +11,14 @@ localVue.use(Vuex);
 
 config.mocks.$t = key => key;
 
-describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
+describe("ADDONS: addons/boris/components/Boris.vue", () => {
     const mockConfigJson = {
         Portalconfig: {
             menu: {
                 tools: {
                     children: {
-                        borisVue: {
-                            "name": "common:menu.tools.borisVue",
+                        boris: {
+                            "name": "common:menu.tools.boris",
                             "icon": "bi-vinyl",
                             "active": true,
                             "renderToWindow": false
@@ -36,17 +36,17 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
         originalUpdateSelectedBrwFeature;
 
     beforeEach(() => {
-        originalMatchPolygonFeatureWithLanduse = BorisVue.actions.matchPolygonFeatureWithLanduse;
-        BorisVue.actions.matchPolygonFeatureWithLanduse = sinon.spy();
+        originalMatchPolygonFeatureWithLanduse = Boris.actions.matchPolygonFeatureWithLanduse;
+        Boris.actions.matchPolygonFeatureWithLanduse = sinon.spy();
 
-        originalSimulateLanduseSelect = BorisVue.actions.simulateLanduseSelect;
-        BorisVue.actions.simulateLanduseSelect = sinon.spy();
+        originalSimulateLanduseSelect = Boris.actions.simulateLanduseSelect;
+        Boris.actions.simulateLanduseSelect = sinon.spy();
 
-        originalSendWpsConvertRequest = BorisVue.actions.sendWpsConvertRequest;
-        BorisVue.actions.sendWpsConvertRequest = sinon.spy();
+        originalSendWpsConvertRequest = Boris.actions.sendWpsConvertRequest;
+        Boris.actions.sendWpsConvertRequest = sinon.spy();
 
-        originalUpdateSelectedBrwFeature = BorisVue.actions.updateSelectedBrwFeature;
-        BorisVue.actions.updateSelectedBrwFeature = sinon.spy();
+        originalUpdateSelectedBrwFeature = Boris.actions.updateSelectedBrwFeature;
+        Boris.actions.updateSelectedBrwFeature = sinon.spy();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -54,7 +54,7 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
                 Tools: {
                     namespaced: true,
                     modules: {
-                        BorisVue,
+                        Boris,
                         Print: {
                             namespaced: true,
                             getters: {printFileReady: () => sinon.stub(),
@@ -73,10 +73,10 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
         });
     });
     afterEach(() => {
-        BorisVue.actions.matchPolygonFeatureWithLanduse = originalMatchPolygonFeatureWithLanduse;
-        BorisVue.actions.simulateLanduseSelect = originalSimulateLanduseSelect;
-        BorisVue.actions.sendWpsConvertRequest = originalSendWpsConvertRequest;
-        BorisVue.actions.updateSelectedBrwFeature = originalUpdateSelectedBrwFeature;
+        Boris.actions.matchPolygonFeatureWithLanduse = originalMatchPolygonFeatureWithLanduse;
+        Boris.actions.simulateLanduseSelect = originalSimulateLanduseSelect;
+        Boris.actions.sendWpsConvertRequest = originalSendWpsConvertRequest;
+        Boris.actions.updateSelectedBrwFeature = originalUpdateSelectedBrwFeature;
         sinon.restore();
         if (wrapper) {
             wrapper.destroy();
@@ -84,20 +84,20 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
     });
 
     describe("Boris template", () => {
-        it("renders BorisVue", () => {
-            store.state.Tools.BorisVue.active = true;
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+        it("renders Boris", () => {
+            store.state.Tools.Boris.active = true;
+            wrapper = shallowMount(BorisComponent, {store, localVue});
             expect(wrapper.find("#boris").exists()).to.be.true;
         });
-        it("do not render BorisVue if not active", () => {
-            store.state.Tools.BorisVue.active = false;
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+        it("do not render Boris if not active", () => {
+            store.state.Tools.Boris.active = false;
+            wrapper = shallowMount(BorisComponent, {store, localVue});
             expect(wrapper.find("#boris").exists()).to.be.false;
         });
         it("renders input to toggle boarder stripes", () => {
-            store.state.Tools.BorisVue.active = true;
-            store.state.Tools.BorisVue.isAreaLayer = true;
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            store.state.Tools.Boris.active = true;
+            store.state.Tools.Boris.isAreaLayer = true;
+            wrapper = shallowMount(BorisComponent, {store, localVue});
 
             expect(wrapper.find("#showStripes").exists()).to.be.true;
             expect(wrapper.find("#showStripes").element.checked).to.be.false;
@@ -107,9 +107,9 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
             expect(wrapper.find(".info-text").exists()).to.be.false;
         });
         it("render text to click on polygon if no polygon is selected", () => {
-            store.state.Tools.BorisVue.active = true;
-            store.state.Tools.BorisVue.selectedPolygon = null;
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            store.state.Tools.Boris.active = true;
+            store.state.Tools.Boris.selectedPolygon = null;
+            wrapper = shallowMount(BorisComponent, {store, localVue});
             expect(wrapper.find("#selectPolygonText").text()).to.equals("additional:modules.tools.boris.SelectAreaInMap");
         });
         it("render choose landuse selection", () => {
@@ -117,9 +117,9 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
                 get: () => "value"
             };
 
-            store.state.Tools.BorisVue.active = true;
-            store.commit("Tools/BorisVue/setSelectedPolygon", feature);
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            store.state.Tools.Boris.active = true;
+            store.commit("Tools/Boris/setSelectedPolygon", feature);
+            wrapper = shallowMount(BorisComponent, {store, localVue});
 
             expect(wrapper.find("#landuseSelect").exists()).to.be.true;
         });
@@ -138,10 +138,10 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
             };
 
         it("getFilterListWithoutStripes includes & does not include layer without stripes", () => {
-            store.state.Tools.BorisVue.active = true;
-            store.state.Tools.BorisVue.filteredLayerList.push(layer1);
-            store.state.Tools.BorisVue.filteredLayerList.push(layer2);
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            store.state.Tools.Boris.active = true;
+            store.state.Tools.Boris.filteredLayerList.push(layer1);
+            store.state.Tools.Boris.filteredLayerList.push(layer2);
+            wrapper = shallowMount(BorisComponent, {store, localVue});
 
             expect(wrapper.vm.getFilterListWithoutStripes).to.have.lengthOf(1);
             expect(wrapper.vm.getFilterListWithoutStripes[0]).to.deep.equal(layer2);
@@ -152,21 +152,21 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
             newValue = "A Acker";
 
         it("selectedLanduseComputed equals newValue but does not equal oldValue", () => {
-            store.state.Tools.BorisVue.active = true;
-            store.commit("Tools/BorisVue/setSelectedLanduse", newValue);
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            store.state.Tools.Boris.active = true;
+            store.commit("Tools/Boris/setSelectedLanduse", newValue);
+            wrapper = shallowMount(BorisComponent, {store, localVue});
             expect(wrapper.vm.selectedLanduseComputed).to.equal(newValue);
             expect(wrapper.vm.selectedLanduseComputed).to.not.equal(oldValue);
         });
     });
     describe("selectedPolygon watcher", () => {
         it("landuse select should be simulated if parametric Url is being used ", () => {
-            store.state.Tools.BorisVue.active = true;
-            store.state.Tools.BorisVue.isProcessFromParametricUrl = true;
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            store.state.Tools.Boris.active = true;
+            store.state.Tools.Boris.isProcessFromParametricUrl = true;
+            wrapper = shallowMount(BorisComponent, {store, localVue});
             wrapper.vm.$options.watch.selectedPolygon.call(wrapper.vm);
 
-            expect(BorisVue.actions.simulateLanduseSelect.calledOnce).to.equal(true);
+            expect(Boris.actions.simulateLanduseSelect.calledOnce).to.equal(true);
 
         });
     });
@@ -175,71 +175,71 @@ describe("ADDONS: addons/borisVue/components/BorisVue.vue", () => {
             const oldValue = "BH Bürohäuser",
                 newValue = "A Acker";
 
-            store.state.Tools.BorisVue.active = true;
-            store.state.Tools.BorisVue.buttonValue = "liste";
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            store.state.Tools.Boris.active = true;
+            store.state.Tools.Boris.buttonValue = "liste";
+            wrapper = shallowMount(BorisComponent, {store, localVue});
             wrapper.vm.$options.watch.selectedLanduse.call(wrapper.vm, newValue, oldValue);
 
-            expect(store.state.Tools.BorisVue.buttonValue).to.equals("info");
-            expect(BorisVue.actions.matchPolygonFeatureWithLanduse.calledOnce).to.equal(true);
+            expect(store.state.Tools.Boris.buttonValue).to.equals("info");
+            expect(Boris.actions.matchPolygonFeatureWithLanduse.calledOnce).to.equal(true);
         });
     });
     describe("toggleInfoText method", () => {
         it("toggleInfoText", () => {
-            store.state.Tools.BorisVue.active = true;
-            store.state.Tools.BorisVue.textIds = ["id1", "id2"];
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            store.state.Tools.Boris.active = true;
+            store.state.Tools.Boris.textIds = ["id1", "id2"];
+            wrapper = shallowMount(BorisComponent, {store, localVue});
             wrapper.vm.toggleInfoText("id3");
             wrapper.vm.toggleInfoText("id2");
 
-            expect(store.state.Tools.BorisVue.textIds).to.have.lengthOf(2);
-            expect(store.state.Tools.BorisVue.textIds).that.includes("id3");
-            expect(store.state.Tools.BorisVue.textIds).that.does.not.include("id2");
+            expect(store.state.Tools.Boris.textIds).to.have.lengthOf(2);
+            expect(store.state.Tools.Boris.textIds).that.includes("id3");
+            expect(store.state.Tools.Boris.textIds).that.does.not.include("id2");
         });
     });
     describe("handle input and option change methods", () => {
         it("handleOptionChange", () => {
-            const event = {target: {value: store.state.Tools.BorisVue.buildingDesigns[1]}, get: () => "value"},
+            const event = {target: {value: store.state.Tools.Boris.buildingDesigns[1]}, get: () => "value"},
                 subject = "zBauweise";
 
-            store.state.Tools.BorisVue.active = true;
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            store.state.Tools.Boris.active = true;
+            wrapper = shallowMount(BorisComponent, {store, localVue});
             wrapper.vm.handleOptionChange(event, subject);
 
-            expect(store.state.Tools.BorisVue.selectedOption).to.equal(store.state.Tools.BorisVue.buildingDesigns[1]);
-            expect(BorisVue.actions.updateSelectedBrwFeature.calledOnce).to.equal(true);
-            expect(BorisVue.actions.sendWpsConvertRequest.calledOnce).to.equal(true);
+            expect(store.state.Tools.Boris.selectedOption).to.equal(store.state.Tools.Boris.buildingDesigns[1]);
+            expect(Boris.actions.updateSelectedBrwFeature.calledOnce).to.equal(true);
+            expect(Boris.actions.sendWpsConvertRequest.calledOnce).to.equal(true);
 
         });
         it("handleInputChange", () => {
             const event = {type: "change", key: "Enter", currentTarget: {value: "12,34"}},
                 subject = "345";
 
-            store.state.Tools.BorisVue.active = true;
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            store.state.Tools.Boris.active = true;
+            wrapper = shallowMount(BorisComponent, {store, localVue});
             wrapper.vm.handleInputChange(event, subject);
-            expect(BorisVue.actions.updateSelectedBrwFeature.calledOnce).to.equal(true);
-            expect(BorisVue.actions.sendWpsConvertRequest.calledOnce).to.equal(true);
+            expect(Boris.actions.updateSelectedBrwFeature.calledOnce).to.equal(true);
+            expect(Boris.actions.sendWpsConvertRequest.calledOnce).to.equal(true);
 
         });
     });
     describe("close method", () => {
         it("close", () => {
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            wrapper = shallowMount(BorisComponent, {store, localVue});
             wrapper.vm.close();
 
-            expect(store.state.Tools.BorisVue.active).to.equal(false);
+            expect(store.state.Tools.Boris.active).to.equal(false);
         });
     });
     describe("startPrint method", () => {
         it("startPrint", () => {
-            store.state.Tools.BorisVue.active = true;
-            store.state.Tools.BorisVue.selectedBrwFeature = {id: 1, name: "feature1", get: () => "value"};
+            store.state.Tools.Boris.active = true;
+            store.state.Tools.Boris.selectedBrwFeature = {id: 1, name: "feature1", get: () => "value"};
 
             let printButton = null;
-            const startPrintSpy = sinon.spy(BorisVueComponent.methods, "startPrint");
+            const startPrintSpy = sinon.spy(BorisComponent.methods, "startPrint");
 
-            wrapper = shallowMount(BorisVueComponent, {store, localVue});
+            wrapper = shallowMount(BorisComponent, {store, localVue});
             printButton = wrapper.find(".btn-infos");
 
             printButton.trigger("click");

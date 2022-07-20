@@ -1,6 +1,6 @@
 <script>
 import {mapActions, mapMutations} from "vuex";
-import mutations from "../store/mutationsBorisVue";
+import mutations from "../store/mutationsBoris";
 
 export default {
     name: "CalculationComponent",
@@ -47,8 +47,8 @@ export default {
         }
     },
     methods: {
-        ...mapActions("Tools/BorisVue", ["updateSelectedBrwFeature"]),
-        ...mapMutations("Tools/BorisVue", Object.keys(mutations)),
+        ...mapActions("Tools/Boris", ["updateSelectedBrwFeature"]),
+        ...mapMutations("Tools/Boris", Object.keys(mutations)),
         /**
          * Check if 'Einzelhäuser' or 'Doppelhäuser' are selected to change the option name to singular
          * @param {String} option is one option of the options of buildingDesigns or positionsToStreet

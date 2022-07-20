@@ -1,9 +1,9 @@
 import {expect} from "chai";
-import getters from "../../../store/gettersBorisVue";
-import stateBoris from "../../../store/stateBorisVue";
+import getters from "../../../store/gettersBoris";
+import stateBoris from "../../../store/stateBoris";
 
 
-describe("src/modules/tools/boris/store/gettersBorisVue.js", () => {
+describe("src/modules/tools/boris/store/gettersBoris.js", () => {
 
     afterEach(() => {
         // set state back, because of directly use of original state
@@ -32,7 +32,7 @@ describe("src/modules/tools/boris/store/gettersBorisVue.js", () => {
             // TypeError: Cannot read properties of undefined (reading 'nutzungsart') sieht man in der console
             // 1.) Vielleicht hast du selbst ein Idee wie man das lösen kann, sonst frage mich
             // 2.) was soll denn dieser getter zurückgeben, wenn foundLanduse nicht gefunden wird, einen Leerstring oder undefined (ist das in der Oberfläche sichtbar?)?
-            // @inka: ist dass so richtig? --> siehe anpassungen gettersBorisVue.js: findLanduseByBrwId
+            // @inka: ist dass so richtig? --> siehe anpassungen gettersBoris.js: findLanduseByBrwId
             stateBoris.paramUrlParams.brwId = "nix";
             expect(getters.findLanduseByBrwId()).to.equal(undefined);
         });

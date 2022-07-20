@@ -1,5 +1,5 @@
 import {generateSimpleGetters} from "../../../src/app-store/utils/generators";
-import state from "./stateBorisVue";
+import state from "./stateBoris";
 
 const getters = {
     /**
