@@ -48,6 +48,9 @@
   "oktagonKartenportal": {
     "type": "tool"
   },
+  "quickResponseCode": {
+    "type": "tool"
+  },
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
     "type": "gfiTheme"
