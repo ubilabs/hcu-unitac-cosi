@@ -18,7 +18,9 @@
               "attachments": "Attachments",
               "plan": "Plan",
               "requestAlert": "not available",
-              "districtTitle": "District:"
+              "districtTitle": "District:",
+              "wrongDistrictName": "Sorry, the parameterized call to the portal failed!",
+              "wrongDistrictNameMessage": "The following district could not be found: "
           }
       }
   }

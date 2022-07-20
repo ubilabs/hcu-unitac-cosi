@@ -18,7 +18,9 @@
                 "attachments": "Anlagen",
                 "plan": "Plan",
                 "requestAlert": "nicht erreichbar",
-                "districtTitle": "Bezirk:"
+                "districtTitle": "Bezirk:",
+                "wrongDistrictName": "Der parametrisierte Aufruf des Portals ist leider fehlgeschlagen!",
+                "wrongDistrictNameMessage": "Folgender Bezirk konnte nicht gefunden werden: "
             }
         }
     }

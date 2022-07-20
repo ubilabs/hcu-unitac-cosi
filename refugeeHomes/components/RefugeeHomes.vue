@@ -26,10 +26,7 @@ export default {
     },
     watch: {
         active (value) {
-            if (value) {
-                this.allFeatures = true;
-            }
-            else {
+            if (!value) {
                 this.close();
             }
         },
@@ -62,6 +59,13 @@ export default {
             }
         }
     },
+
+    mounted () {
+        this.requestRawLayerList();
+        this.$nextTick(() => {
+            this.initURLParameter();
+        });
+    },
     /**
      * Created hook: Creates event listener for legacy Radio calls (to be removed sometimes).
      * @returns {void}
@@ -69,28 +73,29 @@ export default {
     created () {
         this.$on("close", this.close);
         this.requestRawLayerList();
-        Backbone.Events.listenTo(Radio.channel("RefugeesTable"), {
-            "showAllFeatures": () => {
-                this.allFeatures = true;
-                this.setActive(true);
-                this.removeHighlightLayer();
-            },
-            "showFeaturesByBezirk": district => {
-                this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
-                this.filterFeaturesByBezirk(district);
-                this.allFeatures = false;
-                this.$store.commit("ZoomTo/setZoomToGeometry", district, {root: true});
-                this.$store.dispatch("ZoomTo/zoomToFeatures", {}, {root: true});
-                this.setActive(true);
-                this.removeHighlightLayer();
-            }
-
+        this.$nextTick(() => {
+            Backbone.Events.listenTo(Radio.channel("RefugeesTable"), {
+                "showAllFeatures": () => {
+                    this.allFeatures = true;
+                    this.setActive(true);
+                    this.removeHighlightLayer();
+                },
+                "showFeaturesByBezirk": district => {
+                    this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
+                    this.filterFeaturesByBezirk(district);
+                    this.allFeatures = false;
+                    this.$store.commit("ZoomTo/setZoomToGeometry", district, {root: true});
+                    this.$store.dispatch("ZoomTo/zoomToFeatures", {}, {root: true});
+                    this.setActive(true);
+                    this.removeHighlightLayer();
+                }
+            });
         });
     },
 
     methods: {
         ...mapMutations("Tools/RefugeeHomes", Object.keys(mutations)),
-        ...mapActions("Tools/RefugeeHomes", ["requestRawLayerList"]),
+        ...mapActions("Tools/RefugeeHomes", ["requestRawLayerList", "initURLParameter"]),
         ...mapActions("Maps", ["removeAllHighlightedFeatures"]),
         isWebLink,
 
@@ -100,7 +105,7 @@ export default {
          */
         removeHighlightLayer: function () {
             this.getLayers.forEach(item => {
-                if (item.get("name") === undefined) {
+                if (item?.get("name") === undefined) {
                     mapCollection.getMap("2D").removeLayer(item);
                 }
             });
@@ -113,10 +118,10 @@ export default {
          * @returns {void}
          */
         filterFeaturesByBezirk: async function (name) {
-            const filteredDistricts = this.features?.filter(district => district?.bezirk?.toUpperCase().trim() === name.toUpperCase().trim()),
+            const filteredDistricts = await this.features?.filter(district => district?.bezirk?.toUpperCase().trim() === name.toUpperCase().trim()),
                 sortedFeatures = this.sortFeatures(filteredDistricts, this.ranking);
 
-            this.$store.commit("Tools/RefugeeHomes/addFilteredFeature", sortedFeatures);
+            await this.$store.commit("Tools/RefugeeHomes/addFilteredFeature", sortedFeatures);
             this.selectedFeatures = this.filteredFeatures[0];
         },
 
@@ -175,7 +180,6 @@ export default {
                 this.$store.dispatch("Maps/setZoomLevel", 4);
             }
         },
-
         /**
          * Closing behaviour of the tool
          * @returns {void}

@@ -51,6 +51,43 @@ const actions = {
     },
 
     /**
+    * Processes the url parameter.
+    * @param {Object} dispatch vuex element
+    * @param {Object} getters vuex element
+    * @returns {void}
+    */
+    initURLParameter ({dispatch, getters}) {
+        const result = {},
+            params = new URLSearchParams(window.location.search);
+
+        params.forEach(function (value, key) {
+            result[key.toUpperCase()] = decodeURIComponent(value.toUpperCase());
+        });
+
+        if (result?.BEZIRK) {
+            const districtFromUrl = getters.getParameterValue({result: result, property: "BEZIRK"});
+            let districtNameToZoom = "";
+
+            districtNameToZoom = getters.hasDistrict(districtFromUrl);
+            if (districtNameToZoom === "") {
+                dispatch("Alerting/addSingleAlert",
+                    "<strong>" + i18next.t("additional:modules.tools.refugeehomes.wrongDistrictName") + "</strong>"
+                    + "<br>"
+                    + "<small>" + i18next.t("additional:modules.tools.refugeehomes.wrongDistrictNameMessage") + districtFromUrl + ".</small>",
+                    {root: true}
+                );
+            }
+            else {
+                Radio.trigger("RefugeesTable", "showFeaturesByBezirk", districtNameToZoom);
+                console.log("herre");
+                console.log(districtNameToZoom);
+               /*  commit("ZoomTo/setZoomToGeometry", districtNameToZoom, {root: true});
+                dispatch("ZoomTo/zoomToFeatures", {}, {root: true}); */
+            }
+        }
+    },
+
+    /**
      * Parses the xml data
      * @param {Object} commit vuex element
      * @param {XML} data xml data
