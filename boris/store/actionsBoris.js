@@ -1,3 +1,4 @@
+/* eslint-disable one-var */
 import axios from "axios";
 import helpers from "../utils/helpers";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
@@ -96,7 +97,7 @@ const actions = {
         dispatch("MapMarker/removePointMarker", null, {root: true});
         commit("setTextIds", []);
 
-        if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
+        if (typeof state.selectedLayer?.attributes.layers === "string" && state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
             commit("setIsAreaLayer", true);
             dispatch("toggleStripesLayer", state.isStripesLayer);
         }
@@ -167,11 +168,19 @@ const actions = {
     requestGFI ({state, dispatch}, {event, processFromParametricUrl, center}) {
         if (state.active) {
             const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
-                layerSource = selectedLayer.get("layer").getSource(),
                 coordinates = processFromParametricUrl ? center : event.coordinate,
                 map = processFromParametricUrl ? mapCollection.getMap("2D") : event.map,
-                mapView = map.getView(),
-                url = layerSource.getFeatureInfoUrl(coordinates, mapView.getResolution(), mapView.getProjection());
+                mapView = map.getView();
+            let layerSource;
+
+            if (typeof selectedLayer.attributes.layers !== "string") {
+                layerSource = selectedLayer.get("layer").values_.layers.array_[2].getSource();
+            }
+            else {
+                layerSource = selectedLayer.get("layer").getSource();
+            }
+
+            const url = layerSource.getFeatureInfoUrl(coordinates, mapView.getResolution(), mapView.getProjection());
 
             axios.get(url)
                 .then((response) => {
