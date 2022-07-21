@@ -90,12 +90,15 @@ const actions = {
         dispatch("selectLayerByName", selectedLayerName);
         commit("setSelectedLayerName", selectedLayerName);
         commit("setSelectedBrwFeature", {});
+        commit("setSelectedLanduse", "");
+        commit("setSelectedPolygon", null);
         dispatch("MapMarker/removePolygonMarker", null, {root: true});
         dispatch("MapMarker/removePointMarker", null, {root: true});
         commit("setTextIds", []);
 
         if (state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
             commit("setIsAreaLayer", true);
+            dispatch("toggleStripesLayer", state.isStripesLayer);
         }
         else {
             commit("setIsAreaLayer", false);

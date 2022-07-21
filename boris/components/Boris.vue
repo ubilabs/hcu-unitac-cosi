@@ -265,7 +265,7 @@ export default {
                     </div>
                 </div>
                 <div
-                    v-if="selectedPolygon === null"
+                    v-if="selectedPolygon === null && Object.keys(selectedBrwFeature).length === 0"
                     class="pt-3"
                 >
                     <span
@@ -275,7 +275,7 @@ export default {
                     </span>
                 </div>
                 <div
-                    v-else
+                    v-else-if="selectedPolygon !== null"
                     class="pt-3"
                 >
                     <span>{{ $t("additional:modules.tools.boris.labelSelectUse") }}</span>
