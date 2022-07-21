@@ -43,7 +43,7 @@ function getProportionMap (feature, extent, projection, style, proportion, layer
 function getBoundingBox (coordinates, configProp) {
     const longiDiff = coordinates[2] - coordinates[0],
         latiDiff = coordinates[3] - coordinates[1],
-        maxDiff = Math.max(longiDiff, latiDiff),
+        minDiff = Math.min(longiDiff, latiDiff),
         latiLongiDiff = (latiDiff - longiDiff) > 0 ? (latiDiff - longiDiff) / 2 : 0,
         longiLatiDiff = (longiDiff - latiDiff) > 0 ? (longiDiff - latiDiff) / 2 : 0;
 
@@ -60,10 +60,10 @@ function getBoundingBox (coordinates, configProp) {
 
     ratio = (1 - proportion) / (2 * proportion);
 
-    longiLeft = coordinates[0] - maxDiff * ratio - latiLongiDiff;
-    longiRight = coordinates[2] + maxDiff * ratio + latiLongiDiff;
-    latiBottom = coordinates[1] - maxDiff * ratio - longiLatiDiff;
-    latiTop = coordinates[3] + maxDiff * ratio + longiLatiDiff;
+    longiLeft = coordinates[0] - minDiff * ratio - latiLongiDiff;
+    longiRight = coordinates[2] + minDiff * ratio + latiLongiDiff;
+    latiBottom = coordinates[1] - minDiff * ratio - longiLatiDiff;
+    latiTop = coordinates[3] + minDiff * ratio + longiLatiDiff;
 
     return [longiLeft, latiBottom, longiRight, latiTop];
 }
