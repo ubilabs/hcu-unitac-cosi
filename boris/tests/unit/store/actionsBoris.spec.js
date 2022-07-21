@@ -224,15 +224,19 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
             state.selectedLayer = {"attributes": {"layers": "lgv_brw_zonen_2017,lgv_brw_zonen_brw_grdstk_2017"}};
 
             actions.switchLayer({state, dispatch, commit}, selectedLayerName);
-            expect(commit.callCount).to.equal(4);
-            expect(commit.firstCall.args[0]).to.equal("setSelectedLayerName");
-            expect(commit.firstCall.args[1]).to.equal(selectedLayerName);
-            expect(commit.secondCall.args[0]).to.equal("setSelectedBrwFeature");
-            expect(commit.secondCall.args[1]).to.deep.equal({});
-            expect(commit.thirdCall.args[0]).to.equal("setTextIds");
-            expect(commit.thirdCall.args[1]).to.deep.equal([]);
-            expect(commit.args[3][0]).to.equal("setIsAreaLayer");
-            expect(commit.args[3][1]).to.equal(false);
+            expect(commit.callCount).to.equal(6);
+            expect(commit.args[0][0]).to.equal("setSelectedLayerName");
+            expect(commit.args[0][1]).to.equal(selectedLayerName);
+            expect(commit.args[1][0]).to.equal("setSelectedBrwFeature");
+            expect(commit.args[1][1]).to.deep.equal({});
+            expect(commit.args[2][0]).to.equal("setSelectedLanduse");
+            expect(commit.args[2][1]).to.equal("");
+            expect(commit.args[3][0]).to.equal("setSelectedPolygon");
+            expect(commit.args[3][1]).to.equal(null);
+            expect(commit.args[4][0]).to.equal("setTextIds");
+            expect(commit.args[4][1]).to.deep.equal([]);
+            expect(commit.args[5][0]).to.equal("setIsAreaLayer");
+            expect(commit.args[5][1]).to.equal(false);
             expect(dispatch.callCount).to.equal(4);
             expect(dispatch.args[0][0]).to.equal("selectLayerByName");
             expect(dispatch.args[0][1]).to.equal(selectedLayerName);
@@ -250,8 +254,9 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
             state.selectedLayer = {"attributes": {"layers": "v_brw_zonen_geom_flaeche_2019"}};
 
             actions.switchLayer({state, dispatch, commit}, selectedLayerName);
-            expect(commit.args[3][0]).to.equal("setIsAreaLayer");
-            expect(commit.args[3][1]).to.equal(true);
+            expect(commit.args[5][0]).to.equal("setIsAreaLayer");
+            expect(commit.args[5][1]).to.equal(true);
+            expect(dispatch.args[3][0]).to.equal("toggleStripesLayer");
         });
     });
     describe("toggleStripesLayer", () => {
