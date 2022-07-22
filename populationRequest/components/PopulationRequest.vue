@@ -342,7 +342,7 @@ export default {
                 rasterCheckBox.setActive(value);
             }
             if (value) {
-                const scale = this.$store.state.Map.scale;
+                const scale = this.$store.state.Maps.scale;
 
                 // if the Map has too large Scale give notification and undo the activation
                 if (scale > 100000) {
@@ -378,7 +378,7 @@ export default {
                 alkisAdressesCheckBox.setActive(value);
             }
             if (value) {
-                const scale = this.$store.state.Map.scale;
+                const scale = this.$store.state.Maps.scale;
 
                 // if the Map has too large Scale give notification and undo the activation
                 if (scale > 10000) {
@@ -437,45 +437,38 @@ export default {
 <template lang="html">
     <ToolTemplate
         :title="translate(name)"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
         :deactivate-gfi="deactivateGFI"
-        class="PopulationRequest"
+        class="population-request"
     >
         <template
             v-if="active"
             #toolBody
         >
-            <div
-                class="form-horizontal"
-                role="form"
-            >
-                <div class="col-md-12 col-sm-12 col-xs-12">
+            <form class="form-horizontal">
+                <div class="mb-3">
                     {{ translate("additional:modules.tools.populationRequest.select.info") }}
                 </div>
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                    &nbsp;
-                </div>
-                <div class="form-group form-group-sm">
+                <div class="graphicalSelectionContainer row">
                     <label
                         for="graphicalSelection"
-                        class="col-md-5 col-sm-5 control-label"
+                        class="col-sm-5"
                     >
                         {{ translate("additional:modules.tools.populationRequest.select.action") }}
                     </label>
-                    <div class="col-md-7 col-sm-7">
-                        <div class="dropdown">
-                            <GraphicalSelect
-                                ref="graphicalSelection"
-                                :select-element="'Dropdown'"
-                                :focus-on-creation="true"
-                            />
-                        </div>
+                    <div class="col-sm-7 dropdown">
+                        <GraphicalSelect
+                            id="graphicalSelection"
+                            ref="graphicalSelection"
+                            :select-element="'Dropdown'"
+                            :focus-on-creation="true"
+                        />
                     </div>
                 </div>
-                <div class="col-md-12 col-sm-12 col-xs-12">
+                <div>
                     <div
                         v-if="inhabitantsFHHNum > -1 || inhabitantsMRHNum > -1"
                         class="result"
@@ -559,7 +552,7 @@ export default {
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
             <div
                 v-if="isDefaultStyle"
             >
@@ -614,53 +607,79 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-    .PopulationRequest {
-        max-width:500px;
-    }
-    div.result {
-        margin-top: 10px;
-    }
-    .result .table {
-        margin-bottom: 20px;
-    }
-    .result .table td {
-        padding: 8px;
-        border-top: 1px solid #ddd;
-    }
-    .checkbox-container .form-inline {
-        font-size: 15px;
-    }
-    @media (max-width: 767px) {
-        .checkbox-container .form-inline {
-            font-size: 12px;
+.population-request {
+    max-width: 500px;
+
+    .form-horizontal {
+        & > * {
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        .graphicalSelectionContainer {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result {
+            margin-top: 10px;
+
+            .table {
+                margin-bottom: 20px;
+
+                td {
+                    padding: 8px;
+                    border-top: 1px solid #ddd;
+                }
+
+                & > :not(:first-child) {
+                    // NOTE: Overwrites default style of .table
+                    border-top: 0 solid currentColor;
+                }
+            }
         }
     }
-    .checkbox-container .form-inline .title-checkbox {
-        width: 100%;
+
+    .checkbox-container {
+        .form-inline {
+            font-size: 15px;
+
+            @media (max-width: 767px) {
+                font-size: 12px;
+            }
+
+            .title-checkbox {
+                width: 100%;
+
+                label {
+                    white-space: normal;
+                    padding-left:5px;
+                }
+            }
+        }
     }
-    .checkbox-container .form-inline .title-checkbox label {
-        white-space: normal;
-        padding-left:5px;
-    }
+}
 </style>
 
 <style lang="scss">
-    @import "~/css/mixins.scss";
+@import "~/css/mixins.scss";
+@import "~variables";
 
-    #tooltip-overlay {
-        position: relative;
-        background: $accent_active;
-        color: #fff;
-        max-width: 200px;
-        padding: 4px 8px;
-    }
+#tooltip-overlay {
+    position: relative;
+    background: $accent_active;
+    color: $white;
+    max-width: 200px;
+    padding: 4px 8px;
+}
 
-    #circle-overlay {
-        position: relative;
-        top: -20px;
-        background: $accent_active;
-        color: #fff;
-        max-width: 70px;
-        padding: 4px 8px;
-    }
+#circle-overlay {
+    position: relative;
+    top: -20px;
+    background: $accent_active;
+    color: $white;
+    max-width: 70px;
+    padding: 4px 8px;
+}
 </style>

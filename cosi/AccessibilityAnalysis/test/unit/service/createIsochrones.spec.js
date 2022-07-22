@@ -25,7 +25,7 @@ function baseUrl () {
 }
 
 const rootGetters = {
-    "Map/projectionCode": "EPSG:25832"
+    "Maps/projectionCode": "EPSG:25832"
 };
 
 before(() => {

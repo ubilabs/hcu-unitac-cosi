@@ -1,9 +1,10 @@
+@import "~variables";
 .ol-popup {
     display: none;
     position: absolute;
-    background-color: white;
+    background-color: $white;
     padding: 15px 25px 15px 15px;
-    border: 1px solid #cccccc;
+    border: 1px solid $light_grey;
     bottom: 12px;
     left: -50px;
 }
@@ -19,14 +20,14 @@
 }
 
 .ol-popup:after {
-    border-top-color: white;
+    border-top-color: $white;
     border-width: 10px;
     left: 48px;
     margin-left: -10px;
 }
 
 .ol-popup:before {
-    border-top-color: #cccccc;
+    border-top-color: $light_grey;
     border-width: 11px;
     left: 48px;
     margin-left: -11px;
@@ -44,7 +45,7 @@
     right: 2px;
     font-size: 150%;
     padding: 0 4px;
-    color: gray;
+    color: $light_grey;
     text-decoration: none;
 }
 

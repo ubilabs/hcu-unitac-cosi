@@ -98,7 +98,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
-        ...mapGetters("Map", {map: "ol2DMap", projectionCode: "projectionCode"}),
+        ...mapGetters("Maps", {projectionCode: "projectionCode"}),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
@@ -304,6 +304,7 @@ export default {
         });
 
         this.baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url") + "/v2/";
+        this.map = mapCollection.getMap("2D");
     },
 
     /**
@@ -333,10 +334,10 @@ export default {
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapActions("Tools/AccessibilityAnalysisService", ["getIsochrones"]),
-        ...mapMutations("Map", ["setCenter"]),
+        ...mapMutations("Maps", ["setCenter"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
-        ...mapActions("Map", ["createLayer"]),
+        ...mapActions("Maps", ["createLayer"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
 

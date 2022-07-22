@@ -1,6 +1,6 @@
 import {WMSCapabilities} from "ol/format.js";
 import {intersects} from "ol/extent";
-import {transform as transformCoord, getProjection} from "masterportalapi/src/crs";
+import {transform as transformCoord, getProjection} from "@masterportal/masterportalapi/src/crs";
 import axios from "axios";
 import store from "../../src/app-store";
 
@@ -34,7 +34,7 @@ export default function importLayers (url, layersToLoad, folderName, zoomTo) {
                     version = capability?.version,
                     checkVersion = isVersionEnabled(version),
                     currentExtent = Radio.request("Parser", "getPortalConfig")?.mapView?.extent,
-                    projection = store.getters["Map/projection"].code_;
+                    projection = store.getters["Maps/projection"].code_;
 
                 let checkExtent = getIfInExtent(capability, currentExtent, projection),
                     uniqueId = "external_",
@@ -64,7 +64,40 @@ export default function importLayers (url, layersToLoad, folderName, zoomTo) {
 
                 if (layersToLoad) {
                     layersToLoad.forEach(layer => {
-                        Radio.trigger("Parser", "addLayer", layer.title, getParsedTitle(layer.title), uniqueId, 1, layer.name, url, version, {isSelected: layer.layerOn, styles: layer.style});
+                        const layerObj = {
+                            id: getParsedTitle(layer.title),
+                            name: layer.title,
+                            parentId: uniqueId,
+                            level: 1,
+                            layers: layer.name,
+                            url: url,
+                            version: version,
+                            transparent: layer.layerTransparent ? layer.layerTransparent : true,
+                            isSelected: !layer.layerOn ? layer.layerOn : true,
+                            time: layer.layerTime ? layer.layerTime : false,
+                            infoFormat: layer.infoFormat ? layer.infoFormat : "text/xml",
+                            styles: layer.style ? layer.style : "",
+                            cache: false,
+                            datasets: [],
+                            featureCount: 3,
+                            format: "image/png",
+                            gfiAttributes: "showAll",
+                            gutter: "0",
+                            isBaseLayer: false,
+                            layerAttribution: "nicht vorhanden",
+                            legendURL: "",
+                            maxScale: "2500000",
+                            minScale: "0",
+                            singleTile: false,
+                            supported: ["2D", "3D"],
+                            tilesize: "512",
+                            typ: "WMS",
+                            type: "layer",
+                            urlIsVisible: true
+                        };
+
+                        Radio.trigger("Parser", "addItem", layerObj);
+
                         Radio.trigger("ModelList", "addModelsByAttributes", {id: getParsedTitle(layer.title)});
                     });
                 }
@@ -75,7 +108,7 @@ export default function importLayers (url, layersToLoad, folderName, zoomTo) {
                     });
                 }
                 if (zoomTo) {
-                    Radio.trigger("Map", "zoomToExtent", checkExtent);
+                    Radio.trigger("Map", "zoomToExtent", {extent: checkExtent});
                 }
 
                 Radio.trigger("ModelList", "closeAllExpandedFolder");

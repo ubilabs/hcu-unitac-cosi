@@ -33,7 +33,7 @@ export default {
     computed: {
         ...mapGetters("Tools/AreaSelector", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
-        ...mapGetters("Map", ["projectionCode"]),
+        ...mapGetters("Maps", ["projectionCode"]),
         ...mapGetters("Language", ["currentLocale"]),
         geomField () {
             return {
@@ -81,7 +81,7 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/AreaSelector", Object.keys(mutations)),
-        ...mapActions("Map", ["createLayer"]),
+        ...mapActions("Maps", ["createLayer"]),
 
         /**
          * Updates the geometry from the geomPicker in the data for later use when instantiating a new feature

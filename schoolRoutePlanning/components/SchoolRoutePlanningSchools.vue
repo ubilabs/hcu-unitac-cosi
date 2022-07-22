@@ -4,8 +4,6 @@ import getters from "../store/gettersSchoolRoutePlanning";
 import mutations from "../store/mutationsSchoolRoutePlanning";
 import actions from "../store/actionsSchoolRoutePlanning";
 
-import "bootstrap-select";
-
 export default {
     name: "SchoolRoutePlanningSchools",
     props: {
@@ -48,9 +46,6 @@ export default {
             this.selectSchoolNumber(value);
         }
     },
-    created () {
-        this.initializeSelectpicker();
-    },
     mounted () {
         if (this.initialSelectedSchoolNumber !== "") {
             this.$nextTick(() => {
@@ -58,24 +53,9 @@ export default {
             });
         }
     },
-    updated () {
-        this.$nextTick(() => $(".selectpicker").selectpicker("refresh"));
-    },
     methods: {
         ...mapMutations("Tools/SchoolRoutePlanning", Object.keys(mutations)),
         ...mapActions("Tools/SchoolRoutePlanning", Object.keys(actions)),
-
-        /**
-         * Initialize the selectpicker.
-         * @returns {void}
-         */
-        initializeSelectpicker () {
-            this.$nextTick(() => $(".selectpicker").selectpicker({
-                width: "100%",
-                selectedTextFormat: "value",
-                size: 6
-            }));
-        },
 
         /**
          * Sets the school number to dropdown.
@@ -95,54 +75,46 @@ export default {
 </script>
 
 <template>
-    <div class="schools-container">
-        <div class="form-group col-xs-12">
-            <span>
-                <span class="regionalPrimarySchool">
-                    {{ $t("additional:modules.tools.schoolRoutePlanning.regionalPrimarySchool") }}
-                </span>
-                <a
-                    id="regional-school"
-                    @click="selectSchoolNumber(regionalPrimarySchoolNumber)"
-                    @keydown.enter="selectSchoolNumber(regionalPrimarySchoolNumber)"
-                >
-                    {{ $t(regionalPrimarySchoolName) }}
-                </a>
-            </span>
-        </div>
-        <div class="form-group col-xs-12">
-            <select
-                id="tool-schoolRoutePlanning-schools"
-                v-model="selectedSchoolNumber"
-                class="selectpicker"
-                :title="$t('additional:modules.tools.schoolRoutePlanning.selectSchool')"
-                data-live-search="true"
-                @change="event => selectSchool({selectedSchoolId: event.target.value, layer})"
+    <div class="mb-3">
+        <label
+            for="tool-schoolRoutePlanning-schools-select"
+            class="form-label"
+        >
+            {{ $t("additional:modules.tools.schoolRoutePlanning.selectSchool") }}
+        </label>
+        <span
+            v-if="regionalPrimarySchoolName"
+            class="d-block"
+        >
+            {{ $t("additional:modules.tools.schoolRoutePlanning.regionalPrimarySchool") }}
+            <a
+                role="button"
+                tabindex="0"
+                href="#"
+                :class="regionalPrimarySchoolNumber ? 'd-block' : ''"
+                @click="selectSchoolNumber(regionalPrimarySchoolNumber)"
+                @keydown.enter="selectSchoolNumber(regionalPrimarySchoolNumber)"
             >
-                <option
-                    v-for="school in sortedSchools"
-                    :key="school.get('schul_id')"
-                    :value="school.get('schul_id')"
-                >
-                    {{ `${school.get('schulname')}, ${school.get('adresse_strasse_hausnr')}` }}
-                </option>
-            </select>
-        </div>
+                {{ $t(regionalPrimarySchoolName) }}
+            </a>
+        </span>
+        <select
+            id="tool-schoolRoutePlanning-schools-select"
+            v-model="selectedSchoolNumber"
+            class="form-select"
+            data-live-search="true"
+            @change="event => selectSchool({selectedSchoolId: event.target.value, layer})"
+        >
+            <option
+                v-for="school in sortedSchools"
+                :key="school.get('schul_id')"
+                :value="school.get('schul_id')"
+            >
+                {{ `${school.get('schulname')}, ${school.get('adresse_strasse_hausnr')}` }}
+            </option>
+        </select>
     </div>
 </template>
 
 <style lang="scss" scoped>
-    .schools-container {
-        .form-group {
-            margin-bottom: 25px;
-            >label {
-                float: left;
-                width: 75%;
-            }
-        }
-
-        #regional-school {
-            cursor: pointer;
-        }
-    }
 </style>

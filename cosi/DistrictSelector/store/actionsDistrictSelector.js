@@ -36,7 +36,7 @@ const actions = {
                     const districtName = compensateInconsistency(districts[i].getName()),
                         statFeatures = await getStatFeatures(urls[j], {
                             featureTypes: districtLevel.featureTypes[j],
-                            srsName: rootGetters["Map/projectionCode"],
+                            srsName: rootGetters["Maps/projectionCode"],
                             propertyNames: districtLevel.propertyNameList[j],
                             filter: equalTo(districtLevel.stats.keyOfAttrName, districtName)
                         }),

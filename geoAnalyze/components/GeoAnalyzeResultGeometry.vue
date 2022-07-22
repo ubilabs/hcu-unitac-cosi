@@ -38,32 +38,64 @@ export default {
 
 <template lang="html">
     <div>
-        <dl class="dl-horizontal">
-            <dt>Einwohnerzahl Hauptsitz gesamt:</dt>
-            <dd>{{ sum_ew_haupt }}</dd>
-            <dt>Einwohnerzahl Nebensitz gesamt:</dt>
-            <dd>{{ sum_ew_neben }}</dd>
+        <dl class="dl-horizontal row">
+            <dt class="col-6 d-flex justify-content-end">
+                Einwohnerzahl Hauptsitz gesamt:
+            </dt>
+            <dd class="col-6">
+                {{ sum_ew_haupt }}
+            </dd>
+            <dt class="col-6 d-flex justify-content-end">
+                Einwohnerzahl Nebensitz gesamt:
+            </dt>
+            <dd class="col-6">
+                {{ sum_ew_neben }}
+            </dd>
         </dl>
         <hr>
-        <dl class="dl-horizontal">
-            <dt>Summe der Schulen:</dt>
-            <dd>{{ schools_sum }}</dd>
-            <dt>Summe der Schüler:</dt>
-            <dd>{{ students_sum }}</dd>
+        <dl class="dl-horizontal row">
+            <dt class="col-6 d-flex justify-content-end">
+                Summe der Schulen:
+            </dt>
+            <dd class="col-6">
+                {{ schools_sum }}
+            </dd>
+            <dt class="col-6 d-flex justify-content-end">
+                Summe der Schüler:
+            </dt>
+            <dd class="col-6">
+                {{ students_sum }}
+            </dd>
         </dl>
         <hr>
-        <dl class="dl-horizontal">
-            <dt>Summe der Kitas:</dt>
-            <dd>{{ sum_kita }}</dd>
-            <dt>Summe der Kinder:</dt>
-            <dd>{{ sum_children }}</dd>
+        <dl class="dl-horizontal row">
+            <dt class="col-6 d-flex justify-content-end">
+                Summe der Kitas:
+            </dt>
+            <dd class="col-6">
+                {{ sum_kita }}
+            </dd>
+            <dt class="col-6 d-flex justify-content-end">
+                Summe der Kinder:
+            </dt>
+            <dd class="col-6">
+                {{ sum_children }}
+            </dd>
         </dl>
         <hr>
-        <dl class="dl-horizontal">
-            <dt>Summe der Krankenhäuser:</dt>
-            <dd>{{ sum_hospitals }}</dd>
-            <dt>Summe der Planbetten:</dt>
-            <dd>{{ sum_hospitals_beds }}</dd>
+        <dl class="dl-horizontal row">
+            <dt class="col-6 d-flex justify-content-end">
+                Summe der Krankenhäuser:
+            </dt>
+            <dd class="col-6">
+                {{ sum_hospitals }}
+            </dd>
+            <dt class="col-6 d-flex justify-content-end">
+                Summe der Planbetten:
+            </dt>
+            <dd class="col-6">
+                {{ sum_hospitals_beds }}
+            </dd>
         </dl>
     </div>
 </template>
@@ -74,13 +106,11 @@ export default {
         margin-bottom: 10px;
     }
     .dl-horizontal {
-        margin-bottom: 10px;
         dd {
-            margin-left: 240px;
+            margin-bottom: 0;
         }
         dt {
             font-family: "MasterPortalFont Bold", "Arial Narrow", Arial, sans-serif;
-            width: 220px;
         }
     }
 </style>

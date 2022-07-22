@@ -86,7 +86,9 @@ export default {
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend"]),
         ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping", groupActiveLayer: "groupActiveLayer", isFeatureActive: "isFeatureActive"}),
-        ...mapGetters("Map", ["layerList"]),
+        ...mapGetters("Maps", {
+            layerList: "getLayerList"
+        }),
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
         availableColumns () {
             const options = [

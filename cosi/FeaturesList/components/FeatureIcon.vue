@@ -25,7 +25,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions("Map", ["zoomTo"]),
+        ...mapActions("Maps", ["zoomTo"]),
         ...mapActions("Alerting", ["addSingleAlert"]),
         /**
          * @description

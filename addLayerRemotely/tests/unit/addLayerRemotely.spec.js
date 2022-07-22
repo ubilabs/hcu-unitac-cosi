@@ -1,10 +1,10 @@
 import {expect} from "chai";
-import {getFeatureIds} from "../../addLayerRemotely";
+import {getFeatureIds, returnGeoJSONLayerObject} from "../../addLayerRemotely";
 import sinon from "sinon";
 
 const geojson = {
-    "type": "FeatureCollection",
-    "features":
+        "type": "FeatureCollection",
+        "features":
         [
             {
                 "type": "Feature",
@@ -16,20 +16,42 @@ const geojson = {
                 "properties": {"epsg": "WGS84"}
             }
         ],
-    "styles": [
-        {
-            "styleId": "customStyle",
-            "rules": [
-                {
-                    "style": {
-                        "circleStrokeColor": [255, 0, 0, 1],
-                        "circleFillColor": [255, 0, 0, 0.5]
+        "styles": [
+            {
+                "styleId": "customStyle",
+                "rules": [
+                    {
+                        "style": {
+                            "circleStrokeColor": [255, 0, 0, 1],
+                            "circleFillColor": [255, 0, 0, 0.5]
+                        }
                     }
-                }
-            ]
-        }
-    ]
-};
+                ]
+            }
+        ]
+    },
+    layer = {
+        type: "layer",
+        name: "LayerName",
+        id: "LayerID",
+        typ: "GeoJSON",
+        geojson: geojson,
+        transparent: true,
+        minScale: "0",
+        maxScale: "500000",
+        gfiAttributes: {"test1": "xyz", "test2": "abc"},
+        layerAttribution: "nicht vorhanden",
+        legendURL: "",
+        isBaseLayer: false,
+        isSelected: true,
+        isVisibleInTree: true,
+        cache: false,
+        datasets: [],
+        urlIsVisible: true,
+        styleId: "customStyle",
+        parentId: "tree",
+        gfiTheme: "default"
+    };
 
 describe("ADDON: addLayerRemotely", () => {
     const spy = sinon.spy(Radio, "trigger");
@@ -38,9 +60,23 @@ describe("ADDON: addLayerRemotely", () => {
 
     it("addGeoJsonRemotely should trigger the right Radio functions", () => {
         expect(spy.getCall(1).calledWithExactly("StyleList", "addToStyleList", geojson.styles)).to.be.true;
-        expect(spy.getCall(2).calledWithExactly("Parser", "addGeoJSONLayer", "LayerName", "LayerID", geojson, "customStyle", "tree", {"test1": "xyz", "test2": "abc"})).to.be.true;
+        expect(spy.getCall(2).calledWithExactly("Parser", "addItem", layer)).to.be.true;
         expect(spy.getCall(3).calledWithExactly("ModelList", "addModelsByAttributes", {id: "LayerID"})).to.be.true;
         expect(spy.getCall(4).calledWithExactly("ModelList", "renderTree")).to.be.true;
+    });
+});
+
+describe("ADDON: addLayerRemotely - returnGeoJSONLayerObject", function () {
+    it("returnGeoJSONLayerObject should return an object", function () {
+        expect(returnGeoJSONLayerObject("name", "id", geojson, "styleId", "parentId", "showAll", 20)).to.be.a("object");
+    });
+    it("returnGeoJSONLayerObject should return an object including the right properties", function () {
+        expect(returnGeoJSONLayerObject("name", "id", geojson, "styleId", "parentId", "showAll", 20)).to.have.own.property("styleId");
+        expect(returnGeoJSONLayerObject("name", "id", geojson, "styleId", "parentId", "showAll", 20)).to.have.own.property("clusterDistance");
+        expect(returnGeoJSONLayerObject("name", "id", geojson, "styleId", "parentId", "showAll", 20)).to.have.own.property("parentId");
+    });
+    it("returnGeoJSONLayerObject should return an object not including clusterDistance", function () {
+        expect(returnGeoJSONLayerObject("name", "id", geojson, "styleId", "parentId", "showAll")).to.not.have.own.property("clusterDistance");
     });
 });
 

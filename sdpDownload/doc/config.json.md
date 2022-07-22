@@ -29,7 +29,7 @@ Download von Standard-Datenpaketen für Hamburg. Dieses Werkzeug öffnet sich in
 |Name|Verpflichtend|Typ|Default|Beschreibung|Expert|
 |----|-------------|---|-------|------------|------|
 |name|ja|String||Name des Werkzeuges im Menu.|false|
-|glyphicon|nein|String||CSS Klasse des Glyphicons, das vor dem Toolnamen im Menu angezeigt wird.|false|
+|icon|nein|String||CSS Klasse des Icons, das vor dem Toolnamen im Menu angezeigt wird.|false|
 
 
 **Beispiel SDP Download**
@@ -37,7 +37,7 @@ Download von Standard-Datenpaketen für Hamburg. Dieses Werkzeug öffnet sich in
 #!json
 "sdpDownload": {
                         "name": "SDP Download",
-                        "glyphicon": "glyphicon-download"
+                        "icon": "bi-download"
                 },
 ```
 

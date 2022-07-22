@@ -491,8 +491,9 @@ export default {
         return model;
     },
     deleteLayerFromTree ({state, commit, rootGetters}, filename) {
+        console.log(rootGetters);
         const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", filename: filename}),
-            map = rootGetters["Map/ol2DMap"],
+            map = this.map = mapCollection.getMap("2D"),
             importedFiles = state.importedFileNames.filter(file => file !== filename);
 
         map.removeLayer(model.get("layer"));
@@ -512,7 +513,7 @@ export default {
             layerName = datasrc.layerName,
             layerId = "imported" + uniqueId("_"),
             format = getFormat(datasrc.filename, state.selectedFiletype, state.supportedFiletypes, supportedFormats),
-            currentCrs = rootGetters["Map/projectionCode"];
+            currentCrs = rootGetters["Maps/projectionCode"];
         let
             featureError = false,
             alertingMessage,

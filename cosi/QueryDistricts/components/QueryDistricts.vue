@@ -54,7 +54,7 @@ export default {
             "mapping"
         ]),
         ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById", "activeVectorLayerList"]),
-        ...mapGetters("Map", ["layerById", "projectionCode"])
+        ...mapGetters("Maps", ["layerById", "projectionCode"])
     },
     watch: {
         async layerFilterModels (newValue) {
@@ -140,7 +140,7 @@ export default {
         ...mapMutations("Tools/DistrictSelector", ["setSelectedDistrictsCollection"]),
         ...mapActions("Tools/DistrictSelector", ["setDistrictsByName"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-        ...mapActions("Map", ["zoomTo", "createLayer"]),
+        ...mapActions("Maps", ["zoomTo", "createLayer"]),
         ...compareFeatures,
 
         initializeDistrictNames: function () {

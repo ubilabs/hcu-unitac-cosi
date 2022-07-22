@@ -16,6 +16,10 @@ describe("addons/flaecheninfo/components/FlaecheninfoTheme.vue", () => {
         wrapper;
 
     beforeEach(() => {
+        report = false;
+        sinon.stub(FlaecheninfoTheme.methods, "createReport").callsFake(function () {
+            report = true;
+        });
         wrapper = shallowMount(FlaecheninfoTheme, {
             propsData: {
                 feature: {
@@ -46,10 +50,12 @@ describe("addons/flaecheninfo/components/FlaecheninfoTheme.vue", () => {
         });
     });
 
+    afterEach(() => {
+        sinon.restore();
+    });
+
+
     it("should exist", () => {
-        sinon.stub(FlaecheninfoTheme.methods, "createReport").callsFake(function () {
-            report = true;
-        });
         expect(wrapper.find("div").exists()).to.be.true;
     });
 

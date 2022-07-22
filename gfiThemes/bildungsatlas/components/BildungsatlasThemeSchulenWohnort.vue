@@ -75,7 +75,8 @@ export default {
             numberOfStudentsInDistrictFormated: 0,
             statgeb_id: 0,
             stadtteil_name: "",
-            featureIds: []
+            featureIds: [],
+            infoText: ""
         };
     },
     computed: {
@@ -170,7 +171,7 @@ export default {
                 "featuresLoaded": this.getActiveSchoolLayer
             });
 
-            this.$el.querySelector(".gfi-info").innerHTML = this.parseTranslationInHtml(this.translate("additional:addons.gfiThemes.bildungsatlas.schulenWohnort.info." + themeType));
+            this.infoText = this.parseTranslationInHtml(this.translate("additional:addons.gfiThemes.bildungsatlas.schulenWohnort.info." + themeType));
         },
 
         /**
@@ -402,11 +403,8 @@ export default {
 </script>
 
 <template>
-    <div class="gfi-school-living-location">
-        <div
-            class="tab-panel"
-            :class="{ 'hidden': !isActiveTab('data') }"
-        >
+    <div class="gfi-bildungsatlas-current-content">
+        <div v-if="isActiveTab('data')">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -434,42 +432,36 @@ export default {
             </table>
         </div>
         <div
-            class="tab-panel gfi-info"
-            :class="{ 'hidden': !isActiveTab('info') }"
+            v-if="isActiveTab('info')"
+            class="gfi-info"
+            v-html="infoText"
         />
     </div>
 </template>
 
 <style lang="scss" scoped>
-    .gfi-school-living-location {
-        max-width: 420px;
-        table {
-            margin-bottom: 0;
-        }
-        .gfi-info {
-            padding: 0 10px 10px;
-        }
-
-        .hidden {
-            display: none;
-        }
+.gfi-bildungsatlas-current-content {
+    table {
+        margin-bottom: 0;
     }
+}
 </style>
 
 <style lang="scss">
-     .schulWohnort {
-        &.table {
-            max-width: 420px;
-            tbody {
-                tr{
-                    td {
-                        font-weight: bold;
-                        &:last-child {
-                            text-align: right;
-                        }
+.schulWohnort {
+    table {
+        max-width: 420px;
+
+        tbody {
+            tr {
+                td {
+                    font-weight: bold;
+                    &:last-child {
+                        text-align: right;
                     }
                 }
             }
         }
     }
+}
 </style>

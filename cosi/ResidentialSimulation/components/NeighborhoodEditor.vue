@@ -26,7 +26,6 @@ export default {
         confirmDialog: false
     }),
     computed: {
-        ...mapGetters("Map", {map: "ol2DMap"}),
         ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
         neighborhoodName () {
             return this.selectedNeighborhood.editFeature?.get("name");
@@ -45,6 +44,7 @@ export default {
         }
     },
     mounted () {
+        this.map = mapCollection.getMap("2D");
         this.map.addEventListener("click", this.openEditDialog.bind(this));
     },
     methods: {

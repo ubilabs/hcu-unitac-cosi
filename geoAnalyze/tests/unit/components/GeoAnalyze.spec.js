@@ -17,13 +17,13 @@ describe("addons/geoAnalyze/components/GeoAnalyze.vue", () => {
                     };
                 },
                 computed: {
-                    clickCoord: () => [],
+                    clickCoordinate: () => [],
                     name: () => "Hallo",
                     renderToWindow: () => true,
                     resizableWindow: () => false,
                     deactivateGFI: () => true,
                     active: () => isActive,
-                    glyphicon: () => "glyphicon-map"
+                    icon: () => "bi-list-task"
                 }
             });
         }

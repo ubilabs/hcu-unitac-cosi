@@ -40,7 +40,7 @@ export default {
         checkbox: false
     }),
     computed: {
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
+        ...mapGetters("Maps", {layerById: "layerById"}),
         ...mapGetters("Tools/DistrictSelector", ["districtLevels", "selectedDistrictLevel", "mapping"]),
 
         statsMapping () {
@@ -99,6 +99,7 @@ export default {
      * @returns {void}
      */
     mounted () {
+        this.map = mapCollection.getMap("2D");
         this.workingDistrictLevel = this.selectedDistrictLevel;
     },
 

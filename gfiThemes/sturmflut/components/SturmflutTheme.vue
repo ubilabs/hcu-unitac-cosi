@@ -74,13 +74,14 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "~variables";
 .sturmflut-theme {
     padding: 10px;
     max-width: 500px;
-    color: #000;
+    color: $black;
 
     p {
-        color: #000;
+        color: $black;
     }
 
     td {
@@ -88,8 +89,8 @@ export default {
     }
 
     #sturmflut-theme-headline {
-        color: #000;
-        border-bottom: 1px solid #000;
+        color: $black;
+        border-bottom: 1px solid $black;
         font-size: 130%;
         margin: 0 0 0.5em 0;
         padding: 5px;
@@ -112,7 +113,7 @@ export default {
 
     #sturmflut-theme-table-image-zoom {
         font-size: 11px;
-        color: #666;
+        color: $light_grey;
         padding: 3px 0;
     }
 
@@ -123,9 +124,10 @@ export default {
 </style>
 
 <style lang="scss">
+    @import "~variables";
     #sturmflut-theme-table-description {
         p {
-            color: #000;
+            color: $black;
         }
     }
 </style>

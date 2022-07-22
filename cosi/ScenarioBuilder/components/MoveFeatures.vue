@@ -48,7 +48,7 @@ export default {
         }
     }),
     computed: {
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
+        ...mapGetters("Maps", {layerById: "layerById", projectionCode: "projectionCode"}),
         ...mapGetters("Tools/Routing", ["geosearchReverse"]),
 
         /**
@@ -100,6 +100,9 @@ export default {
             this.moveFeaturesActive = false;
         }
     },
+    created () {
+        this.map = mapCollection.getMap("2D");
+    },
     /**
      * Deactivate the map interaction when tool is closed forcefully
      * @returns {void}
@@ -108,7 +111,7 @@ export default {
         this.unlisten();
     },
     methods: {
-        ...mapActions("Map", ["removeHighlightFeature"]),
+        ...mapActions("Maps", ["removeHighlightFeature"]),
 
         /**
          * Sets and adds all OL interactions to move features

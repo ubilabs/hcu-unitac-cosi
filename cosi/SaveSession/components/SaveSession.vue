@@ -115,7 +115,7 @@ export default {
         ...mapGetters("Tools/ScenarioBuilder", {simGuideLayer: "guideLayer"}),
         ...mapGetters("Tools/ResidentialSimulation", {simNeighborhoodLayer: "drawingLayer"}),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "districtLevels"]),
-        ...mapGetters("Map", ["layerById"])
+        ...mapGetters("Maps", ["layerById"])
     },
     watch: {
         /**

@@ -36,7 +36,10 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/DistrictSelector", Object.keys(getters)),
-        ...mapGetters("Map", ["layerList", "visibleLayerList"]),
+        ...mapGetters("Maps", {
+            layerList: "getLayerList",
+            visibleLayerList: "getVisibleLayerList"
+        }),
         ...mapState(["easyReadMode"]),
         ...mapGetters("Tools/AreaSelector", {areaSelectorGeom: "geometry"}),
 
@@ -172,7 +175,7 @@ export default {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapActions("Tools/DistrictSelector", ["loadStatFeatures"]),
-        ...mapActions("Map", ["addInteraction", "removeInteraction", "zoomTo", "resetView"]),
+        ...mapActions("Maps", ["addInteraction", "removeInteraction", "zoomTo", "resetView"]),
 
         /**
          * quickly checks the key evt code

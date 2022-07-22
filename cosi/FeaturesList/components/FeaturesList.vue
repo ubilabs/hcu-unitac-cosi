@@ -303,7 +303,7 @@ export default {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Tools/DistanceScoreService", ["getDistanceScore", "getFeatureValues"]),
-        ...mapActions("Map", ["removeHighlightFeature", "createLayer"]),
+        ...mapActions("Maps", ["removeHighlightFeature", "createLayer"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...chartMethods,
 

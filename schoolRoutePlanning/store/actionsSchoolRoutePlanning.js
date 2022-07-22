@@ -35,7 +35,7 @@ export default {
                 callback: () => Radio.trigger("MapView", "setZoomLevelDown")
             };
 
-            Radio.trigger("Map", "zoomToExtent", source.getExtent(), options);
+            Radio.trigger("Map", "zoomToExtent", {extent: source.getExtent(), options: options});
         }
     },
 

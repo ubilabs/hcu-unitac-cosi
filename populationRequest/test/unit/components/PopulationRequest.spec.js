@@ -21,7 +21,9 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
             removeLayerFromMap: sinon.stub()
         },
         mockMapActions = {
-            addInteraction: sinon.stub()
+            addInteraction: sinon.stub(),
+            registerListener: sinon.stub(),
+            addLayerOnTop: sinon.stub()
         },
         mockGraphicalSelectGetters = {
             circleOverlay: sinon.stub(),
@@ -52,7 +54,7 @@ describe("addons/PopulationRequest/components/PopulationRequest.vue", () => {
                         PopulationRequest: Module
                     }
                 },
-                Map: {
+                Maps: {
                     namespaced: true,
                     mutations: mockMapMutations,
                     actions: mockMapActions

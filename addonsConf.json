@@ -2,9 +2,13 @@
   "bauforum": "changeGUI/loader.js",
   "boris": "bodenrichtwertabfrage/view.js",
   "formular": "view.js",
-  "oktagonKartenportal": "oktagonLoader.js",
   "showParcelGFI": "showParcelGFI.js",
-  "verkehrsfunctions": "verkehrsfunctions.js",
+  "verkehrsfunctions": {
+    "type": "javascript"
+  },
+  "fileImportAddon": {
+    "type": "tool"
+  },
   "cosiFileImport": {
     "path": "cosi/cosiFileImport",
     "type": "tool"
@@ -72,9 +76,14 @@
   "streetSmart": {
     "type": "tool"
   },
-  "activeCityMaps": {
-    "path":"gfiThemes/activeCityMaps",
-    "type": "gfiTheme"
+  "hochWasserPrint": {
+    "type": "tool"
+  },
+  "valuationPrint": {
+    "type": "tool"
+  },
+  "oktagonKartenportal": {
+    "type": "tool"
   },
   "bildungsatlas": {
     "path":"gfiThemes/bildungsatlas",
@@ -86,6 +95,10 @@
   },
   "dipas": {
     "path":"gfiThemes/dipas",
+    "type": "gfiTheme"
+  },
+  "dipasCockpit": {
+    "path":"gfiThemes/dipasCockpit",
     "type": "gfiTheme"
   },
   "flaecheninfo": {
@@ -145,5 +158,9 @@
     "type": "tool"
   },
   "addLayerRemotely": "addLayerRemotely.js",
-  "qr": "view.js"
+  "qr": "view.js",
+  "obliqueControl": {
+    "path":"controls/obliqueControl",
+    "type": "control"
+  }
 }

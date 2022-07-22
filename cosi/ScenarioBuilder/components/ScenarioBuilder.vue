@@ -61,7 +61,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["groupActiveLayer", "activeVectorLayerList"]),
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
+        ...mapGetters("Maps", {layerById: "layerById", projectionCode: "projectionCode"}),
         ...mapGetters("Tools/Routing", ["geosearchReverse"]),
 
         /**
@@ -165,6 +165,7 @@ export default {
         this.$on("close", () => {
             this.setActive(false);
         });
+        this.map = mapCollection.getMap("2D");
         await this.createGuideLayer();
     },
     // mounted () {
@@ -174,8 +175,8 @@ export default {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
-        ...mapActions("Map", ["createLayer"]),
-        ...mapMutations("Map", ["setCenter"]),
+        ...mapActions("Maps", ["createLayer"]),
+        ...mapMutations("Maps", ["setCenter"]),
 
         compareLayerMapping, // the utils function that checks a prop against the layer map
         validateProp, // the utils function validating the type of props and returning the relevant rules

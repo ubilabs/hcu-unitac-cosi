@@ -8,8 +8,4 @@ OpenRouteService/node_modules/*
 qr/node_modules/*
 .history
 .vscode
-
-node_modules
-yarn.lock
-.eslintrc
-babel.config.js
+.idea

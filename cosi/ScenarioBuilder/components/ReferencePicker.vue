@@ -32,7 +32,7 @@ export default {
         showClusteredFeaturePicker: false
     }),
     computed: {
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
+        ...mapGetters("Maps", {layerById: "layerById"}),
 
         /**
          * Returns the OpenLayers map layer from the workingLayer object
@@ -72,6 +72,10 @@ export default {
                 this.$emit("referencePickerActive", false);
             }
         }
+    },
+
+    created () {
+        this.map = mapCollection.getMap("2D");
     },
 
     /**

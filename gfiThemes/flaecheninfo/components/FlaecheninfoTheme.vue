@@ -18,7 +18,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Map", ["gfiFeatures"]),
+        ...mapGetters("Maps", ["gfiFeatures"]),
         ...mapGetters("MapMarker", ["markerPolygon"])
     },
     watch: {
@@ -82,7 +82,7 @@ export default {
             this.placingPolygonMarker(getWKTGeom(coord, "POLYGON"));
 
             if (this.markerPolygon?.getSource().getFeatures().length > 0) {
-                Radio.trigger("Map", "zoomToExtent", this.markerPolygon?.getSource()?.getExtent(), {maxZoom: 7});
+                Radio.trigger("Map", "zoomToExtent", {extent: this.markerPolygon?.getSource()?.getExtent(), options: {maxZoom: 7}});
             }
         },
         /**

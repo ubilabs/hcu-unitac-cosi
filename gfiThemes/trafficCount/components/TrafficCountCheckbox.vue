@@ -81,3 +81,16 @@ export default {
         >{{ checkboxLabel }}</label>
     </div>
 </template>
+
+<style lang="scss" scoped>
+@import "~variables";
+
+.form-check-input:checked {
+    color: $secondary_focus_contrast;
+    background-color: $secondary_focus;
+    border-color: $secondary_focus;
+}
+.form-check-label {
+    margin-top: 0.1095em;
+}
+</style>

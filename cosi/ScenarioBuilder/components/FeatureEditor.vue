@@ -43,7 +43,7 @@ export default {
     }),
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
+        ...mapGetters("Maps", {layerById: "layerById"}),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "layerMapById"]),
         ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
         isSimulation () {
@@ -54,7 +54,7 @@ export default {
         }
     },
     created () {
-        this.map.addEventListener("click", this.openEditDialog.bind(this));
+        mapCollection.getMap("2D").addEventListener("click", this.openEditDialog.bind(this));
         this.confirmText = this.$t("additional:modules.tools.cosi.featureEditor.noScenarioconfirmDeleteWarning");
     },
     methods: {
@@ -66,7 +66,7 @@ export default {
 
             this.reset();
 
-            this.map.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
+            mapCollection.getMap("2D").forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
                 for (const _feature of unpackCluster(feature)) {
                     this.featureSelectionList.push({
                         layerMap: this.layerMapById(layer.get("id")),

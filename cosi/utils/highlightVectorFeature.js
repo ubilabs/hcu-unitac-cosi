@@ -8,7 +8,7 @@ import store from "../../../src/app-store";
  * @returns {void}
  */
 function highlightFeature (payload) {
-    store.dispatch("Map/highlightFeature", payload);
+    store.dispatch("Maps/highlightFeature", payload);
 }
 
 /**

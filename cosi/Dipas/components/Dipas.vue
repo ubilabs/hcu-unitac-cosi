@@ -43,7 +43,7 @@ export default {
     computed: {
         ...mapGetters("Tools/Dipas", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["isFeatureActive"]),
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
+        ...mapGetters("Maps", {layerById: "layerById", projectionCode: "projectionCode"}),
         ...mapGetters("Language", ["currentLocale"]),
         isProjectActive () {
             return (id) => {
@@ -79,6 +79,7 @@ export default {
     */
     created () {
         this.$on("close", this.close);
+        this.map = mapCollection.getMap("2D");
     },
     /**
    * fetches the projects and creates their layer with different color styles
@@ -90,11 +91,11 @@ export default {
         this.initialize();
     },
     methods: {
-        ...mapActions("Map", ["createLayer", "zoomTo"]),
+        ...mapActions("Maps", ["createLayer", "zoomTo"]),
         ...mapActions("Tools/Dipas", ["addLayer"]),
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
-        ...mapMutations("Map", ["addLayerToMap"]),
+        ...mapMutations("Maps", ["addLayerToMap"]),
         ...mapActions("Tools/Draw", ["createCenterPoint"]),
         getLayerById,
 

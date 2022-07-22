@@ -12,12 +12,12 @@ const actions = {
      */
     toggleFeatureDisabled ({dispatch, commit, rootGetters}, featureItem) {
         const
-            layerById = rootGetters["Map/layerById"],
+            layerById = rootGetters["Maps/layerById"],
             layer = layerById(featureItem.layerId)?.olLayer,
             source = getClusterSource(layer);
 
         // remove all highlightings to avoid undefined errors on the map
-        dispatch("Map/removeHighlightFeature", null, {root: true});
+        dispatch("Maps/removeHighlightFeature", null, {root: true});
         if (layer) {
             let scenarioFeature;
 

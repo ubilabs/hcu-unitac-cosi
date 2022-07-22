@@ -51,7 +51,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
+        ...mapGetters("Maps", {layerById: "layerById", projectionCode: "projectionCode"}),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList"]),
 
         /**
@@ -90,7 +90,7 @@ export default {
         if (this.geomField.type) {
             this.geometry.type = this.isGml ? getOlGeomTypeByGmlType(this.geomField.type) : this.geomField.type;
         }
-
+        this.map = mapCollection.getMap("2D");
         await this.createDrawingLayer();
     },
     beforeDestroy () {
@@ -100,7 +100,7 @@ export default {
     },
     methods: {
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
-        ...mapActions("Map", ["createLayer"]),
+        ...mapActions("Maps", ["createLayer"]),
 
         /**
          * todo
