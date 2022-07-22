@@ -79,13 +79,17 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
                 "name": "31.12.2022",
                 "isNeverVisibleInTree": true,
                 "isSelected": true,
-                "isVisibleInMap": false
+                "isVisibleInMap": false,
+                "typ": "WMS",
+                "layers": "lgv_brw_zonen_2017,lgv_brw_zonen_brw_grdstk_2017"
             },
             attribute2 = {
                 "name": "31.12.2020",
                 "isNeverVisibleInTree": true,
                 "isSelected": false,
-                "isVisibleInMap": false
+                "isVisibleInMap": false,
+                "typ": "WMS",
+                "layers": "v_brw_zonen_geom_flaeche_2020"
             };
 
         state.filteredLayerList = [
@@ -221,7 +225,7 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
         it("handles layer switch for point & stripes layer", () => {
             const selectedLayerName = "31.12.2017";
 
-            state.selectedLayer = {"attributes": {"layers": "lgv_brw_zonen_2017,lgv_brw_zonen_brw_grdstk_2017"}};
+            state.selectedLayer = state.filteredLayerList.attribute1;
 
             actions.switchLayer({state, dispatch, commit}, selectedLayerName);
             expect(commit.callCount).to.equal(6);
@@ -249,9 +253,9 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
 
         });
         it("handles layer switch for area layer", () => {
-            const selectedLayerName = "31.12.2019";
+            const selectedLayerName = "31.12.2020";
 
-            state.selectedLayer = {"attributes": {"layers": "v_brw_zonen_geom_flaeche_2019"}};
+            state.selectedLayer = state.filteredLayerList[1];
 
             actions.switchLayer({state, dispatch, commit}, selectedLayerName);
             expect(commit.args[5][0]).to.equal("setIsAreaLayer");

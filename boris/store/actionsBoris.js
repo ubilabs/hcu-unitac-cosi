@@ -1,4 +1,3 @@
-/* eslint-disable one-var */
 import axios from "axios";
 import helpers from "../utils/helpers";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
@@ -97,7 +96,7 @@ const actions = {
         dispatch("MapMarker/removePointMarker", null, {root: true});
         commit("setTextIds", []);
 
-        if (typeof state.selectedLayer?.attributes.layers === "string" && state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
+        if (state.selectedLayer?.get("typ") !== "GROUP" && state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
             commit("setIsAreaLayer", true);
             dispatch("toggleStripesLayer", state.isStripesLayer);
         }
@@ -171,16 +170,19 @@ const actions = {
                 coordinates = processFromParametricUrl ? center : event.coordinate,
                 map = processFromParametricUrl ? mapCollection.getMap("2D") : event.map,
                 mapView = map.getView();
-            let layerSource;
+            let layerSource,
+                url = null;
 
-            if (typeof selectedLayer.attributes.layers !== "string") {
-                layerSource = selectedLayer.get("layer").values_.layers.array_[2].getSource();
+            if (selectedLayer.get("typ") === "GROUP") {
+                const groupedLayers = selectedLayer.get("layerSource");
+
+                layerSource = groupedLayers[2].get("layer").getSource();
             }
             else {
                 layerSource = selectedLayer.get("layer").getSource();
             }
 
-            const url = layerSource.getFeatureInfoUrl(coordinates, mapView.getResolution(), mapView.getProjection());
+            url = layerSource.getFeatureInfoUrl(coordinates, mapView.getResolution(), mapView.getProjection());
 
             axios.get(url)
                 .then((response) => {
