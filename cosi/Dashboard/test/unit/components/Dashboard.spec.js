@@ -377,8 +377,4 @@ describe.only("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             expect(spyChannelGraphData.callCount).to.equal(0);
         });
     });
-
-    describe("Calculation functions", () => {
-
-    });
 });

@@ -8,7 +8,6 @@ import GeoJSON from "ol/format/GeoJSON";
 import {Fill, Stroke, Style, Circle, Text} from "ol/style.js";
 import {Vector} from "ol/source.js";
 import {Heatmap} from "ol/layer.js";
-import {getCenter} from "ol/extent.js";
 import {Point} from "ol/geom.js";
 import {generateColorScale, generateColorScaleByColor} from "../../utils/colorScale";
 import {getLayerById} from "../../DistrictSelector/utils/prepareDistrictLevels.js";

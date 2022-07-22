@@ -490,8 +490,7 @@ export default {
         commit("setUpdateLayerStyles", true);
         return model;
     },
-    deleteLayerFromTree ({state, commit, rootGetters}, filename) {
-        console.log(rootGetters);
+    deleteLayerFromTree ({state, commit}, filename) {
         const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", filename: filename}),
             map = this.map = mapCollection.getMap("2D"),
             importedFiles = state.importedFileNames.filter(file => file !== filename);

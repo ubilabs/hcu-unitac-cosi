@@ -156,21 +156,15 @@ describe("createIsochrones", () => {
 
     it("createIsochrones point error", async () => {
         const commitStub = sinon.stub(),
-            originalError = console.error;
-
-        console.error = sinon.stub();
-
-        const ret = await service.store.actions.getIsochrones({getters: {baseUrl}, commit: commitStub, rootGetters},
-            {
-                coordinates: [[9.744273174491198, "b"]],
-                transportType: "driving-car",
-                scaleUnit: "time",
-                distance: 10
-            });
+            ret = await service.store.actions.getIsochrones({getters: {baseUrl}, commit: commitStub, rootGetters},
+                {
+                    coordinates: [[9.744273174491198, "b"]],
+                    transportType: "driving-car",
+                    scaleUnit: "time",
+                    distance: 10
+                });
 
         expect(ret.length).to.equal(0);
-
-        console.error = originalError;
     });
     it("should not fail if one point is outside hamburg", async () => {
         const commitStub = sinon.stub(),

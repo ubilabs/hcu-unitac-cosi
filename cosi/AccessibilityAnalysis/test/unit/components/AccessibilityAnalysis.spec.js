@@ -202,7 +202,7 @@ describe("AccessibilityAnalysis.vue", () => {
                 MapMarker: {
                     namespaced: true,
                     actions: {
-                        placingPointMarker: () => sinon.stub(), 
+                        placingPointMarker: () => sinon.stub(),
                         removePointMarker: () => sinon.stub()
                     }
                 }
@@ -235,7 +235,7 @@ describe("AccessibilityAnalysis.vue", () => {
                 return layersMock[0];
             }
             if (a1 === "RestReader" && a2 === "getServiceById" && a3 === "bkg_ors") {
-                return {get: () => ""}
+                return {get: () => ""};
             }
             return null;
         });

@@ -27,8 +27,8 @@ async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, 
                 "Content-Type": "application/json"
             };
 
-        if (baseUrl_ == "https://api.openrouteservice.org/v2/") {
-            headers["Authorization"] = "5b3ce3597851110001cf6248ef277cc626c440eb819e9299870c194c"
+        if (baseUrl_ === "https://api.openrouteservice.org/v2/") {
+            headers.Authorization = "5b3ce3597851110001cf6248ef277cc626c440eb819e9299870c194c";
         }
         promises.push(
             axios.post(url, JSON.stringify(opts), {
