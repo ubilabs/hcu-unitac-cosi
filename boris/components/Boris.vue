@@ -92,6 +92,25 @@ export default {
             }
         },
         /**
+         * Listens to the selectedBrwFeature for point layer
+         * to check if the new value has no 'geschossfl_zahl', but the old one does
+         * to set the buttonValue to "info" in this case
+         * @param {Object} newValue the newly selected brwFeature
+         * @param {Object} oldValue the previously selected brwFeature
+         * @returns {void}
+         */
+        selectedBrwFeature (newValue, oldValue) {
+            if (this.selectedPolygon === null && typeof newValue.get === "function" && typeof oldValue.get === "function") {
+                if (this.buttonValue === "liste") {
+                    if (oldValue.get("geschossfl_zahl")) {
+                        if (!newValue.get("geschossfl_zahl")) {
+                            this.setButtonValue("info");
+                        }
+                    }
+                }
+            }
+        },
+        /**
          * Checks if file to print is ready to be printed
          * @returns {void}
          */

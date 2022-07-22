@@ -184,6 +184,34 @@ describe("ADDONS: addons/boris/components/Boris.vue", () => {
             expect(Boris.actions.matchPolygonFeatureWithLanduse.calledOnce).to.equal(true);
         });
     });
+    describe("selectedBrwFeature watcher", () => {
+        it.only("selectedBrwFeature: should change buttonValue to 'info'", () => {
+            const oldVal = {"geschossfl_zahl": 3},
+                newVal = {"hausnummer": 3},
+                values = [{
+                    "attributes": oldVal,
+                    get: (key)=> {
+                        return oldVal[key];
+                    }
+                },
+                {"attributes": newVal,
+                    get: (key)=> {
+                        return newVal[key];
+                    }
+                }
+                ],
+                oldValue = values[0],
+                newValue = values[1];
+
+            store.state.selectedPolygon = null;
+            store.state.Tools.Boris.active = true;
+            store.state.Tools.Boris.buttonValue = "liste";
+            wrapper = shallowMount(BorisComponent, {store, localVue});
+            wrapper.vm.$options.watch.selectedBrwFeature.call(wrapper.vm, newValue, oldValue);
+
+            expect(store.state.Tools.Boris.buttonValue).to.equals("info");
+        });
+    });
     describe("toggleInfoText method", () => {
         it("toggleInfoText", () => {
             store.state.Tools.Boris.active = true;
