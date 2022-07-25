@@ -100,14 +100,14 @@ export default {
     },
     methods: {
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
-        ...mapActions("Maps", ["createLayer"]),
+        ...mapActions("Maps", ["addNewLayerIfNotExists"]),
 
         /**
          * todo
          * @returns {void}
          */
         async createDrawingLayer () {
-            const newLayer = await this.createLayer(this.id + "_draw");
+            const newLayer = await this.addNewLayerIfNotExists(this.id + "_draw");
 
             newLayer.setVisible(true);
             this.drawLayer = newLayer;

@@ -175,7 +175,7 @@ export default {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapActions("Tools/DistrictSelector", ["loadStatFeatures"]),
-        ...mapActions("Maps", ["addInteraction", "removeInteraction", "zoomTo", "resetView"]),
+        ...mapActions("Maps", ["addInteraction", "removeInteraction", "zoomToExtent", "resetView"]),
 
         /**
          * quickly checks the key evt code
@@ -378,7 +378,7 @@ export default {
                 setBBoxToGeom.call(this, this.areaSelectorGeom || bboxGeom);
 
                 if (zoomToExtent) {
-                    this.zoomTo({geometryOrExtent: extent, options: {}});
+                    this.zoomToExtent({extent, options: {}});
                 }
 
                 this.loadStatFeatures({

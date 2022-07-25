@@ -175,7 +175,7 @@ export default {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
-        ...mapActions("Maps", ["createLayer"]),
+        ...mapActions("Maps", ["addNewLayerIfNotExists"]),
         ...mapMutations("Maps", ["setCenter"]),
 
         compareLayerMapping, // the utils function that checks a prop against the layer map
@@ -186,7 +186,7 @@ export default {
          * @returns {void}
          */
         async createGuideLayer () {
-            const newLayer = await this.createLayer(this.id + "_layer");
+            const newLayer = await this.addNewLayerIfNotExists(this.id + "_layer");
 
             newLayer.setVisible(true);
             newLayer.setStyle(function (feature) {

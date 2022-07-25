@@ -295,7 +295,7 @@ export default {
 
         this.$root.$on("updateFeaturesList", this.updateFeaturesList);
 
-        this.distScoreLayer = await this.createLayer("distance-score-features");
+        this.distScoreLayer = await this.addNewLayerIfNotExists("distance-score-features");
         this.distScoreLayer.setVisible(true);
         this.distScoreLayer.setZIndex(22);
     },
@@ -303,7 +303,7 @@ export default {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Tools/DistanceScoreService", ["getDistanceScore", "getFeatureValues"]),
-        ...mapActions("Maps", ["removeHighlightFeature", "createLayer"]),
+        ...mapActions("Maps", ["removeHighlightFeature", "addNewLayerIfNotExists"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...chartMethods,
 

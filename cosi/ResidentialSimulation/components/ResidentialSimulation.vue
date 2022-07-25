@@ -217,7 +217,7 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
-        ...mapActions("Maps", ["createLayer"]),
+        ...mapActions("Maps", ["addNewLayerIfNotExists"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Tools/DistrictSelector", ["getStatsByDistrict"]),
 
@@ -226,7 +226,7 @@ export default {
          * @returns {void}
          */
         async createDrawingLayer () {
-            const newLayer = await this.createLayer(this.id + "_layer");
+            const newLayer = await this.addNewLayerIfNotExists(this.id + "_layer");
 
             newLayer.setVisible(true);
             newLayer.setStyle(residentialLayerStyle);

@@ -90,7 +90,7 @@ export default {
         this.initialize();
     },
     methods: {
-        ...mapActions("Maps", ["createLayer", "zoomTo"]),
+        ...mapActions("Maps", ["addNewLayerIfNotExists", "zoomToExtent"]),
         ...mapActions("Tools/Dipas", ["addLayer"]),
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
@@ -584,7 +584,7 @@ export default {
         zoomToProject (feature) {
             const extent = feature.getGeometry().getExtent();
 
-            this.zoomTo({geometryOrExtent: extent, options: {padding: [20, 20, 20, 20]}});
+            this.zoomToExtent({extent, options: {padding: [20, 20, 20, 20]}});
         },
 
         getDateString (feature) {

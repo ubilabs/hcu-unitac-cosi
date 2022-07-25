@@ -235,7 +235,7 @@ describe("Dipas.vue", () => {
                         projectionCode: () => "EPSG:25832"
                     },
                     actions: {
-                        createLayer: () => {
+                        addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: sinon.stub(),
                                 addEventListener: sinon.stub(),

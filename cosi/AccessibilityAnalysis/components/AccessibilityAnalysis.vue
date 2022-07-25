@@ -314,11 +314,11 @@ export default {
     async mounted () {
         this.applyTranslationKey(this.name);
 
-        this.mapLayer = await this.createLayer("accessibility-analysis");
+        this.mapLayer = await this.addNewLayerIfNotExists("accessibility-analysis");
         this.mapLayer.setVisible(true);
         this.mapLayer.setZIndex(10);
 
-        this.directionsLayer = await this.createLayer("accessibility-directions");
+        this.directionsLayer = await this.addNewLayerIfNotExists("accessibility-directions");
         this.directionsLayer.setZIndex(10);
         this.directionsLayer.setStyle(this.directionsRouteLayer.getStyleFunction());
         this.directionsLayer.setSource(this.directionsRouteSource);
@@ -337,7 +337,7 @@ export default {
         ...mapMutations("Maps", ["setCenter"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
-        ...mapActions("Maps", ["createLayer"]),
+        ...mapActions("Maps", ["addNewLayerIfNotExists"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
 

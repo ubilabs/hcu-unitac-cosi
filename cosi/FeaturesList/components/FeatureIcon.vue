@@ -25,7 +25,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions("Maps", ["zoomTo"]),
+        ...mapActions("Maps", ["zoomToExtent"]),
         ...mapActions("Alerting", ["addSingleAlert"]),
         /**
          * @description
@@ -106,7 +106,7 @@ export default {
             const extent = this.item.feature.getGeometry().getExtent(),
                 buffered = buffer(extent, 500);
 
-            this.zoomTo({geometryOrExtent: buffered, options: {}});
+            this.zoomToExtent({buffered, options: {}});
 
             if (!this.item.enabled) {
                 this.addSingleAlert({

@@ -133,14 +133,14 @@ export default {
 
     async mounted () {
         this.applyTranslationKey(this.name);
-        this.mapLayer = await this.createLayer("query-districts");
+        this.mapLayer = await this.addNewLayerIfNotExists("query-districts");
     },
     methods: {
         ...mapMutations("Tools/QueryDistricts", Object.keys(mutations)),
         ...mapMutations("Tools/DistrictSelector", ["setSelectedDistrictsCollection"]),
         ...mapActions("Tools/DistrictSelector", ["setDistrictsByName"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-        ...mapActions("Maps", ["zoomTo", "createLayer"]),
+        ...mapActions("Maps", ["zoomToExtent", "addNewLayerIfNotExists"]),
         ...compareFeatures,
 
         initializeDistrictNames: function () {
@@ -465,7 +465,7 @@ export default {
                 if (feature.getProperties()[attributeSelector] === row.name) {
                     const extent = feature.getGeometry().getExtent();
 
-                    this.zoomTo({geometryOrExtent: extent, options: {padding: [20, 20, 20, 20]}});
+                    this.zoomToExtent({extent, options: {padding: [20, 20, 20, 20]}});
                     return;
                 }
             }

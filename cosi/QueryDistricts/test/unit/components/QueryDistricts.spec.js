@@ -173,8 +173,8 @@ describe("addons/cosi/QueryDistricts/", () => {
                 Map: {
                     namespaced: true,
                     actions: {
-                        zoomTo: zoomToStub,
-                        createLayer: () => {
+                        zoomToExtent: zoomToStub,
+                        addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: sandbox.stub(),
                                 addEventListener: sandbox.stub(),

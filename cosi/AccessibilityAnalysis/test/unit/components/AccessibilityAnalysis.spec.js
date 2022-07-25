@@ -168,7 +168,7 @@ describe("AccessibilityAnalysis.vue", () => {
                         projectionCode: () => "EPSG:25832"
                     },
                     actions: {
-                        createLayer: () => {
+                        addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: () => sinon.stub(),
                                 setZIndex: () => sinon.stub(),

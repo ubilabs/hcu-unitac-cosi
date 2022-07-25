@@ -39,7 +39,7 @@ global.ShadowRoot = window.ShadowRoot;
 
 
 // eslint-disable-next-line require-jsdoc
-function createLayer (feature) {
+function addNewLayerIfNotExists (feature) {
     return new Layer({
         id: "1234",
         source: new Source({
@@ -170,12 +170,12 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                 Map: {
                     namespaced: true,
                     getters: {
-                        layerById: () => sinon.stub().returns({olLayer: createLayer()}),
+                        layerById: () => sinon.stub().returns({olLayer: addNewLayerIfNotExists()}),
                         layerList: layerListStub
                     },
                     actions: {
                         removeHighlightFeature: () => sinon.stub(),
-                        createLayer: () => {
+                        addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: sinon.stub(),
                                 addEventListener: sinon.stub(),
@@ -296,7 +296,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("layer should be read out if active", async () => {
-            const wrapper = await mountComponent(true, [createLayer()]);
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             await wrapper.vm.$nextTick();
 
@@ -309,7 +309,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("items array should hold one item with relevant properties", async () => {
-            const wrapper = await mountComponent(true, [createLayer()]);
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             expect(wrapper.vm.items).to.have.lengthOf(1);
             expect(wrapper.vm.items[0]).to.have.all.keys("key", "name", "style", "district", "group", "layerName", "layerId", "type", "address", "feature", "enabled", "isModified", "isSimulation", "anzahl_schueler", "gfiAttributes");
@@ -318,7 +318,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         it("should show layers for distance score", async () => {
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
 
-            const wrapper = await mountComponent(true, [createLayer()]);
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             await wrapper.vm.$nextTick();
 
@@ -339,7 +339,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("should show distance score layers select only if enabled", async () => {
-            const wrapper = await mountComponent(true, [createLayer()]);
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             expect(await wrapper.find("#selectedDistanceScoreLayers").exists()).to.be.true;
 
@@ -350,7 +350,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
         it("should show distance score column on select layer", async () => {
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
-            const wrapper = await mountComponent(true, [createLayer()]);
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             await wrapper.setData({selectedDistanceScoreLayers: [{layerId: "1234"}]});
             expect(wrapper.vm.columns.map(e => e.value)).to.contain("distanceScore");
@@ -360,7 +360,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
 
             const feature = createFeature(),
-                wrapper = await mountComponent(true, [createLayer(feature)]);
+                wrapper = await mountComponent(true, [addNewLayerIfNotExists(feature)]);
 
             await wrapper.setData({selectedDistanceScoreLayers: [{layerId: "1234"}]});
 
@@ -381,7 +381,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         it("should delete distance score on remove layer", async () => {
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
 
-            const wrapper = await mountComponent(true, [createLayer()]);
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             await wrapper.setData({selectedDistanceScoreLayers: [{layerId: "1234"}]});
             await wrapper.vm.$nextTick();
@@ -396,7 +396,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             // arrange
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
             const feature = createFeature(),
-                wrapper = await mountComponent(true, [createLayer(feature)]),
+                wrapper = await mountComponent(true, [addNewLayerIfNotExists(feature)]),
                 spyChannelGraphData = sinon.spy(wrapper.vm, "channelGraphData");
 
             await wrapper.setData({selectedDistanceScoreLayers: [{layerId: "1234"}]});
@@ -413,7 +413,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
         it("should show distance score features", async () => {
             // arrange
-            const wrapper = await mountComponent(true, [createLayer()]);
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             await wrapper.vm.$nextTick();
             await wrapper.setData({selectedDistanceScoreLayers: [{layerId: "1234"}]});
@@ -434,7 +434,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         it("should hide distance score features on deselect", async () => {
 
             // arrange
-            const wrapper = await mountComponent(true, [createLayer()]);
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             await wrapper.vm.$nextTick();
 
@@ -459,7 +459,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                 {"id": "1235", "url": "url", "featureType": "type"}
             ]);
 
-            const wrapper = await mountComponent(true, [createLayer()]);
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             await wrapper.setData({selectedDistanceScoreLayers: [{layerId: "1234"}, {layerId: "1235"}]});
             getDistanceScoreStub.reset();
@@ -477,13 +477,13 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("headers should have all fields", async () => {
-            const wrapper = await mountComponent(true, [createLayer()]);
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             expect(wrapper.vm.columns.map(e => e.value)).deep.to.equal(expCols);
         });
 
         it("layer with one feature should be rendered to table if layer is active", async () => {
-            const wrapper = await mountComponent(true, [createLayer()]),
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]),
                 tableWrapper = wrapper.findComponent({name: "v-data-table"});
 
             // table has been rendered
@@ -495,7 +495,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         sinon.stub(DetailView.methods, "gfiOrBeautifyKey");
 
         it("table row should be expanded to detail view", async () => {
-            const wrapper = await mountComponent(true, [createLayer()]),
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]),
                 tableWrapper = wrapper.findComponent({name: "v-data-table"});
 
             // await wrapper.vm.$nextTick();
@@ -509,7 +509,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
         it("selecting a field in expanded view should emit the 'filterProps' event", async () => {
             const spyUpdateFilterProps = sinon.spy(FeaturesList.methods, "updateFilterProps"),
-                wrapper = await mountComponent(true, [createLayer()]);
+                wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             // await wrapper.vm.$nextTick();
             await wrapper.find("button.mdi-chevron-down").trigger("click");
@@ -525,7 +525,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
         it("expect download prompt to open when table is exported", async () => {
             const spyExportTable = sinon.spy(FeaturesList.methods, "exportTable"),
-                wrapper = await mountComponent(true, [createLayer()]);
+                wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             await wrapper.vm.$nextTick();
             await wrapper.find("#export-table").trigger("click");
@@ -536,7 +536,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
         it("expect feature to be removed from map/layer, when toggled off", async () => {
             const spyToggleFeature = sinon.spy(FeaturesList.methods, "toggleFeature"),
-                layer1 = createLayer(),
+                layer1 = addNewLayerIfNotExists(),
                 wrapper = await mountComponent(true, [layer1]);
 
 

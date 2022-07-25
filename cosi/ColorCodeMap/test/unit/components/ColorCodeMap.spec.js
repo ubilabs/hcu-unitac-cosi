@@ -82,7 +82,7 @@ describe("ColorCodeMap.vue", () => {
                 Map: {
                     namespaced: true,
                     actions: {
-                        createLayer: () => {
+                        addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: sinon.stub(),
                                 getSource: () => sourceStub
