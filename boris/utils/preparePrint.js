@@ -117,11 +117,11 @@ export function createPostalCodeCityString (feature) {
 }
 /**
  * Helpers function for preparePrint that checks if 'schichtwerte' should be printed
- * @param   {object} feature 'schichtwerte'-Object of feature
+ * @param   {object} floorvalue 'schichtwerte'-Object of feature
  * @returns {boolean} true when 'schichtwerte' should be printed
  */
-export function printFloorValues (feature) {
-    if (feature && feature.get("schichtwerte") && feature.get("schichtwerte").length > 0) {
+export function printFloorValues (floorvalue) {
+    if (floorvalue && floorvalue.schichtwerte && floorvalue.schichtwerte.length > 0) {
         return true;
     }
     return false;
