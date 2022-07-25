@@ -185,7 +185,7 @@ describe("ADDONS: addons/boris/components/Boris.vue", () => {
         });
     });
     describe("selectedBrwFeature watcher", () => {
-        it.only("selectedBrwFeature: should change buttonValue to 'info'", () => {
+        it("selectedBrwFeature: should change buttonValue to 'info'", () => {
             const oldVal = {"geschossfl_zahl": 3},
                 newVal = {"hausnummer": 3},
                 values = [{
@@ -203,12 +203,11 @@ describe("ADDONS: addons/boris/components/Boris.vue", () => {
                 oldValue = values[0],
                 newValue = values[1];
 
-            store.state.selectedPolygon = null;
+            store.state.Tools.Boris.selectedPolygon = null;
             store.state.Tools.Boris.active = true;
             store.state.Tools.Boris.buttonValue = "liste";
             wrapper = shallowMount(BorisComponent, {store, localVue});
             wrapper.vm.$options.watch.selectedBrwFeature.call(wrapper.vm, newValue, oldValue);
-
             expect(store.state.Tools.Boris.buttonValue).to.equals("info");
         });
     });
