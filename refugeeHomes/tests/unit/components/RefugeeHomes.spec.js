@@ -82,12 +82,6 @@ describe("ADDONS: addons/refugeeHomes/components/RefugeeHomes.vue", () => {
         expect(wrapper.find("tr").exists()).to.be.true;
     });
 
-    it("do not render the RefugeeHomes if not active", () => {
-        store.commit("Tools/RefugeeHomes/setActive", false);
-        wrapper = shallowMount(RefugeeHomesComponent, {store, localVue});
-
-        expect(wrapper.find("#refugeehomes").exists()).to.be.false;
-    });
     it("if all features watcher is true the sortFeatures is executed", async () => {
         const sortFeaturesStub = sinon.stub();
 

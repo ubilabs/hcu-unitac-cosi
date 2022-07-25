@@ -10,12 +10,11 @@ const actions = {
      */
     requestRawLayerList ({getters, dispatch}) {
         getters.layerIds.forEach(async (layerId) => {
-            const rawLayer = getLayerWhere({id: layerId}),
+            const rawLayer = await getLayerWhere({id: layerId}),
                 getFeatureUrl = await dispatch("buildAndGetRequestUrl", rawLayer);
 
-            dispatch("sendRequest", getFeatureUrl);
+            await dispatch("sendRequest", getFeatureUrl);
         });
-
     },
 
     /**
@@ -69,6 +68,7 @@ const actions = {
             let districtNameToZoom = "";
 
             districtNameToZoom = getters.hasDistrict(districtFromUrl);
+
             if (districtNameToZoom === "") {
                 dispatch("Alerting/addSingleAlert",
                     "<strong>" + i18next.t("additional:modules.tools.refugeehomes.wrongDistrictName") + "</strong>"
@@ -78,11 +78,7 @@ const actions = {
                 );
             }
             else {
-                Radio.trigger("RefugeesTable", "showFeaturesByBezirk", districtNameToZoom);
-                console.log("herre");
-                console.log(districtNameToZoom);
-               /*  commit("ZoomTo/setZoomToGeometry", districtNameToZoom, {root: true});
-                dispatch("ZoomTo/zoomToFeatures", {}, {root: true}); */
+                Radio.trigger("RefugeesTable", "showFeaturesByBezirk", districtNameToZoom, true);
             }
         }
     },
@@ -93,7 +89,7 @@ const actions = {
      * @param {XML} data xml data
      * @returns {void}
      */
-    parseFeatures: function ({getters, dispatch, commit, rootGetters}, data) {
+    parseFeatures ({getters, dispatch, commit, rootGetters}, data) {
         const xmlData = new DOMParser().parseFromString(data, "text/xml"),
             hits = xmlData.getElementsByTagName("wfs:member");
 

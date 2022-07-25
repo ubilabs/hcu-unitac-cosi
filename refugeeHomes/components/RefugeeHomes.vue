@@ -16,7 +16,9 @@ export default {
             hoverActive: true,
             existingLocationActive: true,
             allFeatures: null,
-            selectedFeatures: []
+            selectedFeatures: [],
+            districtName: "",
+            loaded: false
         };
     },
     computed: {
@@ -57,14 +59,49 @@ export default {
                     return el.featureType.indexOf("geplant") !== -1;
                 });
             }
+        },
+        features () {
+            if (this.loaded === true) {
+                this.initURLParameter();
+            }
+        },
+        filteredFeatures () {
+            if (this.filteredFeatures.length > 0) {
+                this.districtName = this.filteredFeatures[0][0].bezirk;
+            }
+
         }
     },
 
     mounted () {
-        this.requestRawLayerList();
         this.$nextTick(() => {
-            this.initURLParameter();
+            Backbone.Events.listenTo(Radio.channel("RefugeesTable"), {
+                "showAllFeatures": () => {
+                    this.loaded = false;
+                    this.allFeatures = true;
+                    this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
+                    this.setActive(true);
+                    this.selectedFeatures = this.features;
+                    this.removeHighlightLayer();
+                },
+                "showFeaturesByBezirk": (districtName, calledByURL = false) => {
+                    if (calledByURL === false) {
+                        this.$store.commit("ZoomTo/setZoomToGeometry", districtName, {root: true});
+                        this.$store.dispatch("ZoomTo/zoomToFeatures", {}, {root: true});
+                    }
+                    this.removeHighlightLayer();
+                    this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
+                    this.allFeatures = false;
+                    this.filterFeaturesByBezirk(districtName);
+                    this.setActive(true);
+
+                }
+            });
+            this.loaded = true;
         });
+    },
+    beforeMount () {
+        this.requestRawLayerList();
     },
     /**
      * Created hook: Creates event listener for legacy Radio calls (to be removed sometimes).
@@ -72,25 +109,6 @@ export default {
      */
     created () {
         this.$on("close", this.close);
-        this.requestRawLayerList();
-        this.$nextTick(() => {
-            Backbone.Events.listenTo(Radio.channel("RefugeesTable"), {
-                "showAllFeatures": () => {
-                    this.allFeatures = true;
-                    this.setActive(true);
-                    this.removeHighlightLayer();
-                },
-                "showFeaturesByBezirk": district => {
-                    this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
-                    this.filterFeaturesByBezirk(district);
-                    this.allFeatures = false;
-                    this.$store.commit("ZoomTo/setZoomToGeometry", district, {root: true});
-                    this.$store.dispatch("ZoomTo/zoomToFeatures", {}, {root: true});
-                    this.setActive(true);
-                    this.removeHighlightLayer();
-                }
-            });
-        });
     },
 
     methods: {
@@ -118,15 +136,20 @@ export default {
          * @returns {void}
          */
         filterFeaturesByBezirk: async function (name) {
-            const filteredDistricts = await this.features?.filter(district => district?.bezirk?.toUpperCase().trim() === name.toUpperCase().trim()),
-                sortedFeatures = this.sortFeatures(filteredDistricts, this.ranking);
+            let checkedName = name;
+
+            if (name.includes("-")) {
+                checkedName = name.split("-")[1];
+            }
+            const filteredDistricts = await this.features?.filter(district => district?.bezirk?.toUpperCase().trim() === checkedName.toUpperCase().trim()),
+                sortedFeatures = await this.sortFeatures(filteredDistricts, this.ranking);
 
             await this.$store.commit("Tools/RefugeeHomes/addFilteredFeature", sortedFeatures);
             this.selectedFeatures = this.filteredFeatures[0];
         },
 
         /**
-         *  Sorts district features by given ranking and district number
+         * Sorts district features by given ranking and district number
          * @param {olFeatures} features features to be sorted
          * @param {ranking} ranking used as first sort criteria
          * @returns {void}
@@ -180,6 +203,7 @@ export default {
                 this.$store.dispatch("Maps/setZoomLevel", 4);
             }
         },
+
         /**
          * Closing behaviour of the tool
          * @returns {void}
@@ -213,14 +237,13 @@ export default {
     >
         <template #toolBody>
             <div
-                v-if="active"
                 id="refugeehomes"
             >
                 <h4 v-if="allFeatures">
                     Hamburg
                 </h4>
                 <h4 v-else>
-                    {{ $t('additional:modules.tools.refugeehomes.districtTitle') }} {{ filteredFeatures[0][0].bezirk }}
+                    {{ $t('additional:modules.tools.refugeehomes.districtTitle') }} {{ districtName }}
                 </h4>
                 <ul
                     class="nav nav-pills nav-fill"

@@ -14,11 +14,8 @@ describe("ADDONS: addons/refugeeHomes/store/mutationsRefugeeHomes", () => {
     it("RequestRawLayerList dispatch buildAndGetRequestUrl and sendRequest ", async function () {
 
         await actions.requestRawLayerList({getters: {layerIds: ["4553"]}, dispatch});
-        expect(dispatch.calledTwice).to.be.true;
-
         expect(dispatch.args[0][0]).to.equal("buildAndGetRequestUrl");
         expect(dispatch.args[0][1]).to.deep.equal(null);
-        expect(dispatch.args[1][0]).to.equal("sendRequest");
     });
     it("buildAndGetRequestUrl results in string url", function () {
         const rawLayer = {url: "https://testurl", featureType: "testFeatureTyp"},
