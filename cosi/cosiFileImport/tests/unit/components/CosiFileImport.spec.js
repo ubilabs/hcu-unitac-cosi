@@ -43,7 +43,7 @@ describe("addons/cosi/cosiFileImport/components/CosiFileImport.vue", () => {
                             CosiFileImport:
                             {
                                 "title": "translate#addtional:menu.tools.cosiFileImport",
-                                "glyphicon": "glyphicon-resize-full",
+                                "icon": "bi bi-upload",
                                 "renderToWindow": true
                             }
                         }

@@ -7,7 +7,7 @@ import MappingJson from "../../assets/mapping.json";
  * @property {Boolean} [deactivateGFI=true] - Deactivates the gfi if true (config-param).
  * @property {Object[]} districtLevels - All avaiable district levels (config-param).
  * @property {Number[]} extent - The extent of the selected districts.
- * @property {String} [glyphicon="glyphicon-screenshot"] - Bootstrap glyphicon class (config-param).
+ * @property {String} [icon="bi bi-image"] - Bootstrap icon class (config-param).
  * @property {String} id - The id of the district selector component.
  * @property {String} [name=Gebiet auswählen] - The name of the tool (config-param).
  * @property {Boolean} [renderToWindow=true] - Renders tool in a window if true, otherwise in the sidebar (config-param).
@@ -28,7 +28,7 @@ const state = {
     districtLevels: [],
     extent: [],
     boundingGeometry: undefined,
-    glyphicon: "glyphicon-screenshot",
+    icon: "bi bi-image",
     id: "districtSelector",
     isVisibleInMenu: true,
     name: "Gebiet auswählen",

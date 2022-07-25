@@ -408,7 +408,7 @@ export default {
     <div :class="active ? 'tool-wrap' : ''">
         <Tool
             :title="$t('additional:modules.tools.cosi.residentialSimulation.title')"
-            :icon="glyphicon"
+            :icon="icon"
             :active="active"
             :render-to-window="renderToWindow"
             :resizable-window="resizableWindow"

@@ -491,7 +491,7 @@ export default {
 <template lang="html">
     <Tool
         :title="$t('additional:modules.tools.cosi.districtSelector.title')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -568,7 +568,6 @@ export default {
                                 multiple
                                 dense
                                 hide-details
-                                class="form-check-input"
                                 type="checkbox"
                                 :label="`${key} ${$t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle')}`"
                             />

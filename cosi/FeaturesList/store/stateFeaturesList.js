@@ -3,7 +3,7 @@
  * @typedef {Object} DistrictSelectorState
  * @property {Boolean} [active=false] - Is activated (will rendered) or not (config-param).
  * @property {Boolean} [deactivateGFI=false] - Deactivates the gfi if true (config-param).
- * @property {String} [glyphicon="glyphicon-apple"] - Bootstrap glyphicon class (config-param).
+ * @property {String} [icon="bi bi-list-columns-reverse"] - Bootstrap icon class (config-param).
  * @property {String} id - The id of the district selector component.
  * @property {String} [name=Einrichtungsübersicht] - The name of the tool (config-param).
  * @property {Boolean} [renderToWindow=true] - Renders tool in a window if true, otherwise in the sidebar (config-param).
@@ -12,7 +12,7 @@
 const state = {
     active: false,
     deactivateGFI: false,
-    glyphicon: "glyphicon-screenshot",
+    icon: "bi bi-list-columns-reverse",
     id: "featuresList",
     isVisibleInMenu: true,
     name: "Einrichtungsübersicht",

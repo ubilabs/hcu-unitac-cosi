@@ -46,7 +46,7 @@ describe("AccessibilityAnalysis.vue", () => {
                         children: {
                             AccessibilityAnalysis: {
                                 "name": "translate#additional:modules.tools.vueAddon.title",
-                                "glyphicon": "glyphicon-th-list"
+                                "icon": "bi bi-signpost-split"
                             }
                         }
                     }

@@ -488,7 +488,7 @@ export default {
     <div id="toolWrap">
         <Tool
             :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.title')"
-            :icon="glyphicon"
+            :icon="icon"
             :active="active"
             :render-to-window="renderToWindow"
             :resizable-window="resizableWindow"

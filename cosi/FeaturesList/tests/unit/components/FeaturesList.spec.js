@@ -559,7 +559,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         it("should update weights and recompute score", async () => {
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
 
-            const wrapper = await mountComponent(true, [createLayer(createFeature(1))]);
+            const wrapper = await mountComponent(true, [addNewLayerIfNotExists(createFeature(1))]);
 
             await wrapper.setData({selectedDistanceScoreLayers: [{layerId: "1234"}]});
             await wrapper.vm.$nextTick();

@@ -5,14 +5,14 @@ Die ColorCodeMap Component färbt die Karte basierend auf ausgewählten Gebieten
 |Name|Verpflichtend|Typ|Default|Beschreibung|
 |----|-------------|---|-------|------------|
 |name|nein|String|Gebiet auswählen|Name des Werkzeuges im Menu.|
-|glyphicon|nein|String|glyphicon-map|CSS Klasse des Glyphicons, das vor dem Toolnamen im Menu angezeigt wird.|
+|icon|nein|String|bi bi-map|CSS Klasse des icons, das vor dem Toolnamen im Menu angezeigt wird.|
 |isVisibleInMenu|ja|Boolean|false|Das Tool wird nicht im Menü geladen.|
 
 **Beispiel**
 ```
 "colorCodeMap": {
   "name": "ColorCodeMap",
-  "glyphicon": "glyphicon-map
+  "icon": "bi bi-map
   "isVisibleInMenu": false
 }
 ```

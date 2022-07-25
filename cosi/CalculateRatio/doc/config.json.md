@@ -5,14 +5,14 @@ Das CalculateRatio-Tool berechnet Relationen zwischen ausgewählten Datensätzen
 |Name|Verpflichtend|Typ|Default|Beschreibung|
 |----|-------------|---|-------|------------|
 |name|nein|String|Gebiet auswählen|Name des Werkzeuges im Menu.|
-|glyphicon|nein|String|glyphicon-map|CSS Klasse des Glyphicons, das vor dem Toolnamen im Menu angezeigt wird.|
+|icon|nein|String|bi bi-map|CSS Klasse des icons, das vor dem Toolnamen im Menu angezeigt wird.|
 |isVisibleInMenu|nein|Boolean|false|Das Tool wird nicht im Menü geladen.|
 
 **Beispiel**
 ```
 "CalculateRatio": {
   "name": "Versorgungsanalyse",
-  "glyphicon": "glyphicon-tasks,
+  "icon": "bi bi-map,
   "isVisibleInMenu", true
 }
 ```

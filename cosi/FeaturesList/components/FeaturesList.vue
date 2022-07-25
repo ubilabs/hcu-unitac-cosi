@@ -728,7 +728,7 @@ export default {
         ref="tool"
         class=""
         :title="$t('additional:modules.tools.cosi.featuresList.title')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
