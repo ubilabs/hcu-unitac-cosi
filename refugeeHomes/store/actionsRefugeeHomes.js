@@ -28,7 +28,7 @@ const actions = {
             url: url,
             type: "GET",
             timeout: 6000
-        }).then((response) => {
+        }).then(response => {
             dispatch("parseFeatures", response.data);
         }).catch(function () {
             dispatch("Alerting/addSingleAlert", url + " " + i18next.t("additional:modules.tools.refugeehomes.requestAlert"), {root: true});

@@ -29,10 +29,4 @@ describe("ADDONS: addons/refugeeHomes/store/mutationsRefugeeHomes", () => {
 
         expect(updatedFeature.imgHeight).to.equal(20);
     });
-    it("sendRequest should execute axios get and throw an alert", () => {
-        actions.sendRequest({dispatch}, "www.no_value.de");
-        expect(dispatch.calledOnce).to.be.true;
-        expect(dispatch.args[0][0]).to.equal("Alerting/addSingleAlert");
-
-    });
 });
