@@ -131,20 +131,20 @@ export default {
         },
 
         /**
-         * Filters the list according the district name and Sorts the table entries according the ranking list and district number
+         * Filters the list according the district name and sorts the table entries according the ranking list and district number
          * @param  {String} name - name of the district
          * @returns {void}
          */
-        filterFeaturesByBezirk: async function (name) {
+        filterFeaturesByBezirk: function (name) {
             let checkedName = name;
 
             if (name.includes("-")) {
                 checkedName = name.split("-")[1];
             }
-            const filteredDistricts = await this.features?.filter(district => district?.bezirk?.toUpperCase().trim() === checkedName.toUpperCase().trim()),
-                sortedFeatures = await this.sortFeatures(filteredDistricts, this.ranking);
+            const filteredDistricts = this.features?.filter(district => district?.bezirk?.toUpperCase().trim() === checkedName.toUpperCase().trim()),
+                sortedFeatures = this.sortFeatures(filteredDistricts, this.ranking);
 
-            await this.$store.commit("Tools/RefugeeHomes/addFilteredFeature", sortedFeatures);
+            this.addFilteredFeature(sortedFeatures);
             this.selectedFeatures = this.filteredFeatures[0];
         },
 
@@ -214,7 +214,7 @@ export default {
             this.$store.dispatch("MapMarker/removePointMarker");
             this.removeHighlightLayer();
 
-            const model = getComponent(this.$store.state.Tools.RefugeeHomes);
+            const model = getComponent(this.$store.state.Tools.RefugeeHomes.id);
 
             if (model) {
                 model.set("isActive", false);
@@ -237,6 +237,7 @@ export default {
     >
         <template #toolBody>
             <div
+                v-if="active"
                 id="refugeehomes"
             >
                 <h4 v-if="allFeatures">
@@ -256,7 +257,6 @@ export default {
                         <a
                             class="nav-link"
                             :class="{ active: existingLocationActive}"
-                            href="#bestehendeStandorte"
                         >
                             {{ $t('additional:modules.tools.refugeehomes.existingAccommodations') }}
                         </a>
@@ -269,7 +269,6 @@ export default {
                         <a
                             class="nav-link"
                             :class="{ active: !existingLocationActive}"
-                            href="#geplanteStandorte"
                         >
                             {{ $t('additional:modules.tools.refugeehomes.plannedAccommodations') }}
                         </a>
@@ -300,7 +299,7 @@ export default {
                             </thead>
                             <tbody
                                 v-for="(feature, idx) in selectedFeatures"
-                                id="feature.id"
+                                :id="feature.id"
                                 :key="idx"
                             >
                                 <tr

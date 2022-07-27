@@ -30,9 +30,9 @@ const actions = {
             timeout: 6000
         }).then((response) => {
             dispatch("parseFeatures", response.data);
-        }).catch(
-            dispatch("Alerting/addSingleAlert", url + i18next.t("additional:modules.tools.refugeehomes.requestAlert"), {root: true})
-        );
+        }).catch(function () {
+            dispatch("Alerting/addSingleAlert", url + " " + i18next.t("additional:modules.tools.refugeehomes.requestAlert"), {root: true});
+        });
     },
 
     /**
