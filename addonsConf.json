@@ -95,7 +95,6 @@
     "path":"gfiThemes/verkehrsstaerken",
     "type": "gfiTheme"
   },
-  "qr": "view.js",
   "addLayerRemotely": "addLayerRemotely.js",
   "obliqueControl": {
     "path":"controls/obliqueControl",

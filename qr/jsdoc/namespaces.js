@@ -1,4 +1,0 @@
-/**
- * @namespace QR
- * @memberof Addons
- */

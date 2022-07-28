@@ -12,7 +12,7 @@
     "versionMinor": "npm version minor && npm run versionLatest && git push --tags -f",
     "versionMajor": "npm version major && npm run versionLatest && git push --tags -f",
     "versionLatest": "git tag latest -f",
-    "postinstall": "cd qr && npm install && cd .. && cd quickResponseCode && npm install && cd .. && cd sdpDownload && npm install && cd .. && cd valuationPrint && npm install",
+    "postinstall": "cd quickResponseCode && npm install && cd .. && cd sdpDownload && npm install && cd .. && cd valuationPrint && npm install",
     "prePushHook": "cd .. && npm run prePushHook",
     "prepare": "husky install"
   },
