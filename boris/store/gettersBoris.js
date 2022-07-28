@@ -14,7 +14,7 @@ const getters = {
     ...generateSimpleGetters(state),
     /**
      * Gets the landuse by brwId if parametric URL is being used
-     * @return {String} returns the landuse of the selected feature
+     * @returns {String} returns the landuse of the selected feature
      */
     findLanduseByBrwId () {
         if (state.selectedPolygon !== undefined) {
@@ -24,7 +24,7 @@ const getters = {
                     if (landuse.richtwertnummer === brwId) {
                         return landuse;
                     }
-                    console.warn("The parameter \"brwId\" in the URL might be wrong.");
+                    console.warn("The parameter \"brwId\":" + brwId + "in the URL might be wrong.");
                     return undefined;
                 });
 
@@ -35,9 +35,9 @@ const getters = {
         return undefined;
     },
     /**
-     * Sets the name of the active layer as date
+     * Gets the name of the active layer as date
      * @param  {Backbone.Model[]} filteredLayerList List of all selected WMS Layers
-     * @return {String} layername which is used as date
+     * @returns {String} layername which is used as date
      */
     getDateBySelectedLayerName () {
         let date = "";

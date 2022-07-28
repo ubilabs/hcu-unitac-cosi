@@ -20,7 +20,7 @@ export default {
         FloorComponent
     },
     computed: {
-        ...mapGetters("Tools/Boris", ["active", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLayerName", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options", "isProcessFromParametricUrl", "paramUrlParams"]),
+        ...mapGetters("Tools/Boris", ["active", "id", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLayerName", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options", "isProcessFromParametricUrl", "paramUrlParams"]),
         ...mapGetters("Tools/Print", ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]),
         ...mapGetters({
             isMobile: "mobile"
@@ -56,6 +56,20 @@ export default {
         }
     },
     watch: {
+        /**
+         * Whenever active changes to false, the map click listener is unregistered
+         * @param {boolean} value this.active
+         * @returns {void}
+         */
+        active (value) {
+            console.log("is active", value);
+            if (value === false) {
+                this.unregisterListener({type: "click", listener: this.requestGFI});
+            }
+            else {
+                this.registerListener({type: "click", listener: this.requestGFI});
+            }
+        },
         /**
          * Listens to the selectedPolygon for simulating landuse if parametric URL is being used
          * @returns {void}
@@ -101,12 +115,8 @@ export default {
          */
         selectedBrwFeature (newValue, oldValue) {
             if (this.selectedPolygon === null && typeof newValue.get === "function" && typeof oldValue.get === "function") {
-                if (this.buttonValue === "liste") {
-                    if (oldValue.get("geschossfl_zahl")) {
-                        if (!newValue.get("geschossfl_zahl")) {
-                            this.setButtonValue("info");
-                        }
-                    }
+                if (this.buttonValue === "liste" && oldValue.get("geschossfl_zahl") && !newValue.get("geschossfl_zahl")) {
+                    this.setButtonValue("info");
                 }
             }
         },
@@ -136,6 +146,7 @@ export default {
                 this.setRenderToWindow(true);
             }
             this.handleUrlParameters();
+            this.registerListener({type: "click", listener: this.requestGFI});
         });
     },
     methods: {
@@ -148,7 +159,12 @@ export default {
             "getSelectedBuildingDesign",
             "updateSelectedBrwFeature",
             "simulateLanduseSelect",
-            "sendWpsConvertRequest"
+            "sendWpsConvertRequest",
+            "requestGFI"
+        ]),
+        ...mapActions("Maps", [
+            "registerListener",
+            "unregisterListener"
         ]),
         ...mapMutations("Tools/Boris", Object.keys(mutations)),
         preparePrint,
@@ -162,7 +178,7 @@ export default {
                 this.textIds.push(id);
             }
             else {
-                for (let i = 0; i < Object.values(this.textIds).length; i++) {
+                for (let i = Object.values(this.textIds).length - 1; i >= 0; i--) {
                     if (this.textIds[i] === id) {
                         this.textIds.splice(i, 1);
                     }
@@ -170,7 +186,7 @@ export default {
             }
         },
         /**
-         * Handles option-change for Individual Property Conversion
+         * Handles option-change for individual property conversion
          * @param {String} event the selected option
          * @param {String} subject contains subject information for the select: building design oder position to street
          * @returns {void}
@@ -200,7 +216,7 @@ export default {
          */
         close () {
             this.setActive(false);
-            const layer = getLayerModelByAttributes({id: this.$store.state.Tools.Boris.id});
+            const layer = getLayerModelByAttributes({id: this.id});
 
             if (layer) {
                 layer.set("isActive", false);
@@ -483,6 +499,7 @@ export default {
                             :title="$t('additional:modules.tools.boris.floorValues.title')"
                             :feature="selectedBrwFeature.get('schichtwert')"
                             :label="$t('additional:modules.tools.boris.floorValues.subTitle')"
+                            :landuse="selectedLanduseComputed"
                         />
                     </div>
                     <button

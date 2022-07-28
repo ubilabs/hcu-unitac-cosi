@@ -1,4 +1,4 @@
-import state from "../store/stateBoris";
+import borisState from "../store/stateBoris";
 import store from "../../../src/app-store/index";
 import SpecModel from "../../../src/modules/tools/print/utils/buildSpec.js";
 
@@ -8,12 +8,12 @@ import SpecModel from "../../../src/modules/tools/print/utils/buildSpec.js";
  * @returns {void}
  */
 export async function preparePrint (getResponse) {
-    const visibleLayerList = Radio.request("Map", "getLayers").getArray().filter(function (layer) {
+    const visibleLayerList = mapCollection.getMap("2D").getLayers().getArray().filter(function (layer) {
             return layer.getVisible() === true;
         }),
         scale = store.state.Maps.scale,
-        feature = state.selectedBrwFeature,
-        selectedOption = state.selectedOption,
+        feature = borisState.selectedBrwFeature,
+        selectedOption = borisState.selectedOption,
         defaultString = "",
         attributes = {
             "layout": "A4 Hochformat",
@@ -61,7 +61,7 @@ export async function preparePrint (getResponse) {
                 },
                 "map": {
                     "dpi": 96,
-                    "projection": store.state.Maps.projection.code_,
+                    "projection": store.state.Maps.projection.getCode(),
                     "center": store.state.Maps.center,
                     "scale": scale
                 }

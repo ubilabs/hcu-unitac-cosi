@@ -14,6 +14,10 @@ export default {
         label: {
             type: String,
             required: true
+        },
+        landuse: {
+            type: String,
+            required: true
         }
     }
 };
@@ -33,7 +37,18 @@ export default {
                 v-for="(schichtwert, index) in feature.schichtwerte"
                 :key="index"
             >
-                <h5> {{ schichtwert.geschoss }} </h5>
+                <h5 v-if="schichtwert.geschoss === '3. Obergeschoss oder höher'">
+                    {{ $t("additional:modules.tools.boris.floorValues.third") }}
+                </h5>
+                <h5 v-else-if="schichtwert.geschoss === '2. Obergeschoss'">
+                    {{ $t("additional:modules.tools.boris.floorValues.second") }}
+                </h5>
+                <h5 v-else-if="schichtwert.geschoss === '1. Obergeschoss'">
+                    {{ $t("additional:modules.tools.boris.floorValues.first") }}
+                </h5>
+                <h5 v-else>
+                    {{ $t("additional:modules.tools.boris.floorValues.ground") }}
+                </h5>
                 <dl>
                     <dt>{{ $t("additional:modules.tools.boris.floorValues.wgfz") }}</dt>
                     <dd>{{ schichtwert.wgfz }}</dd>
@@ -58,7 +73,15 @@ export default {
             class="floorvalue-part-II"
         >
             <dl>
-                <dt> {{ Object.values(feature)[0] }}: </dt>
+                <dt v-if="landuse === 'GH Geschäftshäuser (mehrgeschossig, Wertanteil Erdgeschoss)'">
+                    {{ $t("additional:modules.tools.boris.floorValues.valueLanduse") }} {{ $t("additional:modules.tools.boris.floorValues.commercial") }}:
+                </dt>
+                <dt v-else-if="landuse === 'MFH Mehrfamilienhäuser'">
+                    {{ $t("additional:modules.tools.boris.floorValues.valueLanduse") }} {{ $t("additional:modules.tools.boris.floorValues.apartment") }}:
+                </dt>
+                <dt v-else>
+                    {{ $t("additional:modules.tools.boris.floorValues.valueLanduse") }} {{ $t("additional:modules.tools.boris.floorValues.office") }}:
+                </dt>
                 <dd v-if="Object.values(feature)[2] === ''">
                     <span> {{ Object.values(feature)[1] }} €/m²</span>
                 </dd>

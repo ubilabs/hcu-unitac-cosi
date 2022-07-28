@@ -6,7 +6,7 @@ const helpers = {
      * if not returns undefined
      * @param {ol.Feature} features - list of all available brw features
      * @param {String} year - the selected year
-     * @return {ol.Feature|undefined} brw feature
+     * @return {ol.Feature|null} brw feature
      */
     findBrwFeatureByYear: function ({features, year}) {
         if (features) {
@@ -227,9 +227,6 @@ const helpers = {
         if (sw) {
             if (typeof sw === "string") {
                 sw = JSON.parse(sw);
-            }
-            else if (typeof sw === "object" && sw.normschichtwert_wohnen) {
-                sw.normschichtwert_wohnen = sw.normschichtwert_wohnen.replace(".", "").replace(",", ".");
             }
             if (sw.normschichtwert_wohnen) {
                 sw.normschichtwert_wohnenDM = isDMTime ? thousandsSeparator((parseFloat(sw.normschichtwert_wohnen, 10) * 1.95583).toFixed(1)) : "";

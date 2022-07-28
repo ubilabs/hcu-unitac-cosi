@@ -2,7 +2,7 @@ import axios from "axios";
 import helpers from "../utils/helpers";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import {WFS, WMSGetFeatureInfo} from "ol/format.js";
-import {getLayerModelsByAttributes, mapClickListener} from "../utils/RadioBridge";
+import {getLayerModelsByAttributes} from "../utils/RadioBridge";
 import WPS from "../../../src/api/wps";
 import mapCollection from "../../../src/core/maps/mapCollection";
 
@@ -13,7 +13,7 @@ const actions = {
      * @param {Object} initialize.commit the commit
      * @returns {void}
      */
-    initialize ({dispatch, commit}) {
+    initialize ({commit}) {
         let layerList = getLayerModelsByAttributes({isNeverVisibleInTree: true});
 
         if (layerList) {
@@ -25,9 +25,6 @@ const actions = {
 
             commit("setFilteredLayerList", layerList);
         }
-
-        mapClickListener((event) => dispatch("requestGFI", {event}));
-
     },
     /**
      * Requests parametic url and checks if all neccessary information is available to simulate feature click and landuse select
@@ -53,7 +50,7 @@ const actions = {
             dispatch("switchLayer", brwLayerName);
             commit("setSelectedLayerName", brwLayerName);
             dispatch("Maps/setCenter", center, {root: true});
-            dispatch("requestGFI", {undefined, processFromParametricUrl, center});
+            dispatch("requestGFI", {processFromParametricUrl, center});
         }
         console.warn("To be able to perform a BORIS query directly, the parameters \"brwId\",  \"brwLayerName\" and \"center\" must be set in the URL");
     },
@@ -164,11 +161,11 @@ const actions = {
      * @param {Number[]} [center] center coordinate of faked gfi
      * @returns {void}
      */
-    requestGFI ({state, dispatch}, {event, processFromParametricUrl, center}) {
+    requestGFI ({rootGetters, state, dispatch}, {processFromParametricUrl, center}) {
         if (state.active) {
             const selectedLayer = state.filteredLayerList.find(layer => layer.get("isSelected") === true),
-                coordinates = processFromParametricUrl ? center : event.coordinate,
-                map = processFromParametricUrl ? mapCollection.getMap("2D") : event.map,
+                coordinates = processFromParametricUrl ? center : rootGetters["Maps/clickCoordinate"],
+                map = mapCollection.getMap("2D"),
                 mapView = map.getView();
             let layerSource,
                 url = null;
@@ -176,7 +173,7 @@ const actions = {
             if (selectedLayer.get("typ") === "GROUP") {
                 const groupedLayers = selectedLayer.get("layerSource");
 
-                layerSource = groupedLayers[2].get("layer").getSource();
+                layerSource = groupedLayers[groupedLayers.length - 1].get("layer").getSource();
             }
             else {
                 layerSource = selectedLayer.get("layer").getSource();
@@ -186,10 +183,13 @@ const actions = {
 
             axios.get(url)
                 .then((response) => {
-                    dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: coordinates});
+                    if (response.status === 200) {
+                        dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: coordinates});
+                    }
                 })
                 .catch((error) => {
                     console.error(error.response);
+                    dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noData"), {root: true});
                 });
         }
     },
@@ -203,32 +203,26 @@ const actions = {
      * @param {ol.coordinate} coordinates clicked coordinates
      * @returns {void}
      */
-    handleGfiResponse ({state, dispatch, commit}, {response, status, coordinate}) {
-        if (status === 200) {
-            const feature = new WMSGetFeatureInfo().readFeature(response);
+    handleGfiResponse ({state, dispatch, commit}, {response, coordinate}) {
+        const feature = new WMSGetFeatureInfo().readFeature(response);
 
-            if (feature !== null) {
-                if (parseInt(feature.get("jahrgang"), 10) > 2008) {
-                    feature.set("nutzungsart", JSON.parse(feature.get("nutzungsart")).nutzungen);
-                    dispatch("getFeatureRequestById", {featureId: feature.getId(), featureYear: feature.get("jahrgang")});
-                    commit("setSelectedPolygon", feature);
-                    dispatch("matchPolygonFeatureWithLanduse", {feature, selectedLanduse: state.selectedLanduse});
-                }
-                else {
-                    commit("setBrwFeatures", feature);
-                    dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
-                    dispatch("Maps/setCenter", coordinate, {root: true});
-                    dispatch("combineFeatureWithSelectedDate", feature);
-                    commit("setSelectedPolygon", null);
-                }
+        if (feature !== null) {
+            if (parseInt(feature.get("jahrgang"), 10) > 2008) {
+                feature.set("nutzungsart", JSON.parse(feature.get("nutzungsart")).nutzungen);
+                dispatch("getFeatureRequestById", {featureId: feature.getId(), featureYear: feature.get("jahrgang")});
+                commit("setSelectedPolygon", feature);
+                dispatch("matchPolygonFeatureWithLanduse", {feature, selectedLanduse: state.selectedLanduse});
             }
             else {
-                dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noBrw"), {root: true});
+                commit("setBrwFeatures", feature);
+                dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
+                dispatch("Maps/setCenter", coordinate, {root: true});
+                dispatch("combineFeatureWithSelectedDate", feature);
+                commit("setSelectedPolygon", null);
             }
         }
         else {
-            console.error("Data query failed:" + status);
-            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noData"), {root: true});
+            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noBrw"), {root: true});
         }
     },
     /**
@@ -236,7 +230,7 @@ const actions = {
      * @param {Object} getFeatureRequestById.dispatch the dispatch
      * @param {String} featureId id of seelected feature
      * @param {String} year selected year
-     * @return {void}
+     * @returns {void}
      */
     getFeatureRequestById ({dispatch}, {featureId, featureYear}) {
         const yearInt = parseInt(featureYear, 10),
@@ -275,7 +269,7 @@ const actions = {
             })
             .catch((error) => {
                 console.error(error.message);
-                dispatch("Alerting/addSingleAlert", {content: i18next.t("additional:modules.tools.boris.alertMessage:noData") + error.message}, {root: true});
+                dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noData"), {root: true});
             });
 
     },
@@ -307,7 +301,7 @@ const actions = {
      * @param {Object} postFeatureRequestByBrwNumber.dispatch the dispatch
      * @param {String} brwNumber brwNumber is the standard land value number
      * @param {String} featureYear selected year
-     * @return {void}
+     * @returns {void}
      */
     postFeatureRequestByBrwNumber ({dispatch}, {brwNumber, featureYear}) {
         const typeName = parseInt(featureYear, 10) > 2008 ? "lgv_brw_zoniert_alle" : "lgv_brw_lagetypisch_alle",
@@ -330,9 +324,12 @@ const actions = {
             data: wfsString,
             headers: {"Content-Type": "text/xml"}
         }).then((response) => {
-            dispatch("handleGetFeatureResponse", {response: response.data, status: response.status, year: featureYear});
+            if (response.status === 200) {
+                dispatch("handleGetFeatureResponse", {response: response.data, status: response.status, year: featureYear});
+            }
         }).catch((error) => {
             console.error(error.response);
+            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noData"), {root: true});
         });
     },
     /**
@@ -344,19 +341,13 @@ const actions = {
      * @param {Number} year selected year
      * @returns {void}
      */
-    async handleGetFeatureResponse ({dispatch, commit}, {response, status, year}) {
+    async handleGetFeatureResponse ({dispatch, commit}, {response, year}) {
 
-        if (status === 200) {
-            const features = new WFS().readFeatures(response),
-                featureByYear = await helpers.findBrwFeatureByYear({features, year});
+        const features = new WFS().readFeatures(response),
+            featureByYear = await helpers.findBrwFeatureByYear({features, year});
 
-            commit("setBrwFeatures", features);
-
-            dispatch("combineFeatureWithSelectedDate", featureByYear);
-        }
-        else {
-            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noData"), {root: true});
-        }
+        commit("setBrwFeatures", features);
+        dispatch("combineFeatureWithSelectedDate", featureByYear);
     },
     /**
      * Get the actually selected date and set date and feature to get the extended feature attributes
@@ -379,7 +370,7 @@ const actions = {
     /**
      * Gets the date of the selected layer
      * @param {Object} getDateByActiveLayerName.state the state
-     * @return {String} layername which is used as date
+     * @returns {String} layername which is used as date
      */
     getDateByActiveLayerName ({state}) {
         let date = "";
@@ -396,7 +387,7 @@ const actions = {
      * @param {Object} extendFeatureAttributes.commit the commit
      * @param {Object} feature selected fetaure
      * @param {String} date date
-     * @return {void}
+     * @returns {void}
      */
     extendFeatureAttributes ({dispatch, commit, state}, {feature, date}) {
         const isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002,
@@ -440,7 +431,8 @@ const actions = {
      */
     handleConvertResponse ({dispatch}, {response, status}) {
         let complexData,
-            executeResponse;
+            executeResponse,
+            showErrorMessage = false;
 
         if (status === 200) {
             executeResponse = response.ExecuteResponse;
@@ -448,10 +440,12 @@ const actions = {
             if (executeResponse.ProcessOutputs) {
                 complexData = response.ExecuteResponse.ProcessOutputs.Output.Data.ComplexData;
                 if (complexData.serviceResponse) {
+                    showErrorMessage = true;
                     console.error("FME-Server status info: " + complexData.serviceResponse.statusInfo.message);
                 }
                 else if (complexData.Bodenrichtwert) {
                     if (complexData.Bodenrichtwert.Ergebnis.ErrorOccured !== "No") {
+                        showErrorMessage = true;
                         console.error("BRWConvert error message: " + complexData.Bodenrichtwert.Ergebnis.Fehlermeldung);
                     }
                     else {
@@ -460,11 +454,16 @@ const actions = {
                 }
             }
             else if (executeResponse.Status) {
+                showErrorMessage = true;
                 console.error("FME-Server execute response: " + executeResponse.Status.ProcessFailed.ExceptionReport.Exception.ExceptionText);
             }
         }
         else {
+            showErrorMessage = true;
             console.error("WPS-Query with status " + status + " aborted.");
+        }
+        if (showErrorMessage) {
+            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noData"), {root: true});
         }
     },
     /**
@@ -478,42 +477,43 @@ const actions = {
     updateSelectedBrwFeature ({state, commit}, {converted, brw}) {
         if (Object.keys(state.selectedBrwFeature).length !== 0) {
             const feature = state.selectedBrwFeature,
-                isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002;
+                isDMTime = parseInt(feature.get("jahrgang"), 10) < 2002,
+                valueDm = isDMTime ? thousandsSeparator((parseFloat(brw, 10) * 1.95583).toFixed(1)) : "";
 
-            if (converted === "convertedBrw") {
-                const valueDm = isDMTime ? thousandsSeparator((parseFloat(brw, 10) * 1.95583).toFixed(1)) : "";
+            switch (converted) {
+                case "zBauweise":
+                    feature.setProperties({
+                        "zBauweise": brw,
+                        "convertedBrw": "",
+                        "convertedBrwDM": ""
+                    });
+                    break;
+                case "zGeschossfl_zahl":
+                    feature.setProperties({
+                        "zGeschossfl_zahl": brw,
+                        "convertedBrw": "",
+                        "convertedBrwDM": ""
+                    });
+                    break;
+                case "zGrdstk_flaeche":
+                    feature.setProperties({
+                        "zGrdstk_flaeche": brw,
+                        "convertedBrw": "",
+                        "convertedBrwDM": ""
+                    });
+                    break;
+                case "zStrassenLage":
+                    feature.setProperties({
+                        "zStrassenLage": brw,
+                        "convertedBrw": "",
+                        "convertedBrwDM": ""
+                    });
+                    break;
+                default:
+                    feature.setProperties({"convertedBrw": thousandsSeparator(brw)});
+                    feature.setProperties({"convertedBrwDM": valueDm});
+            }
 
-                feature.setProperties({"convertedBrw": thousandsSeparator(brw)});
-                feature.setProperties({"convertedBrwDM": valueDm});
-            }
-            else if (converted === "zBauweise") {
-                feature.setProperties({
-                    "zBauweise": brw,
-                    "convertedBrw": "",
-                    "convertedBrwDM": ""
-                });
-            }
-            else if (converted === "zGeschossfl_zahl") {
-                feature.setProperties({
-                    "zGeschossfl_zahl": brw,
-                    "convertedBrw": "",
-                    "convertedBrwDM": ""
-                });
-            }
-            else if (converted === "zGrdstk_flaeche") {
-                feature.setProperties({
-                    "zGrdstk_flaeche": brw,
-                    "convertedBrw": "",
-                    "convertedBrwDM": ""
-                });
-            }
-            else if (converted === "zStrassenLage") {
-                feature.setProperties({
-                    "zStrassenLage": brw,
-                    "convertedBrw": "",
-                    "convertedBrwDM": ""
-                });
-            }
             commit("setSelectedBrwFeature", feature);
             commit("setConvertedBrw", state.selectedBrwFeature.get("convertedBrw"));
         }

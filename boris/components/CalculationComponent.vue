@@ -78,7 +78,7 @@ export default {
             class="select-part"
         >
             <dt>
-                <span>{{ title }}</span>
+                <span> {{ title }}</span>
                 <span
                     class="bootstrap-icon bi-question-circle-fill"
                     tabindex="0"
@@ -95,7 +95,7 @@ export default {
                         v-for="(option, i) in options"
                         :key="i"
                         :value="option"
-                        :SELECTED="checkForBuildingMatch(option)"
+                        :selected="checkForBuildingMatch(option)"
                     >
                         {{ option }}
                     </option>

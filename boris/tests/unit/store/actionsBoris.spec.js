@@ -16,6 +16,7 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
         dispatch,
         getters,
         rootState,
+        rootGetters,
         state,
         map = null,
         error;
@@ -54,7 +55,7 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
             }
         };
         mapCollection.clear();
-        mapCollection.addMap(map, "ol", "2D");
+        mapCollection.addMap(map, "2D");
     });
 
     beforeEach(() => {
@@ -70,6 +71,9 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
                 "brwLayerName": "31.12.2017",
                 "Maps/center": "[565774, 5933956]"
             }
+        };
+        rootGetters = {
+            "Maps/clickCoordinate": [0, 0]
         };
         state = {...stateBoris};
         error = sinon.spy();
@@ -143,8 +147,7 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
             const layer1 = new VectorLayer(),
                 layer2 = new VectorLayer(),
                 layer3 = new VectorLayer();
-            let listenerRegistered = false,
-                resultArray = [];
+            let resultArray = [];
 
             layer1.set("name", "Layer1");
             layer1.set("id", "1");
@@ -163,9 +166,6 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
                 if (channel === "ModelList" && topic === "getModelsByAttributes") {
                     return [layer1, layer2, layer3];
                 }
-                else if (channel === "Map" && topic === "registerListener") {
-                    listenerRegistered = true;
-                }
                 return null;
             });
 
@@ -176,8 +176,6 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
             expect(commit.args[0][0]).to.equal("setFilteredLayerList");
             expect(resultArray[1]).to.deep.equal(layer2);
             expect(resultArray).to.deep.equal([layer3, layer2]);
-
-            expect(listenerRegistered).to.be.true;
         });
     });
     describe("handleUrlParameters", () => {
@@ -306,11 +304,11 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
 
             const axiosStub = sinon.stub(axios, "get").returns(Promise.resolve({status: 200})),
                 url = state.filteredLayerList[0].get("layer").getSource().getFeatureInfoUrl(),
-                event = {map, coordinate: [565704.0348976917, 5933928.490635253]},
                 processFromParametricUrl = "",
                 center = "";
+                // console.log("*****URL*****", url)
 
-            actions.requestGFI({state, dispatch}, {event, processFromParametricUrl, center});
+            actions.requestGFI({rootGetters, state, dispatch}, {processFromParametricUrl, center});
             expect(axiosStub.calledWith(url)).to.be.true;
         });
     });
@@ -478,16 +476,8 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
 
             expect(commit.calledOnce).to.be.true;
             expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.firstCall.args[0]).to.equal("combineFeatureWithSelectedDate");
 
-        });
-        it("does not handle feature request", async () => {
-            const status = 404,
-                response = "",
-                year = 2000;
-
-            await actions.handleGetFeatureResponse({dispatch, commit}, {response, status, year});
-            expect(dispatch.calledOnce).to.be.true;
-            expect(dispatch.firstCall.args[0]).to.equal("Alerting/addSingleAlert");
         });
     });
     describe("combineFeatureWithSelectedDate", () => {

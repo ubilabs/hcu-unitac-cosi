@@ -50,7 +50,15 @@
                     "subTitle": "Durchschnittliche Bodenwerte der Geschossfläche einer bestimmten Nutzung:",
                     "wgfz": "Anteilige WGFZ:",
                     "usage": "Nutzung",
-                    "floorValue": "Schichtwert"
+                    "floorValue": "Schichtwert",
+                    "valueLanduse": "Normierter Bodenrichtwert für ",
+                    "commercial": "Geschäftshäuser",
+                    "apartment": "Mehrfamilienhäuser",
+                    "office": "Bürohäuser",
+                    "third": "3. Obergeschoss oder höher",
+                    "second": "2. Obergeschoss",
+                    "first": "1. Obergeschoss",
+                    "ground": "Erdgeschoss"
                 },
                 "landValue": "Bodenrichtwert",
                 "print": "Drucken",

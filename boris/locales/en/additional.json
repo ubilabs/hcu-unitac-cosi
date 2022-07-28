@@ -50,7 +50,15 @@
                     "subTitle": "Average land values of the floor of a given use",
                     "wgfz": "Pro Rata Value-relevant Number of Floors",
                     "usage": "Usage",
-                    "floorValue": "Floor Value"
+                    "floorValue": "Floor Value",
+                    "valueLanduse": "Standardized land value for ",
+                    "commercial": "commercial buildings",
+                    "apartment": "apartment buildings",
+                    "office": "office buildings",
+                    "third": "3rd floor or higher",
+                    "second": "2nd floor",
+                    "first": "1st floor",
+                    "ground": "Ground floor"
                 },
                 "landValue": "Standard Land Value",
                 "print": "Print",

@@ -2,6 +2,7 @@ import Vuex from "vuex";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import BorisComponent from "../../../components/Boris.vue";
 import Boris from "../../../store/indexBoris";
+import MapActions from "../../../../../src/core/maps/store/actions/actionsMapInteractions.js";
 import {expect} from "chai";
 import sinon from "sinon";
 
@@ -33,7 +34,8 @@ describe("ADDONS: addons/boris/components/Boris.vue", () => {
         originalMatchPolygonFeatureWithLanduse,
         originalSimulateLanduseSelect,
         originalSendWpsConvertRequest,
-        originalUpdateSelectedBrwFeature;
+        originalUpdateSelectedBrwFeature,
+        originalUnregisterListener;
 
     beforeEach(() => {
         originalMatchPolygonFeatureWithLanduse = Boris.actions.matchPolygonFeatureWithLanduse;
@@ -47,6 +49,9 @@ describe("ADDONS: addons/boris/components/Boris.vue", () => {
 
         originalUpdateSelectedBrwFeature = Boris.actions.updateSelectedBrwFeature;
         Boris.actions.updateSelectedBrwFeature = sinon.spy();
+
+        originalUnregisterListener = MapActions.unregisterListener;
+        MapActions.unregisterListener = sinon.spy();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -77,6 +82,8 @@ describe("ADDONS: addons/boris/components/Boris.vue", () => {
         Boris.actions.simulateLanduseSelect = originalSimulateLanduseSelect;
         Boris.actions.sendWpsConvertRequest = originalSendWpsConvertRequest;
         Boris.actions.updateSelectedBrwFeature = originalUpdateSelectedBrwFeature;
+        MapActions.unregisterListener = originalUnregisterListener;
+
         sinon.restore();
         if (wrapper) {
             wrapper.destroy();
@@ -158,6 +165,18 @@ describe("ADDONS: addons/boris/components/Boris.vue", () => {
             expect(wrapper.vm.selectedLanduseComputed).to.equal(newValue);
             expect(wrapper.vm.selectedLanduseComputed).to.not.equal(oldValue);
         });
+    });
+    describe("active watcher", () => {
+        it.skip("unregister listener if active is false", () => {
+            store.state.Tools.Boris.active = false;
+            wrapper = shallowMount(BorisComponent, {store, localVue});
+            wrapper.vm.$options.watch.active.call(wrapper.vm, false);
+
+            expect(MapActions.unregisterListener.calledOnce).to.equal(true);
+        });
+        // it("register listener if active is true", () => {
+        // store.state.Tools.Boris.active = true;
+        // });
     });
     describe("selectedPolygon watcher", () => {
         it("landuse select should be simulated if parametric Url is being used ", () => {

@@ -18,12 +18,3 @@ export function getLayerModelsByAttributes (attribute) {
 export function getLayerModelByAttributes ({id}) {
     return Radio.request("ModelList", "getModelByAttributes", {id});
 }
-/**
- * Requests the click-listener
- * Can be done directly or is no longer needed, if modelList is refactored.
- * @param {Function} fn function that is triggered by the click-listener
- * @returns {void}
- */
-export function mapClickListener (fn) {
-    return Radio.request("Map", "registerListener", "click", fn);
-}
