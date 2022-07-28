@@ -45,6 +45,12 @@
                         "reset": "zurücksetzen",
                         "holidaySign": "Feiertagseinfluss",
                         "trucksStatus": "** SV-Anzahl (Beta-Status)",
+                        "downloads": "Downloads",
+                        "downloadsAll": "Alles herunterladen",
+                        "downloadsMin": "15-Min Interval",
+                        "downloadsHour": "1-Stunde Interval",
+                        "downloadsDay": "1-Tag Interval",
+                        "downloadsWeek": "1-Week Interval",
                         "error": {
                             "dataNotAvailableA": "(nicht",
                             "dataNotAvailableB": "empfangen)",
