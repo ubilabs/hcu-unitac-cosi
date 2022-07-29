@@ -66,7 +66,7 @@ export default {
             }
         },
         filteredFeatures () {
-            if (this.filteredFeatures.length > 0) {
+            if (this.filteredFeatures[0] && this.filteredFeatures[0][0]) {
                 this.districtName = this.filteredFeatures[0][0].bezirk;
             }
 
@@ -77,6 +77,7 @@ export default {
         this.$nextTick(() => {
             Backbone.Events.listenTo(Radio.channel("RefugeesTable"), {
                 "showAllFeatures": () => {
+                    this.setActive(true);
                     this.loaded = false;
                     this.allFeatures = true;
                     this.$store.commit("Tools/RefugeeHomes/setFilteredFeatures", []);
@@ -239,6 +240,7 @@ export default {
             <div
                 v-if="active"
                 id="refugeehomes"
+                class="container"
             >
                 <h4 v-if="allFeatures">
                     Hamburg

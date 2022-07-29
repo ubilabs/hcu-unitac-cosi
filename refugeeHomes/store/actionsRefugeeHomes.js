@@ -3,14 +3,14 @@ import axios from "axios";
 
 const actions = {
     /**
-     * Iterates over layerIds, creates the url and executes the wfs request.
+     * Iterates over layerIds defined in the state, creates the url and executes the wfs request.
      * @param {Object} getters vuex element
      * @param {Object} dispatch vuex element
      * @returns {void}
      */
     requestRawLayerList ({getters, dispatch}) {
         getters.layerIds.forEach(async (layerId) => {
-            const rawLayer = await getLayerWhere({id: layerId}),
+            const rawLayer = getLayerWhere({id: layerId}),
                 getFeatureUrl = await dispatch("buildAndGetRequestUrl", rawLayer);
 
             await dispatch("sendRequest", getFeatureUrl);
@@ -30,7 +30,7 @@ const actions = {
             timeout: 6000
         }).then(response => {
             dispatch("parseFeatures", response.data);
-        }).catch(function () {
+        }).catch(() => {
             dispatch("Alerting/addSingleAlert", url + " " + i18next.t("additional:modules.tools.refugeehomes.requestAlert"), {root: true});
         });
     },
