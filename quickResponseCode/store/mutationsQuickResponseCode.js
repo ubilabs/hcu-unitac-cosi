@@ -5,7 +5,7 @@ const mutations = {
     ...generateSimpleMutations(stateQuickResponseCode),
 
     /**
-     * Sets the number and name of the regional primary school.
+     * Sets the click event coordinate.
      * @param {Object} state The state of quick response code.
      * @param {Event} evt The click event.
      * @returns {void}

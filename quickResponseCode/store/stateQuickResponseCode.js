@@ -1,8 +1,8 @@
 /**
- * SchoolRoutePlanning tool state definition.
+ * QuickResponseCode tool state definition.
  * @typedef {Object} SchoolRoutePlanningState
- * @property {String} id id of the SchoolRoutePlanning component.
- * @property {Boolean} active if true, SchoolRoutePlanning will be rendered.
+ * @property {String} id Id of the QuickResponseCode component.
+ * @property {Boolean} active If true, QuickResponseCode will be rendered.
  * @property {String} name Displayed as the title.
  * @property {String} icon Icon next to the title.
  * @property {Boolean} renderToWindow If true, tool is rendered in a window, else in the sidebar.

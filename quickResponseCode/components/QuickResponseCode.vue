@@ -24,11 +24,6 @@ export default {
     created () {
         this.$on("close", this.close);
     },
-    mounted () {
-        if (this.active) {
-            this.registerListener({type: "click", listener: this.setEvtCoordinate});
-        }
-    },
     methods: {
         ...mapMutations("Tools/QuickResponseCode", Object.keys(mutations)),
         ...mapActions("Maps", ["registerListener", "unregisterListener"]),
