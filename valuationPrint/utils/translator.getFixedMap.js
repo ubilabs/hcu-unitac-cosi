@@ -28,17 +28,25 @@ function getFixedMap (coordinate, projection, style, bbox, layerIds, dpi = 200) 
     mapConfig.layers = [];
 
     if (!layerIds.includes("feature")) {
-        originLayers.push([getFeatureLayer(style, feature, "point"), 1]);
-        originLayers = originLayers.concat(getPrintedLayers(layerIds));
+        originLayers.push({
+            layer: getFeatureLayer(style, feature, "point"),
+            opacity: 1,
+            dpi
+        });
+        originLayers = originLayers.concat(getPrintedLayers(layerIds, dpi));
     }
     else {
         const splitIndex = layerIds.indexOf("feature"),
             frontLayerIds = layerIds.slice(0, splitIndex),
             backLayerIds = layerIds.slice(splitIndex + 1 - layerIds.length);
 
-        originLayers = getPrintedLayers(frontLayerIds);
-        originLayers.push([getFeatureLayer(style, feature, "point"), 1]);
-        originLayers = originLayers.concat(getPrintedLayers(backLayerIds));
+        originLayers = getPrintedLayers(frontLayerIds, dpi);
+        originLayers.push({
+            layer: getFeatureLayer(style, feature, "point"),
+            opacity: 1,
+            dpi
+        });
+        originLayers = originLayers.concat(getPrintedLayers(backLayerIds, dpi));
 
     }
 
