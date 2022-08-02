@@ -28,7 +28,7 @@ const state = {
     renderToWindow: false,
     resizableWindow: true,
     isVisibleInMenu: true,
-    deactivateGFI: true,
+    deactivateGFI: false,
     initialWidth: 500,
     serviceId: "streetsmart",
     streetsmartAPIVersion: "22.2",
