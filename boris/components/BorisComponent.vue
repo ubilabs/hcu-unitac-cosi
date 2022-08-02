@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import Tool from "../../../src/modules/tools/ToolTemplate.vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
@@ -12,7 +11,7 @@ import {getLayerModelByAttributes} from "../utils/RadioBridge";
 
 
 export default {
-    name: "Boris",
+    name: "BorisComponent",
     components: {
         Tool,
         InformationComponent,
@@ -20,7 +19,7 @@ export default {
         FloorComponent
     },
     computed: {
-        ...mapGetters("Tools/Boris", ["active", "id", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLayerName", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options", "isProcessFromParametricUrl", "paramUrlParams"]),
+        ...mapGetters("Tools/BorisComponent", ["active", "id", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLayerName", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options", "isProcessFromParametricUrl", "paramUrlParams"]),
         ...mapGetters("Tools/Print", ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]),
         ...mapGetters({
             isMobile: "mobile"
@@ -62,7 +61,6 @@ export default {
          * @returns {void}
          */
         active (value) {
-            console.log("is active", value);
             if (value === false) {
                 this.unregisterListener({type: "click", listener: this.requestGFI});
             }
@@ -114,10 +112,9 @@ export default {
          * @returns {void}
          */
         selectedBrwFeature (newValue, oldValue) {
-            if (this.selectedPolygon === null && typeof newValue.get === "function" && typeof oldValue.get === "function") {
-                if (this.buttonValue === "liste" && oldValue.get("geschossfl_zahl") && !newValue.get("geschossfl_zahl")) {
-                    this.setButtonValue("info");
-                }
+            if (this.selectedPolygon === null && typeof newValue.get === "function" && typeof oldValue.get === "function" &&
+                this.buttonValue === "liste" && oldValue.get("geschossfl_zahl") && !newValue.get("geschossfl_zahl")) {
+                this.setButtonValue("info");
             }
         },
         /**
@@ -150,7 +147,7 @@ export default {
         });
     },
     methods: {
-        ...mapActions("Tools/Boris", [
+        ...mapActions("Tools/BorisComponent", [
             "initialize",
             "switchLayer",
             "toggleStripesLayer",
@@ -166,7 +163,7 @@ export default {
             "registerListener",
             "unregisterListener"
         ]),
-        ...mapMutations("Tools/Boris", Object.keys(mutations)),
+        ...mapMutations("Tools/BorisComponent", Object.keys(mutations)),
         preparePrint,
         /**
          * Toggles info text if clicked on info icon

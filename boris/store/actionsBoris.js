@@ -8,7 +8,7 @@ import mapCollection from "../../../src/core/maps/mapCollection";
 
 const actions = {
     /**
-     * Sets a filtered layerList and the mapClickListener
+     * Sets a filtered layerList
      * @param {Object} initialize.dispatch the dispatch
      * @param {Object} initialize.commit the commit
      * @returns {void}
@@ -20,9 +20,7 @@ const actions = {
             layerList = layerList.filter(function (layer) {
                 return layer.get("gfiAttributes") !== "ignore";
             });
-
             layerList = layerList.reverse();
-
             commit("setFilteredLayerList", layerList);
         }
     },
@@ -52,7 +50,6 @@ const actions = {
             dispatch("Maps/setCenter", center, {root: true});
             dispatch("requestGFI", {processFromParametricUrl, center});
         }
-        console.warn("To be able to perform a BORIS query directly, the parameters \"brwId\",  \"brwLayerName\" and \"center\" must be set in the URL");
     },
     /**
      * Simulates landuse selection when parametric URL is being used
@@ -83,7 +80,6 @@ const actions = {
             layer.set("isVisibleInMap", false);
             layer.set("isSelected", false);
         });
-
         dispatch("selectLayerByName", selectedLayerName);
         commit("setSelectedLayerName", selectedLayerName);
         commit("setSelectedBrwFeature", {});
@@ -184,7 +180,7 @@ const actions = {
             axios.get(url)
                 .then((response) => {
                     if (response.status === 200) {
-                        dispatch("handleGfiResponse", {response: response.data, status: response.status, coordinate: coordinates});
+                        dispatch("handleGfiResponse", {response: response.data, coordinate: coordinates});
                     }
                 })
                 .catch((error) => {
@@ -199,7 +195,6 @@ const actions = {
      * @param {Object} handleGfiResponse.dispatch the dispatch
      * @param {Object} handleGfiResponse.commit the commit
      * @param {String} response XML sent as String
-     * @param {Number} status request status
      * @param {ol.coordinate} coordinates clicked coordinates
      * @returns {void}
      */

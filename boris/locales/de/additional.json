@@ -67,7 +67,7 @@
                     "noBrw": "An dieser Stelle ist kein BRW vorhanden."
                 },
                 "config": {
-                    "placeholder": "Suche nach Adresse/Flurstück/Bodenrichtwertnummer",
+                    "placeholder": "Suche nach Adresse/Bodenrichtwertnummer",
                     "menuName": "Hintergrundkarten",
                     "parcelSearchName": "Flurstückssuche",
                     "toolsName": "Werkzeuge",

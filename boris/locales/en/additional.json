@@ -67,7 +67,7 @@
                     "noBrw": "There is no land value at this position"
                 },
                 "config": {
-                    "placeholder": "Search by address/Parcel/Ground reference number",
+                    "placeholder": "Search by address/Ground reference number",
                     "menuName": "Background maps",
                     "parcelSearchName": "Parcel search",
                     "toolsName": "Tools",
