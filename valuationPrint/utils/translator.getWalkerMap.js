@@ -30,20 +30,20 @@ function getWalkerMap (feature, center, projection, style, scale, layerIds, dpi 
             opacity: 1,
             dpi
         });
-        originLayers = originLayers.concat(getPrintedLayers(layerIds, dpi));
+        originLayers = originLayers.concat(getPrintedLayers(layerIds));
     }
     else {
         const splitIndex = layerIds.indexOf("feature"),
             frontLayerIds = layerIds.slice(0, splitIndex),
             backLayerIds = layerIds.slice(splitIndex + 1 - layerIds.length);
 
-        originLayers = getPrintedLayers(frontLayerIds, dpi);
+        originLayers = getPrintedLayers(frontLayerIds);
         originLayers.push({
             layer: getFeatureLayer(style, feature),
             opacity: 1,
             dpi
         });
-        originLayers = originLayers.concat(getPrintedLayers(backLayerIds, dpi));
+        originLayers = originLayers.concat(getPrintedLayers(backLayerIds));
 
     }
 

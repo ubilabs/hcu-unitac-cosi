@@ -3,27 +3,42 @@ import isObject from "../../../src/utils/isObject.js";
 /**
  * Gets the printed layers from layer Ids
  * @param {String[]} layerIds the layer id
- * @param {Number} dpi the dpi to use for all layers
  * @returns {[ol/layer, opacity]} printedLayers the printed layer and its opacity in an Array list
  */
-export default function getPrintedLayers (layerIds, dpi) {
+export default function getPrintedLayers (layerIds) {
     const printedLayers = [];
 
     if (Array.isArray(layerIds) && layerIds.length) {
-        layerIds.forEach(id => {
-            if (typeof id !== "string" && !isObject(id)) {
+        layerIds.forEach(layerId => {
+            let layerObj = null,
+                layer = {};
+
+            if (isObject(layerId)) {
+                layerObj = Object.assign({
+                    opacity: 1,
+                    dpi: 200
+                }, layerId);
+            }
+            else if (typeof layerId === "string") {
+                layerObj = {
+                    layerId,
+                    opacity: 1,
+                    dpi: 200
+                };
+            }
+            else {
                 return;
             }
 
-            const layerId = typeof id === "string" ? id : Object.keys(id)[0],
-                opacity = isObject(id) ? id[layerId] : 1;
-            let layer = {};
-
-            Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
-            layer = Radio.request("ModelList", "getModelByAttributes", {id: layerId})?.layer;
+            Radio.trigger("ModelList", "addModelsByAttributes", {id: layerObj.layerId});
+            layer = Radio.request("ModelList", "getModelByAttributes", {id: layerObj.layerId})?.layer;
 
             if (typeof layer !== "undefined") {
-                printedLayers.push({layer, opacity, dpi});
+                printedLayers.push({
+                    layer,
+                    opacity: layerObj.opacity,
+                    dpi: layerObj.dpi
+                });
             }
         });
     }
