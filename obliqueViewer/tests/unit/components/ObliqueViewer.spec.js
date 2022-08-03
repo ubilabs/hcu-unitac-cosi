@@ -30,7 +30,7 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
         mockMapMarkerActions = {
             removePointMarker: sinon.stub()
         };
-    let store, wrapper, setObliqueViewOrig, initObliqueViewOrig, setRenderToWindowOrig;
+    let store, wrapper, setObliqueViewOrig, initObliqueViewOrig, setRenderToWindowOrig, initResetObliqueViewer;
 
     beforeEach(() => {
         global.MutationObserver = {
@@ -43,6 +43,8 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
         ObliqueViewer.actions.setObliqueView = sinon.stub();
         initObliqueViewOrig = ObliqueViewer.actions.initObliqueView;
         ObliqueViewer.actions.initObliqueView = sinon.stub();
+        initResetObliqueViewer = ObliqueViewer.actions.resetObliqueViewer;
+        ObliqueViewer.actions.resetObliqueViewer = sinon.stub();
         setRenderToWindowOrig = ObliqueViewer.mutations.setRenderToWindow;
         ObliqueViewer.mutations.setRenderToWindow = sinon.stub();
 
@@ -72,7 +74,7 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
                     namespaced: true,
                     actions: mockMapMarkerActions,
                     mutations: {
-                        setPointStyleId: () => sinon.spy()
+                        setPointStyleId: () => sinon.stub()
                     }
                 }
             },
@@ -91,6 +93,7 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
         sinon.restore();
         ObliqueViewer.actions.setObliqueView = setObliqueViewOrig;
         ObliqueViewer.actions.initObliqueView = initObliqueViewOrig;
+        ObliqueViewer.actions.resetObliqueViewer = initResetObliqueViewer;
         ObliqueViewer.mutations.setRenderToWindow = setRenderToWindowOrig;
         if (wrapper) {
             wrapper.destroy();
@@ -98,36 +101,32 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
     });
     describe("ObliqueViewer.vue watcher", () => {
         it("test watch on clickCoordinate should call action setObliqueView", async () => {
-            store.state.Tools.ObliqueViewer.active = true;
-            wrapper = shallowMount(ObliqueViewerComponent, {store, localVue});
-
             expect(wrapper.find("#obliqueIframe").exists()).to.be.true;
             wrapper.vm.$options.watch.clickCoordinate.call(wrapper.vm, [10, 20]);
             expect(ObliqueViewer.actions.setObliqueView.calledOnce).to.be.true;
         });
         it("test watch on active should call action setObliqueView", async () => {
-            store.state.Tools.ObliqueViewer.active = true;
-            wrapper = shallowMount(ObliqueViewerComponent, {store, localVue});
-
             expect(wrapper.find("#obliqueIframe").exists()).to.be.true;
             wrapper.vm.$options.watch.active.call(wrapper.vm, true);
             expect(ObliqueViewer.actions.initObliqueView.calledOnce).to.be.true;
+            expect(ObliqueViewer.actions.resetObliqueViewer.calledOnce).to.be.false;
+        });
+        it("test watch on active = false should call action setObliqueView", async () => {
+            expect(wrapper.find("#obliqueIframe").exists()).to.be.true;
+            wrapper.vm.$options.watch.active.call(wrapper.vm, false);
+            expect(ObliqueViewer.actions.resetObliqueViewer.calledOnce).to.be.true;
         });
         it("test watch on isMobile should call mutation setRenderToWindow if isMobile is false", async () => {
-            store.state.Tools.ObliqueViewer.active = true;
-            wrapper = shallowMount(ObliqueViewerComponent, {store, localVue});
-
             expect(wrapper.find("#obliqueIframe").exists()).to.be.true;
             wrapper.vm.$options.watch.isMobile.call(wrapper.vm, false);
             expect(ObliqueViewer.mutations.setRenderToWindow.calledOnce).to.be.true;
+            expect(ObliqueViewer.mutations.setRenderToWindow.args[0][1]).to.be.false;
         });
         it("test watch on isMobile should call mutation setRenderToWindow if isMoblie is true", async () => {
-            store.state.Tools.ObliqueViewer.active = true;
-            wrapper = shallowMount(ObliqueViewerComponent, {store, localVue});
-
             expect(wrapper.find("#obliqueIframe").exists()).to.be.true;
             wrapper.vm.$options.watch.isMobile.call(wrapper.vm, true);
             expect(ObliqueViewer.mutations.setRenderToWindow.calledOnce).to.be.true;
+            expect(ObliqueViewer.mutations.setRenderToWindow.args[0][1]).to.be.true;
         });
     });
     describe("ObliqueViewer.vue methods", () => {

@@ -44,6 +44,9 @@ export default {
                     this.initObliqueView();
                 });
             }
+            else {
+                this.resetObliqueViewer();
+            }
         },
         clickCoordinate (value) {
             if (this.active === true) {
@@ -51,10 +54,6 @@ export default {
             }
         },
         isMobile (value) {
-            if (value) {
-                this.setRenderToWindow(value);
-                return;
-            }
             this.setRenderToWindow(value);
         }
     },
@@ -72,13 +71,10 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ObliqueViewer", Object.keys(mutationsObliqueViewer)),
-        ...mapMutations("MapMarker", ["setPointStyleId"]),
-        ...mapActions("Tools/ObliqueViewer", ["initObliqueView", "setObliqueView", "setObliqueViewerURL"]),
-        ...mapActions("MapMarker", ["removePointMarker"]),
-        ...mapActions("Maps", ["unregisterListener"]),
+        ...mapActions("Tools/ObliqueViewer", ["initObliqueView", "resetObliqueViewer", "setObliqueView", "setObliqueViewerURL"]),
 
         /**
-        * Hides the sidebar. Removes the MapMarker
+        * Close the sidebar and deactivate the obliqueViewer
         * @returns {void}
         */
         close () {
@@ -88,10 +84,6 @@ export default {
             if (model) {
                 model.set("isActive", false);
             }
-
-            this.unregisterListener({type: "click", listener: "setClickCoordinate", listenerType: "commit"});
-            this.setPointStyleId(this.defaultMapMarkerStyleId);
-            this.removePointMarker();
         }
     }
 };

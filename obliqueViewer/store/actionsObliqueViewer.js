@@ -21,7 +21,7 @@ const actions = {
 
                 if (map) {
                     map.olMap.on("moveend", () => {
-                        const transformedCooridnates = transform("EPSG:4326", "EPSG:25832", map.getViewPointSync().groundPosition);
+                        const transformedCooridnates = transform("EPSG:4326", mapCollection.getMapView("2D").getProjection().getCode(), map.getViewPointSync().groundPosition);
 
                         transformedCooridnates.every((coordinate, index) => {
                             if (Math.round(coordinate) !== Math.round(getters.lastCoordinates[index]) && (coordinate - getters.lastCoordinates[index] > 50 || coordinate - getters.lastCoordinates[index] < -50)) {
@@ -62,6 +62,17 @@ const actions = {
             });
         });
     },
+
+    /**
+    * unregister the map listener. Resets the mapMarker style. Removes the MapMarker.
+    * @returns {void}
+    */
+    resetObliqueViewer ({commit, dispatch, getters}) {
+        dispatch("Maps/unregisterListener", {type: "click", listener: "setClickCoordinate", listenerType: "commit"}, {root: true});
+        commit("MapMarker/setPointStyleId", getters.defaultMapMarkerStyleId, {root: true});
+        dispatch("MapMarker/removePointMarker", {root: true});
+    },
+
     /**
     * setObliqueView moves the map marker to the click position and centers the oblique aerial images at the point in the sidebar
     * @param {Array} coordinate the click/center coordinate
@@ -73,11 +84,11 @@ const actions = {
             map = framework?.getActiveMap();
         let viewPoint = {};
 
-        if (coordinate && Array.isArray(coordinate) && coordinate.length > 1) {
+        if (framework && coordinate && Array.isArray(coordinate) && coordinate.length > 1) {
             commit("setLastCoordinates", coordinate);
             if (vcs?.vcm?.util) {
                 viewPoint = new vcs.vcm.util.ViewPoint({
-                    groundPosition: transform("EPSG:25832", "EPSG:4326", coordinate),
+                    groundPosition: transform(mapCollection.getMapView("2D").getProjection().getCode(), "EPSG:4326", coordinate),
                     heading: getters.heading,
                     distance: map.getViewPointSync().distance
                 });
@@ -87,6 +98,14 @@ const actions = {
 
             dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
         }
+        else {
+            dispatch("Alerting/addSingleAlert",
+                "<strong>" + i18next.t("additional:modules.tools.obliqueViewer.frameworkUndefined") + "</strong>"
+                + "<br>"
+                + "<small>" + i18next.t("additional:modules.tools.oktagon.frameworkUndefinedMessage") + "</small>",
+                {root: true}
+            );
+        }
     },
     /**
     * setObliqueViewerURL gets the initaialCenter coordinate and creates the URL for the Oblique Map
@@ -95,7 +114,7 @@ const actions = {
     */
     setObliqueViewerURL ({commit, getters, rootGetters}, initialCenter = []) {
         if (initialCenter && Array.isArray(initialCenter) && initialCenter.length > 1) {
-            const transformedCoordinates = transform("EPSG:25832", "EPSG:4326", initialCenter);
+            const transformedCoordinates = transform(mapCollection.getMapView("2D").getProjection().getCode(), "EPSG:4326", initialCenter);
             let startCoordinates = "";
 
             startCoordinates = transformedCoordinates[0] + ", " + transformedCoordinates[1];
