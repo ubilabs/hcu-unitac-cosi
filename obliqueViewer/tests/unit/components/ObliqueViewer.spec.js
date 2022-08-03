@@ -30,7 +30,7 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
         mockMapMarkerActions = {
             removePointMarker: sinon.stub()
         };
-    let store, wrapper, setObliqueViewOrig, initObliqueViewOrig, setRenderToWindowOrig, initResetObliqueViewer;
+    let store, wrapper, setObliqueViewOrig, initObliqueViewOrig, setRenderToWindowOrig, initResetObliqueViewer, setObliqueViewerURLOrig;
 
     beforeEach(() => {
         global.MutationObserver = {
@@ -45,10 +45,10 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
         ObliqueViewer.actions.initObliqueView = sinon.stub();
         initResetObliqueViewer = ObliqueViewer.actions.resetObliqueViewer;
         ObliqueViewer.actions.resetObliqueViewer = sinon.stub();
+        setObliqueViewerURLOrig = ObliqueViewer.actions.setObliqueViewerURL;
+        ObliqueViewer.actions.setObliqueViewerURL = sinon.stub();
         setRenderToWindowOrig = ObliqueViewer.mutations.setRenderToWindow;
         ObliqueViewer.mutations.setRenderToWindow = sinon.stub();
-
-        ObliqueViewer.actions.setObliqueViewerURL = sinon.stub();
 
         store = new Vuex.Store({
             namespaces: true,
@@ -94,6 +94,7 @@ describe("ADDONS: addons/obliqueViewer/components/ObliqueViewer.vue", () => {
         ObliqueViewer.actions.setObliqueView = setObliqueViewOrig;
         ObliqueViewer.actions.initObliqueView = initObliqueViewOrig;
         ObliqueViewer.actions.resetObliqueViewer = initResetObliqueViewer;
+        ObliqueViewer.actions.setObliqueViewerURL = setObliqueViewerURLOrig;
         ObliqueViewer.mutations.setRenderToWindow = setRenderToWindowOrig;
         if (wrapper) {
             wrapper.destroy();

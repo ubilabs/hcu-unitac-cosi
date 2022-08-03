@@ -1,7 +1,6 @@
 import {expect} from "chai";
 import sinon from "sinon";
 import actions from "../../../store/actionsObliqueViewer";
-import state from "../../../store/stateObliqueViewer";
 import * as crs from "@masterportal/masterportalapi/src/crs";
 
 
@@ -53,19 +52,18 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
             }
         };
     });
-    afterEach(function () {
+    afterEach(() => {
         sinon.restore();
     });
 
     describe("initObliqueView", () => {
-        it("initObliqueView shall dispatch once", async () => {
+        it("initObliqueView shall dispatch once", () => {
             const callback = {
                 type: "click",
                 listener: "setClickCoordinate",
                 listenerType: "commit"};
 
-            state.active = true;
-            await actions.initObliqueView({commit, dispatch, getters, rootGetters});
+            actions.initObliqueView({commit, dispatch, getters, rootGetters});
 
             expect(dispatch.calledOnce).to.be.true;
             expect(dispatch.args[0][0]).to.equal("Maps/registerListener");
@@ -73,14 +71,13 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
         });
     });
     describe("resetObliqueViewer", () => {
-        it("resetObliqueViewer shall unregister the map listener, reset the mapMarker style and remove the mapMarker", async () => {
+        it("resetObliqueViewer shall unregister the map listener, reset the mapMarker style and remove the mapMarker", () => {
             const callback = {
                 type: "click",
                 listener: "setClickCoordinate",
                 listenerType: "commit"};
 
-            state.active = true;
-            await actions.resetObliqueViewer({commit, dispatch, getters});
+            actions.resetObliqueViewer({commit, dispatch, getters});
 
             expect(dispatch.calledTwice).to.be.true;
             expect(dispatch.args[0][0]).to.equal("Maps/unregisterListener");
@@ -91,51 +88,46 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
         });
     });
     describe("setObliqueView", () => {
-        it("setObliqueView shall do nothing, if coordinates are null", async () => {
+        it("setObliqueView shall do nothing, if coordinates are null", () => {
             const centerCoordinate = null;
 
-            state.active = true;
-            await actions.setObliqueView({commit, dispatch, getters}, centerCoordinate);
+            actions.setObliqueView({commit, dispatch, getters}, centerCoordinate);
 
             expect(commit.calledOnce).to.be.false;
             expect(dispatch.calledOnce).to.be.true;
 
         });
-        it("setObliqueView shall do nothing, if coordinates are undefined", async () => {
+        it("setObliqueView shall do nothing, if coordinates are undefined", () => {
             const centerCoordinate = undefined;
 
-            state.active = true;
-            await actions.setObliqueView({commit, dispatch, getters}, centerCoordinate);
+            actions.setObliqueView({commit, dispatch, getters}, centerCoordinate);
 
             expect(commit.calledOnce).to.be.false;
             expect(dispatch.calledOnce).to.be.true;
 
         });
-        it("setObliqueView shall do nothing, if coordinates are no array", async () => {
+        it("setObliqueView shall do nothing, if coordinates are no array", () => {
             const centerCoordinate = "";
 
-            state.active = true;
-            await actions.setObliqueView({commit, dispatch, getters}, centerCoordinate);
+            actions.setObliqueView({commit, dispatch, getters}, centerCoordinate);
 
             expect(commit.calledOnce).to.be.false;
             expect(dispatch.calledOnce).to.be.true;
 
         });
-        it("setObliqueView shall do nothing, if coordinates array length is smaller two", async () => {
+        it("setObliqueView shall do nothing, if coordinates array length is smaller two", () => {
             const centerCoordinate = [565874];
 
-            state.active = true;
-            await actions.setObliqueView({commit, dispatch, getters}, centerCoordinate);
+            actions.setObliqueView({commit, dispatch, getters}, centerCoordinate);
 
             expect(commit.calledOnce).to.be.false;
             expect(dispatch.calledOnce).to.be.true;
 
         });
-        it("setObliqueView shall do nothing, if active is false", async () => {
+        it("setObliqueView shall do nothing, if active is false", () => {
             const centerCoordinate = [565874, 5934140];
 
-            state.active = true;
-            await actions.setObliqueView({commit, dispatch, getters}, centerCoordinate);
+            actions.setObliqueView({commit, dispatch, getters}, centerCoordinate);
 
             expect(commit.calledOnce).to.be.false;
             expect(dispatch.calledOnce).to.be.true;
@@ -143,29 +135,26 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
         });
     });
     describe("setObliqueViewerURL", () => {
-        it("setObliqueViewerURL shall do nothing, if coordinates are null", async () => {
+        it("setObliqueViewerURL shall do nothing, if coordinates are null", () => {
             const initialCenter = null;
 
-            state.active = true;
-            await actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
+            actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
 
             expect(commit.calledOnce).to.be.false;
 
         });
-        it("setObliqueViewerURL shall do nothing, if coordinates are undefined", async () => {
+        it("setObliqueViewerURL shall do nothing, if coordinates are undefined", () => {
             const initialCenter = undefined;
 
-            state.active = true;
-            await actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
+            actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
 
             expect(commit.calledOnce).to.be.false;
 
         });
-        it("setObliqueViewerURL shall do nothing, if coordinates are no array", async () => {
+        it("setObliqueViewerURL shall do nothing, if coordinates are no array", () => {
             const initialCenter = "";
 
-            state.active = true;
-            await actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
+            actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
 
             expect(commit.calledOnce).to.be.false;
 
@@ -173,8 +162,7 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
         it("setObliqueViewerURL shall do nothing, if coordinates array length is smaller two", async () => {
             const initialCenter = [565874];
 
-            state.active = true;
-            await actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
+            actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
 
             expect(commit.calledOnce).to.be.false;
 
@@ -182,7 +170,6 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
         it("setObliqueViewerURL shall commit the oblique url", async () => {
             const initialCenter = [565874, 5934140];
 
-            state.active = true;
             await actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
 
             expect(commit.calledOnce).to.be.true;

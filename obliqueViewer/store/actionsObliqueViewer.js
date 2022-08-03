@@ -112,7 +112,7 @@ const actions = {
     * @param {Array} initialCenter the initial center coordinate
     * @returns {void}
     */
-    setObliqueViewerURL ({commit, getters, rootGetters}, initialCenter = []) {
+    setObliqueViewerURL ({commit, getters, rootGetters}, initialCenter) {
         if (initialCenter && Array.isArray(initialCenter) && initialCenter.length > 1) {
             const transformedCoordinates = transform(mapCollection.getMapView("2D").getProjection().getCode(), "EPSG:4326", initialCenter);
             let startCoordinates = "";
