@@ -15,7 +15,8 @@
                 "format": "Format",
                 "filenameLabel": "Dateiname",
                 "saveFile": "Speichern",
-                "setFileName": "Bitte Dateiname angeben"
+                "setFileName": "Bitte Dateiname angeben",
+                "category": "Kategorie"
             }
         }
     }
