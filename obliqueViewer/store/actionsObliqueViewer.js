@@ -70,7 +70,7 @@ const actions = {
     resetObliqueViewer ({commit, dispatch, getters}) {
         dispatch("Maps/unregisterListener", {type: "click", listener: "setClickCoordinate", listenerType: "commit"}, {root: true});
         commit("MapMarker/setPointStyleId", getters.defaultMapMarkerStyleId, {root: true});
-        dispatch("MapMarker/removePointMarker", {root: true});
+        dispatch("MapMarker/removePointMarker", null, {root: true});
     },
 
     /**
