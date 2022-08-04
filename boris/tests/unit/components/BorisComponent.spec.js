@@ -130,7 +130,7 @@ describe("ADDONS: addons/boris/components/BorisComponent.vue", () => {
             };
 
             store.state.Tools.BorisComponent.active = true;
-            store.commit("Tools/Boris/setSelectedPolygon", feature);
+            store.commit("Tools/BorisComponent/setSelectedPolygon", feature);
             wrapper = shallowMount(BorisComponent, {store, localVue});
 
             expect(wrapper.find("#landuseSelect").exists()).to.be.true;
@@ -165,7 +165,7 @@ describe("ADDONS: addons/boris/components/BorisComponent.vue", () => {
 
         it("selectedLanduseComputed equals newValue but does not equal oldValue", () => {
             store.state.Tools.BorisComponent.active = true;
-            store.commit("Tools/Boris/setSelectedLanduse", newValue);
+            store.commit("Tools/BorisComponent/setSelectedLanduse", newValue);
             wrapper = shallowMount(BorisComponent, {store, localVue});
             expect(wrapper.vm.selectedLanduseComputed).to.equal(newValue);
             expect(wrapper.vm.selectedLanduseComputed).to.not.equal(oldValue);
@@ -257,7 +257,7 @@ describe("ADDONS: addons/boris/components/BorisComponent.vue", () => {
             wrapper = shallowMount(BorisComponent, {store, localVue});
             wrapper.vm.handleOptionChange(event, subject);
 
-            expect(store.state.Tools.BorisComponent.selectedOption).to.equal(store.state.Tools.Boris.buildingDesigns[1]);
+            expect(store.state.Tools.BorisComponent.selectedOption).to.equal(store.state.Tools.BorisComponent.buildingDesigns[1]);
             expect(Boris.actions.updateSelectedBrwFeature.calledOnce).to.equal(true);
             expect(Boris.actions.sendWpsConvertRequest.calledOnce).to.equal(true);
 

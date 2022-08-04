@@ -85,7 +85,7 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
                 "isSelected": true,
                 "isVisibleInMap": false,
                 "typ": "WMS",
-                "layers": "lgv_brw_zonen_2017,lgv_brw_zonen_brw_grdstk_2017"
+                "layers": "v_brw_zonen_geom_flaeche_2022"
             },
             attribute2 = {
                 "name": "31.12.2020",
@@ -220,13 +220,49 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
         });
     });
     describe("switchLayer", () => {
-        it("handles layer switch for point & stripes layer", () => {
+        it("handles layer switch for area to stripes layer", () => {
             const selectedLayerName = "31.12.2017";
 
             state.selectedLayer = state.filteredLayerList.attribute1;
 
-            actions.switchLayer({state, dispatch, commit}, selectedLayerName);
-            expect(commit.callCount).to.equal(6);
+            actions.switchLayer({rootGetters, state, dispatch, commit}, selectedLayerName);
+            expect(commit.callCount).to.equal(2);
+            expect(commit.args[0][0]).to.equal("setSelectedLayerName");
+            expect(commit.args[0][1]).to.equal(selectedLayerName);
+            expect(commit.args[1][0]).to.equal("setIsAreaLayer");
+            expect(commit.args[1][1]).to.equal(false);
+            expect(dispatch.callCount).to.equal(3);
+            expect(dispatch.args[0][0]).to.equal("selectLayerByName");
+            expect(dispatch.args[0][1]).to.equal(selectedLayerName);
+            expect(dispatch.args[1][0]).to.equal("requestGFI");
+            expect(dispatch.args[1][1]).to.deep.equal({processFromParametricUrl: false, center: null});
+            expect(dispatch.args[2][0]).to.equal("toggleStripesLayer");
+            expect(dispatch.args[2][1]).to.equal(false);
+
+        });
+        it("handles layer switch for stripes to point layer", () => {
+            const selectedLayerName = "31.12.2006",
+                attribute1 = {
+                    "name": "31.12.2017",
+                    "isSelected": true,
+                    "isVisibleInMap": false
+                };
+
+            state.filteredLayerList = [
+                {
+                    "attributes": attribute1,
+                    get: (key)=> {
+                        return attribute1[key];
+                    },
+                    set: (key, value) => {
+                        attribute1[key] = value;
+                    }
+                }];
+
+            state.selectedLayer = state.filteredLayerList.attribute1;
+
+            actions.switchLayer({rootGetters, state, dispatch, commit}, selectedLayerName);
+            expect(commit.callCount).to.equal(7);
             expect(commit.args[0][0]).to.equal("setSelectedLayerName");
             expect(commit.args[0][1]).to.equal(selectedLayerName);
             expect(commit.args[1][0]).to.equal("setSelectedBrwFeature");
@@ -237,28 +273,67 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
             expect(commit.args[3][1]).to.equal(null);
             expect(commit.args[4][0]).to.equal("setTextIds");
             expect(commit.args[4][1]).to.deep.equal([]);
-            expect(commit.args[5][0]).to.equal("setIsAreaLayer");
-            expect(commit.args[5][1]).to.equal(false);
+            expect(commit.args[5][0]).to.equal("Maps/setClickCoordinate");
+            expect(commit.args[5][1]).to.equal(null);
+            expect(commit.args[6][0]).to.equal("setIsAreaLayer");
+            expect(commit.args[6][1]).to.equal(false);
             expect(dispatch.callCount).to.equal(4);
             expect(dispatch.args[0][0]).to.equal("selectLayerByName");
             expect(dispatch.args[0][1]).to.equal(selectedLayerName);
             expect(dispatch.args[1][0]).to.equal("MapMarker/removePolygonMarker");
             expect(dispatch.args[1][1]).to.equal(null);
-            expect(dispatch.args[2][0]).to.equal("MapMarker/removePointMarker");
-            expect(dispatch.args[2][1]).to.equal(null);
+            expect(dispatch.args[2][0]).to.equal("MapMarker/removePolygonMarker");
+            expect(dispatch.args[2][1]).to.deep.equal(null);
             expect(dispatch.args[3][0]).to.equal("toggleStripesLayer");
             expect(dispatch.args[3][1]).to.equal(false);
-
         });
-        it("handles layer switch for area layer", () => {
+        it("handles layer switch for area to area layer", () => {
             const selectedLayerName = "31.12.2020";
 
             state.selectedLayer = state.filteredLayerList[1];
 
-            actions.switchLayer({state, dispatch, commit}, selectedLayerName);
-            expect(commit.args[5][0]).to.equal("setIsAreaLayer");
-            expect(commit.args[5][1]).to.equal(true);
+            actions.switchLayer({rootGetters, state, dispatch, commit}, selectedLayerName);
+            expect(commit.calledTwice).to.be.true;
+            expect(dispatch.calledThrice).to.be.true;
+            expect(commit.args[1][0]).to.equal("setIsAreaLayer");
+            expect(commit.args[1][1]).to.equal(true);
+            expect(dispatch.args[1][0]).to.equal("requestGFI");
+            expect(dispatch.args[2][0]).to.equal("toggleStripesLayer");
+        });
+        it("handles layer switch for point to stripes layer", () => {
+            const selectedLayerName = "31.12.2018",
+                attribute1 = {
+                    "name": "01.01.2000",
+                    "isSelected": true,
+                    "isVisibleInMap": false
+                };
+
+            state.filteredLayerList = [
+                {
+                    "attributes": attribute1,
+                    get: (key)=> {
+                        return attribute1[key];
+                    },
+                    set: (key, value) => {
+                        attribute1[key] = value;
+                    }
+                }];
+
+            state.selectedLayer = state.filteredLayerList.attribute1;
+
+            actions.switchLayer({rootGetters, state, dispatch, commit}, selectedLayerName);
+            expect(commit.callCount).to.equal(4);
+            expect(commit.args[1][0]).to.equal("setSelectedBrwFeature");
+            expect(commit.args[1][1]).to.deep.equal({});
+            expect(commit.args[2][0]).to.equal("setTextIds");
+            expect(commit.args[2][1]).to.deep.equal([]);
+            expect(commit.args[3][0]).to.equal("setIsAreaLayer");
+            expect(commit.args[3][1]).to.equal(false);
+            expect(dispatch.callCount).to.equal(4);
+            expect(dispatch.args[1][0]).to.equal("requestGFI");
+            expect(dispatch.args[2][0]).to.equal("MapMarker/removePointMarker");
             expect(dispatch.args[3][0]).to.equal("toggleStripesLayer");
+            expect(dispatch.args[3][1]).to.equal(false);
         });
     });
     describe("toggleStripesLayer", () => {
@@ -315,17 +390,15 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
     describe("handleGfiResponse", () => {
         it("handles GFI response features from year 2008", () => {
             const response = rawSources.gfiResponseNewer,
-                status = 200,
                 coordinate = [565867.1504386466, 5933871.340649964];
 
-            actions.handleGfiResponse({state, dispatch, commit}, {response, status, coordinate});
+            actions.handleGfiResponse({state, dispatch, commit}, {response, coordinate});
             expect(commit.calledOnce).to.be.true;
             expect(commit.firstCall.args[0]).to.equal("setSelectedPolygon");
-            expect(commit.firstCall.args[1]).not.to.equal(null);
+            expect(commit.firstCall.args[1]).to.not.equal(null);
             expect(dispatch.calledTwice).to.be.true;
             expect(dispatch.firstCall.args[0]).to.equal("getFeatureRequestById");
             expect(dispatch.secondCall.args[0]).to.equal("matchPolygonFeatureWithLanduse");
-
         });
         it("handles GFI response features until year 2008", () => {
             const response = rawSources.gfiResponseOlder,
@@ -352,17 +425,17 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
                 coordinate = [];
 
             actions.handleGfiResponse({state, dispatch, commit}, {response, status, coordinate});
-            expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.calledThrice).to.be.true;
             expect(dispatch.firstCall.args[0]).to.equal("Alerting/addSingleAlert");
-        });
-        it("data query error", () => {
-            const response = null,
-                status = 400,
-                coordinate = [];
-
-            actions.handleGfiResponse({state, dispatch, commit}, {response, status, coordinate});
-            expect(dispatch.calledOnce).to.be.true;
-            expect(dispatch.firstCall.args[0]).to.equal("Alerting/addSingleAlert");
+            expect(dispatch.secondCall.args[0]).to.equal("MapMarker/removePolygonMarker");
+            expect(dispatch.thirdCall.args[0]).to.equal("MapMarker/removePointMarker");
+            expect(commit.calledThrice).to.be.true;
+            expect(commit.firstCall.args[0]).to.equal("setSelectedBrwFeature");
+            expect(commit.firstCall.args[1]).to.deep.equal({});
+            expect(commit.secondCall.args[0]).to.equal("setSelectedPolygon");
+            expect(commit.secondCall.args[1]).to.deep.equal(null);
+            expect(commit.thirdCall.args[0]).to.equal("setSelectedLanduse");
+            expect(commit.thirdCall.args[1]).to.deep.equal("");
         });
     });
     describe("getFeatureRequestById", () => {

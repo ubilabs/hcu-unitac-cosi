@@ -65,30 +65,53 @@ const actions = {
     },
     /**
      * Handles a layer switch by setting some attributes to their initial state and selecting the layer by the selected layer name
+     * @param {Object} switchLayer.rootGetters the rootgetters
      * @param {Object} switchLayer.state the state
      * @param {Object} switchLayer.dispatch the dispatch
      * @param {Object} switchLayer.commit the commit
      * @param {String} selectedLayerName name of the selected layer
      * @returns {void}
      */
-    switchLayer ({state, dispatch, commit}, selectedLayerName) {
+    switchLayer ({rootGetters, state, dispatch, commit}, selectedLayerName) {
         const previousSelectedLayer = state.filteredLayerList.filter(function (layer) {
-            return layer.get("isSelected") === true;
-        });
+                return layer.get("isSelected") === true;
+            }),
+            currentYear = selectedLayerName.split(".")[2];
+        let previousYear = null;
 
         previousSelectedLayer.forEach(layer => {
             layer.set("isVisibleInMap", false);
             layer.set("isSelected", false);
+            previousYear = layer.get("name").split(".")[2];
         });
+
         dispatch("selectLayerByName", selectedLayerName);
         commit("setSelectedLayerName", selectedLayerName);
-        commit("setSelectedBrwFeature", {});
-        commit("setSelectedLanduse", "");
-        commit("setSelectedPolygon", null);
-        dispatch("MapMarker/removePolygonMarker", null, {root: true});
-        dispatch("MapMarker/removePointMarker", null, {root: true});
-        commit("setTextIds", []);
 
+        if (currentYear > 2008) {
+            if (rootGetters["Maps/clickCoordinate"]) {
+                dispatch("requestGFI", {processFromParametricUrl: false, center: null});
+            }
+        }
+        else {
+            dispatch("MapMarker/removePolygonMarker", null, {root: true});
+            if (rootGetters["Maps/clickCoordinate"] && !(previousYear > 2008 && currentYear <= 2008)) {
+                dispatch("requestGFI", {processFromParametricUrl: false, center: null});
+            }
+        }
+        if (previousYear > 2008 && currentYear <= 2008) {
+            dispatch("MapMarker/removePolygonMarker", null, {root: true});
+            commit("setSelectedBrwFeature", {});
+            commit("setSelectedLanduse", "");
+            commit("setSelectedPolygon", null);
+            commit("setTextIds", []);
+            commit("Maps/setClickCoordinate", null, {root: true});
+        }
+        else if (currentYear > 2008 && previousYear <= 2008) {
+            dispatch("MapMarker/removePointMarker", null, {root: true});
+            commit("setSelectedBrwFeature", {});
+            commit("setTextIds", []);
+        }
         if (state.selectedLayer?.get("typ") !== "GROUP" && state.selectedLayer?.attributes.layers.indexOf("flaeche") > -1) {
             commit("setIsAreaLayer", true);
             dispatch("toggleStripesLayer", state.isStripesLayer);
@@ -218,6 +241,11 @@ const actions = {
         }
         else {
             dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noBrw"), {root: true});
+            dispatch("MapMarker/removePolygonMarker", null, {root: true});
+            dispatch("MapMarker/removePointMarker", null, {root: true});
+            commit("setSelectedBrwFeature", {});
+            commit("setSelectedPolygon", null);
+            commit("setSelectedLanduse", "");
         }
     },
     /**
@@ -337,7 +365,6 @@ const actions = {
      * @returns {void}
      */
     async handleGetFeatureResponse ({dispatch, commit}, {response, year}) {
-
         const features = new WFS().readFeatures(response),
             featureByYear = await helpers.findBrwFeatureByYear({features, year});
 
