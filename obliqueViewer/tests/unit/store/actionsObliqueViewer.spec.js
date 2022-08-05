@@ -95,6 +95,7 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
 
             expect(commit.calledOnce).to.be.false;
             expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.args[0][0]).to.equal("Alerting/addSingleAlert");
 
         });
         it("setObliqueView shall do nothing, if coordinates are undefined", () => {
@@ -104,6 +105,7 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
 
             expect(commit.calledOnce).to.be.false;
             expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.args[0][0]).to.equal("Alerting/addSingleAlert");
 
         });
         it("setObliqueView shall do nothing, if coordinates are no array", () => {
@@ -113,6 +115,7 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
 
             expect(commit.calledOnce).to.be.false;
             expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.args[0][0]).to.equal("Alerting/addSingleAlert");
 
         });
         it("setObliqueView shall do nothing, if coordinates array length is smaller two", () => {
@@ -122,15 +125,7 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
 
             expect(commit.calledOnce).to.be.false;
             expect(dispatch.calledOnce).to.be.true;
-
-        });
-        it("setObliqueView shall do nothing, if active is false", () => {
-            const centerCoordinate = [565874, 5934140];
-
-            actions.setObliqueView({commit, dispatch, getters}, centerCoordinate);
-
-            expect(commit.calledOnce).to.be.false;
-            expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.args[0][0]).to.equal("Alerting/addSingleAlert");
 
         });
     });
@@ -173,6 +168,7 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
             await actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
 
             expect(commit.calledOnce).to.be.true;
+            expect(commit.args[0][0]).to.equal("setObliqueViewerURL");
 
         });
     });
