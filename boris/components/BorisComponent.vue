@@ -91,7 +91,8 @@ export default {
                         newValue === "A Acker" ||
                         newValue === "GR Grünland" ||
                         newValue === "EGA Erwerbsgartenanbaufläche" ||
-                        newValue === "F forstwirtschaftliche Fläche"
+                        newValue === "F forstwirtschaftliche Fläche" ||
+                        newValue === "LAD Läden (eingeschossig)"
                     ) {
                         if (oldValue === "MFH Mehrfamilienhäuser" ||
                             oldValue === "GH Geschäftshäuser (mehrgeschossig, Wertanteil Erdgeschoss)" ||
@@ -501,11 +502,12 @@ export default {
                     </div>
                     <button
                         class="btn btn-primary btn-infos"
-                        :title="'export as PDF'"
+                        :title="$t('additional:modules.tools.boris.printExport')"
                         @click="startPrint"
                     >
                         {{ $t("additional:modules.tools.boris.print") }}
                     </button>
+                    <span>{{ $t("additional:modules.tools.boris.printScale") }}</span>
                     <div
                         v-if="printStarted"
                         class="pt-2"

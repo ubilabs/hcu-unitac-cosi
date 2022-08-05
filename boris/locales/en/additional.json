@@ -19,6 +19,7 @@
                     "landUse": "Landuse",
                     "numberOfFloor": "Value-relevant Number of Floors",
                     "landArea": "Land Area in m²",
+                    "propertyDepth": "Property depth in m",
                     "moreFeatures": "Further Features"
                 },
                 "locationDescription": {
@@ -62,6 +63,8 @@
                 },
                 "landValue": "Standard Land Value",
                 "print": "Print",
+                "printScale":"The print scale is based on currently selected",
+                "printExport":"Export as PDF",
                 "alertMessage":{
                     "noData": "Data request failed. This may be a temporary problem. Please try again.",
                     "noBrw": "There is no land value at this position"

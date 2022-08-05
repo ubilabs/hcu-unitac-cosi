@@ -68,6 +68,11 @@ export default {
                 />
                 <DetailComponent
                     :feature="selectedBrwFeature"
+                    :keys="['grdstk_tiefe']"
+                    :label="$t('additional:modules.tools.boris.detailInformation.propertyDepth')"
+                />
+                <DetailComponent
+                    :feature="selectedBrwFeature"
                     :keys="['bemerkung']"
                     :label="$t('additional:modules.tools.boris.detailInformation.moreFeatures')"
                 />

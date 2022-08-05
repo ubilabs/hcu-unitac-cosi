@@ -17,8 +17,9 @@
                     "developmentAddition": "Sanierungs- oder Entwicklungszusatz",
                     "typeOfUse": "Art der Nutzung",
                     "landUse": "Anbauart",
-                    "numberOfFloor": "Wertrelevante Geschossflächenzahl (WGFZ):",
+                    "numberOfFloor": "Wertrelevante Geschossflächenzahl (WGFZ)",
                     "landArea": "Grundstücksfläche in m²",
+                    "propertyDepth": "Grundstückstiefe in m",
                     "moreFeatures": "Weitere Merkmale"
                 },
                 "locationDescription": {
@@ -62,6 +63,8 @@
                 },
                 "landValue": "Bodenrichtwert",
                 "print": "Drucken",
+                "printScale":"Der Druckmaßstab orientiert sich an derzeit ausgewähltem Maßstab",
+                "printExport":"Als PDF exportieren",
                 "alertMessage" :{
                     "noData": "Datenabfrage fehlgeschlagen. Dies kann ein temporäres Problem sein. Bitte versuchen Sie es erneut.",
                     "noBrw": "An dieser Stelle ist kein BRW vorhanden."
