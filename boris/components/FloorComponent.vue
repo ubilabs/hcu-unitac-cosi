@@ -82,7 +82,12 @@ export default {
                 <dt v-else>
                     {{ $t("additional:modules.tools.boris.floorValues.valueLanduse") }} {{ $t("additional:modules.tools.boris.floorValues.office") }}:
                 </dt>
-                <dd v-if="Object.values(feature)[2] === ''">
+                <dd v-if="Object.values(feature)[1] === undefined">
+                    <span>
+                        {{ $t("additional:modules.tools.boris.floorValues.noValue") }}
+                    </span>
+                </dd>
+                <dd v-else-if="Object.values(feature)[2] === ''">
                     <span> {{ Object.values(feature)[1] }} €/m²</span>
                 </dd>
                 <dd v-else>

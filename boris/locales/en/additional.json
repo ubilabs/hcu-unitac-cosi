@@ -59,7 +59,8 @@
                     "third": "3rd floor or higher",
                     "second": "2nd floor",
                     "first": "1st floor",
-                    "ground": "Ground floor"
+                    "ground": "Ground floor",
+                    "noValue": "No value available"
                 },
                 "landValue": "Standard Land Value",
                 "print": "Print",

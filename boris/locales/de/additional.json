@@ -59,7 +59,8 @@
                     "third": "3. Obergeschoss oder höher",
                     "second": "2. Obergeschoss",
                     "first": "1. Obergeschoss",
-                    "ground": "Erdgeschoss"
+                    "ground": "Erdgeschoss",
+                    "noValue": "Kein Wert vorhanden"
                 },
                 "landValue": "Bodenrichtwert",
                 "print": "Drucken",
