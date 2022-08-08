@@ -210,8 +210,8 @@ describe("ADDONS: addons/boris/components/BorisComponent.vue", () => {
     });
     describe("selectedBrwFeature watcher", () => {
         it("selectedBrwFeature: should change buttonValue to 'info'", () => {
-            const oldVal = {"geschossfl_zahl": 3},
-                newVal = {"hausnummer": 3},
+            const oldVal = {"schichtwert": 3},
+                newVal = {"schichtwert": null},
                 values = [{
                     "attributes": oldVal,
                     get: (key)=> {

@@ -114,7 +114,7 @@ export default {
          */
         selectedBrwFeature (newValue, oldValue) {
             if (this.selectedPolygon === null && typeof newValue.get === "function" && typeof oldValue.get === "function" &&
-                this.buttonValue === "liste" && oldValue.get("geschossfl_zahl") && !newValue.get("geschossfl_zahl")) {
+                this.buttonValue === "liste" && oldValue.get("schichtwert") !== null && newValue.get("schichtwert") === null) {
                 this.setButtonValue("info");
             }
         },
