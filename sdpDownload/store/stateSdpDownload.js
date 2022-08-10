@@ -9,6 +9,7 @@
  * @property {Boolean} deactivateGFI= true avoid show DK5-Info if user clicks into Map
  * @property {Boolean} renderToSidebar= true show this tool in sidebar
  * @property {Boolean} renderToWindow= false not show this tool in window
+ * @property {Number} initialWidth Size of the sidebar when opening.
  * @property {String} wmsRasterLayerId= "4707" id of the Layer utm_dk5_1km (WMS Uebersicht Kachelbezeichnungen)
  * @property {String[]} formats= [] provided formats of data to download
  * @property {String} selectedFormat= "NAS" is the preselected format
@@ -51,6 +52,7 @@ const state = {
     renderToSidebar: true,
     renderToWindow: false,
     resizableWindow: true,
+    initialWidth: 500,
     wmsRasterLayerId: "4707",
     formats: [
         {id: "NAS", label: "additional:modules.tools.sdpdownload.nasLabel", isSelected: true, desc: "additional:modules.tools.sdpdownload.nasDescription", fileId: "nas"},

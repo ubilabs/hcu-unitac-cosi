@@ -129,39 +129,42 @@ export default {
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
+        :initial-width="initialWidth"
         :deactivate-gfi="deactivateGFI"
     >
         <template #toolBody>
-            <div
-                v-if="active"
-                id="sdp-addon"
-                class="header"
-            />
-            <div class="content row">
-                <div class="form-group col-12 first">
-                    <span>{{ translate(selectFormat) }}</span>
-                </div>
-                <div class="form-group col-12">
-                    <select
-                        id="formatSelection"
-                        ref="formatSelection"
-                        name="formatSelection"
-                        class="form-control formatselect"
-                        @change="setSelectedFormat($event.target.value)"
-                    >
-                        <option
-                            v-for="(format,index) in formats"
-                            :key="index"
-                            :value="format.id"
-                            data-bs-toggle="tooltip"
-                            :title="format.label"
+            <form
+                id="sdp-download"
+                class="form-horizontal"
+            >
+                <div class="form-group form-group-sm">
+                    <div class="row">
+                        <label
+                            for="formatSelection"
+                            class="col-sm-5 col-form-label"
                         >
-                            {{ translate(`additional:modules.tools.sdpdownload.${format.fileId}Label`) }}
-                        </option>
-                    </select>
-                </div>
-                <div class="form-group col-12 first">
-                    <span>{{ translate(howToChooseTiles) }}</span>
+                            {{ translate(selectFormat) }}
+                        </label>
+                        <div class="col-sm-7 ">
+                            <select
+                                id="formatSelection"
+                                ref="formatSelection"
+                                name="formatSelection"
+                                class="form-control formatselect"
+                                @change="setSelectedFormat($event.target.value)"
+                            >
+                                <option
+                                    v-for="(format,index) in formats"
+                                    :key="index"
+                                    :value="format.id"
+                                    data-bs-toggle="tooltip"
+                                    :title="format.label"
+                                >
+                                    {{ translate(`additional:modules.tools.sdpdownload.${format.fileId}Label`) }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group col-12">
                     <div
@@ -169,6 +172,7 @@ export default {
                     >
                         <GraphicalSelect
                             ref="graphicalSelection"
+                            :label="howToChooseTiles"
                         />
                     </div>
                 </div>
@@ -189,7 +193,7 @@ export default {
                     <button
                         id="button-neuwerk"
                         type="button"
-                        class="btn btn-outline-default btn-sm btn-block center-block"
+                        class="w-100 btn btn-outline-default btn-sm btn-block center-block"
                         @click="requestCompressIslandData('Neuwerk')"
                     >
                         {{ translate(neuwerkDataPackage) }}
@@ -199,7 +203,7 @@ export default {
                     <button
                         id="button-scharhoern"
                         type="button"
-                        class="btn btn-sm btn-outline-default btn-block center-block"
+                        class="w-100 btn btn-outline-default"
                         @click="requestCompressIslandData('Scharhoern')"
                     >
                         {{ $t(scharhoernDataPackage) }}
@@ -225,7 +229,7 @@ export default {
                         {{ translate(tileOverview320) }}
                     </button>
                 </div>
-            </div>
+            </form>
         </template>
     </ToolTemplate>
 </template>
@@ -234,18 +238,6 @@ export default {
     @import "~/css/mixins.scss";
 
 /*sdp download*/
-    .content {
-        width: 350px;
-        .first{
-            padding-top: 5px;
-        }
-        .form-group {
-            >label {
-                float: left;
-                width: 75%;
-            }
-        }
-    }
     #button-selectedDownload{
         margin-top: 15px;
     }

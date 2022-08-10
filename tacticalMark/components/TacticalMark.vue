@@ -578,7 +578,11 @@ export default {
                         > {{ title }}
                     </label>
                 </div>
+                <label for="tacticalMark-category">
+                    {{ $t("additional:modules.tools.tacticalMark.category") }}
+                </label>
                 <select
+                    id="tacticalMark-category"
                     class="form-control input-sm"
                     @change="selectIconCat($event)"
                 >
@@ -2796,6 +2800,6 @@ export default {
         }
     }
     .checkbox {
-        margin-top: 0;
+        margin: 0 0 5px 0;
     }
 </style>

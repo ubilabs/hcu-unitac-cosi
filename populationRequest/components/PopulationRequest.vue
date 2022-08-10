@@ -449,18 +449,13 @@ export default {
                     {{ translate("additional:modules.tools.populationRequest.select.info") }}
                 </div>
                 <div class="graphicalSelectionContainer row">
-                    <label
-                        for="graphicalSelection"
-                        class="col-sm-5"
-                    >
-                        {{ translate("additional:modules.tools.populationRequest.select.action") }}
-                    </label>
-                    <div class="col-sm-7 dropdown">
+                    <div class="dropdown">
                         <GraphicalSelect
                             id="graphicalSelection"
                             ref="graphicalSelection"
                             :select-element="'Dropdown'"
                             :focus-on-creation="true"
+                            :label="'additional:modules.tools.populationRequest.select.action'"
                         />
                     </div>
                 </div>
