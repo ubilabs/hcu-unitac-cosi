@@ -45,6 +45,9 @@
   "valuationPrint": {
     "type": "tool"
   },
+  "sessionTool": {
+    "type": "tool"
+  },
   "oktagonKartenportal": {
     "type": "tool"
   },
