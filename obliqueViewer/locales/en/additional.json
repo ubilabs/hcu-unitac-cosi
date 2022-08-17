@@ -1,0 +1,16 @@
+{
+    "menu": {
+        "tools":{
+          "obliqueViewer": "Oblique aerial view"
+        }
+    },
+    "modules": {
+        "tools": {
+          "vueAddon": {
+            "title": "Oblique aerial view",
+            "frameworkUndefined": "Oblique aerial view",
+            "frameworkUndefinedMessage": "An error has occurred while displaying the oblique aerial images. Please restart the application. If the error still occurs, please report it via Contact."
+          }
+        }
+    }
+}

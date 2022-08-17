@@ -65,7 +65,7 @@ export default {
         },
 
         close () {
-            const model = getComponent("streetsmart");
+            const model = getComponent("streetSmart");
 
             this.destroyApi();
             this.setActive(false);
