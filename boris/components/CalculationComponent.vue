@@ -89,6 +89,7 @@ export default {
             <dd>
                 <select
                     class="form-select"
+                    :aria-label="$t('additional:modules.tools.boris.landCalculation.ariaLabelBuildingDesigns')"
                     @change="handleChange($event, subject)"
                 >
                     <option
