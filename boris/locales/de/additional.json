@@ -4,10 +4,12 @@
             "boris": {
                 "name": "Bodenrichtwert-Informationen",
                 "labelSelectYear": "Die Abfrage erfolgt für den Bodenrichtwertsstichtag",
+                "ariaLabelSelectYear": "Datum",
                 "toggleStripesLayer": "Blockrandstreifen darstellen",
                 "toggleStripesLayerInfo": "Bisher wurden die Bodenrichtwertzonen als Blockrandstreifen dargestellt. Jetzt sehen Sie initial flächendeckende Bodenrichtwertzonen. Hier können Sie die Anzeige der Blockrandstreifen einschalten.",
                 "SelectAreaInMap": "Bitte klicken Sie nun auf den gewünschten BRW in der Karte.",
                 "labelSelectUse": "Gewählte Nutzung:",
+                "ariaLabelSelectUse": "Nutzungsarten",
                 "selectOption": "Bitte wählen",
                 "referenceNumber": "Richtwertnummer",
                 "detailInformation": {
@@ -64,7 +66,7 @@
                 },
                 "landValue": "Bodenrichtwert",
                 "print": "Drucken",
-                "printScale":"Der Druckmaßstab orientiert sich an derzeit ausgewähltem Maßstab",
+                "printScale":"Der Druckmaßstab orientiert sich an dem derzeit ausgewählten Maßstab",
                 "printExport":"Als PDF exportieren",
                 "alertMessage" :{
                     "noData": "Datenabfrage fehlgeschlagen. Dies kann ein temporäres Problem sein. Bitte versuchen Sie es erneut.",

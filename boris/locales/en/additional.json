@@ -4,10 +4,12 @@
             "boris": {
                 "name": "Land Value Information",
                 "labelSelectYear": "The query is carried out for the standard land value date",
+                "ariaLabelSelectYear": "Date",
                 "toggleStripesLayer": "Display block boarder stripes",
                 "toggleStripesLayerInfo": "Previously, the standard land value zones were displayed as block boarder stripes. Now you see initial area-wide standard land value zones. Here you can switch to the display of the block edge stripes.",
                 "SelectAreaInMap": "Please click on the required BRW in the map",
                 "labelSelectUse": "Chosen Land Use:",
+                "ariaLabelSelectUse": "Land Use Types",
                 "selectOption": "Please select",
                 "referenceNumber": "Reference Number",
                 "detailInformation": {

@@ -60,7 +60,7 @@ export async function preparePrint (getResponse) {
                     "rows": feature.get("schichtwert") && feature.get("schichtwert").schichtwerte ? feature.get("schichtwert").schichtwerte : []
                 },
                 "map": {
-                    "dpi": 150,
+                    "dpi": 200,
                     "projection": store.state.Maps.projection.getCode(),
                     "center": store.state.Maps.center,
                     "scale": scale

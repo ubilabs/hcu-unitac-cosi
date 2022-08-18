@@ -256,6 +256,7 @@ export default {
                     <select
                         id="brwLayerSelect"
                         v-model="selectedLayerNameComputed"
+                        :aria-label="$t('additional:modules.tools.boris.ariaLabelSelectYear')"
                         class="form-select"
                         @change="switchLayer($event.target.value)"
                     >
@@ -315,6 +316,7 @@ export default {
                     <select
                         id="landuseSelect"
                         v-model="selectedLanduseComputed"
+                        :aria-label="$t('additional:modules.tools.boris.ariaLabelSelectUse')"
                         class="form-select mt-1"
                     >
                         <option
@@ -507,7 +509,9 @@ export default {
                     >
                         {{ $t("additional:modules.tools.boris.print") }}
                     </button>
-                    <span>{{ $t("additional:modules.tools.boris.printScale") }}</span>
+                    <div class="mt-2">
+                        {{ $t("additional:modules.tools.boris.printScale") }}
+                    </div>
                     <div
                         v-if="printStarted"
                         class="pt-2"
