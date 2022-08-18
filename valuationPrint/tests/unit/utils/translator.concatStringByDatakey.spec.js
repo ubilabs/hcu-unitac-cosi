@@ -3,17 +3,84 @@ import sinon from "sinon";
 import {
     concatStringByDatakey,
     concatSingleDatakey,
+    findPossibleError,
     getDefaultOnEmptyResult,
     getFlippedKnowledgeBase,
     calcMaxArrayLength,
     getKeysFromDataKey,
     getSplittedDatakey,
-    mergeKnowledgeIntoDatakey
+    mergeKnowledgeIntoDatakey,
+    formatValue,
+    formatValueNumber
 } from "../../../utils/translator.concatStringByDatakey.js";
 
 describe("addons/valuationPrint/utils/translator.concatStringByDatakey.js", () => {
     afterEach(sinon.restore);
 
+    describe("formatValueNumber", () => {
+        it("should return string 0 if anything but an interpretable number is given", () => {
+            expect(formatValueNumber(undefined)).to.equal("0");
+            expect(formatValueNumber(null)).to.equal("0");
+            expect(formatValueNumber("string")).to.equal("0");
+            expect(formatValueNumber([])).to.equal("0");
+            expect(formatValueNumber({})).to.equal("0");
+        });
+        it("should return the given number as string if a Number is given", () => {
+            expect(formatValueNumber(1234)).to.equal("1234");
+            expect(formatValueNumber(1234.6789)).to.equal("1234.6789");
+        });
+        it("should return the given thousands separated string correctly", () => {
+            expect(formatValueNumber("1234.5678")).to.equal("1234.5678");
+            expect(formatValueNumber("1234,5678")).to.equal("1234.5678");
+            expect(formatValueNumber("1,234.5678")).to.equal("1234.5678");
+            expect(formatValueNumber("1.234,5678")).to.equal("1234.5678");
+            expect(formatValueNumber("1,231,234.5678")).to.equal("1231234.5678");
+            expect(formatValueNumber("1.231.234,5678")).to.equal("1231234.5678");
+        });
+        it("should interpret boolean", () => {
+            expect(formatValueNumber(true)).to.equal("1");
+            expect(formatValueNumber(false)).to.equal("0");
+        });
+        it("should cap decimal points if fixed by options", () => {
+            expect(formatValueNumber("1234.5678", {decimals: 2})).to.equal("1234.57");
+        });
+        it("should use thousands separation if configured by options", () => {
+            const options = {
+                thousandsSeparator: {
+                    delimAbs: "|",
+                    delimDec: "_"
+                }
+            };
+
+            expect(formatValueNumber("1234.5678", options)).to.equal("1|234_5678");
+        });
+        it("should combine fixed decimals and thousands separation", () => {
+            const options = {
+                decimals: 2,
+                thousandsSeparator: {
+                    delimAbs: "|",
+                    delimDec: "_"
+                }
+            };
+
+            expect(formatValueNumber("1234.5678", options)).to.equal("1|234_57");
+        });
+    });
+    describe("formatValue", () => {
+        it("should return the given value as it is if anything but an object is given as options", () => {
+            expect(formatValue("value", undefined)).to.equal("value");
+            expect(formatValue("value", null)).to.equal("value");
+            expect(formatValue("value", 1234)).to.equal("value");
+            expect(formatValue("value", "string")).to.equal("value");
+            expect(formatValue("value", true)).to.equal("value");
+            expect(formatValue("value", false)).to.equal("value");
+            expect(formatValue("value", [])).to.equal("value");
+        });
+        it("should return the given value as it is if anything but options type Number is requested", () => {
+            expect(formatValue("value", {})).to.equal("value");
+            expect(formatValue("value", {type: "anything"})).to.equal("value");
+        });
+    });
     describe("mergeKnowledgeIntoDatakey", () => {
         it("should return an empty string if anything but an object is given as first parameter", () => {
             expect(mergeKnowledgeIntoDatakey(undefined)).to.be.a("string").that.is.empty;
@@ -221,6 +288,42 @@ describe("addons/valuationPrint/utils/translator.concatStringByDatakey.js", () =
             expect(getDefaultOnEmptyResult("foo-{{datakey}}-bar", {datakey: "defaultDatakey"}, "defaultValue")).to.equal("defaultDatakey");
         });
     });
+    describe("findPossibleError", () => {
+        it("should return the error found in knowledgeBase at any structure point of datakeys", () => {
+            const knowledgeBase = {
+                    keyA: 0,
+                    keyB: 1,
+                    keyC: new Error("error"),
+                    keyD: 3
+                },
+                datakeys = ["keyA", "keyB", "keyC"];
+
+            expect(findPossibleError(knowledgeBase, datakeys)).to.be.an.instanceOf(Error);
+        });
+        it("should return no error if none is found in knowledgeBase at any structure point of datakeys", () => {
+            const knowledgeBase = {
+                    keyA: 0,
+                    keyB: 1,
+                    keyC: new Error("error"),
+                    keyD: 3
+                },
+                datakeys = ["keyA", "keyB", "keyD"];
+
+            expect(findPossibleError(knowledgeBase, datakeys)).to.not.be.an.instanceOf(Error);
+        });
+        it("should be able to handle string inputs", () => {
+            const knowledgeBase = {
+                    keyA: 0,
+                    keyB: 1,
+                    keyC: new Error("error"),
+                    keyD: 3
+                },
+                datakeys = "keyC";
+
+            expect(findPossibleError(knowledgeBase, datakeys)).to.be.an.instanceOf(Error);
+        });
+    });
+
     describe("concatSingleDatakey", () => {
         it("should create a string for a single datakey", () => {
             const knowledgeBase = {
@@ -228,6 +331,22 @@ describe("addons/valuationPrint/utils/translator.concatStringByDatakey.js", () =
                     b: [2, 3],
                     c: [4, 5, 6, 7],
                     d: [8, 9]
+                },
+                datakey = "foo {{a}} bar {{b}} baz {{c}} foobar {{d}} qrz",
+                defaults = {
+                    "a": "defaultA",
+                    "d": "defaultD"
+                },
+                expected = "foo 1 bar 2 baz 4 foobar 8 qrzDELIMITORfoo defaultA bar 3 baz 5 foobar 9 qrzDELIMITORfoo defaultA bar defaultValue baz 6 foobar defaultD qrzDELIMITORfoo defaultA bar defaultValue baz 7 foobar defaultD qrz";
+
+            expect(concatSingleDatakey(knowledgeBase, datakey, defaults, "defaultValue", "DELIMITOR")).to.deep.equal(expected);
+        });
+        it("should create a string with unique entries", () => {
+            const knowledgeBase = {
+                    a: [1, 1, 1],
+                    b: [2, 2, 2, 3],
+                    c: [4, 4, 4, 5, 6, 7],
+                    d: [8, 8, 8, 9]
                 },
                 datakey = "foo {{a}} bar {{b}} baz {{c}} foobar {{d}} qrz",
                 defaults = {
@@ -290,6 +409,24 @@ describe("addons/valuationPrint/utils/translator.concatStringByDatakey.js", () =
                 expected = "foo 1 bar 2DELIMITORfoo defaultA bar 3DELIMITOR4 foobar 8 qrzDELIMITOR5 foobar 9 qrzDELIMITOR6 foobar defaultD qrzDELIMITOR7 foobar defaultD qrz";
 
             expect(concatStringByDatakey(knowledgeBase, datakey, defaults, "defaultValue", "DELIMITOR")).to.deep.equal(expected);
+        });
+        it("should return an error if an error is found at any point in knowledge base", () => {
+            const knowledgeBase = {
+                    a: [1],
+                    b: [2, 3],
+                    c: new Error("error"),
+                    d: [8, 9]
+                },
+                defaults = {
+                    "a": "defaultA",
+                    "d": "defaultD"
+                },
+                datakey = [
+                    "foo {{a}} bar {{b}}",
+                    "{{c}} foobar {{d}} qrz"
+                ];
+
+            expect(concatStringByDatakey(knowledgeBase, datakey, defaults, "defaultValue", "DELIMITOR")).to.be.an.instanceof(Error);
         });
     });
 });

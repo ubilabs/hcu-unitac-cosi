@@ -64,7 +64,40 @@ export default function importLayers (url, layersToLoad, folderName, zoomTo) {
 
                 if (layersToLoad) {
                     layersToLoad.forEach(layer => {
-                        Radio.trigger("Parser", "addLayer", layer.title, getParsedTitle(layer.title), uniqueId, 1, layer.name, url, version, {isSelected: layer.layerOn, styles: layer.style});
+                        const layerObj = {
+                            id: getParsedTitle(layer.title),
+                            name: layer.title,
+                            parentId: uniqueId,
+                            level: 1,
+                            layers: layer.name,
+                            url: url,
+                            version: version,
+                            transparent: layer.layerTransparent ? layer.layerTransparent : true,
+                            isSelected: !layer.layerOn ? layer.layerOn : true,
+                            time: layer.layerTime ? layer.layerTime : false,
+                            infoFormat: layer.infoFormat ? layer.infoFormat : "text/xml",
+                            styles: layer.style ? layer.style : "",
+                            cache: false,
+                            datasets: [],
+                            featureCount: 3,
+                            format: "image/png",
+                            gfiAttributes: "showAll",
+                            gutter: "0",
+                            isBaseLayer: false,
+                            layerAttribution: "nicht vorhanden",
+                            legendURL: "",
+                            maxScale: "2500000",
+                            minScale: "0",
+                            singleTile: false,
+                            supported: ["2D", "3D"],
+                            tilesize: "512",
+                            typ: "WMS",
+                            type: "layer",
+                            urlIsVisible: true
+                        };
+
+                        Radio.trigger("Parser", "addItem", layerObj);
+
                         Radio.trigger("ModelList", "addModelsByAttributes", {id: getParsedTitle(layer.title)});
                     });
                 }

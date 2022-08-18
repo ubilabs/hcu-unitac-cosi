@@ -61,7 +61,7 @@ describe("SdpDownload.vue", () => {
     it("renders the SDPAddon", () => {
         const wrapper = shallowMount(SDPComponent, {store, localVue});
 
-        expect(wrapper.find("#sdp-addon").exists()).to.be.true;
+        expect(wrapper.find("#sdp-download").exists()).to.be.true;
 
     });
     it("SDPAddon contains correct amount (4 formats) of available options in format select", () => {

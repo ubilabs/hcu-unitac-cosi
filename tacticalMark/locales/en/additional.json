@@ -15,7 +15,8 @@
                 "format": "Format",
                 "filenameLabel": "Filename",
                 "saveFile": "Save",
-                "setFileName": "Please set file name"
+                "setFileName": "Please set file name",
+                "category": "Category"
             }
         }
     }

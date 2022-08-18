@@ -12,6 +12,9 @@
  * @property {Number} initialWidth initial width of the sidebar
  * @property {String} serviceId id of the rest-service that provides the panorama pictures
  * @property {String} streetsmartAPIVersion version of the streetsmartAPI to load
+ * @property {Boolean} timeTravelVisible enables timeTravel in panoramaViewer
+ * @property {Boolean} toggle3DCursor toggles the visibility of the 3D cursor in the PanoramaViewer
+ * @property {Boolean} toggleAddressesVisible toggles the visibility of addresses
  * @property {String} reactVersion version of react to load
  * @property {Array} lastCoordinates the last clicked coordinates
  * @property {Number} lastYaw the last recorded yaw
@@ -25,11 +28,15 @@ const state = {
     renderToWindow: false,
     resizableWindow: true,
     isVisibleInMenu: true,
-    deactivateGFI: true,
+    deactivateGFI: false,
     initialWidth: 500,
     serviceId: "streetsmart",
     streetsmartAPIVersion: "22.2",
     reactVersion: "16.12.0",
+    timeTravelVisible: false,
+    toggle3DCursor: false,
+    toggleAddressesVisible: false,
+    cycloLayerID: null,
     styleId: "defaultMapMarkerPoint",
     mapMarkerStyleId: "defaultMapMarkerPoint",
     lastCoordinates: [],

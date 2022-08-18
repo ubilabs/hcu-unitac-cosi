@@ -6,7 +6,18 @@
               "removeButton": "Entfernen",
               "startButton": "Starten",
               "parcel": "Flurstück:",
-              "district": "Gemarkung:"
+              "district": "Gemarkung:",
+              "messageListTitle": "Statusverlauf",
+              "parcelListTitle": "Ausgewählte Flurstücke",
+              "urlListTitle": "Download-Links",
+              "pdfInTheMaking": "PDF wird erstellt.",
+              "pleaseWait": "Bitte warten ...",
+              "pdfError": "Fehler beim Erzeugen der PDF.",
+              "pdfSuccess": "PDF wurde erstellt.",
+              "report": "Bericht",
+              "imageInTheMaking": "{{imageName}} wird erstellt.",
+              "imageSuccess": "{{imageName}} wurde erstellt.",
+              "imageError": "Fehler beim Erzeugen vom {{imageName}}."
           }
       }
   }

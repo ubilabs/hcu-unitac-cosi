@@ -45,6 +45,12 @@
                         "reset": "Reset",
                         "holidaySign": "Holiday Influence",
                         "trucksStatus": "** The count of trucks (Beta-Status)",
+                        "downloads": "Downloads",
+                        "downloadsAll": "Download all data",
+                        "downloadsMin": "Interval: 15 Minutes",
+                        "downloadsHour": "Interval: 1 Hour",
+                        "downloadsDay": "Interval: 1 Day",
+                        "downloadsWeek": "Interval: 1 Week",
                         "error": {
                             "dataNotAvailableA": "(not",
                             "dataNotAvailableB": "received)",

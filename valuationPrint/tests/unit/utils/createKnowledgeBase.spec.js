@@ -2,7 +2,7 @@ import {expect} from "chai";
 import Feature from "ol/Feature";
 import Polygon from "ol/geom/Polygon";
 import sinon from "sinon";
-import {createAttributesByFeatures, createKnowledgeBase} from "../../../utils/createKnowledgeBase.js";
+import {createAttributesByFeatures, addKnowledgeBaseError, createKnowledgeBase} from "../../../utils/createKnowledgeBase.js";
 
 describe("addons/valuationPrint/utils/createKnowledgeBase.js", () => {
     const features = [
@@ -50,11 +50,22 @@ describe("addons/valuationPrint/utils/createKnowledgeBase.js", () => {
         });
     });
 
+    describe("addKnowledgeBaseError", () => {
+        it("should add the given error to each key in knowledge base", () => {
+            const knowledgeBase = {},
+                propertyName = ["attrA", "attrB"],
+                expected = {"prefix.attrA": "error", "prefix.attrB": "error"};
+
+            addKnowledgeBaseError(knowledgeBase, "error", "prefix", propertyName);
+            expect(knowledgeBase).to.deep.equal(expected);
+        });
+    });
+
     describe("createKnowledgeBase", () => {
         it("should call onfinish if no more service is available", () => {
             const onfinish = sinon.spy();
 
-            createKnowledgeBase(undefined, {}, undefined, onfinish, undefined, undefined);
+            createKnowledgeBase(undefined, {}, undefined, undefined, onfinish, undefined, undefined);
 
             expect(onfinish.calledOnce).to.be.true;
         });

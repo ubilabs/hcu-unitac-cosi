@@ -31,10 +31,9 @@ Das Werkzeug umfasst
 |streetsmartAPIVersion|nein|String|22.2|Die Version der streetsmartApi.|true|
 |reactVersion|nein|String|16.13.0|Die Version von React, kompatibel zur Version der streetsmartAPI.|true|
 |styleId|nein|String|"defaultMapMarkerPoint"|StyleId, um den Mapmarker in der Karte zu stylen, wenn streetsmart geöffnet ist.|true|
-
-
-
-
+|timeTravelVisible|nein|Boolean|false|Schaltet Zeitauswahl in der Panoramaansicht ein.|false|
+|toggle3DCursor|nein|Boolean|false|Schaltet die Sichtbarkeit des 3D-Cursors in der Panoramaansicht ein.|false|
+|toggleAddressesVisible|nein|Boolean|false|Schaltet die Sichtbarkeit von Adressen ein.|false|
 
 **Beispiel**
 ```

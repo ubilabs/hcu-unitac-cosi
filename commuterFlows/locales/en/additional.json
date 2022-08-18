@@ -4,7 +4,9 @@
             "CommuterFlows": {
                 "title": "Commuter flows",
                 "selectDistrict": "Choose county/district",
+                "labelDistrict": "County/district",
                 "selectCity": "Choose town/municipality",
+                "labelCity": "Town/municipality",
                 "checkName": "Show names",
                 "checkNumber": "Show values",
                 "checkBeams": "Show lines",

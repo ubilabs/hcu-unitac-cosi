@@ -1,4 +1,4 @@
-Following are examples of howthe addLayerRemotely Addon can be used from the browser console:
+Following are examples of how the addLayerRemotely Addon can be used from the browser console:
 
 addGeoJsonRemotely:
 The geojson must be constructed according to the geojson standard.
@@ -125,7 +125,7 @@ var geojson = {
 }
 
 If treeType = light:
-Backbone.Radio.trigger("addLayerRemotely", "addGeoJson", "Test2", "xyx", geojson,"customLayer", "tree",{"test1":"WGS84","test":"abc"})
+Backbone.Radio.trigger("addLayerRemotely", "addGeoJson", {"name":"Test2", "id":"xyx", "geoJson":geojson, "styleId":"customLayer", "folderName":"tree", "gfiAttributes":{"test1":"WGS84","test":"abc"}})
 
 If treeType = custom:
-Backbone.Radio.trigger("addLayerRemotely", "addGeoJson", "Test2", "xyx", geojson,"customLayer", "External Layer",{"test1":"WGS84","test":"abc"})
+Backbone.Radio.trigger("addLayerRemotely", "addGeoJson", {"name":"Test2", "id":"xyx", "geoJson":geojson, "styleId":"customLayer", "folderName":"External Layer", "gfiAttributes":{"test1":"WGS84","test":"abc"}})

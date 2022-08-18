@@ -2,7 +2,9 @@
   "bauforum": "changeGUI/loader.js",
   "formular": "view.js",
   "showParcelGFI": "showParcelGFI.js",
-  "verkehrsfunctions": "verkehrsfunctions.js",
+  "verkehrsfunctions": {
+    "type": "javascript"
+  },
   "fileImportAddon": {
     "type": "tool"
   },
@@ -36,6 +38,9 @@
   "streetSmart": {
     "type": "tool"
   },
+  "refugeeHomes": {
+    "type": "tool"
+  },
   "hochWasserPrint": {
     "type": "tool"
   },
@@ -43,6 +48,9 @@
     "type": "tool"
   },
   "oktagonKartenportal": {
+    "type": "tool"
+  },
+  "quickResponseCode": {
     "type": "tool"
   },
   "bildungsatlas": {
@@ -89,10 +97,12 @@
     "path":"gfiThemes/verkehrsstaerken",
     "type": "gfiTheme"
   },
-  "qr": "view.js",
   "addLayerRemotely": "addLayerRemotely.js",
   "obliqueControl": {
     "path":"controls/obliqueControl",
     "type": "control"
+  },
+  "obliqueViewer": {
+    "type": "tool"
   }
 }

@@ -31,7 +31,9 @@ The tool includes
 |streetsmartAPIVersion|no|String|22.2|The version of streetsmartApi.|true|
 |reactVersion|no|String|16.13.0|The version of React compatible with the version of streetsmartAPI.|true|
 |styleId|no|String|"defaultMapMarkerPoint"|StyleId to replace the mapmarker in the map when streetsmart is open.|true|
-
+|timeTravelVisible|no|Boolean|false|Enables timeTravel in panoramaViewer.|false|
+|toggle3DCursor|no|Boolean|false|Toggles the visibility of the 3D cursor in the PanoramaViewer.|false|
+|toggleAddressesVisible|no|Boolean|false|Toggles the visibility of addresses.|false|
 
 **Example**
 ```
