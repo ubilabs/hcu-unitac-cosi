@@ -277,15 +277,16 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
             expect(commit.args[5][1]).to.equal(null);
             expect(commit.args[6][0]).to.equal("setIsAreaLayer");
             expect(commit.args[6][1]).to.equal(false);
-            expect(dispatch.callCount).to.equal(4);
+            expect(dispatch.callCount).to.equal(5);
             expect(dispatch.args[0][0]).to.equal("selectLayerByName");
             expect(dispatch.args[0][1]).to.equal(selectedLayerName);
             expect(dispatch.args[1][0]).to.equal("MapMarker/removePolygonMarker");
             expect(dispatch.args[1][1]).to.equal(null);
-            expect(dispatch.args[2][0]).to.equal("MapMarker/removePolygonMarker");
-            expect(dispatch.args[2][1]).to.deep.equal(null);
-            expect(dispatch.args[3][0]).to.equal("toggleStripesLayer");
-            expect(dispatch.args[3][1]).to.equal(false);
+            expect(dispatch.args[2][0]).to.equal("Alerting/addSingleAlert");
+            expect(dispatch.args[3][0]).to.equal("MapMarker/removePolygonMarker");
+            expect(dispatch.args[3][1]).to.deep.equal(null);
+            expect(dispatch.args[4][0]).to.equal("toggleStripesLayer");
+            expect(dispatch.args[4][1]).to.equal(false);
         });
         it("handles layer switch for area to area layer", () => {
             const selectedLayerName = "31.12.2020";
@@ -429,13 +430,14 @@ describe("ADDONS: addons/boris/store/actionsBoris.js", () => {
             expect(dispatch.firstCall.args[0]).to.equal("Alerting/addSingleAlert");
             expect(dispatch.secondCall.args[0]).to.equal("MapMarker/removePolygonMarker");
             expect(dispatch.thirdCall.args[0]).to.equal("MapMarker/removePointMarker");
-            expect(commit.calledThrice).to.be.true;
+            expect(commit.callCount).to.equal(5);
             expect(commit.firstCall.args[0]).to.equal("setSelectedBrwFeature");
             expect(commit.firstCall.args[1]).to.deep.equal({});
             expect(commit.secondCall.args[0]).to.equal("setSelectedPolygon");
             expect(commit.secondCall.args[1]).to.deep.equal(null);
             expect(commit.thirdCall.args[0]).to.equal("setSelectedLanduse");
             expect(commit.thirdCall.args[1]).to.deep.equal("");
+            expect(commit.args[4][0]).to.equal("Maps/setClickCoordinate");
         });
     });
     describe("getFeatureRequestById", () => {
