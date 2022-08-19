@@ -14,7 +14,11 @@ const state = {
     active: false,
     id: "Dipas",
     name: "DIPAS",
+<<<<<<< HEAD
     icon: "bi-people",
+=======
+    icon: "bi bi-box-arrow-down-right",
+>>>>>>> 9daae4803bcd06f34a3807077b82db749a5e31ec
     renderToWindow: true,
     resizableWindow: false,
     isVisibleInMenu: true,

@@ -30,7 +30,7 @@ describe("ColorCodeMap.vue", () => {
                     children: {
                         ColorCodeMap: {
                             "name": "translate#additional:modules.tools.vueAddon.title",
-                            "icon": "bi-bar-chart"
+                            "icon": "bi-map"
                         }
                     }
                 }

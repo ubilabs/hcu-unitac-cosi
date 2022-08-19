@@ -25,7 +25,7 @@ const state = {
     id: "CalculateRatio",
     // defaults for config.json parameters
     name: "Versorgungsanalyse",
-    icon: "bi-calculator",
+    icon: "bi-sliders2",
     renderToWindow: true,
     resizableWindow: false,
     isVisibleInMenu: true,

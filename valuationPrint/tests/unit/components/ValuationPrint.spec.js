@@ -186,13 +186,27 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
             expect(wrapper.find(".messageListError").exists()).to.be.true;
         });
-        it("should not show any message if no feature is selected", async () => {
+
+        it("should not show any message if no message is added", async () => {
             const wrapper = factory.getShallowMount({}, true);
 
-            wrapper.vm.addMessage("message", true);
+            expect(wrapper.find(".messageListError").exists()).to.be.false;
+            expect(wrapper.find(".messageListEntry").exists()).to.be.false;
+        });
+
+        it("should add an url to the list entry if an url is added", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.addUrl({url: "url", name: "name"});
             await wrapper.vm.$forceUpdate();
 
-            expect(wrapper.find(".messageListError").exists()).to.be.false;
+            expect(wrapper.find(".urlListEntry").exists()).to.be.true;
+        });
+
+        it("should not show any url if no url is added", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            expect(wrapper.find(".urlListEntry").exists()).to.be.false;
         });
     });
 
@@ -253,6 +267,12 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
     });
 
     describe("Methods", () => {
+        describe("getFilenameOfPDF", () => {
+            const wrapper = factory.getShallowMount({});
+
+            expect(wrapper.vm.getFilenameOfPDF([features[0], features[1]], "prefix", "2022-07-11__10-31-22")).to.equal("prefix__2022-07-11__10-31-22__12345-67890");
+        });
+
         describe("styleSelectedFeatures", () => {
             it("should style the features with the select interaction style if the interaction is active", () => {
                 const wrapper = factory.getShallowMount({});
@@ -306,7 +326,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
                 wrapper.vm.setParcelData([features[0]]);
 
-                expect(wrapper.vm.parcelData).to.have.all.keys("centerCoordinate", "geometry", "extent");
+                expect(wrapper.vm.parcelData).to.have.all.keys("center", "geometry", "extent", "feature", "featureList");
             });
             it("should not set the parcelData object", () => {
                 const wrapper = factory.getShallowMount({}, true);

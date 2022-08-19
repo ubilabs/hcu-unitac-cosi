@@ -16,7 +16,7 @@ const state = {
     id: "ColorCodeMap",
     // defaults for config.json parameters
     name: "ColorCodeMap",
-    icon: "bi-bar-chart",
+    icon: "bi-map",
     renderToWindow: false,
     resizableWindow: false,
     isVisibleInMenu: false,

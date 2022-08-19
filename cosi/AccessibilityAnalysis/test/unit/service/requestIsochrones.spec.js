@@ -3,7 +3,6 @@ import {
 } from "chai";
 import requestIsochrones from "../../../service/requestIsochrones";
 import axios from "axios";
-import sinon from "sinon";
 
 describe("requestIsochrones", () => {
     it("point request within hamburg", async () => {
@@ -44,9 +43,6 @@ describe("requestIsochrones", () => {
         }
     });
     it("point request invalid data", async () => {
-        const originalError = console.error;
-
-        console.error = sinon.stub();
         try {
             await requestIsochrones(
                 "driving-car", [
@@ -57,6 +53,5 @@ describe("requestIsochrones", () => {
         catch (e) {
             expect(e.response.data.error.code).to.equal(3002);
         }
-        console.error = originalError;
     });
 });

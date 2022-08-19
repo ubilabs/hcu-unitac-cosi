@@ -381,7 +381,7 @@ export default {
                 setBBoxToGeom.call(this, this.areaSelectorGeom || bboxGeom);
 
                 if (zoomToExtent) {
-                    this.zoomToExtent({extent: extent, options: {}});
+                    this.zoomToExtent({extent, options: {}});
                 }
 
                 this.loadStatFeatures({

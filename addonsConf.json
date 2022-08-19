@@ -2,7 +2,6 @@
   "bauforum": "changeGUI/loader.js",
   "boris": "bodenrichtwertabfrage/view.js",
   "formular": "view.js",
-  "oktagonKartenportal": "oktagonLoader.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": {
     "type": "javascript"
@@ -77,9 +76,14 @@
   "streetSmart": {
     "type": "tool"
   },
-  "activeCityMaps": {
-    "path":"gfiThemes/activeCityMaps",
-    "type": "gfiTheme"
+  "hochWasserPrint": {
+    "type": "tool"
+  },
+  "valuationPrint": {
+    "type": "tool"
+  },
+  "oktagonKartenportal": {
+    "type": "tool"
   },
   "valuationPrint": {
     "type": "tool"
@@ -161,5 +165,9 @@
     "type": "control"
   },
   "addLayerRemotely": "addLayerRemotely.js",
-  "qr": "view.js"
+  "qr": "view.js",
+  "obliqueControl": {
+    "path":"controls/obliqueControl",
+    "type": "control"
+  }
 }

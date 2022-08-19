@@ -97,7 +97,7 @@ export default {
         if (this.geomField.type) {
             this.geometry.type = this.isGml ? getOlGeomTypeByGmlType(this.geomField.type) : this.geomField.type;
         }
-
+        this.map = mapCollection.getMap("2D");
         await this.createDrawingLayer();
     },
     beforeDestroy () {

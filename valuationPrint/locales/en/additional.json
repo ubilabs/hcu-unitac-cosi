@@ -7,11 +7,17 @@
               "startButton": "Start",
               "parcel": "Parcel:",
               "district": "District:",
-              "messageListTitle": "Process:",
+              "messageListTitle": "Process",
+              "parcelListTitle": "Selected Parcels",
+              "urlListTitle": "Download-Links",
               "pdfInTheMaking": "PDF is in progress.",
               "pleaseWait": "Please wait ...",
               "pdfError": "PDF failed ...",
-              "pdfSuccess": "PDF is ready."
+              "pdfSuccess": "PDF is ready.",
+              "report": "Report",
+              "imageInTheMaking": "{{imageName}} is in progress.",
+              "imageSuccess": "{{imageName}} is ready.",
+              "imageError": "{{imageName}} failed."
           }
         }
     }

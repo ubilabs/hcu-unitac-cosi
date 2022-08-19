@@ -172,6 +172,7 @@ export default {
     },
     created () {
         this.$on("close", this.close);
+        this.map = mapCollection.getMap("2D");
     },
     mounted () {
         const namedProjections = this.$store.state.configJson.namedProjections;

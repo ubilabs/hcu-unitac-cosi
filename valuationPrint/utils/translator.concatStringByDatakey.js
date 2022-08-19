@@ -1,4 +1,5 @@
 import isObject from "../../../src/utils/isObject.js";
+import thousandsSeparator from "../../../src/utils/thousandsSeparator.js";
 
 /**
  * Translator for generating a string with any number of knowledge base value.
@@ -7,9 +8,10 @@ import isObject from "../../../src/utils/isObject.js";
  * @param {String|Object} defaults If no value is found in the knowledge base instead of defaultValue, this string or object relation should be used.
  * @param {String|Object} defaultValue The default to use for any unset value that is not found in defaults.
  * @param {String} delimitor The separator to use for data sets in case of multiple value in the knowledge base, also the separator for arrays of datakeys.
+ * @param {Object} options Options to define how to handle any datakey.
  * @returns {String|Error} A single string or an error if errors where found for this concat in knowledgeBase.
  */
-function concatStringByDatakey (knowledgeBase, datakey, defaults, defaultValue, delimitor) {
+function concatStringByDatakey (knowledgeBase, datakey, defaults, defaultValue, delimitor, options) {
     const error = findPossibleError(knowledgeBase, datakey);
 
     if (error instanceof Error) {
@@ -22,11 +24,11 @@ function concatStringByDatakey (knowledgeBase, datakey, defaults, defaultValue, 
             if (result) {
                 result += delimitor;
             }
-            result += concatSingleDatakey(knowledgeBase, key, defaults, defaultValue, delimitor);
+            result += concatSingleDatakey(knowledgeBase, key, defaults, defaultValue, delimitor, options);
         });
     }
     else {
-        result = concatSingleDatakey(knowledgeBase, datakey, defaults, defaultValue, delimitor);
+        result = concatSingleDatakey(knowledgeBase, datakey, defaults, defaultValue, delimitor, options);
     }
 
     return result ? result : getDefaultOnEmptyResult(datakey, defaults, defaultValue);
@@ -39,21 +41,19 @@ function concatStringByDatakey (knowledgeBase, datakey, defaults, defaultValue, 
  * @param {String|Object} defaults If no value is found in the knowledge base instead of defaultValue, this string or object relation should be used.
  * @param {String|Object} defaultValue The default to use for any unset value that is not found in defaults.
  * @param {String} delimitor The separator to use for data sets in case of multiple value in the knowledge base.
+ * @param {Object} options Options to define how to handle any datakey.
  * @returns {String} A single string.
  */
-function concatSingleDatakey (knowledgeBase, datakey, defaults, defaultValue, delimitor) {
+function concatSingleDatakey (knowledgeBase, datakey, defaults, defaultValue, delimitor, options) {
     const keys = getKeysFromDataKey(datakey),
-        knowledgeFlip = getFlippedKnowledgeBase(knowledgeBase, keys, defaults, defaultValue);
-    let result = "";
+        knowledgeFlip = getFlippedKnowledgeBase(knowledgeBase, keys, defaults, defaultValue),
+        result = new Set();
 
     knowledgeFlip.forEach(knowledgeBits => {
-        if (result) {
-            result += delimitor;
-        }
-        result += mergeKnowledgeIntoDatakey(knowledgeBits, datakey);
+        result.add(mergeKnowledgeIntoDatakey(knowledgeBits, datakey, options));
     });
 
-    return result;
+    return [...result].join(delimitor);
 }
 
 /**
@@ -195,9 +195,10 @@ function getSplittedDatakey (datakey) {
  * Replaces placeholders in datakey with the value from knowledgeBits.
  * @param {Object} knowledgeBits An object with key value where key is the single datakey and value is the replacement.
  * @param {String} datakey A datakey with placeholders for the replacements in knowledgeBits.
+ * @param {Object} options Options to define how to handle any datakey.
  * @returns {String} The datakey where placeholders are replaced by value.
  */
-function mergeKnowledgeIntoDatakey (knowledgeBits, datakey) {
+function mergeKnowledgeIntoDatakey (knowledgeBits, datakey, options) {
     if (typeof datakey !== "string" || !isObject(knowledgeBits)) {
         return "";
     }
@@ -206,16 +207,82 @@ function mergeKnowledgeIntoDatakey (knowledgeBits, datakey) {
         post = "}}";
 
     Object.entries(knowledgeBits).forEach(([key, value]) => {
+        const formatedValue = formatValue(value, isObject(options) ? options[key] : undefined);
+
         if (key === datakey) {
-            result = result.replace(key, value);
+            result = result.replace(key, formatedValue);
         }
         else {
-            result = result.replaceAll(pre + key + post, value);
+            result = result.replaceAll(pre + key + post, formatedValue);
         }
     });
 
     return result;
 }
+
+/**
+ * Formats the given value if options are given.
+ * @param {*} value The value to format.
+ * @param {Object} [options] The options which define how to format the value.
+ * @param {String} [options.type] The type to interpret value e.g. Number.
+ * @param {Number} [options.decimals] Decimals to use if type is Number.
+ * @param {Object} [options.thousandsSeparator] Describes the way thousands separation is used.
+ * @param {String} [options.thousandsSeparator.delimAbs] The letter(s) to use as thousand point.
+ * @param {String} [options.thousandsSeparator.delimDec] The letter(s) to use as decimal point.
+ * @returns {*} The formated value.
+ */
+function formatValue (value, options) {
+    if (options?.type === "Number") {
+        return formatValueNumber(value, options);
+    }
+    return value;
+}
+
+/**
+ * Formats the given value for type Number.
+ * @param {*} value The value to format.
+ * @param {Object} [options] The options which define how to format the value.
+ * @param {Number} [options.decimals] Decimals to use.
+ * @param {Boolean} [options.thousandsSeparator] true if thousandsSeparator should be used.
+ * @param {String} [options.thousandsSeparator.delimAbs] The letter(s) to use as thousand point.
+ * @param {String} [options.thousandsSeparator.delimDec] The letter(s) to use as decimal point.
+ * @returns {String} The formated value.
+ */
+function formatValueNumber (value, options) {
+    let saveValue = 0;
+
+    if (typeof value === "number") {
+        saveValue = value;
+    }
+    else if (typeof value === "string") {
+        if (value.indexOf(".") !== -1 && value.indexOf(".") > value.indexOf(",")) {
+            saveValue = parseFloat(value.replaceAll(",", ""));
+        }
+        else {
+            saveValue = parseFloat(value.replaceAll(".", "").replace(",", "."));
+        }
+    }
+    else if (typeof value === "boolean") {
+        saveValue = value ? 1 : 0;
+    }
+    else {
+        saveValue = 0;
+    }
+
+    if (isNaN(saveValue)) {
+        saveValue = 0;
+    }
+
+    if (typeof options?.decimals === "number") {
+        saveValue = saveValue.toFixed(options.decimals);
+    }
+
+    if (typeof options?.thousandsSeparator?.delimAbs === "string" && typeof options?.thousandsSeparator?.delimDec === "string") {
+        return thousandsSeparator(saveValue, options.thousandsSeparator.delimAbs, options.thousandsSeparator.delimDec);
+    }
+    return String(saveValue);
+}
+
 
 export {
     concatStringByDatakey,
@@ -226,5 +293,7 @@ export {
     calcMaxArrayLength,
     getKeysFromDataKey,
     getSplittedDatakey,
-    mergeKnowledgeIntoDatakey
+    mergeKnowledgeIntoDatakey,
+    formatValue,
+    formatValueNumber
 };

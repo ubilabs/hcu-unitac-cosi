@@ -81,6 +81,10 @@ export default {
         }
     },
 
+    created () {
+        this.map = mapCollection.getMap("2D");
+    },
+
     /**
      * Deactivate the map interaction when tool is closed forcefully
      * @returns {void}

@@ -1,4 +1,0 @@
-/**
- * @namespace OktagonKartenportal
- * @memberof Addons
- */

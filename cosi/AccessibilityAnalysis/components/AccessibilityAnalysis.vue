@@ -311,6 +311,7 @@ export default {
         });
 
         this.baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url") + "/v2/";
+        this.map = mapCollection.getMap("2D");
     },
 
     /**

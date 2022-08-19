@@ -65,7 +65,7 @@ describe("addons/valuationPrint/utils/createKnowledgeBase.js", () => {
         it("should call onfinish if no more service is available", () => {
             const onfinish = sinon.spy();
 
-            createKnowledgeBase(undefined, {}, undefined, onfinish, undefined, undefined);
+            createKnowledgeBase(undefined, {}, undefined, undefined, onfinish, undefined, undefined);
 
             expect(onfinish.calledOnce).to.be.true;
         });

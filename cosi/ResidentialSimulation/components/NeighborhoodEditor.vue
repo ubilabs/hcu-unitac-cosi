@@ -51,6 +51,7 @@ export default {
         }
     },
     mounted () {
+        this.map = mapCollection.getMap("2D");
         this.map.addEventListener("click", this.openEditDialog.bind(this));
     },
     methods: {

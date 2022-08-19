@@ -7,11 +7,17 @@
               "startButton": "Starten",
               "parcel": "Flurstück:",
               "district": "Gemarkung:",
-              "messageListTitle": "Statusverlauf:",
+              "messageListTitle": "Statusverlauf",
+              "parcelListTitle": "Ausgewählte Flurstücke",
+              "urlListTitle": "Download-Links",
               "pdfInTheMaking": "PDF wird erstellt.",
               "pleaseWait": "Bitte warten ...",
               "pdfError": "Fehler beim Erzeugen der PDF.",
-              "pdfSuccess": "PDF wurde erstellt."
+              "pdfSuccess": "PDF wurde erstellt.",
+              "report": "Bericht",
+              "imageInTheMaking": "{{imageName}} wird erstellt.",
+              "imageSuccess": "{{imageName}} wurde erstellt.",
+              "imageError": "Fehler beim Erzeugen vom {{imageName}}."
           }
       }
   }

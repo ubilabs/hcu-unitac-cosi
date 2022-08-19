@@ -25,7 +25,7 @@ const state = {
     id: "QueryDistricts",
     // defaults for config.json parameters
     name: "QueryDistricts",
-    icon: "bi-binoculars",
+    icon: "bi-shuffle",
     renderToWindow: true,
     resizableWindow: false,
     isVisibleInMenu: true,

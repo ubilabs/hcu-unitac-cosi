@@ -88,6 +88,7 @@ export default {
     */
     created () {
         this.$on("close", this.close);
+        this.map = mapCollection.getMap("2D");
     },
     /**
    * fetches the projects and creates their layer with different color styles
@@ -99,7 +100,11 @@ export default {
         this.initialize();
     },
     methods: {
+<<<<<<< HEAD
         ...mapActions("Maps", ["zoomToExtent"]),
+=======
+        ...mapActions("Maps", ["addNewLayerIfNotExists", "zoomToExtent"]),
+>>>>>>> 9daae4803bcd06f34a3807077b82db749a5e31ec
         ...mapActions("Tools/Dipas", ["addLayer"]),
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
@@ -593,7 +598,11 @@ export default {
         zoomToProject (feature) {
             const extent = feature.getGeometry().getExtent();
 
+<<<<<<< HEAD
             this.zoomToExtent({extent: extent, options: {padding: [20, 20, 20, 20]}});
+=======
+            this.zoomToExtent({extent, options: {padding: [20, 20, 20, 20]}});
+>>>>>>> 9daae4803bcd06f34a3807077b82db749a5e31ec
         },
 
         getDateString (feature) {

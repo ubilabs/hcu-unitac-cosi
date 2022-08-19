@@ -15,55 +15,8 @@ import {createMapfishDialog} from "../utils/createMapfishDialog.js";
 import {startPrintProcess} from "../utils/startPrintProcess.js";
 import axios from "axios";
 import isObject from "../../../src/utils/isObject";
-
-const mapfishDialogExample = {
-    "uniqueIdList": [],
-    "visibleLayerIds": ["717", "1933"],
-    "layout": "A4 Hochformat",
-    "attributes": {
-        "title": "Mein Titel",
-        "map": {
-            "dpi": 200,
-            "projection": "EPSG:25832",
-            "center": [565887.493742713, 5934231.082763315],
-            "scale": 1000,
-            "layers": [
-                {
-                    "baseURL": "https://geodienste.hamburg.de/wms_hvv",
-                    "opacity": 1,
-                    "type": "tiledwms",
-                    "layers": ["geofox_workspace:geofoxdb_stations"],
-                    "styles": ["geofox_stations"],
-                    "imageFormat": "image/png",
-                    "customParams": {
-                        "TRANSPARENT": "true",
-                        "DPI": 200
-                    },
-                    "tileSize": [512, 512]
-                },
-                {
-                    "baseURL": "https://geodienste.hamburg.de/HH_WMS_Geobasiskarten",
-                    "opacity": 1,
-                    "type": "tiledwms",
-                    "layers": ["M100000_farbig", "M60000_farbig", "M20000_farbig", "M5000_farbig", "M40000_farbig", "M125000_farbig", "M10000_farbig", "M2500_farbig"],
-                    "imageFormat": "image/png",
-                    "customParams": {
-                        "TRANSPARENT": "true",
-                        "DPI": 200
-                    },
-                    "tileSize": [512, 512]
-                }
-            ]
-        },
-        "scale": "1:1000",
-        "showGfi": false,
-        "gfi": {},
-        "showLegend": false,
-        "legend": {}
-    },
-    "outputFilename": "Ausdruck",
-    "outputFormat": "pdf"
-};
+import moment from "moment";
+import upperFirst from "../../../src/utils/upperFirst";
 
 export default {
     name: "ValuationPrint",
@@ -74,11 +27,13 @@ export default {
         return {
             selectedFeatures: [],
             parcelData: null,
-            messageList: []
+            messageList: [],
+            urlList: []
         };
     },
     computed: {
         ...mapGetters("Tools/ValuationPrint", Object.keys(getters)),
+        ...mapGetters("Maps", ["projection"]),
         ...mapGetters(["getRestServiceById"])
     },
     watch: {
@@ -93,9 +48,14 @@ export default {
 
         /**
          * Starts process for the valuation.
+         * @param {Object} parcel - The parcel data.
+         * @param {Number[]} parcel.center - The parcel center.
+         * @param {ol/extent} parcel.extent - The extent of the parcel.
+         * @param {ol/Feature} parcel.feature - The ol feature of the parcel.
+         * @param {ol/geom/Polygon} parcel.geometry - The geometry of the parcel.
          * @returns {void}
          */
-        parcelData () {
+        parcelData (parcel) {
             if (!isObject(this.config?.services)) {
                 console.error("No config found for services");
                 return;
@@ -104,28 +64,37 @@ export default {
                 console.error("No config found for transformer");
                 return;
             }
-            createKnowledgeBase(this.parcelData, this.config.services, message => {
+            createKnowledgeBase(parcel, this.config.services, this.projection.getCode(), message => {
                 this.addMessage(message, false);
             }, knowledgeBase => {
-                const mapfishDialog = createMapfishDialog(knowledgeBase, this.config.transformer, this.defaultValue);
+                const mapfishDialog = createMapfishDialog(
+                    parcel,
+                    knowledgeBase,
+                    this.config.transformer,
+                    this.defaultValue,
+                    this.projection.getCode(),
+                    this.getFilenameOfPDF(parcel.featureList, this.fileprefix, moment().format("YYYY-MM-DD__HH-mm-ss"))
+                );
 
-                console.warn("mapfishDialog", mapfishDialog);
-                startPrintProcess(this.printUrl, this.printConfigPdf, mapfishDialogExample, (url, payload) => {
-                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfInTheMaking"));
-                    return axios.post(url, payload);
-                },
-                () => {
-                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pleaseWait"));
-                },
-                error => {
-                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfError"), true);
-                    console.error(error);
-                },
-                url => {
-                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfSuccess"));
-                    this.addUrl(url);
-                    // startImageProcess();
-                });
+                setTimeout(() => {
+                    startPrintProcess(this.printUrl, "pdf", this.pdfAppId, mapfishDialog, (url, payload) => {
+                        this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfInTheMaking"));
+                        return axios.post(url, payload);
+                    },
+                    () => {
+                        this.addMessage(this.$t("additional:modules.tools.valuationPrint.pleaseWait"));
+                    },
+                    error => {
+                        this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfError"), true);
+                        console.error(error);
+                        this.startImageProcess();
+                    },
+                    url => {
+                        this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfSuccess"));
+                        this.addUrl(url, this.$t("additional:modules.tools.valuationPrint.report"));
+                        this.startImageProcess();
+                    });
+                }, 0);
             }, errorMsg => {
                 this.addMessage(errorMsg, true);
             }, error => {
@@ -137,13 +106,14 @@ export default {
         this.config = null;
         this.select = null;
         this.printUrl = "";
-        this.printConfigPdf = "";
-        this.defaultValue = "n.v.";
+        this.pdfAppId = "";
+        this.imageAppId = "";
+        this.defaultValue = "";
+        this.fileprefix = "";
 
         this.setConfig();
         this.setSelectInteraction();
         this.selectedFeatures = this.select.getFeatures().getArray();
-
 
         this.$on("close", () => {
             this.setActive(false);
@@ -186,7 +156,10 @@ export default {
                 .then(response => {
                     this.config = response.data;
                     this.printUrl = this.getRestServiceById(response.data.settings.printServiceId).url;
-                    this.printConfigPdf = response.data.settings.printConfigPdf;
+                    this.pdfAppId = response.data.settings.pdfAppId;
+                    this.imageAppId = response.data.settings.imageAppId;
+                    this.defaultValue = response.data.settings.defaultValue;
+                    this.fileprefix = response.data.settings.fileprefix;
                 })
                 .catch(error => {
                     const message = "Could not load the config file config.valuation.json";
@@ -239,13 +212,59 @@ export default {
                 extent = feature.getGeometry().getExtent();
 
             this.messageList = [];
+            this.urlList = [];
             this.parcelData = {
-                centerCoordinate: getCenterOfExtent(extent),
-                geometry: feature.getGeometry(),
-                extent
+                center: getCenterOfExtent(extent),
+                extent,
+                feature,
+                featureList,
+                geometry: feature.getGeometry()
             };
         },
 
+        /**
+         * Starts the process for the images to print.
+         * @param {Number} [idx=0] - The index.
+         * @returns {void}
+         */
+        startImageProcess (idx = 0) {
+            const imageName = Object.keys(this.config.images[idx])[0],
+                mapfishDialog = createMapfishDialog(
+                    this.parcelData,
+                    {},
+                    this.config.images[idx],
+                    this.defaultValue,
+                    this.projection.getCode(),
+                    this.getFilenameOfPDF(this.parcelData.featureList, imageName, moment().format("YYYY-MM-DD__HH-mm-ss"))
+                );
+
+            mapfishDialog.attributes.map = mapfishDialog.attributes[imageName + ".map"];
+            delete mapfishDialog.attributes[imageName + ".map"];
+
+            setTimeout(()=> {
+                startPrintProcess(this.printUrl, "png", this.imageAppId, mapfishDialog, (url, payload) => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.imageInTheMaking", {imageName: upperFirst(imageName)}), false);
+                    return axios.post(url, payload);
+                },
+                () => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pleaseWait"), false);
+                },
+                (error) => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.imageError", {imageName: upperFirst(imageName)}), true);
+                    console.error(error);
+                    if (this.config.images[idx + 1]) {
+                        this.startImageProcess(idx + 1);
+                    }
+                },
+                (url) => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.imageSuccess", {imageName: upperFirst(imageName)}), false);
+                    this.addUrl(url, upperFirst(imageName));
+                    if (this.config.images[idx + 1]) {
+                        this.startImageProcess(idx + 1);
+                    }
+                });
+            }, 0);
+        },
 
         /**
          * Sets the style of the selected features depending on the activity of the select interaction.
@@ -283,11 +302,38 @@ export default {
 
         /**
          * Adds another url to the url list for downloding pdf and images.
-         * @param {String} url the url to display
+         * @param {String} url - The url.
+         * @param {String} name - The name to display.
          * @returns {void}
          */
-        addUrl (url) {
-            console.warn(url);
+        addUrl (url, name) {
+            this.urlList.push({
+                link: url,
+                name: name ? name : url
+            });
+        },
+
+        /**
+         * Returns the filename of the pdf, taking into account the currently selected parcels.
+         * @param {ol/Feature[]} features The features to create the filename for.
+         * @param {String} [fileprefix=""] The prefix to use for the filename.
+         * @param {String} [timestamp=""] A timestamp to use for better ui.
+         * @returns {String} The current filname.
+         */
+        getFilenameOfPDF (features, fileprefix = "", timestamp = "") {
+            if (!Array.isArray(features)) {
+                return "unknown";
+            }
+            let flstnrzae = "";
+
+            features.forEach(feature => {
+                if (flstnrzae) {
+                    flstnrzae += "-";
+                }
+                flstnrzae += feature.get("flstnrzae");
+            });
+
+            return fileprefix + "__" + timestamp + "__" + flstnrzae;
         }
     }
 };
@@ -307,79 +353,133 @@ export default {
         >
             <div class="valuation-print">
                 <div
-                    v-for="feature in selectedFeatures"
-                    :key="feature.get('flstnrzae')"
+                    v-if="selectedFeatures.length > 0"
+                    class="card"
                 >
-                    <ul class="list-inline">
-                        <li class="list-inline-item">
-                            {{ $t('additional:modules.tools.valuationPrint.parcel') }}
-                        </li>
-                        <li class="list-inline-item">
-                            {{ feature.get("flstnrzae") }}
-                        </li>
-                        <li class="list-inline-item">
-                            {{ $t('additional:modules.tools.valuationPrint.district') }}
-                        </li>
-                        <li class="list-inline-item">
-                            {{ feature.get("gemarkung") }}
-                        </li>
-                    </ul>
-                    <div class="mt-2">
-                        <button
-                            type="button"
-                            class="btn btn-primary btn-sm"
-                            @click="setParcelData([feature])"
-                        >
-                            {{ $t('additional:modules.tools.valuationPrint.startButton') }}
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-primary btn-sm"
-                            @click="removeFeature(feature)"
-                        >
-                            {{ $t('additional:modules.tools.valuationPrint.removeButton') }}
-                        </button>
+                    <div class="card-header">
+                        {{ $t('additional:modules.tools.valuationPrint.parcelListTitle') }}
                     </div>
-                    <hr>
-                </div>
-                <template v-if="selectedFeatures.length > 1">
-                    <button
-                        type="button"
-                        class="btn btn-primary btn-sm"
-                        @click="setParcelData(select.getFeatures().getArray())"
-                    >
-                        {{ $t('additional:modules.tools.valuationPrint.startButton') }}
-                    </button>
-                    <hr>
-                </template>
-                <template v-if="selectedFeatures.length > 0">
-                    <div>
-                        <div class="messageListTitle">
-                            {{ $t('additional:modules.tools.valuationPrint.messageListTitle') }}
+                    <div class="card-body">
+                        <div class="card-text">
+                            <div
+                                v-for="feature in selectedFeatures"
+                                :key="feature.get('flstnrzae')"
+                            >
+                                <ul class="list-inline">
+                                    <li class="list-inline-item">
+                                        {{ $t('additional:modules.tools.valuationPrint.parcel') }}
+                                    </li>
+                                    <li class="list-inline-item">
+                                        {{ feature.get("flstnrzae") }}
+                                    </li>
+                                    <li class="list-inline-item">
+                                        {{ $t('additional:modules.tools.valuationPrint.district') }}
+                                    </li>
+                                    <li class="list-inline-item">
+                                        {{ feature.get("gemarkung") }}
+                                    </li>
+                                </ul>
+                                <div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-sm"
+                                        @click="setParcelData([feature])"
+                                    >
+                                        {{ $t('additional:modules.tools.valuationPrint.startButton') }}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-sm"
+                                        @click="removeFeature(feature)"
+                                    >
+                                        {{ $t('additional:modules.tools.valuationPrint.removeButton') }}
+                                    </button>
+                                </div>
+                                <hr v-if="selectedFeatures.length > 1">
+                            </div>
+                            <template v-if="selectedFeatures.length > 1">
+                                <button
+                                    type="button"
+                                    class="btn btn-primary btn-sm"
+                                    @click="setParcelData(select.getFeatures().getArray())"
+                                >
+                                    {{ $t('additional:modules.tools.valuationPrint.startButton') }}
+                                </button>
+                            </template>
                         </div>
-                        <div class="messageList">
+                    </div>
+                </div>
+                <div
+                    v-if="messageList.length > 0"
+                    class="card mt-3"
+                >
+                    <div class="card-header">
+                        {{ $t('additional:modules.tools.valuationPrint.messageListTitle') }}
+                    </div>
+                    <div class="card-body">
+                        <div class="card-text">
                             <div
                                 v-for="(messageObj, idx) in messageList"
                                 :key="idx + '_' + messageObj.message"
-                                :class="messageObj.isError ? 'messageListError' : ''"
+                                :class="messageObj.isError ? 'messageListError' : 'messageListEntry'"
                             >
                                 {{ messageObj.message }}
                             </div>
                         </div>
                     </div>
-                </template>
+                </div>
+                <div
+                    v-if="urlList.length > 0"
+                    class="card mt-3"
+                >
+                    <div class="card-header">
+                        {{ $t('additional:modules.tools.valuationPrint.urlListTitle') }}
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <ul class="list-unstyled">
+                                <li
+                                    v-for="(url, idx) in urlList"
+                                    :key="idx + '_' + url.name"
+                                    class="urlListEntry"
+                                >
+                                    <a
+                                        :href="url.link"
+                                        target="_blank"
+                                    >{{ url.name }}</a>
+                                </li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
             </div>
         </template>
     </ToolTemplate>
 </template>
 
 <style lang="scss" scoped>
-    .messageList {
-        height: 300px;
-        overflow-y: auto;
-        border: 1px solid LightGray;
-    }
-    .messageList .messageListError {
-        color: Red;
-    }
+@import "~variables";
+
+button {
+    font-size: 13px;
+}
+
+h6 {
+    margin-bottom: 13px;
+}
+
+.messageListError {
+    color: $danger;
+}
+
+.card-body {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 13px;
+}
+
+.list-inline, .list-unstyled {
+    margin-bottom: 0;
+}
+
 </style>

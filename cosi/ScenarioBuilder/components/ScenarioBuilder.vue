@@ -171,6 +171,7 @@ export default {
         this.$on("close", () => {
             this.setActive(false);
         });
+        this.map = mapCollection.getMap("2D");
         await this.createGuideLayer();
     },
     methods: {

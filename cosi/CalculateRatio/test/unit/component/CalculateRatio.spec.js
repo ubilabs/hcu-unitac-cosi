@@ -43,7 +43,7 @@ describe("CalculateRatio.vue", () => {
                     children: {
                         CalculateRatio: {
                             name: "translate#additional:modules.tools.vueAddon.title",
-                            icon: "bi-calculator",
+                            icon: "bi-sliders2",
                             yearSelector: "jahr_"
                         }
                     }

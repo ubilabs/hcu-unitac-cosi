@@ -107,6 +107,7 @@ export default {
      * @returns {void}
      */
     mounted () {
+        this.map = mapCollection.getMap("2D");
         this.workingDistrictLevel = this.selectedDistrictLevel;
     },
 
