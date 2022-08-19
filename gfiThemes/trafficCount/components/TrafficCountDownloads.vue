@@ -146,7 +146,7 @@ export default {
             const api = this.api,
                 timeSet = {
                     interval: this.minInterval,
-                    from: moment().subtract(7, "days").format("YYYY-MM-DD"),
+                    from: moment().subtract(14, "days").format("YYYY-MM-DD"),
                     until: moment().format("YYYY-MM-DD")
                 };
 
@@ -188,7 +188,7 @@ export default {
             const api = this.api,
                 timeSet = {
                     interval: this.dayInterval,
-                    from: moment().subtract(54, "weeks").format("YYYY-MM-DD"),
+                    from: moment().subtract(1, "year").startOf("year").format("YYYY-MM-DD"),
                     until: moment().format("YYYY-MM-DD")
                 };
 

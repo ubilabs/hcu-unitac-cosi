@@ -200,7 +200,7 @@ export default {
                 return true;
             }
             const endDate = this.checkGurlittInsel ? moment().subtract(1, "days") : moment(),
-                startDate = moment().subtract(7, "days"),
+                startDate = moment().subtract(14, "days"),
                 question = moment(date);
 
             if (Array.isArray(currentDates) && currentDates.length >= 5) {

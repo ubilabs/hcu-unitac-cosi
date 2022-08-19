@@ -216,7 +216,7 @@ export default {
                 return true;
             }
             const endDate = this.checkGurlittInsel ? moment().subtract(1, "days") : moment(),
-                startDate = moment("2020-01-01") > moment().subtract(1, "year") ? moment("2020-01-01") : moment().subtract(1, "year"),
+                startDate = moment("2020-01-01") > moment().subtract(1, "year") ? moment("2020-01-01") : moment().subtract(1, "year").startOf("year"),
                 question = moment(date);
 
             if (Array.isArray(currentDates) && currentDates.length >= 5) {
@@ -227,6 +227,8 @@ export default {
                 }
                 return true;
             }
+
+            startDate.subtract(1, "days");
 
             return question.isSameOrBefore(startDate) || question.isSameOrAfter(endDate);
         }
@@ -245,7 +247,7 @@ export default {
                 aria-label="Datum"
                 placeholder="Datum"
                 type="week"
-                format="KW ww"
+                format="YYYY KW ww"
                 :multiple="true"
                 :show-week-number="true"
                 :disabled-date="isDateDisabled"
