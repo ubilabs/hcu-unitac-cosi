@@ -36,7 +36,7 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/DistrictSelector", Object.keys(getters)),
-        ...mapGetters("Map", ["layerList", "visibleLayerList"]),
+        ...mapGetters("Maps", ["getVisibleLayerList"]),
         ...mapState(["easyReadMode"]),
         ...mapGetters("Tools/AreaSelector", {areaSelectorGeom: "geometry"}),
 
@@ -67,6 +67,10 @@ export default {
             set (v) {
                 this.setSelectedDistrictLevelId(v);
             }
+        },
+
+        layerList () {
+            return mapCollection.getMap("2D").getLayers().getArray();
         }
     },
 
@@ -108,7 +112,7 @@ export default {
         },
 
         /**
-         * Every time the list of layers of the map (computed property Map/layerList) changes the function prepareDistricts is called.
+         * Every time the list of layers of the map changes the function prepareDistricts is called.
          * @param {module:ol/layer[]} newLayerList - An array of layers.
          * @returns {void}
          */
@@ -127,7 +131,7 @@ export default {
          * @description Watches Layer visiblity changes to determine whether the addtional info layers are active
          * @returns {void}
          */
-        visibleLayerList () {
+        getVisibleLayerList () {
             this.checkAdditionalLayers();
         },
 
@@ -149,7 +153,6 @@ export default {
         this.selectedLevelId = this.districtLevels[0].layerId;
         this.setNonReactiveData();
         this.initializeAdditionalInfoLayers();
-        this.loadMapping();
     },
     mounted () {
         /**
@@ -167,13 +170,15 @@ export default {
         if (this.active) {
             document.addEventListener("keyup", this.checkKey);
         }
+
+        this.loadMapping();
     },
 
     methods: {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-        ...mapActions("Tools/DistrictSelector", ["loadStatFeatures"]),
-        ...mapActions("Map", ["addInteraction", "removeInteraction", "zoomTo", "resetView"]),
+        ...mapActions("Tools/DistrictSelector", ["loadStatFeatures", "loadMapping"]),
+        ...mapActions("Maps", ["addInteraction", "removeInteraction", "zoomToExtent", "resetView"]),
 
         /**
          * quickly checks the key evt code
@@ -376,7 +381,7 @@ export default {
                 setBBoxToGeom.call(this, this.areaSelectorGeom || bboxGeom);
 
                 if (zoomToExtent) {
-                    this.zoomTo({geometryOrExtent: extent, options: {}});
+                    this.zoomToExtent({extent: extent, options: {}});
                 }
 
                 this.loadStatFeatures({
@@ -489,7 +494,7 @@ export default {
 <template lang="html">
     <Tool
         :title="$t('additional:modules.tools.cosi.districtSelector.title')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -566,7 +571,6 @@ export default {
                                 multiple
                                 dense
                                 hide-details
-                                class="form-check-input"
                                 type="checkbox"
                                 :label="`${key} ${$t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle')}`"
                             />

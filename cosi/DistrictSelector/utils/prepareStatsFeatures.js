@@ -13,7 +13,7 @@ export function parseFeatures (olFeatures, district, districtLevel) {
      * parse LTF
      * @todo refactor
      */
-    try {
+    if (olFeatures.every(feature => feature.get("jahr") && feature.get("jahr_timestamp"))) {
         const features = createStatFeaturesFromLTF(olFeatures, districtLevel);
 
         // add statFeatures to district
@@ -24,7 +24,7 @@ export function parseFeatures (olFeatures, district, districtLevel) {
     /**
      * try old timeline format alternatively
      */
-    catch {
+    else {
         olFeatures.forEach(prepareStatsFeatures);
 
         // add statFeatures to district

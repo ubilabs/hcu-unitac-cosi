@@ -51,8 +51,15 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
+        ...mapGetters("Maps", ["getLayerById", "projectionCode"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList"]),
+        /**
+         * gets the 2D map from the collection
+         * @returns {module:ol/Map} the 2D map
+         */
+        map () {
+            return mapCollection.getMap("2D");
+        },
 
         /**
          * Getter for the current value of the geometry as coordinates array
@@ -100,14 +107,14 @@ export default {
     },
     methods: {
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
-        ...mapActions("Map", ["createLayer"]),
+        ...mapActions("Maps", ["addNewLayerIfNotExists"]),
 
         /**
          * todo
          * @returns {void}
          */
         async createDrawingLayer () {
-            const newLayer = await this.createLayer(this.id + "_draw");
+            const newLayer = await this.addNewLayerIfNotExists({layerName: this.id + "_draw"});
 
             newLayer.setVisible(true);
             this.drawLayer = newLayer;
@@ -148,7 +155,6 @@ export default {
                 Radio.on("Searchbar", "hit", this.pickLocationBySearchbar.bind(this));
             }
             else if (this.geometry.type === "Polygon") {
-                // this.map.addEventListener("click", this.pickPolygon.bind(this));
                 this.drawPolygon();
 
                 // Get coords from searchbar if geom type is "Point"
@@ -247,7 +253,7 @@ export default {
         pickPolygon () {
             const layers = [
                 ...this.activeVectorLayerList,
-                ...this.additionalSelectLayerIds.map(id => this.layerById(id)?.olLayer)
+                ...this.additionalSelectLayerIds.map(id => this.getLayerById({layerId: id}))
             ];
 
             this.polygonSelect = new Select({

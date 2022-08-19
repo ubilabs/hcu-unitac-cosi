@@ -36,7 +36,7 @@ const actions = {
                     const districtName = compensateInconsistency(districts[i].getName()),
                         statFeatures = await getStatFeatures(urls[j], {
                             featureTypes: districtLevel.featureTypes[j],
-                            srsName: rootGetters["Map/projectionCode"],
+                            srsName: rootGetters["Maps/projectionCode"],
                             propertyNames: districtLevel.propertyNameList[j],
                             filter: equalTo(districtLevel.stats.keyOfAttrName, districtName)
                         }),
@@ -143,20 +143,15 @@ const actions = {
         const path = state.mappingPath;
 
         if (path) {
-            console.log(path);
             const
                 req = await fetch(path),
                 mapping = await req.json();
 
-            console.log(req);
-
             commit("setMappingInit", mapping);
-
-            console.log(state.mappingInit);
         }
 
         commit("resetMapping");
-    },
+    }
 };
 
 export default actions;

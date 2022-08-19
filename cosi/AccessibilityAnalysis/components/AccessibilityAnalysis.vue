@@ -98,7 +98,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
-        ...mapGetters("Map", {map: "ol2DMap", projectionCode: "projectionCode"}),
+        ...mapGetters("Maps", ["projectionCode"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
@@ -106,6 +106,13 @@ export default {
         ...mapGetters("Tools/ScenarioBuilder", ["scenarioUpdated"]),
         ...mapGetters("Tools/Routing/Directions", ["directionsRouteSource", "directionsRouteLayer", "routingDirections"]),
         ...mapGetters("Tools/Routing", {routingActive: "active", activeRoutingToolOption: "activeRoutingToolOption"}),
+        /**
+         * gets the 2D map from the collection
+         * @returns {module:ol/Map} the 2D map
+         */
+        map () {
+            return mapCollection.getMap("2D");
+        },
         _mode: {
             get () {
                 return this.mode;
@@ -313,11 +320,11 @@ export default {
     async mounted () {
         this.applyTranslationKey(this.name);
 
-        this.mapLayer = await this.createLayer("accessibility-analysis");
+        this.mapLayer = await this.addNewLayerIfNotExists({layerName: "accessibility-analysis"});
         this.mapLayer.setVisible(true);
         this.mapLayer.setZIndex(10);
 
-        this.directionsLayer = await this.createLayer("accessibility-directions");
+        this.directionsLayer = await this.addNewLayerIfNotExists({layerName: "accessibility-directions"});
         this.directionsLayer.setZIndex(10);
         this.directionsLayer.setStyle(this.directionsRouteLayer.getStyleFunction());
         this.directionsLayer.setSource(this.directionsRouteSource);
@@ -333,10 +340,10 @@ export default {
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapActions("Tools/AccessibilityAnalysisService", ["getIsochrones"]),
-        ...mapMutations("Map", ["setCenter"]),
+        ...mapMutations("Maps", ["setCenter"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
-        ...mapActions("Map", ["createLayer"]),
+        ...mapActions("Maps", ["addNewLayerIfNotExists"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
 
@@ -487,7 +494,7 @@ export default {
     <div id="toolWrap">
         <Tool
             :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.title')"
-            :icon="glyphicon"
+            :icon="icon"
             :active="active"
             :render-to-window="renderToWindow"
             :resizable-window="resizableWindow"
@@ -621,7 +628,6 @@ export default {
                                         v-model="_useTravelTimeIndex"
                                         dense
                                         hide-details
-                                        class="form-check-input"
                                         :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.toggle')"
                                         :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.tooltip')"
                                         :disabled="transportType !== 'driving-car' || scaleUnit !== 'time'"
@@ -630,7 +636,6 @@ export default {
                                         v-model="_setByFeature"
                                         dense
                                         hide-details
-                                        class="form-check-input"
                                         :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
                                         :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
                                         :disabled="mode === 'path'"

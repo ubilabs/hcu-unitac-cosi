@@ -36,7 +36,7 @@ describe("addons/cosi/QueryDistricts/", () => {
     // eslint-disable-next-line no-unused-vars
     let store, sandbox, vuetify, selectedFeaturesStub, keyOfAttrNameStub, keyOfAttrNameStatsStub,
         getLayerListStub, zoomToStub, layerFeaturesStub, mappingStub, wrapper,
-        addSingleAlertStub, cleanupStub, addFeatureStub, layerByIdStub, activeVectorLayerListStub;
+        addSingleAlertStub, cleanupStub, addFeatureStub, activeVectorLayerListStub;
 
     const bev_features = new GeoJSON().readFeatures(features_bev),
         ha_features = new GeoJSON().readFeatures(features_ha),
@@ -112,7 +112,6 @@ describe("addons/cosi/QueryDistricts/", () => {
         addSingleAlertStub = sandbox.stub();
         cleanupStub = sandbox.stub();
         addFeatureStub = sandbox.stub();
-        layerByIdStub = sandbox.stub();
         activeVectorLayerListStub = sandbox.stub();
 
         store = new Vuex.Store({
@@ -170,11 +169,11 @@ describe("addons/cosi/QueryDistricts/", () => {
                         }
                     }
                 },
-                Map: {
+                Maps: {
                     namespaced: true,
                     actions: {
                         zoomTo: zoomToStub,
-                        createLayer: () => {
+                        addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: sandbox.stub(),
                                 addEventListener: sandbox.stub(),
@@ -185,9 +184,6 @@ describe("addons/cosi/QueryDistricts/", () => {
                                 })
                             });
                         }
-                    },
-                    getters: {
-                        layerById: () => layerByIdStub
                     }
                 },
                 Alerting: {
@@ -266,19 +262,19 @@ describe("addons/cosi/QueryDistricts/", () => {
                 setStyle: sandbox.stub()
             })
         }]);
-        layerByIdStub.returns({
-            olLayer: {
-                getSource: () => ({
-                    getFeatures: () => [
-                        {
-                            getProperties: () => ({
-                                "ente": "Donald"
-                            })
-                        }
-                    ]
-                })
-            }
-        });
+        // layerByIdStub.returns({
+        //     olLayer: {
+        //         getSource: () => ({
+        //             getFeatures: () => [
+        //                 {
+        //                     getProperties: () => ({
+        //                         "ente": "Donald"
+        //                     })
+        //                 }
+        //             ]
+        //         })
+        //     }
+        // });
 
         sandbox.stub(Radio, "request").callsFake((a1, a2) => {
             if (a1 === "ModelList" && a2 === "getModelByAttributes") {

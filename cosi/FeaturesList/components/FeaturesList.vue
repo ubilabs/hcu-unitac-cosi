@@ -295,7 +295,7 @@ export default {
 
         this.$root.$on("updateFeaturesList", this.updateFeaturesList);
 
-        this.distScoreLayer = await this.createLayer("distance-score-features");
+        this.distScoreLayer = await this.addNewLayerIfNotExists({layerName: "distance-score-features"});
         this.distScoreLayer.setVisible(true);
         this.distScoreLayer.setZIndex(22);
     },
@@ -303,7 +303,7 @@ export default {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Tools/DistanceScoreService", ["getDistanceScore", "getFeatureValues"]),
-        ...mapActions("Map", ["removeHighlightFeature", "createLayer"]),
+        ...mapActions("Maps", ["removeHighlightFeature", "addNewLayerIfNotExists"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...chartMethods,
 
@@ -728,7 +728,7 @@ export default {
         ref="tool"
         class=""
         :title="$t('additional:modules.tools.cosi.featuresList.title')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"
@@ -797,7 +797,6 @@ export default {
                     <v-checkbox
                         id="export-details"
                         v-model="sumUpLayers"
-                        class="form-check-input"
                         dense
                         hide-details
                         :label="$t('additional:modules.tools.cosi.featuresList.sumUpLayers')"
@@ -818,7 +817,7 @@ export default {
                     <v-checkbox
                         id="export-details"
                         v-model="exportDetails"
-                        class="form-check-input float-right"
+                        class="float-right"
                         dense
                         hide-details
                         :label="$t('additional:modules.tools.cosi.featuresList.exportDetails')"

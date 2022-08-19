@@ -7,7 +7,7 @@
 const state = {
     active: false,
     deactivateGFI: true,
-    glyphicon: "glyphicon-screenshot",
+    icon: "bi-boxes",
     id: "ScenarioBuilder",
     name: "ScenarioBuilder",
     useIcons: true,

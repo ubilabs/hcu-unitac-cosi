@@ -42,8 +42,18 @@ export default {
     computed: {
         ...mapGetters("Tools/Dipas", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["isFeatureActive"]),
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
+        /**
+         * @todo refactor: use Map getter "getLayerById" instead of custom method
+         */
+        ...mapGetters("Maps", {layerById: "getLayerById", projectionCode: "projectionCode"}),
         ...mapGetters("Language", ["currentLocale"]),
+        /**
+         * gets the 2D map from the collection
+         * @returns {module:ol/Map} the 2D map
+         */
+        map () {
+            return mapCollection.getMap("2D");
+        },
         isProjectActive () {
             return (id) => {
                 const projectActive = this.projectsActive[id];
@@ -89,11 +99,11 @@ export default {
         this.initialize();
     },
     methods: {
-        ...mapActions("Map", ["createLayer", "zoomTo"]),
+        ...mapActions("Maps", ["zoomToExtent"]),
         ...mapActions("Tools/Dipas", ["addLayer"]),
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
-        ...mapMutations("Map", ["addLayerToMap"]),
+        ...mapMutations("Maps", ["addLayerToMap"]),
         ...mapActions("Tools/Draw", ["createCenterPoint"]),
         getLayerById,
 
@@ -583,7 +593,7 @@ export default {
         zoomToProject (feature) {
             const extent = feature.getGeometry().getExtent();
 
-            this.zoomTo({geometryOrExtent: extent, options: {padding: [20, 20, 20, 20]}});
+            this.zoomToExtent({extent: extent, options: {padding: [20, 20, 20, 20]}});
         },
 
         getDateString (feature) {
@@ -672,7 +682,7 @@ export default {
     <div id="toolWrap">
         <Tool
             :title="$t('additional:modules.tools.cosi.dipas.title')"
-            :icon="glyphicon"
+            :icon="icon"
             :active="active"
             :render-to-window="renderToWindow"
             :resizable-window="resizableWindow"
@@ -870,7 +880,7 @@ export default {
                             :label="$t('additional:modules.tools.cosi.dipas.polling.label')"
                             dense
                             hide-details
-                            class="form-check-input float-right"
+                            class="float-right"
                             type="checkbox"
                         />
                     </div>

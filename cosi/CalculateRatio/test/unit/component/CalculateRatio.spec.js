@@ -43,7 +43,7 @@ describe("CalculateRatio.vue", () => {
                     children: {
                         CalculateRatio: {
                             name: "translate#additional:modules.tools.vueAddon.title",
-                            glyphicon: "glyphicon-th-list",
+                            icon: "bi-calculator",
                             yearSelector: "jahr_"
                         }
                     }
@@ -361,10 +361,10 @@ describe("CalculateRatio.vue", () => {
                         }
                     }
                 },
-                Map: {
+                Maps: {
                     namespaced: true,
                     getters: {
-                        layerList: layerListStub
+                        getVisibleLayerList: layerListStub
                     }
                 },
                 Alerting: {
@@ -474,7 +474,7 @@ describe("CalculateRatio.vue", () => {
         groupActiveLayerStub.returns(expFacilitiesOptions);
         const wrapper = await mount(true);
 
-        await wrapper.vm.$options.watch.layerList.call(wrapper.vm);
+        await wrapper.vm.$options.watch.getVisibleLayerList.call(wrapper.vm);
         expect(wrapper.find("#switchA").text()).to.be.equal("additional:modules.tools.cosi.calculateRatio.dataA");
         expect(wrapper.find("#groupActiveLayerSelect").props("items")).to.be.eql(expFacilitiesOptions);
 

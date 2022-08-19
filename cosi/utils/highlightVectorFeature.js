@@ -4,11 +4,11 @@ import store from "../../../src/app-store";
 
 /**
  * Highlights a feature on the map
- * @param {*} payload - the payload of the store action, Map/highlightFeature
+ * @param {*} payload - the payload of the store action, Maps/highlightFeature
  * @returns {void}
  */
 function highlightFeature (payload) {
-    store.dispatch("Map/highlightFeature", payload);
+    store.dispatch("Maps/highlightFeature", payload);
 }
 
 /**

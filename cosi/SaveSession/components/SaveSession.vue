@@ -24,10 +24,11 @@ export default {
             db: null,
             storePaths: {
                 // The order matters for loading
-                Map: [
+                Maps: [
                     "layerIds",
-                    "center",
-                    "zoomLevel"
+                    "view"
+                    // "center",
+                    // "zoomLevel"
                 ],
                 Tools: {
                     ChartGenerator: [
@@ -115,7 +116,7 @@ export default {
         ...mapGetters("Tools/ScenarioBuilder", {simGuideLayer: "guideLayer"}),
         ...mapGetters("Tools/ResidentialSimulation", {simNeighborhoodLayer: "drawingLayer"}),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "districtLevels"]),
-        ...mapGetters("Map", ["layerById"])
+        ...mapGetters("Maps", ["getLayerById", "addNewLayerIfNotExists"])
     },
     watch: {
         /**
@@ -350,10 +351,10 @@ export default {
         },
 
         getTopicsLayer (layerId) {
-            let layer = this.layerById(layerId);
+            let layer = this.getLayerById({layerId: layerId});
 
             if (layer) {
-                return layer.olLayer;
+                return layer;
             }
             if (this.onlyUdpServices && isNaN(parseInt(layerId, 10))) {
                 return undefined;
@@ -412,7 +413,7 @@ export default {
         <Tool
             ref="tool"
             :title="$t('additional:modules.tools.cosi.saveSession.title')"
-            :icon="glyphicon"
+            :icon="icon"
             :active="active"
             :render-to-window="renderToWindow"
             :resizable-window="resizableWindow"
@@ -497,7 +498,6 @@ export default {
                                 <v-checkbox
                                     id="auto-save"
                                     v-model="autoSave"
-                                    class="form-check-input"
                                     dense
                                     hide-details
                                     :label="$t('additional:modules.tools.cosi.saveSession.autoSave')"

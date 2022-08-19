@@ -33,7 +33,7 @@ export default {
     computed: {
         ...mapGetters("Tools/AreaSelector", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
-        ...mapGetters("Map", ["projectionCode"]),
+        ...mapGetters("Maps", ["projectionCode"]),
         ...mapGetters("Language", ["currentLocale"]),
         geomField () {
             return {
@@ -81,7 +81,7 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/AreaSelector", Object.keys(mutations)),
-        ...mapActions("Map", ["createLayer"]),
+        ...mapActions("Maps", ["addNewLayerIfNotExists"]),
 
         /**
          * Updates the geometry from the geomPicker in the data for later use when instantiating a new feature
@@ -98,7 +98,7 @@ export default {
          * @returns {void}
          */
         async createDrawingLayer () {
-            const newLayer = await this.createLayer(this.id);
+            const newLayer = await this.addNewLayerIfNotExists({layerName: this.id});
 
             newLayer.setVisible(true);
             newLayer.setStyle(this.polygonStyle);
@@ -133,7 +133,7 @@ export default {
 <template lang="html">
     <Tool
         :title="$t('additional:modules.tools.cosi.areaSelector.title')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"

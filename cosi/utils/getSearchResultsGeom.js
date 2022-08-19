@@ -29,7 +29,7 @@ function getCenterOfPolygonFeature (feature) {
  * @returns {number[]} the coords of the search result
  */
 export function getSearchResultsCoordinates (targetCrs) {
-    const portalCrs = store.getters["Map/projectionCode"],
+    const portalCrs = store.getters["Maps/projectionCode"],
         markerPoint = store.getters["MapMarker/markerPoint"],
         markerPolygon = store.getters["MapMarker/markerPolygon"];
     let features = markerPoint.getSource().getFeatures(),

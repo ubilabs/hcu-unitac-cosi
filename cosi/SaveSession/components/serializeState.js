@@ -6,6 +6,7 @@ export default {
     serializeState () {
         const state = this.deepCopyState(this.storePaths, this.$store.state);
 
+        this.serializeView(state);
         this.serializeScenarios(state);
         this.serializeBackboneModules(state);
         this.serializeDrawFeatures(state);
@@ -209,5 +210,9 @@ export default {
 
     serializeToolDatasets (state) {
         return this.deepSerialize(state);
+    },
+
+    serializeView (state) {
+        state.Maps.view = this.$store.getters["Maps/getView"];
     }
 };

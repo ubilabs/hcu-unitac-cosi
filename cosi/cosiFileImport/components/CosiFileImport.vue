@@ -83,7 +83,14 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["layerMapById"]),
-        ...mapGetters("Map", {layerIds: "layerIds", layers: "layers", map: "ol2DMap", projectionCode: "projectionCode"}),
+        ...mapGetters("Maps", ["projectionCode"]),
+        /**
+         * gets the 2D map from the collection
+         * @returns {module:ol/Map} the 2D map
+         */
+        map () {
+            return mapCollection.getMap("2D");
+        },
         selectedFiletype: {
             get () {
                 return this.storePath.selectedFiletype;
@@ -365,7 +372,7 @@ export default {
 <template lang="html">
     <Tool
         :title="$t('additional:modules.tools.cosiFileImport.title')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"

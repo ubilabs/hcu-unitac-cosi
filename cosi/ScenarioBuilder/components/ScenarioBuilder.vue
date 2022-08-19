@@ -61,9 +61,15 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ScenarioBuilder", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["groupActiveLayer", "activeVectorLayerList"]),
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
+        ...mapGetters("Maps", ["getLayerById", "projectionCode"]),
         ...mapGetters("Tools/Routing", ["geosearchReverse"]),
-
+        /**
+         * gets the 2D map from the collection
+         * @returns {module:ol/Map} the 2D map
+         */
+        map () {
+            return mapCollection.getMap("2D");
+        },
         /**
          * Getter and Setter for the manuel coordinates Input for the geometry
          */
@@ -171,8 +177,8 @@ export default {
         ...mapMutations("Tools/ScenarioBuilder", Object.keys(mutations)),
         ...mapActions("Tools/ScenarioBuilder", Object.keys(actions)),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
-        ...mapActions("Map", ["createLayer"]),
-        ...mapMutations("Map", ["setCenter"]),
+        ...mapActions("Maps", ["addNewLayerIfNotExists"]),
+        ...mapMutations("Maps", ["setCenter"]),
 
         compareLayerMapping, // the utils function that checks a prop against the layer map
         validateProp, // the utils function validating the type of props and returning the relevant rules
@@ -183,7 +189,7 @@ export default {
          * @returns {void}
          */
         async createGuideLayer () {
-            const newLayer = await this.createLayer(this.id + "_layer");
+            const newLayer = await this.addNewLayerIfNotExists({layerName: this.id + "_layer"});
 
             newLayer.setVisible(true);
             newLayer.setStyle(function (feature) {
@@ -225,7 +231,7 @@ export default {
          * @returns {void}
          */
         createFeature () {
-            const layer = this.layerById(this.workingLayer.layerId).olLayer,
+            const layer = this.getLayerById({layerId: this.workingLayer.layerId}),
                 geom = this.geometry,
                 feature = new Feature({geometry: geom});
 
@@ -334,7 +340,7 @@ export default {
         },
 
         getDescriptionBySource (layerId) {
-            const layer = this.layerById(layerId).olLayer,
+            const layer = this.getLayerById({layerId: layerId}),
                 feature = layer.getSource().getFeatures()[0] || Radio.request("ModelList", "getModelByAttributes", {id: layerId})?.get("features")[0];
             let props, desc;
 
@@ -394,7 +400,7 @@ export default {
     <div :class="active ? 'tool-wrap' : ''">
         <Tool
             :title="$t('additional:modules.tools.cosi.scenarioBuilder.title')"
-            :icon="glyphicon"
+            :icon="icon"
             :active="active"
             :render-to-window="renderToWindow"
             :resizable-window="resizableWindow"

@@ -6,7 +6,7 @@ import {registerProjections} from "@masterportal/masterportalapi/src/crs";
 describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
     const fs = require("fs"),
         rootGetters = {
-            "Map/projectionCode": "EPSG:25832"
+            "Maps/projectionCode": "EPSG:25832"
         };
     let xmlDoc,
         payload,

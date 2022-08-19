@@ -5,7 +5,7 @@
                 "children": {
                     "featuresList": {
                         "name": "translate#additional:modules.tools.cosi.featuresList.title",
-                        "glyphicon": "glyphicon-apple"
+                        "icon": "bi-apple"
                     }
                 }
             }

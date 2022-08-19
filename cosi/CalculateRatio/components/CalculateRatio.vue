@@ -86,7 +86,7 @@ export default {
         ...mapGetters("Tools/CalculateRatio", Object.keys(getters)),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend"]),
         ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping", groupActiveLayer: "groupActiveLayer", isFeatureActive: "isFeatureActive"}),
-        ...mapGetters("Map", ["layerList"]),
+        ...mapGetters("Maps", ["getVisibleLayerList"]),
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
         availableColumns () {
             const options = [
@@ -121,8 +121,8 @@ export default {
                 this.selectedFieldB.id = [this.selectedFieldB.id];
             }
         },
-        layerList () {
-            this.layerIdList = this.layerList.map(x => x.getProperties().name);
+        getVisibleLayerList () {
+            this.layerIdList = this.getVisibleLayerList.map(x => x.getProperties().name);
             this.updateFacilities();
         },
         loadend (newValue) {
@@ -520,7 +520,7 @@ export default {
                 this.calcHelper["perCalc_" + letter] = this["perCalc_" + letter];
 
                 if (this[letter + "Switch"]) {
-                    const findLayer = this.layerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
+                    const findLayer = this.getVisibleLayerList.find(layer => layer.get("name") === this["selectedField" + letter].id),
                         layerFeatures = getClusterSource(findLayer).getFeatures();
 
                     this.calcHelper["type_" + letter] = "facility";
@@ -822,7 +822,7 @@ export default {
 <template lang="html">
     <Tool
         :title="$t('additional:modules.tools.cosi.calculateRatio.title')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"

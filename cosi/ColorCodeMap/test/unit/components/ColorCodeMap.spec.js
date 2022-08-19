@@ -30,7 +30,7 @@ describe("ColorCodeMap.vue", () => {
                     children: {
                         ColorCodeMap: {
                             "name": "translate#additional:modules.tools.vueAddon.title",
-                            "glyphicon": "glyphicon-th-list"
+                            "icon": "bi-bar-chart"
                         }
                     }
                 }
@@ -82,7 +82,7 @@ describe("ColorCodeMap.vue", () => {
                 Map: {
                     namespaced: true,
                     actions: {
-                        createLayer: () => {
+                        addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: sinon.stub(),
                                 getSource: () => sourceStub

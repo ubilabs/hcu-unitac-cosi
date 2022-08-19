@@ -32,14 +32,21 @@ export default {
         showClusteredFeaturePicker: false
     }),
     computed: {
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
+        ...mapGetters("Maps", ["getLayerById"]),
+        /**
+         * gets the 2D map from the collection
+         * @returns {module:ol/Map} the 2D map
+         */
+        map () {
+            return mapCollection.getMap("2D");
+        },
 
         /**
          * Returns the OpenLayers map layer from the workingLayer object
          * @returns {module:ol/layer/Vector} the map layer currently worked on
          */
         layer () {
-            return this.layerById(this.workingLayer.layerId)?.olLayer;
+            return this.getLayerById({layerId: this.workingLayer.layerId});
         }
     },
     watch: {

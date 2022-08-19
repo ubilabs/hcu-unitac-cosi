@@ -51,7 +51,7 @@ const mutations = {
      * @param {Object} state - the DistrictSelector store state
      * @returns {void}
      */
-    resetMapping ({state}) {
+    resetMapping (state) {
         state.mapping = state.mappingInit;
     }
 };

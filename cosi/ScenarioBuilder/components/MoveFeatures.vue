@@ -48,15 +48,22 @@ export default {
         }
     }),
     computed: {
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById", projectionCode: "projectionCode"}),
+        ...mapGetters("Maps", ["getLayerById", "projectionCode"]),
         ...mapGetters("Tools/Routing", ["geosearchReverse"]),
+        /**
+         * gets the 2D map from the collection
+         * @returns {module:ol/Map} the 2D map
+         */
+        map () {
+            return mapCollection.getMap("2D");
+        },
 
         /**
          * Returns the OpenLayers map layer from the workingLayer object
          * @returns {module:ol/layer/Vector} the map layer currently worked on
          */
         layer () {
-            return this.layerById(this.workingLayer.layerId)?.olLayer;
+            return this.getLayerById({layerId: this.workingLayer.layerId});
         }
     },
     watch: {
@@ -108,7 +115,7 @@ export default {
         this.unlisten();
     },
     methods: {
-        ...mapActions("Map", ["removeHighlightFeature"]),
+        ...mapActions("Maps", ["removeHighlightFeature"]),
 
         /**
          * Sets and adds all OL interactions to move features

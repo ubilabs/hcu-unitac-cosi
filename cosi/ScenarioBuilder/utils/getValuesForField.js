@@ -13,7 +13,7 @@ const wfsReader = new WFS();
  * @returns {module:ol/Layer} the layer on the map
  */
 function layerById (layerId) {
-    return store.getters["Map/layerById"](layerId)?.olLayer;
+    return store.getters["Maps/getLayerById"]({layerId: layerId});
 }
 
 /**

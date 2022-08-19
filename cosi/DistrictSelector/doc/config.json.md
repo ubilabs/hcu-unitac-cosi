@@ -5,7 +5,7 @@ Mit dem DistrictSelector kann ein Gebiet auf Basis einer Verwaltungsebene (z.B.:
 |Name|Verpflichtend|Typ|Default|Beschreibung|
 |----|-------------|---|-------|------------|
 |name|nein|String|Gebiet auswählen|Name des Werkzeuges im Menu.|
-|glyphicon|nein|String|glyphicon-screenshot|CSS Klasse des Glyphicons, das vor dem Toolnamen im Menu angezeigt wird.|
+|icon|nein|String|bi-image|CSS Klasse des Glyphicons, das vor dem Toolnamen im Menu angezeigt wird.|
 |districtLevels|ja|Object[]||Beinhaltet die nötigen Informationen der einzelnen Verwaltungsebenen (siehe Beispiel).|
 |districtLevels[i].layerId|ja|String||Die Layer id zum jeweiligen Verwaltungslayer.|
 |districtLevels[i].label|ja|String||Die/der Bezeichnung/ Name für die Verwaltungsebene.|
@@ -20,7 +20,7 @@ Mit dem DistrictSelector kann ein Gebiet auf Basis einer Verwaltungsebene (z.B.:
 **Beispiel**
 ```
 "districtSelector": {
-  "glyphicon": "glyphicon-picture",
+  "icon": "bi-image",
   "districtLevels": [
     {
       "layerId": "6071",

@@ -54,7 +54,7 @@ export default {
             "mapping"
         ]),
         ...mapGetters("Tools/FeaturesList", ["isFeatureDisabled", "layerMapById", "activeVectorLayerList"]),
-        ...mapGetters("Map", ["layerById", "projectionCode"])
+        ...mapGetters("Maps", ["projectionCode"])
     },
     watch: {
         async layerFilterModels (newValue) {
@@ -133,14 +133,14 @@ export default {
 
     async mounted () {
         this.applyTranslationKey(this.name);
-        this.mapLayer = await this.createLayer("query-districts");
+        this.mapLayer = await this.addNewLayerIfNotExists({layerName: "query-districts"});
     },
     methods: {
         ...mapMutations("Tools/QueryDistricts", Object.keys(mutations)),
         ...mapMutations("Tools/DistrictSelector", ["setSelectedDistrictsCollection"]),
         ...mapActions("Tools/DistrictSelector", ["setDistrictsByName"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
-        ...mapActions("Map", ["zoomTo", "createLayer"]),
+        ...mapActions("Maps", ["zoomToExtent", "addNewLayerIfNotExists"]),
         ...compareFeatures,
 
         initializeDistrictNames: function () {
@@ -465,7 +465,7 @@ export default {
                 if (feature.getProperties()[attributeSelector] === row.name) {
                     const extent = feature.getGeometry().getExtent();
 
-                    this.zoomTo({geometryOrExtent: extent, options: {padding: [20, 20, 20, 20]}});
+                    this.zoomToExtent({extent: extent, options: {padding: [20, 20, 20, 20]}});
                     return;
                 }
             }
@@ -735,7 +735,7 @@ export default {
 <template lang="html">
     <Tool
         :title="$t('additional:modules.tools.cosi.queryDistricts.title')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"

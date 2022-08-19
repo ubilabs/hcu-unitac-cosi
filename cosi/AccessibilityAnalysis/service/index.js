@@ -138,17 +138,17 @@ const id = "AccessibilityAnalysisService",
                     await init({coords: [getters.filterPoly]});
                 }
                 else if (getters.filterUrl && getters.filterFeatureType) {
-                    const coords = await loadFilterPoly(getters.filterUrl, getters.filterFeatureType, rootGetters["Map/projectionCode"]);
+                    const coords = await loadFilterPoly(getters.filterUrl, getters.filterFeatureType, rootGetters["Maps/projectionCode"]);
 
                     await init({coords});
                 }
             }
 
             try {
-                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl(getters.serviceId), projectionCode: rootGetters["Map/projectionCode"]}, (p) => commit("setProgress", p));
+                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl(getters.serviceId), projectionCode: rootGetters["Maps/projectionCode"]}, (p) => commit("setProgress", p));
             }
             catch {
-                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl(), projectionCode: rootGetters["Map/projectionCode"]}, (p) => commit("setProgress", p));
+                ret = await createIsochrones({...params, batchSize: getters.batchSize, baseUrl: getters.baseUrl(), projectionCode: rootGetters["Maps/projectionCode"]}, (p) => commit("setProgress", p));
             }
             finally {
                 commit("setProgress", 0);

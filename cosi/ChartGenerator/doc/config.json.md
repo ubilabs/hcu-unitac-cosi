@@ -10,14 +10,14 @@ Das Tool kann angesprochen werden, indem der State newDataset im Store (stateCha
 |Name|Verpflichtend|Typ|Default|Beschreibung|
 |----|-------------|---|-------|------------|
 |name|nein|String|Gebiet auswählen|Name des Werkzeuges im Menu.|
-|glyphicon|nein|String|glyphicon-map|CSS Klasse des Glyphicons, das vor dem Toolnamen im Menu angezeigt wird.|
+|icon|nein|String|bi-bar-chart|CSS Klasse des Glyphicons, das vor dem Toolnamen im Menu angezeigt wird.|
 |isVisibleInMenu|nein|Boolean|false|Das Tool wird nicht im Menü geladen.|
 
 **Beispiel**
 ```
 "chartGenerator": {
   "name": "Graphenvisualisierung",
-  "glyphicon": "glyphicon-stats,
+  "icon": ""bi-bar-chart,
   "isVisibleInMenu", false
 }
 ```

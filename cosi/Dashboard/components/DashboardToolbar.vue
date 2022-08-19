@@ -98,7 +98,7 @@ export default {
         <v-checkbox
             id="export-details"
             v-model="exportTimeline"
-            class="form-check-input float-right"
+            class="float-right"
             dense
             hide-details
             :label="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
@@ -119,7 +119,4 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-    #dashboard-toolbar {
-        display: block;
-    }
 </style>

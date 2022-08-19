@@ -43,9 +43,16 @@ export default {
     }),
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
+        ...mapGetters("Maps", ["getLayerById"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "layerMapById"]),
         ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
+        /**
+         * gets the 2D map from the collection
+         * @returns {module:ol/Map} the 2D map
+         */
+        map () {
+            return mapCollection.getMap("2D");
+        },
         isSimulation () {
             return this.selectedFeature.properties?.isSimulation;
         },
@@ -129,9 +136,9 @@ export default {
         },
 
         updateSelectedFeature () {
-            const layer = this.layerById(this.selectedFeature.layerMap.layerId);
+            const layer = this.getLayerById({layerId: this.selectedFeature.layerMap.layerId});
 
-            this.activeScenario.modifyFeature(this.selectedFeature.feature, this.selectedFeature.properties, layer.olLayer);
+            this.activeScenario.modifyFeature(this.selectedFeature.feature, this.selectedFeature.properties, layer);
             this.reset();
         },
 

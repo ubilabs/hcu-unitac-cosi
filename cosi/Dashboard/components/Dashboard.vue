@@ -523,7 +523,7 @@ export default {
     <Tool
         class="no-scroll"
         :title="$t('additional:modules.tools.cosi.dashboard.title')"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"

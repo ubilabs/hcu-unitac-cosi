@@ -217,7 +217,7 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ResidentialSimulation", Object.keys(mutations)),
-        ...mapActions("Map", ["createLayer"]),
+        ...mapActions("Maps", ["addNewLayerIfNotExists"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Tools/DistrictSelector", ["getStatsByDistrict"]),
 
@@ -226,7 +226,7 @@ export default {
          * @returns {void}
          */
         async createDrawingLayer () {
-            const newLayer = await this.createLayer(this.id + "_layer");
+            const newLayer = await this.addNewLayerIfNotExists({layerName: this.id + "_layer"});
 
             newLayer.setVisible(true);
             newLayer.setStyle(residentialLayerStyle);
@@ -408,7 +408,7 @@ export default {
     <div :class="active ? 'tool-wrap' : ''">
         <Tool
             :title="$t('additional:modules.tools.cosi.residentialSimulation.title')"
-            :icon="glyphicon"
+            :icon="icon"
             :active="active"
             :render-to-window="renderToWindow"
             :resizable-window="resizableWindow"

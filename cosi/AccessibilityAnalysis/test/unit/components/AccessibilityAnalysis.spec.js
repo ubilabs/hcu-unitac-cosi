@@ -46,7 +46,7 @@ describe("AccessibilityAnalysis.vue", () => {
                         children: {
                             AccessibilityAnalysis: {
                                 "name": "translate#additional:modules.tools.vueAddon.title",
-                                "glyphicon": "glyphicon-th-list"
+                                "icon": "bi-geo"
                             }
                         }
                     }
@@ -168,7 +168,7 @@ describe("AccessibilityAnalysis.vue", () => {
                         projectionCode: () => "EPSG:25832"
                     },
                     actions: {
-                        createLayer: () => {
+                        addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: () => sinon.stub(),
                                 setZIndex: () => sinon.stub(),
@@ -202,7 +202,7 @@ describe("AccessibilityAnalysis.vue", () => {
                 MapMarker: {
                     namespaced: true,
                     actions: {
-                        placingPointMarker: () => sinon.stub(), 
+                        placingPointMarker: () => sinon.stub(),
                         removePointMarker: () => sinon.stub()
                     }
                 }
@@ -235,7 +235,7 @@ describe("AccessibilityAnalysis.vue", () => {
                 return layersMock[0];
             }
             if (a1 === "RestReader" && a2 === "getServiceById" && a3 === "bkg_ors") {
-                return {get: () => ""}
+                return {get: () => ""};
             }
             return null;
         });

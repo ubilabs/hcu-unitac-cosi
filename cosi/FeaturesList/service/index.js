@@ -74,7 +74,7 @@ async function distanceScore ({getters, commit, rootGetters}, {feature, weights,
         let mindist = getters.mindists[id];
 
         if (!mindist) {
-            mindist = await layerScore(feature, layerIds[j], getters.initialBuffer, getters.bufferIncrement, rootGetters["Map/projectionCode"], getters.serviceId, getters.fallbackServiceId);
+            mindist = await layerScore(feature, layerIds[j], getters.initialBuffer, getters.bufferIncrement, rootGetters["Maps/projectionCode"], getters.serviceId, getters.fallbackServiceId);
             commit("setMindists", {...getters.mindists, [id]: mindist});
         }
 
@@ -149,7 +149,7 @@ async function featureValues ({getters, rootGetters}, {feature, layerId}) {
         coord = feature.getGeometry().flatCoordinates.slice(0, 2),
         wmsAttrs = getters.wmsLayers.find(l => l.id === layerId),
         converter = getConverter(wmsAttrs.converter),
-        infos = await getFeatureInfos(layer.url, layer.layers, coord, rootGetters["Map/projectionCode"], wmsAttrs.resolution, wmsAttrs.featureCount);
+        infos = await getFeatureInfos(layer.url, layer.layers, coord, rootGetters["Maps/projectionCode"], wmsAttrs.resolution, wmsAttrs.featureCount);
 
     if (infos.length > 0) {
         return aggregate(infos.map(info => converter.convert(info.getProperties()[wmsAttrs.attribute])),

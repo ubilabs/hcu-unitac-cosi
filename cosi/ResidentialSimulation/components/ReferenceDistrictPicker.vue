@@ -40,8 +40,16 @@ export default {
         checkbox: false
     }),
     computed: {
-        ...mapGetters("Map", {map: "ol2DMap", layerById: "layerById"}),
+        ...mapGetters("Maps", ["getLayerById"]),
         ...mapGetters("Tools/DistrictSelector", ["districtLevels", "selectedDistrictLevel", "mapping"]),
+
+        /**
+         * gets the 2D map from the collection
+         * @returns {module:ol/Map} the 2D map
+         */
+        map () {
+            return mapCollection.getMap("2D");
+        },
 
         statsMapping () {
             return groupMapping(this.mapping);
@@ -80,7 +88,7 @@ export default {
          * @returns {void}
          */
         workingDistrictLevel () {
-            this.layer = this.layerById(this.workingDistrictLevel?.layerId)?.olLayer;
+            this.layer = this.getLayerById({layerId: this.workingDistrictLevel?.layerId});
             if (this.referencePickerActive) {
                 this.unlisten();
                 this.listen();

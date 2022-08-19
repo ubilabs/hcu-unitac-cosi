@@ -7,7 +7,7 @@ import store from "../../../../src/app-store";
  * @returns {String} the map's current CRS code
  */
 function getPortalCrs () {
-    return store.getters["Map/projectionCode"];
+    return store.getters["Maps/projectionCode"];
 }
 
 /**

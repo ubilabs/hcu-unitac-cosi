@@ -40,7 +40,7 @@ before(() => {
 });
 
 describe("Dipas.vue", () => {
-    let store, clearStub, sourceStub, vuetify, features,
+    let store, vuetify, features,
         wrapper = null;
 
     const factory = {
@@ -195,14 +195,14 @@ describe("Dipas.vue", () => {
 
     beforeEach(async () => {
         vuetify = new Vuetify();
-        clearStub = sinon.stub();
-        sourceStub = {
-            clear: clearStub,
-            addFeatures: sinon.stub(),
-            getFeatures: sinon.stub().returns([
-                []
-            ])
-        };
+        // clearStub = sinon.stub();
+        // sourceStub = {
+        //     clear: clearStub,
+        //     addFeatures: sinon.stub(),
+        //     getFeatures: sinon.stub().returns([
+        //         []
+        //     ])
+        // };
 
         store = new Vuex.Store({
             namespaced: true,
@@ -233,15 +233,6 @@ describe("Dipas.vue", () => {
                             getLayers: () => ({getArray: sinon.stub()})
                         }),
                         projectionCode: () => "EPSG:25832"
-                    },
-                    actions: {
-                        createLayer: () => {
-                            return Promise.resolve({
-                                setVisible: sinon.stub(),
-                                addEventListener: sinon.stub(),
-                                getSource: () => sourceStub
-                            });
-                        }
                     }
                 }
             },

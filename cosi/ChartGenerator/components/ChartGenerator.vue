@@ -274,7 +274,7 @@ export default {
     <Tool
         id="chart-generator-win"
         :title="$t(name)"
-        :icon="glyphicon"
+        :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
         :resizable-window="resizableWindow"

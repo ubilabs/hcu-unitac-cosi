@@ -167,15 +167,15 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                         }
                     }
                 },
-                Map: {
+                Maps: {
                     namespaced: true,
                     getters: {
-                        layerById: () => sinon.stub().returns({olLayer: createLayer()}),
-                        layerList: layerListStub
+                        getLayerById: () => sinon.stub().returns(createLayer()),
+                        getVisibleLayerList: layerListStub
                     },
                     actions: {
                         removeHighlightFeature: () => sinon.stub(),
-                        createLayer: () => {
+                        addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: sinon.stub(),
                                 addEventListener: sinon.stub(),

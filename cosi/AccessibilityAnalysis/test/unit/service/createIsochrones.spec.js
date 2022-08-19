@@ -25,7 +25,7 @@ function baseUrl () {
 }
 
 const rootGetters = {
-    "Map/projectionCode": "EPSG:25832"
+    "Maps/projectionCode": "EPSG:25832"
 };
 
 before(() => {
@@ -160,6 +160,7 @@ describe("createIsochrones", () => {
 
         console.error = sinon.stub();
 
+        // eslint-disable-next-line one-var
         const ret = await service.store.actions.getIsochrones({getters: {baseUrl}, commit: commitStub, rootGetters},
             {
                 coordinates: [[9.744273174491198, "b"]],
@@ -170,6 +171,7 @@ describe("createIsochrones", () => {
 
         expect(ret.length).to.equal(0);
 
+        // eslint-disable-next-line require-atomic-updates
         console.error = originalError;
     });
     it("should not fail if one point is outside hamburg", async () => {

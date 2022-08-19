@@ -39,13 +39,14 @@ export default {
                                 });
                             });
                             break;
-                        case "Map/layerIds":
+                        case "Maps/layerIds":
                             this.$nextTick(() => {
                                 state[key][attr].forEach(layerId => this.getTopicsLayer(layerId));
                             });
                             break;
-                        case "Map/zoomLevel":
-                            this.$store.dispatch(mutation, state[key][attr]);
+                        case "Maps/view":
+                            // this.$store.dispatch(mutation, state[key][attr]);
+                            mapCollection.getMap("2D").setView(state[key][attr]);
                             break;
                         case "AreaSelector/geometry":
                             // hacky, wait for the districts to be selected
@@ -176,8 +177,10 @@ export default {
         return new this.geomConstructors[type](coordinates);
     },
 
-    parseDrawFeatures (state, mutation, key, attr) {
-        this.$store.commit(mutation, Radio.request("Map", "createLayerIfNotExists", this.$store.state.Tools.Draw.layerId));
+    async parseDrawFeatures (state, mutation, key, attr) {
+        // this.$store.commit(mutation, Radio.request("Map", "createLayerIfNotExists", this.$store.state.Tools.Draw.layerId));
+        /** @todo not tested!!! */
+        this.$store.commit(mutation, await this.addNewLayerIfNotExists({layerName: this.$store.state.Tools.Draw.layerId}));
         this.$store.dispatch("Tools/Draw/clearLayer");
         const source = this.$store.state.Tools.Draw.layer.getSource();
 

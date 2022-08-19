@@ -89,7 +89,7 @@ export function setBBoxToGeom (bboxGeometry) {
 export function setBboxGeometryToLayer (itemList, bboxGeometry, app) {
     const
         modelList = Radio.request("ModelList", "getCollection"),
-        crs = app?.$store.getters["Map/projectionCode"] || "EPSG:25832";
+        crs = app?.$store.getters["Maps/projectionCode"] || "EPSG:25832";
 
     itemList.forEach(function (item) {
         const model = modelList.get({id: item.id});

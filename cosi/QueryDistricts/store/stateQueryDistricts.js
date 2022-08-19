@@ -1,6 +1,6 @@
 /**
  * User type definition
- * @typedef {object} VueAddonState
+ * @typedef {object} QueryDistricts
  * @property {boolean} active if true, VueAddon will rendered
  * @property {string} id id of the VueAddon component
  * @property {module:ol/interaction/Pointer} selectPointerMove contains interaction listener to map
@@ -14,7 +14,7 @@
  * @property {string} coordinatesEastingField label of the easting field
  * @property {string} coordinatesNorthingField label of the northing field
  * @property {string} name displayed as title (config-param)
- * @property {string} glyphicon icon next to title (config-param)
+ * @property {string} [icon="bi-binoculars"] icon next to title (config-param)
  * @property {boolean} renderToWindow if true, tool is rendered in a window, else in sidebar (config-param)
  * @property {boolean} resizableWindow if true, window is resizable (config-param)
  * @property {boolean} isVisibleInMenu if true, tool is selectable in menu (config-param)
@@ -25,15 +25,12 @@ const state = {
     id: "QueryDistricts",
     // defaults for config.json parameters
     name: "QueryDistricts",
-    glyphicon: "glyphicon-screenshot",
+    icon: "bi-binoculars",
     renderToWindow: true,
     resizableWindow: false,
     isVisibleInMenu: true,
     deactivateGFI: true,
     referenceLayers: [{"id": "15563"}, {"id": "15990"}, {"id": "19041"}, {"id": "19034"}, {"id": "18977"}, {"id": "18970"}],
-    // selectedDistrict: null,
-    // layerFilterModels: [],
-    // selectedLayer: null,
     propertiesMap: {},
     dataSets: [{
         inputs: {

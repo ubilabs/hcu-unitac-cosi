@@ -44,7 +44,7 @@ describe("CharGenerator.vue", () => {
                     children: {
                         ChartGenerator: {
                             name: "translate#additional:modules.tools.vueAddon.title",
-                            glyphicon: "glyphicon-th-list",
+                            icon: "bi-bar-chart",
                             yearSelector: "jahr_"
                         }
                     }

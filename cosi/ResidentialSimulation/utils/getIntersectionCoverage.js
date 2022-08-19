@@ -8,7 +8,7 @@ import store from "../../../../src/app-store";
  * @return {number} - the percentage as float
  */
 export default function getIntersectionCoverage (feature1, feature2) {
-    const crs = store.getters["Map/projectionCode"],
+    const crs = store.getters["Maps/projectionCode"],
         intersection = intersect(
             [feature1, feature2],
             true,

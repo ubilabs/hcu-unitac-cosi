@@ -142,17 +142,17 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
                         }
                     }
                 },
-                Map: {
+                mockFeatureTypeDesc: {
                     namespaced: true,
                     getters: {
-                        layerById: () => sinon.stub().returns({olLayer: layer}),
-                        ol2DMap: () => ({
-                            getLayers: () => ({getArray: sinon.stub()}),
-                            addEventListener: sinon.stub(),
-                            removeEventListener: sinon.stub(),
-                            addInteraction: sinon.stub(),
-                            removeInteraction: sinon.stub()
-                        }),
+                        getLayerById: () => sinon.stub().returns(layer),
+                        // ol2DMap: () => ({
+                        //     getLayers: () => ({getArray: sinon.stub()}),
+                        //     addEventListener: sinon.stub(),
+                        //     removeEventListener: sinon.stub(),
+                        //     addInteraction: sinon.stub(),
+                        //     removeInteraction: sinon.stub()
+                        // }),
                         projectionCode: sinon.stub().returns("EPSG:25832")
                     },
                     mutations: {
@@ -160,7 +160,7 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
                     },
                     actions: {
                         removeHighlightFeature: () => sinon.stub(),
-                        createLayer: () => {
+                        addNewLayerIfNotExists: () => {
                             return Promise.resolve(new Layer({
                                 source: new Source()
                             }));
