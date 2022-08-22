@@ -23,17 +23,11 @@ export default {
             scenarioFeature: null,
             editFeature: null
         },
-        confirmDialog: false
+        confirmDialog: false,
+        map: undefined
     }),
     computed: {
         ...mapGetters("Tools/ScenarioBuilder", ["activeScenario"]),
-        /**
-         * gets the 2D map from the collection
-         * @returns {module:ol/Map} the 2D map
-         */
-        map () {
-            return mapCollection.getMap("2D");
-        },
         neighborhoodName () {
             return this.selectedNeighborhood.editFeature?.get("name");
         },

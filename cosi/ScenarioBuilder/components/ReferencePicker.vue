@@ -29,17 +29,11 @@ export default {
         referencePickerActive: false,
         referenceFeature: null,
         clusteredFeatures: [],
-        showClusteredFeaturePicker: false
+        showClusteredFeaturePicker: false,
+        map: undefined
     }),
     computed: {
         ...mapGetters("Maps", ["getLayerById"]),
-        /**
-         * gets the 2D map from the collection
-         * @returns {module:ol/Map} the 2D map
-         */
-        map () {
-            return mapCollection.getMap("2D");
-        },
 
         /**
          * Returns the OpenLayers map layer from the workingLayer object

@@ -176,15 +176,9 @@ export default {
         return new this.geomConstructors[type](coordinates);
     },
 
-<<<<<<< HEAD
     async parseDrawFeatures (state, mutation, key, attr) {
-        // this.$store.commit(mutation, Radio.request("Map", "createLayerIfNotExists", this.$store.state.Tools.Draw.layerId));
         /** @todo not tested!!! */
         this.$store.commit(mutation, await this.addNewLayerIfNotExists({layerName: this.$store.state.Tools.Draw.layerId}));
-=======
-    parseDrawFeatures (state, mutation, key, attr) {
-        this.$store.commit(mutation, Radio.request("Maps", "createLayerIfNotExists", this.$store.state.Tools.Draw.layerId));
->>>>>>> 9daae4803bcd06f34a3807077b82db749a5e31ec
         this.$store.dispatch("Tools/Draw/clearLayer");
         const source = this.$store.state.Tools.Draw.layer.getSource();
 

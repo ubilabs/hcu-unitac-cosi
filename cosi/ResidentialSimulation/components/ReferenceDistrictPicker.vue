@@ -37,19 +37,12 @@ export default {
         workingDistrictLevel: null,
         selectedStatsFeature: null,
         layer: null,
-        checkbox: false
+        checkbox: false,
+        map: undefined
     }),
     computed: {
         ...mapGetters("Maps", ["getLayerById"]),
         ...mapGetters("Tools/DistrictSelector", ["districtLevels", "selectedDistrictLevel", "mapping"]),
-
-        /**
-         * gets the 2D map from the collection
-         * @returns {module:ol/Map} the 2D map
-         */
-        map () {
-            return mapCollection.getMap("2D");
-        },
 
         statsMapping () {
             return groupMapping(this.mapping);

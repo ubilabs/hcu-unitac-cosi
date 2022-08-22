@@ -19,6 +19,7 @@ import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
+import Vue from "vue";
 
 import
 {

@@ -23,13 +23,13 @@ const getters = {
     featureByAttribute: (state, {featureItemByAttributes}) => attrs => {
         return featureItemByAttributes(attrs)?.feature;
     },
-    activeVectorLayerList (state, {flatActiveVectorLayerIdList}, rootState, rootGetters) {
-        const layerList = rootGetters["Maps/getVisibleLayerList"];
+    activeVectorLayerList (state, {flatActiveVectorLayerIdList}) {
+        const layerList = mapCollection.getMap("2D").getLayers().getArray().filter(layer => layer.getVisible());
 
         return layerList.filter(layer => flatActiveVectorLayerIdList.includes(layer.get("id")));
     },
-    activeLayerMapping (state, {mapping}, rootState, rootGetters) {
-        const layerList = rootGetters["Maps/getVisibleLayerList"],
+    activeLayerMapping (state, {mapping}) {
+        const layerList = mapCollection.getMap("2D").getLayers().getArray().filter(layer => layer.getVisible()),
             activeLayerList = layerList.map(layer => layer.get("id"));
 
         return mapping.reduce((groups, group) => {

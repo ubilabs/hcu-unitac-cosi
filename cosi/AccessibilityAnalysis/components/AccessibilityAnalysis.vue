@@ -91,7 +91,8 @@ export default {
             abortController: null,
             currentCoordinates: null,
             select: null,
-            hide: false
+            hide: false,
+            map: undefined
         };
     },
     computed: {
@@ -106,13 +107,6 @@ export default {
         ...mapGetters("Tools/ScenarioBuilder", ["scenarioUpdated"]),
         ...mapGetters("Tools/Routing/Directions", ["directionsRouteSource", "directionsRouteLayer", "routingDirections"]),
         ...mapGetters("Tools/Routing", {routingActive: "active", activeRoutingToolOption: "activeRoutingToolOption"}),
-        /**
-         * gets the 2D map from the collection
-         * @returns {module:ol/Map} the 2D map
-         */
-        map () {
-            return mapCollection.getMap("2D");
-        },
         _mode: {
             get () {
                 return this.mode;

@@ -54,7 +54,8 @@ export default {
             formValid: false,
             isCreated: false,
             editDialog: false,
-            editFeature: null
+            editFeature: null,
+            map: undefined
         };
     },
     computed: {
@@ -63,13 +64,6 @@ export default {
         ...mapGetters("Tools/FeaturesList", ["groupActiveLayer", "activeVectorLayerList"]),
         ...mapGetters("Maps", ["getLayerById", "projectionCode"]),
         ...mapGetters("Tools/Routing", ["geosearchReverse"]),
-        /**
-         * gets the 2D map from the collection
-         * @returns {module:ol/Map} the 2D map
-         */
-        map () {
-            return mapCollection.getMap("2D");
-        },
         /**
          * Getter and Setter for the manuel coordinates Input for the geometry
          */

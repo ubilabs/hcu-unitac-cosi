@@ -36,7 +36,8 @@ export default {
             pollingEnabled: false,
             poll: null,
             isMounted: false,
-            scrollPos: ""
+            scrollPos: "",
+            map: undefined
         };
     },
     computed: {
@@ -47,13 +48,6 @@ export default {
          */
         ...mapGetters("Maps", {layerById: "getLayerById", projectionCode: "projectionCode"}),
         ...mapGetters("Language", ["currentLocale"]),
-        /**
-         * gets the 2D map from the collection
-         * @returns {module:ol/Map} the 2D map
-         */
-        map () {
-            return mapCollection.getMap("2D");
-        },
         isProjectActive () {
             return (id) => {
                 const projectActive = this.projectsActive[id];
@@ -100,11 +94,7 @@ export default {
         this.initialize();
     },
     methods: {
-<<<<<<< HEAD
         ...mapActions("Maps", ["zoomToExtent"]),
-=======
-        ...mapActions("Maps", ["addNewLayerIfNotExists", "zoomToExtent"]),
->>>>>>> 9daae4803bcd06f34a3807077b82db749a5e31ec
         ...mapActions("Tools/Dipas", ["addLayer"]),
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/Dipas", Object.keys(mutations)),
@@ -598,11 +588,7 @@ export default {
         zoomToProject (feature) {
             const extent = feature.getGeometry().getExtent();
 
-<<<<<<< HEAD
             this.zoomToExtent({extent: extent, options: {padding: [20, 20, 20, 20]}});
-=======
-            this.zoomToExtent({extent, options: {padding: [20, 20, 20, 20]}});
->>>>>>> 9daae4803bcd06f34a3807077b82db749a5e31ec
         },
 
         getDateString (feature) {

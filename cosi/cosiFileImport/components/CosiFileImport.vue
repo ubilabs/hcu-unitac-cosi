@@ -84,13 +84,6 @@ export default {
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
         ...mapGetters("Tools/FeaturesList", ["layerMapById"]),
         ...mapGetters("Maps", ["projectionCode"]),
-        /**
-         * gets the 2D map from the collection
-         * @returns {module:ol/Map} the 2D map
-         */
-        map () {
-            return mapCollection.getMap("2D");
-        },
         selectedFiletype: {
             get () {
                 return this.storePath.selectedFiletype;
@@ -172,7 +165,6 @@ export default {
     },
     created () {
         this.$on("close", this.close);
-        this.map = mapCollection.getMap("2D");
     },
     mounted () {
         const namedProjections = this.$store.state.configJson.namedProjections;
