@@ -71,7 +71,7 @@
                 "printExport":"Export as PDF",
                 "alertMessage":{
                     "noData": "Data request failed. This may be a temporary problem. Please try again.",
-                    "noBrw": "There is no land value at this position"
+                    "noBrw": "There is no land value at this clicked position"
                 },
                 "config": {
                     "placeholder": "Search by address/Ground reference number",

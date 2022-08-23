@@ -71,7 +71,7 @@
                 "printExport":"Als PDF exportieren",
                 "alertMessage" :{
                     "noData": "Datenabfrage fehlgeschlagen. Dies kann ein temporäres Problem sein. Bitte versuchen Sie es erneut.",
-                    "noBrw": "An dieser Stelle ist kein BRW vorhanden."
+                    "noBrw": "An dieser ausgewählten Stelle ist kein BRW vorhanden."
                 },
                 "config": {
                     "placeholder": "Suche nach Adresse/Bodenrichtwertnummer",

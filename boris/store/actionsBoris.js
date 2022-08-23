@@ -100,15 +100,7 @@ const actions = {
             }
         }
         if (previousYear > 2008 && currentYear <= 2008) {
-            if (rootGetters["Maps/clickCoordinate"]) {
-                dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.boris.alertMessage:noBrw"), {root: true});
-            }
-            dispatch("MapMarker/removePolygonMarker", null, {root: true});
-            commit("setSelectedBrwFeature", {});
-            commit("setSelectedLanduse", "");
-            commit("setSelectedPolygon", null);
-            commit("setTextIds", []);
-            commit("Maps/setClickCoordinate", null, {root: true});
+            dispatch("requestGFI", {processFromParametricUrl: false, center: null});
         }
         else if (currentYear > 2008 && previousYear <= 2008) {
             dispatch("MapMarker/removePointMarker", null, {root: true});
