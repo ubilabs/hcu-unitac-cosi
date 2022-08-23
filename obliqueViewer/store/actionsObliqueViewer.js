@@ -44,7 +44,7 @@ const actions = {
                     header.style.display = "none";
                     header.parentElement.style.display = "none";
                     commit("setDefaultMapMarkerStyleId", rootGetters["MapMarker/pointStyleId"]);
-                    commit("MapMarker/setPointStyleId", getters.mapMarkerStyleId, {root: true});
+                    commit("MapMarker/setPointStyleId", getters.styleId, {root: true});
                     dispatch("setObliqueView", rootGetters["Maps/center"]);
                     observer.disconnect();
                 }
@@ -102,7 +102,7 @@ const actions = {
             dispatch("Alerting/addSingleAlert",
                 "<strong>" + i18next.t("additional:modules.tools.obliqueViewer.frameworkUndefined") + "</strong>"
                 + "<br>"
-                + "<small>" + i18next.t("additional:modules.tools.oktagon.frameworkUndefinedMessage") + "</small>",
+                + "<small>" + i18next.t("additional:modules.tools.obliqueViewer.frameworkUndefinedMessage") + "</small>",
                 {root: true}
             );
         }
