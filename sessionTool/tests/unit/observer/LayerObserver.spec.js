@@ -1,6 +1,11 @@
 import {expect} from "chai";
 import sinon from "sinon";
-import {getCurrentLayerList, setLayers, getModelByLayerId} from "../../../observer/LayerObserver";
+import {
+    getCurrentLayerList,
+    setLayers,
+    getModelByLayerId,
+    getLayerIdBlacklistFromAccordions
+} from "../../../observer/LayerObserver";
 
 
 describe("addons/sessionTool/observer/LayerObserver.js", () => {
@@ -105,6 +110,27 @@ describe("addons/sessionTool/observer/LayerObserver.js", () => {
         });
         it("should return true if an array is given", () => {
             expect(setLayers({layerIds: []})).to.be.true;
+        });
+    });
+    describe("getLayerIdBlacklistFromAccordions", () => {
+        it("should return an empty object if anything but an object is given", () => {
+            expect(getLayerIdBlacklistFromAccordions({})).to.be.an("object").that.is.empty;
+            expect(getLayerIdBlacklistFromAccordions(null)).to.be.an("object").that.is.empty;
+            expect(getLayerIdBlacklistFromAccordions(1234)).to.be.an("object").that.is.empty;
+            expect(getLayerIdBlacklistFromAccordions("string")).to.be.an("object").that.is.empty;
+            expect(getLayerIdBlacklistFromAccordions(true)).to.be.an("object").that.is.empty;
+            expect(getLayerIdBlacklistFromAccordions(false)).to.be.an("object").that.is.empty;
+            expect(getLayerIdBlacklistFromAccordions(undefined)).to.be.an("object").that.is.empty;
+        });
+        it("should return an object with layer id's as key", () => {
+            const accordions = [
+                    {
+                        layerId: 0
+                    }
+                ],
+                expected = {0: true};
+
+            expect(getLayerIdBlacklistFromAccordions(accordions)).to.deep.equal(expected);
         });
     });
 });

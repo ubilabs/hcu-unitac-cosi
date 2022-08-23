@@ -9,6 +9,7 @@ import {downloadBlobPerHTML5, downloadBlobPerNavigator} from "../../../src/share
 
 import {register as registerMap} from "../observer/MapObserver";
 import {register as registerLayers} from "../observer/LayerObserver";
+import {register as registerFilter} from "../observer/FilterObserver";
 
 export default {
     name: "SessionTool",
@@ -28,6 +29,7 @@ export default {
         this.$on("close", this.close);
         registerMap();
         registerLayers();
+        registerFilter();
     },
     methods: {
         ...mapMutations("Tools/SessionTool", Object.keys(mutations)),
@@ -68,7 +70,7 @@ export default {
 
                     Object.entries(json.state).forEach(([jsonKey, value]) => {
                         if (jsonKey === key) {
-                            setter(value);
+                            setter(value, json.state);
                         }
                     });
                 });

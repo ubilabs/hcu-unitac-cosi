@@ -15,7 +15,7 @@ function register () {
 
 /**
  * Gets the current extent of the map.
- * @returns {Object} an object which holds the extent
+ * @returns {Object} an object which holds the extent.
  */
 function getCurrentLayerList () {
     const models = getLayersByAttributes({isSelected: true, type: "layer"}),
@@ -40,14 +40,16 @@ function getCurrentLayerList () {
 
 /**
  * Sets the current extent of the map.
- * @param {Object} payload The payload
+ * @param {Object} payload The payload.
+ * @param {Object} state The state which includes the payload.
  * @returns {void}
  */
-function setLayers (payload) {
+function setLayers (payload, state = false) {
     if (!Array.isArray(payload?.layerIds)) {
         return false;
     }
-    const models = getLayersByAttributes({isSelected: true});
+    const models = getLayersByAttributes({isSelected: true, type: "layer"}),
+        blacklist = getLayerIdBlacklistFromAccordions(state?.Filter?.selectedAccordions);
 
     if (Array.isArray(models)) {
         models.forEach(model => {
@@ -56,6 +58,9 @@ function setLayers (payload) {
     }
 
     payload.layerIds.forEach(layer => {
+        if (Object.prototype.hasOwnProperty.call(blacklist, layer.id)) {
+            return;
+        }
         const model = getModelByLayerId(layer.id);
 
         if (typeof model?.setIsSelected === "function") {
@@ -69,9 +74,9 @@ function setLayers (payload) {
 }
 
 /**
- * Gets the model by given layerId
- * @param {String} layerId The layerId
- * @return {Boolean|ol/layer/Layer} returns false if layerId is not a string or a number otherwise returns the model
+ * Gets the model by given layerId.
+ * @param {String} layerId The layerId.
+ * @return {Boolean|ol/layer/Layer} returns false if layerId is not a string or a number otherwise returns the model.
  */
 function getModelByLayerId (layerId) {
     if (typeof layerId !== "string" && typeof layerId !== "number") {
@@ -91,10 +96,34 @@ function getModelByLayerId (layerId) {
 
     return model;
 }
+/**
+ * Get a blacklist of layer ids from given accordions.
+ * @param {Object[]} accordions The array of accordions.
+ * @returns {Object} An object with blacklisted layer ids as keys.
+ */
+function getLayerIdBlacklistFromAccordions (accordions) {
+    const blacklist = {};
+
+    if (!Array.isArray(accordions)) {
+        return {};
+    }
+    accordions.forEach(accordion => {
+        if (accordion?.category) {
+            accordion.layers.forEach(accordionInCategory => {
+                blacklist[accordionInCategory.layerId] = true;
+            });
+            return;
+        }
+        blacklist[accordion.layerId] = true;
+    });
+    return blacklist;
+}
+
 
 export {
     register,
     setLayers,
     getCurrentLayerList,
-    getModelByLayerId
+    getModelByLayerId,
+    getLayerIdBlacklistFromAccordions
 };
