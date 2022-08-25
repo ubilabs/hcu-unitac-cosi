@@ -19,7 +19,6 @@ import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
-import Vue from "vue";
 
 import
 {
@@ -523,6 +522,13 @@ export default {
             this.$root.$emit("updateFeature");
         },
 
+        /**
+         * Searches for any match in the table in all feature properties, not only the columns
+         * @param {*} value - the value of the feature (not needed)
+         * @param {String} search - the value to search for
+         * @param {Object} item - the feature to search in
+         * @return {Boolean} match or no match
+         */
         searchAllAttributes (value, search, item) {
             const allProps = {...item.feature.getProperties(), ...item};
 
