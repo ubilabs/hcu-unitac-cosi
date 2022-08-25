@@ -48,26 +48,7 @@ function addLayerToTree (newLayer) {
 
     Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "dipas", undefined, gfiAttributes, {isNeverVisibleInTree: true, isBaseLayer});
 
-    // eslint-disable-next-line one-var
-    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
-
-    setLayerAttributes(model, newLayer);
-    if (!newLayer.project) {
-        const filterModel = {
-                attributeWhiteList: ["votingPro", "votingContra", "commentsNumber", "category", "contributionType", "originalGeometryType", "dipasLocated"],
-                isActive: false,
-                isSelected: false,
-                layerId: newLayer.id,
-                name: newLayer.name,
-                useConfigName: true
-            },
-            filterQuery = Radio.request("Filter", "getFilters");
-
-
-        filterQuery.push(filterModel);
-    }
-
-    return model;
+    return Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
 }
 
 /**
@@ -108,7 +89,43 @@ function contributionsGfiAttributes () {
 }
 
 export default {
-    addLayer (_, newLayer) {
-        return addLayerToTree(newLayer);
+    /**
+     * Adds a new DIPAS layer to the map, creates a menu model and sets up the filter
+     * @param {*} ctx.rootGetters - the rootGetters of the store
+     * @param {*} ctx.commit - the commit method of the store
+     * @param {*} newLayer - the new layer raw properties to add to the map
+     * @returns {VectorBase} a new VectorBase Layer
+     */
+    addLayer ({rootGetters, commit}, newLayer) {
+        const model = addLayerToTree(newLayer);
+
+        setLayerAttributes(model, newLayer);
+
+        // create a filter if the Layer is not a project area
+        if (!newLayer.project) {
+            const filter = {
+                    layerId: newLayer.id,
+                    title: newLayer.name,
+                    strategy: "active",
+                    showHits: true,
+                    snippetTags: true,
+                    paging: 500,
+                    snippets: [
+                        {title: contributionsGfiAttributes().contributionContent, attrName: "contributionContent", type: "text", operator: "IN", placeholder: "Beitragstext durchsuchen..."},
+                        {title: contributionsGfiAttributes().votingPro, attrName: "votingPro", type: "sliderRange"},
+                        {title: contributionsGfiAttributes().votingContra, attrName: "votingContra", type: "sliderRange"},
+                        {title: contributionsGfiAttributes().commentsNumber, attrName: "commentsNumber", type: "sliderRange"},
+                        {title: contributionsGfiAttributes().category, attrName: "category", type: "dropdown"},
+                        {title: contributionsGfiAttributes().contributionType, attrName: "contributionType", type: "dropdown"},
+                        {title: contributionsGfiAttributes().originalGeometryType, attrName: "originalGeometryType", type: "dropdown"},
+                        {title: contributionsGfiAttributes().dipasLocated, attrName: "dipasLocated", type: "dropdown"}
+                    ]
+                },
+                filters = rootGetters["Tools/Filter/layers"];
+
+            commit("Tools/Filter/setLayers", [...filters, filter], {root: true});
+        }
+
+        return model;
     }
 };

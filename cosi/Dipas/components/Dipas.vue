@@ -309,7 +309,7 @@ export default {
             const id = feature.get("id"),
                 layer = {
                     id: id + "-contributions",
-                    name: feature.get("nameFull") + " BeitrÃ¤ge",
+                    name: feature.get("nameFull") + " Beiträge",
                     features: []
                 };
 

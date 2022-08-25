@@ -5,6 +5,7 @@ import {Fill, Stroke, Style, Circle, Icon} from "ol/style.js";
 import {color as d3Color, hsl} from "d3-color";
 import {interpolateRainbow} from "d3-scale-chromatic";
 import {scaleLinear} from "d3-scale";
+import beautifyKey from "../../../../src/utils/beautifyKey";
 
 const supportedFormats = {
     kml: new KML({extractStyles: true}),
@@ -216,20 +217,10 @@ function addLayerToTree (newLayer) {
     Radio.trigger("ModelList", "closeAllExpandedFolder");
 
     // eslint-disable-next-line one-var
-    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: layerId}),
-        filterModel = {
-            attributeWhiteList: newLayer.filterWhiteList,
-            isActive: false,
-            isSelected: false,
-            layerId: newLayer.id,
-            name: newLayer.name,
-            useConfigName: true
-        },
-        filterQuery = Radio.request("Filter", "getFilters");
+    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: layerId});
 
     setLayerAttributes(model, newLayer);
     adjustLayerStyling(model, newLayer);
-    filterQuery.push(filterModel);
     Radio.trigger("MouseHover", "add", {type: "layer", id: newLayer.id});
 
     return model;
@@ -483,10 +474,25 @@ function generateColorScale (color, length) {
 }
 
 export default {
-    passLayer ({commit, dispatch}, newLayer) {
+    passLayer ({commit, dispatch, rootGetters}, newLayer) {
         dispatch("addImportedFilename", newLayer.filename);
-        const model = addLayerToTree(newLayer);
+        const
+            model = addLayerToTree(newLayer),
+            filter = {
+                attributeWhiteList: newLayer.filterWhiteList,
+                layerId: newLayer.id,
+                title: newLayer.name,
+                strategy: "active",
+                showHits: true,
+                snippetTags: true,
+                paging: 500,
+                snippets: newLayer.filterWhiteList.map(attr => (
+                    {title: beautifyKey(attr), attrName: attr}
+                ))
+            },
+            filters = rootGetters["Tools/Filter/layers"];
 
+        commit("Tools/Filter/setLayers", [...filters, filter], {root: true});
         commit("setUpdateLayerStyles", true);
         return model;
     },

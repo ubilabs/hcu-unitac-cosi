@@ -47,19 +47,12 @@ export default {
             drawPolygonInteraction: null,
             drawLayer: null,
             polygonSelect: null,
-            foo: "bar"
+            map: undefined
         };
     },
     computed: {
         ...mapGetters("Maps", ["getLayerById", "projectionCode"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList"]),
-        /**
-         * gets the 2D map from the collection
-         * @returns {module:ol/Map} the 2D map
-         */
-        map () {
-            return mapCollection.getMap("2D");
-        },
 
         /**
          * Getter for the current value of the geometry as coordinates array
