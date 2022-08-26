@@ -10,6 +10,7 @@ import {downloadBlobPerHTML5, downloadBlobPerNavigator} from "../../../src/share
 import {register as registerMap} from "../observer/MapObserver";
 import {register as registerLayers} from "../observer/LayerObserver";
 import {register as registerFilter} from "../observer/FilterObserver";
+import {register as registerDraw} from "../observer/DrawObserver";
 
 export default {
     name: "SessionTool",
@@ -30,6 +31,7 @@ export default {
         registerMap();
         registerLayers();
         registerFilter();
+        registerDraw();
     },
     methods: {
         ...mapMutations("Tools/SessionTool", Object.keys(mutations)),
@@ -46,7 +48,7 @@ export default {
          * @param {Event} event the native upload event
          * @returns {void}
          */
-        uploadFile (event) {
+        async uploadFile (event) {
             const file = event.target.files.item(0),
                 fileReader = new FileReader();
 
@@ -68,9 +70,9 @@ export default {
                         return;
                     }
 
-                    Object.entries(json.state).forEach(([jsonKey, value]) => {
+                    Object.entries(json.state).forEach(async ([jsonKey, value]) => {
                         if (jsonKey === key) {
-                            setter(value, json.state);
+                            await setter(value, json.state);
                         }
                     });
                 });
@@ -99,19 +101,19 @@ export default {
          * @param {Object[]} observer the observer array from state
          * @returns {void}
          */
-        downloadFile (observer) {
+        async downloadFile (observer) {
             const copyObject = {
                 state: {}
             };
 
-            observer.forEach(({key, getter}) => {
-                if (typeof getter !== "function") {
-                    return;
+            for (let index = 0; index < observer.length; index++) {
+                if (typeof observer[index]?.getter !== "function") {
+                    continue;
                 }
-                const result = getter();
+                const result = await observer[index].getter();
 
-                copyObject.state[key] = result;
-            });
+                copyObject.state[observer[index].key] = result;
+            }
             this.createFile(new Blob([JSON.stringify(copyObject)], {type: "application/json;"}), "session.masterportal");
         },
         triggerUpload () {

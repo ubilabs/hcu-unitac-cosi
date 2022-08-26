@@ -17,7 +17,7 @@ const state = {
     icon: "bi-bullseye",
     id: "sessionTool",
     name: "additional:modules.tools.sessionTool",
-    renderToWindow: true,
+    renderToWindow: false,
     resizableWindow: true,
     isVisibleInMenu: true,
     observer: []
