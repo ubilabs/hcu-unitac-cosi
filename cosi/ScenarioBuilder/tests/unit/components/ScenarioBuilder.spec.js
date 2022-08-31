@@ -38,7 +38,7 @@ before(() => {
     addElemWithDataAppToBody();
 });
 
-describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
+describe("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
     let store, vuetify, wrapper;
 
     const
