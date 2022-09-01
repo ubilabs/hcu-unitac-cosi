@@ -91,8 +91,8 @@ export default {
             abortController: null,
             currentCoordinates: null,
             select: null,
-            hide: false,
-            map: undefined
+            hide: false
+            // map: undefined
         };
     },
     computed: {
@@ -207,19 +207,19 @@ export default {
     watch: {
         active () {
             if (this.active) {
-                this.map.addEventListener("click", this.setCoordinateFromClick);
+                this.registerListener({type: "click", listener: this.setCoordinateFromClick});
                 Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
 
                 if (this.mode === "path") {
-                    this.map.addLayer(this.directionsLayer);
+                    this.addLayer(this.directionsLayer);
                 }
             }
             else {
-                this.map.removeEventListener("click", this.setCoordinateFromClick);
+                this.unregisterListener({type: "click", listener: this.setCoordinateFromClick});
                 Radio.off("Searchbar", "hit", this.setSearchResultToOrigin);
                 this.removePointMarker();
                 this.select.getFeatures().clear();
-                this.map.removeLayer(this.directionsLayer);
+                this.removeLayerFromMap(this.directionsLayer);
             }
         },
         activeSet (newValue) {
@@ -258,13 +258,13 @@ export default {
             if (this.mode === "path") {
                 this._scaleUnit = "distance";
                 this._transportType = "foot-walking";
-                this.map.addLayer(this.directionsLayer);
+                this.addLayer(this.directionsLayer);
             }
             else {
-                this.map.removeLayer(this.directionsLayer);
+                this.removeLayerFromMap(this.directionsLayer);
 
                 if (!this.setByFeature) {
-                    this.map.removeInteraction(this.select);
+                    this.removeInteraction(this.select);
                     this.select.un("select", this.pickDirections.bind(this));
                 }
             }
@@ -274,13 +274,13 @@ export default {
         },
         setByFeature (val) {
             if (val && this.mode === "point") {
-                this.map.addInteraction(this.select);
+                this.addInteraction(this.select);
             }
             else {
                 if (this.select?.getFeatures().getLength() > 0) {
                     this.select.getFeatures().removeAt(0);
                 }
-                this.map.removeInteraction(this.select);
+                this.removeInteraction(this.select);
             }
         },
         activeVectorLayerList (newValues) {
@@ -305,7 +305,7 @@ export default {
         });
 
         this.baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url") + "/v2/";
-        this.map = mapCollection.getMap("2D");
+        // this.map = mapCollection.getMap("2D");
     },
 
     /**
@@ -323,7 +323,7 @@ export default {
         this.directionsLayer.setZIndex(10);
         this.directionsLayer.setStyle(this.directionsRouteLayer.getStyleFunction());
         this.directionsLayer.setSource(this.directionsRouteSource);
-        this.map.removeLayer(this.directionsLayer);
+        this.removeLayerFromMap(this.directionsLayer);
 
         Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
 
@@ -335,7 +335,8 @@ export default {
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapActions("Tools/AccessibilityAnalysisService", ["getIsochrones"]),
-        ...mapMutations("Maps", ["setCenter"]),
+        ...mapActions("Maps", ["setCenter", "removeInteraction", "addInteraction", "addLayer", "registerListener", "unregisterListener"]),
+        ...mapMutations("Maps", ["removeLayerFromMap"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
         ...mapActions("Maps", ["addNewLayerIfNotExists"]),
@@ -452,7 +453,7 @@ export default {
             this.mapLayer.getSource().clear();
             this.resetIsochroneBBox();
             this.removePointMarker();
-            this.map.removeLayer(this.directionsLayer);
+            this.removeLayerFromMap(this.directionsLayer);
         },
         downloadSet (index) {
             downloadGeoJson(this.dataSets[index].geojson);
