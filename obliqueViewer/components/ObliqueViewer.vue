@@ -50,7 +50,7 @@ export default {
         },
         clickCoordinate (value) {
             if (this.active === true) {
-                this.setObliqueView(value.coordinate);
+                this.setObliqueView(value.coordinate ? value.coordinate : value);
             }
         },
         isMobile (value) {
