@@ -19,7 +19,7 @@ export default {
         FloorComponent
     },
     computed: {
-        ...mapGetters("Tools/BorisComponent", ["active", "id", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLayerName", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options", "isProcessFromParametricUrl", "paramUrlParams"]),
+        ...mapGetters("Tools/BorisComponent", ["active", "id", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "keepOpen", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLayerName", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options", "isProcessFromParametricUrl", "paramUrlParams"]),
         ...mapGetters("Tools/Print", ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]),
         ...mapGetters({
             isMobile: "mobile"
@@ -242,6 +242,7 @@ export default {
         :resizable-window="resizableWindow"
         :initial-width="initialWidth"
         :initial-width-mobile="initialWidthMobile"
+        :keep-open="keepOpen"
     >
         <template #toolBody>
             <div
