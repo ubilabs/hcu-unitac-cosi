@@ -9,7 +9,7 @@
  * @property {Boolean} resizableWindow - if true, window is resizable (config-param)
  * @property {Number} initialWidth: Initial width the sidebar when opening
  * @property {Number} initialWidthMobile: Initial mobile width of the sidebar when opening
- * @property {Number} keepOpen: attribute that enables keeping the BORIS component open while opening another tool
+ * @property {Boolean} keepOpen: attribute that enables keeping the BORIS component open while opening another tool
  * @property {Boolean} isVisibleInMenu - if true, tool is selectable in menu (config-param)
  * @property {Boolean} deactivateGFI - flag if tool should deactivate gfi (config-param)
  * @property {Object} filteredLayerList - list of wms layers without the stripes layers
