@@ -4,7 +4,7 @@ import {
 import requestIsochrones from "../../../service/requestIsochrones";
 import axios from "axios";
 
-describe.only("requestIsochrones", () => {
+describe("requestIsochrones", () => {
     it("point request within hamburg", async () => {
         const res = await requestIsochrones(
             "driving-car", [

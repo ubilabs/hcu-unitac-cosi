@@ -69,7 +69,16 @@ function createFeature (key) {
     }
     return feature;
 }
+before(() => {
+    mapCollection.clear();
+    const map = {
+        id: "ol",
+        mode: "2D",
+        updateSize: () => sinon.stub()
+    };
 
+    mapCollection.addMap(map, "2D");
+});
 
 describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
     let store, sandbox, vuetify, layerListStub, getDistanceScoreStub, sourceStub, clearStub, _wrapper;
@@ -170,7 +179,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                 Maps: {
                     namespaced: true,
                     getters: {
-                        getLayerById: () => sinon.stub().returns(createLayer()),
+                        getLayerById: () => sinon.stub().returns(addNewLayerIfNotExists()),
                         getVisibleLayerList: layerListStub
                     },
                     actions: {
@@ -178,6 +187,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                         addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: sinon.stub(),
+                                setZIndex: sinon.stub(),
                                 addEventListener: sinon.stub(),
                                 getSource: () => sourceStub
                             });
