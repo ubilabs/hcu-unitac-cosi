@@ -37,6 +37,9 @@ async function getCurrentStateOfDraw () {
  * @returns {void}
  */
 async function setDrawState (payload) {
+    if (!Array.isArray(payload?.draw?.features) || !payload?.draw?.features?.length) {
+        return;
+    }
     const vectorLayer = await store.dispatch("Maps/addNewLayerIfNotExists", "importDrawLayer", {root: true});
 
     store.dispatch("Tools/FileImport/importGeoJSON", {raw: JSON.stringify(payload.draw), layer: vectorLayer, filename: "draw.geojson"});
