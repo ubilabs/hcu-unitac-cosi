@@ -8,6 +8,7 @@ import ToolInfo from "../../components/ToolInfo.vue";
 // import ImportManager from "./ImportManager.vue";
 // import EditLayer from "./EditLayer.vue";
 import InlineSvg from "vue-inline-svg";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "CosiFileImport",
@@ -190,6 +191,7 @@ export default {
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/CosiFileImport", Object.keys(mutations)),
         ...mapMutations("Tools/CalculateRatio", ["setFacilityMappingUpdate"]),
+
         onDZDragenter () {
             this.dzIsDropHovering = true;
         },
@@ -326,7 +328,7 @@ export default {
          * @returns {void}
          */
         removeLayer (filename) {
-            const layerModel = Radio.request("ModelList", "getModelByAttributes", {type: "layer", filename: filename}),
+            const layerModel = getModelByAttributes({type: "layer", filename: filename}),
                 layerMap = this.layerMapById(layerModel.get("id"));
 
             this.removeVectorLayerFromMapping(layerMap);

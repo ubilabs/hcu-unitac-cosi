@@ -12,6 +12,7 @@ import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import * as turf from "@turf/turf";
 import {readFeatures, transformFeatures} from "../components/util.js";
 import getClusterSource from "../../utils/getClusterSource";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 export const methodConfig = {
     store: null
@@ -388,7 +389,7 @@ export default {
         return {distance, maxDistance, minDistance, steps};
     },
     getCoordinates: function (setByFeature) {
-        const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
+        const selectedLayerModel = getModelByAttributes({
             name: this.selectedFacilityName,
             type: "layer"
         });

@@ -6,6 +6,7 @@ import {color as d3Color, hsl} from "d3-color";
 import {interpolateRainbow} from "d3-scale-chromatic";
 import {scaleLinear} from "d3-scale";
 import beautifyKey from "../../../../src/utils/beautifyKey";
+import {getItemByAttributes, addFolder, renderTree, addVectorLayer, closeAllExpandedFolder, addByMouseHover, getModelByAttributes, removeItem, removeModelsById} from "../../utils/radioBridge.js";
 
 const supportedFormats = {
     kml: new KML({extractStyles: true}),
@@ -207,21 +208,21 @@ function addLayerToTree (newLayer) {
         layerId = newLayer.id,
         features = newLayer.features;
 
-    if (Radio.request("Parser", "getItemByAttributes", {id: "importedData"}) === undefined) {
-        Radio.trigger("Parser", "addFolder", "Importierte Daten", "importedData", "tree", 0);
-        Radio.trigger("ModelList", "renderTree");
+    if (getItemByAttributes({id: "importedData"}) === undefined) {
+        addFolder("Importierte Daten", "importedData", "tree", 0);
+        renderTree();
         document.getElementById("Overlayer").parentNode.appendChild(document.getElementById("importedData").parentNode);
     }
 
-    Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "importedData", undefined, "showAll");
-    Radio.trigger("ModelList", "closeAllExpandedFolder");
+    addVectorLayer(layerName, layerId, features, "importedData", undefined, "showAll");
+    closeAllExpandedFolder();
 
     // eslint-disable-next-line one-var
-    const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: layerId});
+    const model = getModelByAttributes({type: "layer", id: layerId});
 
     setLayerAttributes(model, newLayer);
     adjustLayerStyling(model, newLayer);
-    Radio.trigger("MouseHover", "add", {type: "layer", id: newLayer.id});
+    addByMouseHover({type: "layer", id: newLayer.id});
 
     return model;
 }
@@ -497,14 +498,14 @@ export default {
         return model;
     },
     deleteLayerFromTree ({state, commit}, filename) {
-        const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", filename: filename}),
+        const model = getModelByAttributes({type: "layer", filename: filename}),
             map = mapCollection.getMap("2D"),
             importedFiles = state.importedFileNames.filter(file => file !== filename);
 
         map.removeLayer(model.get("layer"));
-        Radio.trigger("Parser", "removeItem", model.get("id"));
-        Radio.trigger("ModelList", "removeModelsById", model.get("id"));
-        Radio.trigger("ModelList", "renderTree");
+        removeItem(model.get("id"));
+        removeModelsById(model.get("id"));
+        renderTree();
 
         commit("setImportedFileNames", importedFiles);
 

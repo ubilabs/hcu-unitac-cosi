@@ -17,6 +17,7 @@ import ToolInfo from "../../components/ToolInfo.vue";
 import {getFeaturePOST} from "../../../../src/api/wfs/getFeature.js";
 import {WFS} from "ol/format.js";
 import getAvailableYears from "../../utils/getAvailableYears";
+import {groupBy, getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "QueryDistricts",
@@ -171,7 +172,7 @@ export default {
 
             return features.length > 0
                 ? features
-                : Radio.request("ModelList", "getModelByAttributes", {id})?.get("features")
+                : getModelByAttributes({id})?.get("features")
                 || [];
         },
 
@@ -327,7 +328,7 @@ export default {
 
                 features = wfsReader.readFeatures(features);
                 // group features by district
-                groupedFeatures = Radio.request("Util", "groupBy", features, (feature) => {
+                groupedFeatures = groupBy(features, (feature) => {
                     return feature.get([this.keyOfAttrNameStats]);
                 });
 
@@ -565,7 +566,7 @@ export default {
 
             // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
             // else the menu-entry for this tool is always highlighted
-            const model = Radio.request("ModelList", "getModelByAttributes", {
+            const model = getModelByAttributes({
                 id: this.$store.state.Tools.QueryDistricts.id
             });
 
@@ -628,7 +629,7 @@ export default {
         },
 
         async getFacilityFeatures (name) {
-            const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
+            const selectedLayerModel = getModelByAttributes({
                 name: name
             });
 

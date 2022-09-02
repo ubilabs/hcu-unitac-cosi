@@ -11,6 +11,7 @@ import serializeState from "./serializeState";
 import parseState from "./parseState";
 import ToolInfo from "../../components/ToolInfo.vue";
 import openDB from "../utils/indexedDb";
+import {addModelsByAttributes, getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "SaveSession",
@@ -377,11 +378,11 @@ export default {
          * @returns {Object} the layer model from the MP core
          */
         initializeLayer (layerId) {
-            if (!Radio.request("ModelList", "getModelByAttributes", {id: layerId})) {
-                Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
+            if (!getModelByAttributes({id: layerId})) {
+                addModelsByAttributes({id: layerId});
             }
 
-            return Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+            return getModelByAttributes({id: layerId});
         },
 
         onSavePrompt () {

@@ -2,6 +2,7 @@
 import {mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersCosiFileImport";
 import mutations from "../store/mutationsCosiFileImport";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "EditLayer",
@@ -15,7 +16,7 @@ export default {
         ...mapGetters("Tools/CosiFileImport", Object.keys(getters)),
         // returns layer active layer by index in importedLayers (state/store)
         selectedLayer () {
-            const model = Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: this.importedLayers[this.activeLayer].id});
+            const model = getModelByAttributes({type: "layer", id: this.importedLayers[this.activeLayer].id});
 
             return model.attributes;
         }

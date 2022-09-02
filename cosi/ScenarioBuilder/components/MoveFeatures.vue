@@ -6,6 +6,7 @@ import highlightVectorFeature from "../../utils/highlightVectorFeature";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import Point from "ol/geom/Point";
 import {getAddress} from "../../utils/geocode";
+import {onSearchbar, offSearchbar} from "../../utils/radioBridge.js";
 
 export default {
     name: "MoveFeatures",
@@ -139,7 +140,7 @@ export default {
             this.translate.on("translateend", this.onTranslateEnd.bind(this));
 
             // bind listener to Searchbar
-            Radio.on("Searchbar", "hit", this.translateBySearchbar.bind(this));
+            onSearchbar(this.translateBySearchbar.bind(this));
         },
 
         /**
@@ -152,7 +153,7 @@ export default {
             this.map.removeInteraction(this.select);
             this.translate = null;
             this.select = null;
-            Radio.off("Searchbar", "hit");
+            offSearchbar();
         },
 
         /**

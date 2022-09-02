@@ -12,6 +12,7 @@ import ToolInfo from "../../components/ToolInfo.vue";
 import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {getCenter} from "ol/extent";
 import getClusterSource from "../../utils/getClusterSource";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "CalculateRatio",
@@ -327,7 +328,7 @@ export default {
             // TODO replace trigger when Menu is migrated
             // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
             // else the menu-entry for this tool is always highlighted
-            const model = Radio.request("ModelList", "getModelByAttributes", {id: this.id});
+            const model = getModelByAttributes({id: this.id});
 
             if (model) {
                 model.set("isActive", false);

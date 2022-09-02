@@ -1,5 +1,6 @@
 import getClusterSource from "./getClusterSource";
 import Vue from "vue";
+import {getItemsByAttributes, getCollection} from "../utils/radioBridge.js";
 
 /**
  * filters all features by a given geometry
@@ -71,9 +72,9 @@ export function setBBoxToGeom (bboxGeometry) {
     const
         app = this instanceof Vue ? this : undefined,
         layerlist = [
-            ...Radio.request("Parser", "getItemsByAttributes", {typ: "WFS", isBaseLayer: false}),
-            ...Radio.request("Parser", "getItemsByAttributes", {typ: "GeoJSON", isBaseLayer: false}),
-            ...Radio.request("Parser", "getItemsByAttributes", {typ: "VectorBase", isBaseLayer: false})
+            ...getItemsByAttributes({typ: "WFS", isBaseLayer: false}),
+            ...getItemsByAttributes({typ: "GeoJSON", isBaseLayer: false}),
+            ...getItemsByAttributes({typ: "VectorBase", isBaseLayer: false})
         ];
 
     setBboxGeometryToLayer(layerlist, bboxGeometry, app);
@@ -88,7 +89,7 @@ export function setBBoxToGeom (bboxGeometry) {
  */
 export function setBboxGeometryToLayer (itemList, bboxGeometry, app) {
     const
-        modelList = Radio.request("ModelList", "getCollection"),
+        modelList = getCollection(),
         crs = app?.$store.getters["Maps/projectionCode"] || "EPSG:25832";
 
     itemList.forEach(function (item) {

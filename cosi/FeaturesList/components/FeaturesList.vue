@@ -30,6 +30,7 @@ import
 } from "ol/style.js";
 import Feature from "ol/Feature";
 import ToolInfo from "../../components/ToolInfo.vue";
+import {onFeaturesLoaded, onResetFeatures, onShowFeaturesById, onShowAllFeatures} from "../../utils/radioBridge.js";
 
 export default {
     name: "FeaturesList",
@@ -279,7 +280,7 @@ export default {
     },
     async mounted () {
         // initally set the facilities mapping based on the config.json
-        this.setMapping(this.getVectorlayerMapping(this.configJson.Themenconfig));
+        this.setMapping(getVectorlayerMapping(this.configJson.Themenconfig));
         this.updateFeaturesList();
 
         /**
@@ -288,10 +289,10 @@ export default {
          * @todo refactor to vuex, there should be an event on the map calling out loaded features
          * @deprecated
          */
-        Radio.on("VectorLayer", "featuresLoaded", this.updateFeaturesList);
-        Radio.on("VectorLayer", "resetFeatures", this.updateFeaturesList);
-        Radio.on("ModelList", "showFeaturesById", this.updateFeaturesList);
-        Radio.on("ModelList", "showAllFeatures", this.updateFeaturesList);
+        onFeaturesLoaded(this.updateFeaturesList);
+        onResetFeatures(this.updateFeaturesList);
+        onShowFeaturesById(this.updateFeaturesList);
+        onShowAllFeatures(this.updateFeaturesList);
 
         this.$root.$on("updateFeaturesList", this.updateFeaturesList);
 
@@ -307,7 +308,6 @@ export default {
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...chartMethods,
 
-        getVectorlayerMapping,
         getNumericalColumns () {
             const numCols = this.getActiveLayers().reduce((cols, mappingObj) => {
                 const _numCols = mappingObj.numericalValues.map(v => ({

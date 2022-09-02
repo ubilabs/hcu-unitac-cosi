@@ -11,6 +11,7 @@ import {exportAsGeoJson, downloadGeoJson} from "../utils/exportResults";
 import {Select} from "ol/interaction";
 import ToolInfo from "../../components/ToolInfo.vue";
 import travelTimeIndex from "../assets/inrix_traveltimeindex_2021.json";
+import {onSearchbar, offSearchbar, getServiceUrl, onShowFeaturesById, onShowAllFeatures, onFeaturesLoaded, getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -208,7 +209,7 @@ export default {
         active () {
             if (this.active) {
                 this.registerListener({type: "click", listener: this.setCoordinateFromClick});
-                Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
+                onSearchbar(this.setSearchResultToOrigin);
 
                 if (this.mode === "path") {
                     this.addLayer(this.directionsLayer);
@@ -216,7 +217,7 @@ export default {
             }
             else {
                 this.unregisterListener({type: "click", listener: this.setCoordinateFromClick});
-                Radio.off("Searchbar", "hit", this.setSearchResultToOrigin);
+                offSearchbar(this.setSearchResultToOrigin);
                 this.removePointMarker();
                 this.select.getFeatures().clear();
                 this.removeLayerFromMap(this.directionsLayer);
@@ -304,7 +305,7 @@ export default {
             filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
         });
 
-        this.baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url") + "/v2/";
+        this.baseUrl = getServiceUrl("bkg_ors") + "/v2/";
         // this.map = mapCollection.getMap("2D");
     },
 
@@ -325,12 +326,12 @@ export default {
         this.directionsLayer.setSource(this.directionsRouteSource);
         this.removeLayerFromMap(this.directionsLayer);
 
-        Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
+        onSearchbar(this.setSearchResultToOrigin);
 
         this.$root.$on("updateFeature", this.tryUpdateIsochrones);
-        Radio.on("ModelList", "showFeaturesById", this.tryUpdateIsochrones);
-        Radio.on("ModelList", "showAllFeatures", this.tryUpdateIsochrones);
-        Radio.on("VectorLayer", "featuresLoaded", this.tryUpdateIsochrones);
+        onShowFeaturesById(this.tryUpdateIsochrones);
+        onShowAllFeatures(this.tryUpdateIsochrones);
+        onFeaturesLoaded(this.tryUpdateIsochrones);
     },
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
@@ -369,7 +370,7 @@ export default {
 
             // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
             // else the menu-entry for this tool is always highlighted
-            const model = Radio.request("ModelList", "getModelByAttributes", {
+            const model = getModelByAttributes({
                 id: this.$store.state.Tools.AccessibilityAnalysis.id
             });
 
