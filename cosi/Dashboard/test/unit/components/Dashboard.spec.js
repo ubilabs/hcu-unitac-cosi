@@ -32,19 +32,20 @@ function addElemWithDataAppToBody () {
     document.body.append(app);
 }
 
-before(() => {
-    mapCollection.clear();
-    const map = {
-        id: "ol",
-        mode: "2D",
-        updateSize: () => sinon.stub()
-    };
-
-    mapCollection.addMap(map, "2D");
-    addElemWithDataAppToBody();
-});
 
 describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
+    before(() => {
+        mapCollection.clear();
+        const map = {
+            id: "ol",
+            mode: "2D",
+            updateSize: () => sinon.stub()
+        };
+
+        mapCollection.addMap(map, "2D");
+        addElemWithDataAppToBody();
+    });
+
     let store, vuetify, wrapper, selectedDistrictLabelsStub, selectedDistrictNamesStub;
 
     const factory = {

@@ -6,10 +6,8 @@ import {
 } from "@vue/test-utils";
 import FeaturesList from "../../../components/FeaturesList.vue";
 import FeaturesListStore from "../../../store/indexFeaturesList";
-import DetailView from "../../../components/DetailView.vue";
 import chai from "chai";
 import sinon from "sinon";
-import sinonChai from "sinon-chai";
 import Vuetify from "vuetify";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
@@ -29,7 +27,6 @@ const localVue = createLocalVue(),
     expect = chai.expect;
 
 localVue.use(Vuex);
-chai.use(sinonChai);
 
 config.mocks.$t = key => key;
 
@@ -69,18 +66,19 @@ function createFeature (key) {
     }
     return feature;
 }
-before(() => {
-    mapCollection.clear();
-    const map = {
-        id: "ol",
-        mode: "2D",
-        updateSize: () => sinon.stub()
-    };
-
-    mapCollection.addMap(map, "2D");
-});
 
 describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
+    before(() => {
+        mapCollection.clear();
+        const map = {
+            id: "ol",
+            mode: "2D",
+            updateSize: () => sinon.stub()
+        };
+
+        mapCollection.addMap(map, "2D");
+    });
+
     let store, sandbox, vuetify, layerListStub, getDistanceScoreStub, sourceStub, clearStub, _wrapper;
 
 
@@ -500,37 +498,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(tableWrapper.exists()).to.be.true;
             // table has 2 rows (1 header, 1 content)
             expect(tableWrapper.findAll("tr")).to.have.lengthOf(2);
-        });
-
-        sinon.stub(DetailView.methods, "gfiOrBeautifyKey");
-
-        it("table row should be expanded to detail view", async () => {
-            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]),
-                tableWrapper = wrapper.findComponent({name: "v-data-table"});
-
-            // await wrapper.vm.$nextTick();
-            await wrapper.find("button.mdi-chevron-down").trigger("click");
-
-            // expand the table on expand button click
-            expect(tableWrapper.findAll(".v-data-table__expanded")).to.have.lengthOf(2);
-            // render detail view in the expanded row
-            expect(wrapper.findComponent(DetailView).findAll("tr")).to.have.lengthOf(6);
-        });
-
-        it("selecting a field in expanded view should emit the 'filterProps' event", async () => {
-            const spyUpdateFilterProps = sinon.spy(FeaturesList.methods, "updateFilterProps"),
-                wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
-
-            // await wrapper.vm.$nextTick();
-            await wrapper.find("button.mdi-chevron-down").trigger("click");
-            await wrapper.findComponent(DetailView).find("input").trigger("click");
-
-            // event should be emitted once
-            expect(wrapper.findComponent(DetailView).emitted("filterProps").length).to.equal(1);
-            // event should emit the layerId and prop selected
-            expect(wrapper.findComponent(DetailView).emitted("filterProps")[0]).deep.to.equal([{"1234": ["id"]}]);
-            // updateFilterProps called
-            expect(spyUpdateFilterProps.calledOnce).to.be.true;
+            wrapper.destroy();
         });
 
         it("expect download prompt to open when table is exported", async () => {
