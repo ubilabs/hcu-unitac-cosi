@@ -17,7 +17,10 @@ const actions = {
                     mapMenu = iframe.contentWindow.document.getElementsByClassName("vcm-btn-icon single-first maptool-btn vcm-btn-base-default vcm-btn-base-splash-hover vcm-border vcm-border-dye03 vcm-btn-icon-font-default vcm-btn-icon-font-dye01-hover vcm-no-select vcm-btn-map-Oblique")[0],
                     overviewMap = iframe.contentWindow.document.getElementsByClassName("overview-map-wrap")[0],
                     vcs = document.getElementById("obliqueIframe").contentWindow.vcs,
-                    map = vcs.vcm.Framework.getInstance().getActiveMap();
+                    map = vcs.vcm.Framework.getInstance().getActiveMap(),
+                    pixelCoordinate = mapCollection.getMap("2D").getPixelFromCoordinate(rootGetters["Maps/initialCenter"]);
+
+                commit("Maps/setClickCartesianCoordinate", pixelCoordinate, {root: true});
 
                 if (map) {
                     map.olMap.on("moveend", () => {
@@ -35,8 +38,10 @@ const actions = {
                     map.imageChanged.addEventListener(async () => {
                         const viewPoint = await map.getViewPoint();
 
+                        if (viewPoint.heading !== getters.heading) {
+                            dispatch("MapMarker/rotatePointMarker", viewPoint.heading, {root: true});
+                        }
                         commit("setHeading", viewPoint.heading);
-                        dispatch("MapMarker/rotatePointMarker", viewPoint.heading, {root: true});
                     });
                 }
 
@@ -44,7 +49,9 @@ const actions = {
                     header.style.display = "none";
                     header.parentElement.style.display = "none";
                     commit("setDefaultMapMarkerStyleId", rootGetters["MapMarker/pointStyleId"]);
-                    commit("MapMarker/setPointStyleId", getters.styleId, {root: true});
+                    if (getters.styleId) {
+                        commit("MapMarker/setPointStyleId", getters.styleId, {root: true});
+                    }
                     dispatch("setObliqueView", rootGetters["Maps/center"]);
                     observer.disconnect();
                 }
@@ -97,6 +104,7 @@ const actions = {
             await framework?.getActiveMap().gotoViewPoint(viewPoint);
 
             dispatch("MapMarker/placingPointMarker", coordinate, {root: true});
+            dispatch("MapMarker/rotatePointMarker", getters.heading, {root: true});
         }
         else {
             dispatch("Alerting/addSingleAlert",

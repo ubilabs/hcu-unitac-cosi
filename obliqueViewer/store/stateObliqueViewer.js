@@ -31,7 +31,7 @@ const state = {
     obliqueViewerURL: "",
     lastCoordinates: "",
     defaultMapMarkerStyleId: "",
-    heading: "",
+    heading: 0,
     serviceId: "oblique"
 };
 
