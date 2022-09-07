@@ -195,14 +195,6 @@ describe("Dipas.vue", () => {
 
     beforeEach(async () => {
         vuetify = new Vuetify();
-        // clearStub = sinon.stub();
-        // sourceStub = {
-        //     clear: clearStub,
-        //     addFeatures: sinon.stub(),
-        //     getFeatures: sinon.stub().returns([
-        //         []
-        //     ])
-        // };
 
         store = new Vuex.Store({
             namespaced: true,
@@ -226,7 +218,7 @@ describe("Dipas.vue", () => {
                         }
                     }
                 },
-                Map: {
+                Maps: {
                     namespaced: true,
                     getters: {
                         ol2DMap: () => ({
