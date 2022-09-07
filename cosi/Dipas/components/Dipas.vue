@@ -709,12 +709,14 @@ export default {
                                         <v-list-item-content>
                                             <v-list-item-title
                                                 class="text-wrap"
-                                                v-text="feature.get('nameFull')"
-                                            />
+                                            >
+                                                {{ feature.get("nameFull") }}
+                                            </v-list-item-title>
                                             <v-list-item-subtitle
                                                 class="text-wrap"
-                                                v-text="getDateString(feature)"
-                                            />
+                                            >
+                                                {{ getDateString(feature) }}
+                                            </v-list-item-subtitle>
                                         </v-list-item-content>
                                         <v-list-item-icon>
                                             <v-btn
