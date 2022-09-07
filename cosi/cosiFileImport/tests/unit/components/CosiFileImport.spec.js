@@ -78,28 +78,32 @@ describe("addons/cosi/cosiFileImport/components/CosiFileImport.vue", () => {
         store.commit("Tools/CosiFileImport/setActive", true);
     });
 
-    it("renders the CosiFileImport", () => {
-        const wrapper = shallowMount(CosiFileImportComponent, {store, localVue});
+    describe("Component DOM", () => {
+        it("renders the CosiFileImport", () => {
+            const wrapper = shallowMount(CosiFileImportComponent, {store, localVue});
 
-        expect(wrapper.find("#tool-file-import").exists()).to.be.true;
+            expect(wrapper.find("#tool-file-import").exists()).to.be.true;
+        });
+
+        it("do not render the CosiFileImport tool if not active", () => {
+            store.commit("Tools/CosiFileImport/setActive", false);
+            const wrapper = shallowMount(CosiFileImportComponent, {store, localVue});
+
+            expect(wrapper.find("#tool-file-import").exists()).to.be.false;
+        });
     });
 
-    it("do not render the CosiFileImport tool if not active", () => {
-        store.commit("Tools/CosiFileImport/setActive", false);
-        const wrapper = shallowMount(CosiFileImportComponent, {store, localVue});
+    describe("Function", () => {
+        it("import method is initially set to \"auto\"", () => {
+            const wrapper = shallowMount(CosiFileImportComponent, {store, localVue});
 
-        expect(wrapper.find("#tool-file-import").exists()).to.be.false;
-    });
+            expect(wrapper.vm.selectedFiletype).to.equal("auto");
+        });
 
-    it("import method is initially set to \"auto\"", () => {
-        const wrapper = shallowMount(CosiFileImportComponent, {store, localVue});
+        it("The layer name will be got from file name", () => {
+            const wrapper = shallowMount(CosiFileImportComponent, {store, localVue});
 
-        expect(wrapper.vm.selectedFiletype).to.equal("auto");
-    });
-
-    it("The layer name will be got from file name", () => {
-        const wrapper = shallowMount(CosiFileImportComponent, {store, localVue});
-
-        expect(wrapper.vm.getLayerName("geolayer.kml")).to.equal("geolayer");
+            expect(wrapper.vm.getLayerName("geolayer.kml")).to.equal("geolayer");
+        });
     });
 });
