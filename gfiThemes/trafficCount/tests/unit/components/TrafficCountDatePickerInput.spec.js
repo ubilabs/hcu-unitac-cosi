@@ -15,17 +15,16 @@ describe("addons/trafficCount/components/TrafficCountDatePickerInput.spec.js", (
         it("should exist", () => {
             wrapper = shallowMount(TrafficCountDatePickerInput);
             expect(wrapper.exists()).to.be.true;
-            expect(wrapper.findAll(".input-wrapper").exists()).to.be.true;
+            expect(wrapper.find(".input-wrapper").exists()).to.be.true;
         });
         it("should render given props", () => {
             wrapper = shallowMount(TrafficCountDatePickerInput, {
                 propsData: {
-                    dates: ["01.01.1999", "01.01.2000"],
-                    format: "DD.MM.YYYY",
+                    inputDates: ["01.01.1999", "01.01.2000"],
                     delimiter: "|"
                 }
             });
-            expect(wrapper.findAll(".date-input").at(0).element.value).to.be.equal("01.01.1999|01.01.2000");
+            expect(wrapper.find(".date-input").element.value).to.be.equal("01.01.1999|01.01.2000");
         });
     });
     describe("User interaction", () => {
@@ -34,13 +33,12 @@ describe("addons/trafficCount/components/TrafficCountDatePickerInput.spec.js", (
 
             wrapper = shallowMount(TrafficCountDatePickerInput, {
                 propsData: {
-                    dates: ["01.01.1999", "01.01.2000"],
-                    format: "DD.MM.YYYY",
+                    inputDates: ["01.01.1999", "01.01.2000"],
                     delimiter: "|"
                 }
             });
 
-            await wrapper.findAll("input").at(0).trigger("click");
+            await wrapper.find("input").trigger("click");
 
             expect(toggleFunction.calledOnce).to.be.true;
             toggleFunction.restore();
@@ -55,13 +53,12 @@ describe("addons/trafficCount/components/TrafficCountDatePickerInput.spec.js", (
 
             wrapper = shallowMount(TrafficCountDatePickerInput, {
                 propsData: {
-                    dates: ["01.01.1999", "01.01.2000"],
-                    format: "DD.MM.YYYY",
+                    inputDates: ["01.01.1999", "01.01.2000"],
                     delimiter: "|"
                 }
             });
 
-            await wrapper.findAll(".bi-x").at(0).trigger("click");
+            await wrapper.find(".bi-x").trigger("click");
 
             expect(clearFunction.calledOnce).to.be.true;
             clearFunction.restore();

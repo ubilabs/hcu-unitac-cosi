@@ -5,7 +5,7 @@ import TrafficCountDatePickerCalendar from "../../../components/TrafficCountDate
 config.mocks.$t = key => key;
 
 describe("addons/trafficCount/components/TrafficCountDatePickerCalendar.vue", () => {
-    describe("constructor", () => {
+    describe("Component DOM", () => {
         it("should initialize with given props", () => {
             const wrapper = shallowMount(TrafficCountDatePickerCalendar, {
                 propsData: {
@@ -36,7 +36,7 @@ describe("addons/trafficCount/components/TrafficCountDatePickerCalendar.vue", ()
 
             wrapper.destroy();
         });
-        it("should not render with weeknumbers by default", async () => {
+        it("should render without weeknumbers by default", async () => {
             const wrapper = shallowMount(TrafficCountDatePickerCalendar);
 
             await wrapper.vm.$nextTick();
@@ -44,7 +44,7 @@ describe("addons/trafficCount/components/TrafficCountDatePickerCalendar.vue", ()
 
             wrapper.destroy();
         });
-        it("should not render with weeknumbers if requested", async () => {
+        it("should render with weeknumbers if requested", async () => {
             const wrapper = shallowMount(TrafficCountDatePickerCalendar, {
                 propsData: {
                     showWeekNumber: true

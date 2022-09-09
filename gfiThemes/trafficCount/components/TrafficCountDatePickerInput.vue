@@ -1,18 +1,12 @@
 <script>
-import moment from "moment";
 
 export default {
     name: "TrafficCountDatePickerInput",
     props: {
-        dates: {
+        inputDates: {
             type: Array,
             required: false,
             default: () => []
-        },
-        format: {
-            type: String,
-            required: false,
-            default: "DD.MM.YYYY"
         },
         delimiter: {
             type: String,
@@ -27,15 +21,10 @@ export default {
     },
     computed: {
         dateComputed () {
-            if (!Array.isArray(this.dates)) {
+            if (!Array.isArray(this.inputDates)) {
                 return "";
             }
-            const result = [];
-
-            this.dates.forEach(date =>{
-                result.push(moment(date).format(this.format));
-            });
-            return result.join(this.delimiter);
+            return this.inputDates.join(this.delimiter);
         }
     },
     methods: {

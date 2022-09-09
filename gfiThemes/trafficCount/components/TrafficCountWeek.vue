@@ -4,10 +4,10 @@ import TrafficCountCompTable from "./TrafficCountCompTable.vue";
 import TrafficCountCheckbox from "./TrafficCountCheckbox.vue";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
 import moment from "moment";
-import DatePicker from "vue2-datepicker";
-import "vue2-datepicker/index.css";
 import {addMissingDataWeek} from "../utils/addMissingData.js";
 import {getPublicHoliday} from "../../../../src/utils/calendar.js";
+import TrafficCountDatePicker from "./TrafficCountDatePicker.vue";
+import isObject from "../../../../src/utils/isObject";
 
 export default {
     name: "TrafficCountWeek",
@@ -15,7 +15,7 @@ export default {
         TrafficCountCompDiagram,
         TrafficCountCompTable,
         TrafficCountCheckbox,
-        DatePicker
+        TrafficCountDatePicker
     },
     props: {
         api: {
@@ -138,15 +138,13 @@ export default {
             this.initializeDates();
         },
         dates (value) {
-            if (value) {
-                this.weekDatepickerValueChanged([value]);
-            }
-            else {
-                this.weekDatepickerValueChanged([]);
+            if (Array.isArray(value)) {
+                this.weekDatepickerValueChanged(value);
             }
         }
     },
-    mounted () {
+    created () {
+        this.weekFormat = "YYYY [KW] WW";
         moment.locale(i18next.language);
         this.initializeDates();
     },
@@ -157,10 +155,10 @@ export default {
          */
         initializeDates () {
             if (moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday) {
-                this.dates = moment().subtract(7, "days").toDate();
+                this.dates = [moment().subtract(7, "days").format(this.weekFormat)];
             }
             else {
-                this.dates = moment().toDate();
+                this.dates = [moment().format(this.weekFormat)];
             }
         },
         /**
@@ -185,8 +183,8 @@ export default {
                 }).forEach(date => {
                     timeSettings.push({
                         interval: this.weekInterval,
-                        from: moment(date).startOf("isoWeek").format("YYYY-MM-DD"),
-                        until: moment(date).endOf("isoWeek").format("YYYY-MM-DD")
+                        from: moment(date, this.weekFormat).startOf("isoWeek").format("YYYY-MM-DD"),
+                        until: moment(date, this.weekFormat).endOf("isoWeek").format("YYYY-MM-DD")
                     });
                 });
 
@@ -206,40 +204,57 @@ export default {
                     this.apiData = [];
 
                     console.warn("The data received from api are incomplete:", errormsg);
-                    Radio.trigger("Alert", "alert", {
-                        content: "Die gewünschten Daten wurden wegen eines API-Fehlers nicht korrekt empfangen.",
+                    this.$store.dispatch("Alerting/addSingleAlert", {
+                        content: this.$t("additional:modules.tools.gfi.themes.trafficCount.error.apiGeneral"),
                         category: "Info"
                     });
                 });
             }
         },
-
         /**
-         * Checks if the a date should be disabled.
-         * @param {Date} date The date in question.
-         * @param {Date[]} currentDates The list of selected dates.
-         * @returns {Boolean} true if disabled, false if enabled.
+         * Changes the dates array with given dates.
+         * @param {String[]} dates The dates.
+         * @returns {void}
          */
-        isDateDisabled (date, currentDates) {
-            if (!(date instanceof Date)) {
-                return true;
+        change (dates) {
+            if (!Array.isArray(dates)) {
+                return;
             }
-            const endDate = this.checkGurlittInsel ? moment().subtract(1, "days") : moment(),
-                startDate = moment("2020-01-01") > moment().subtract(1, "year") ? moment("2020-01-01") : moment().subtract(1, "year").startOf("year"),
-                question = moment(date);
-
-            if (Array.isArray(currentDates) && currentDates.length >= 5) {
-                for (let i = 0; i < 5; i++) {
-                    if (question.isSame(moment(currentDates[i]))) {
-                        return false;
-                    }
-                }
-                return true;
+            this.dates = dates;
+        },
+        /**
+         * Gets the date field title based on given moment date.
+         * @param {Object} momentDate The moment date.
+         * @returns {String} The date field title.
+         */
+        getDateFieldTitle (momentDate) {
+            if (typeof momentDate?.format !== "function") {
+                return "";
             }
+            const holidayName = getPublicHoliday(momentDate.toDate(), this.holidays);
 
-            startDate.subtract(1, "days");
+            if (isObject(holidayName)) {
+                return `${this.$t(holidayName.translationKey)}, ${momentDate.format("DD.MM.YYYY")}`;
+            }
+            return momentDate.format("DD.MM.YYYY");
+        },
+        /**
+         * Returns if the given moment date is a holiday.
+         * @param {Object} momentDate The moment date.
+         * @returns {Boolean} True if it is a holiday.
+         */
+        isPublicHoliday (momentDate) {
+            return Boolean(getPublicHoliday(momentDate.toDate(), this.holidays));
+        },
+        /**
+         * Gets the current switch as formatted string.
+         * @param {Object} momentDate A moment date.
+         * @returns {String} The formatted string.
+         */
+        getCurrentSwitchFormatted (momentDate) {
+            const months = this.$t("additional:modules.tools.gfi.themes.trafficCount.datepicker.monthsShort", {returnObjects: true});
 
-            return question.isSameOrBefore(startDate) || question.isSameOrAfter(endDate);
+            return `${months[momentDate.get("month")]} ${momentDate.format("YYYY")}`;
         }
     }
 };
@@ -251,18 +266,28 @@ export default {
             id="weekDateSelector"
             class="dateSelector"
         >
-            <DatePicker
-                v-model="dates"
-                aria-label="Datum"
-                placeholder="Datum"
+            <TrafficCountDatePicker
                 type="week"
-                format="YYYY KW ww"
-                :multiple="true"
+                input-delimiter=", "
+                :format="weekFormat"
+                :initial-dates="dates"
                 :show-week-number="true"
-                :disabled-date="isDateDisabled"
-                title-format="DD.MM.YYYY"
-                :lang="$t('common:libraries.vue2-datepicker.lang', {returnObjects: true})"
-            />
+                @change="change"
+            >
+                <template #currentSwitch="{momentDate}">
+                    {{ getCurrentSwitchFormatted(momentDate) }}
+                </template>
+                <template #dateField="{day, momentDate}">
+                    <span
+                        v-if="isPublicHoliday(momentDate)"
+                        :title="getDateFieldTitle(momentDate)"
+                    ><strong>{{ day }}</strong></span>
+                    <span
+                        v-else
+                        :title="getDateFieldTitle(momentDate)"
+                    >{{ day }}</span>
+                </template>
+            </TrafficCountDatePicker>
         </div>
         <TrafficCountCheckbox
             :table-diagram-id="diagramWeek"
