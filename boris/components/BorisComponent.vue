@@ -21,9 +21,6 @@ export default {
     computed: {
         ...mapGetters("Tools/BorisComponent", ["active", "id", "icon", "renderToWindow", "resizableWindow", "initialWidth", "initialWidthMobile", "keepOpen", "filteredLayerList", "isAreaLayer", "isStripesLayer", "textIds", "selectedPolygon", "selectedLayerName", "selectedLanduse", "selectedBrwFeature", "convertedBrw", "buttonValue", "buildingDesigns", "positionsToStreet", "options", "isProcessFromParametricUrl", "paramUrlParams"]),
         ...mapGetters("Tools/Print", ["printFileReady", "fileDownloadUrl", "filename", "printStarted", "progressWidth"]),
-        ...mapGetters({
-            isMobile: "mobile"
-        }),
         /**
          * Gets a list of layers without the stripes-layers
          * @return {Array} filteredListWithoutStripes which is used to select by date
@@ -129,9 +126,6 @@ export default {
                 link.href = this.fileDownloadUrl;
                 link.click();
             }
-        },
-        isMobile () {
-            this.setRenderToWindow(this.isMobile);
         }
     },
     created () {
@@ -140,9 +134,6 @@ export default {
     },
     mounted () {
         this.$nextTick(() => {
-            if (this.isMobile) {
-                this.setRenderToWindow(true);
-            }
             this.handleUrlParameters();
             this.registerListener({type: "click", listener: this.requestGFI});
         });
