@@ -25,6 +25,10 @@ function getFilterState () {
  * @returns {void}
  */
 function setFilter (payload) {
+    if (!Array.isArray(payload?.rulesOfFilters) || payload?.rulesOfFilters.length === 0) {
+        return;
+    }
+
     store.dispatch("Tools/Filter/deserializeState", payload);
 }
 
