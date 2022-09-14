@@ -58,6 +58,13 @@ export default {
             this.toggleSelectedDate(moment(date, this.format));
         });
     },
+    created () {
+        window.addEventListener("click", (e) => {
+            if (this.isCalendarVisible && !this.$el.contains(e.target)) {
+                this.isCalendarVisible = false;
+            }
+        });
+    },
     methods: {
         /**
          * Triggered when a date picker calendar date is clicked.
