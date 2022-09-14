@@ -46,7 +46,7 @@ npm start
 ```
 After some compile time, CoSI should run at https://localhost:9001/portal/cosi
 
-## Setup step by step Explanation
+
 
 Cosi consists of three repositories. They are available on Bitbucket (private repos, owned by the city). There is also a fork on Github (privated repos, owned by the CityScienceLab github organisation). The three repos are: 
 1. The `masterportal` (https://bitbucket.org/geowerkstatt-hamburg/masterportal)
@@ -57,83 +57,45 @@ Cosi consists of three repositories. They are available on Bitbucket (private re
 3. on all repositories we work on the branch called `cosi/dev` (not `dev`)
 
 So we clone the masterportal repo first and get on the right branch
-
-```
-git clone https://bitbucket.org/geowerkstatt-hamburg/masterportal
-cd masterportal
-git checkout cosi/dev
-
-```
-
 Delete folders to be replaced with the other two repos
-
-```
-rm -r addons
-rm -r portal
-```
-
-
 download relevant repos as these folders
 - `geowerkstatt-hamburg/addons` as `addons`
 - `geowerkstatt-hamburg/portalconfigs` as `portal`
-
-```
-git clone https://bitbucket.org/geowerkstatt-hamburg/addons addons
-git clone https://bitbucket.org/geowerkstatt-hamburg/portalconfigs portal
-```
-
 Switch to the relevant branches
-
-```
-cd addons
-git checkout cosi/dev
-cd ../portal
-git checkout cosi/dev
-cd ..
-```
-
 Set up Node and Install. You might need to use a specific node version. On 24.08.22 it's `16.16.0` .
-
-running in masterportal root folder
-```
-nvm install 16.16.
-nvm use 16.16.
-node -v
-```
-
-should return `16.16.0`
-
 Then install the masterportal node dependencies (in masterportal root folder):
-```
-npm install 
-```
 
-Cosi consists of multiple nested node apps. For each, the dependencies have to be installed. there is a costum script to do this correctly (defined in /addons/package.json) that can be executed when in the addons folder:
-```
-cd addons
-npm run postinstall
-cd ..
-```
+Cosi consists of multiple nested node apps. For each, the dependencies have to be installed. there is a costum script `postinstall` to do this correctly (defined in /addons/package.json) that can be executed when in the addons folder.
 
-Now you can give it a go and see if CoSI runs on your machine!
-```
-npm start
-```
-
-After some compile time, this should spit out:
-```
-ℹ ｢wds｣: Project is running at **https://localhost:9001/**
-
-ℹ ｢wds｣: webpack output is served from **/build/**
-
-```
-..and some more stuff including `babel` notes.
-once it finished compliation, navigate to https://localhost:9001/portal/cosi
 
 # More Developer Documentation (under construction)
 
 
 ## Development Workflow
+
+### Git Branching Model
+
+- in all three repositories, development should happen in feature branches. After a code review, and if all unit tests pass, these changes go direclty into the `dev` branch (which is the branch that is in production).
+- adding a new feature:
+	- open a ticket on jira (jira.geowerkstatt-hamburg.de). On the ticket, you can create a branch for your feature
+	- `git checkout FEATURE_BRANCH_NAME` to switch to that new branch locally
+	- `git commit -m "commit message"` to commit your changes to that feature branch
+	- `npm run test:cosi` when your code is ready, make sure all unit tests pass with (see TDD section)
+	- `git rebase dev` your branch to be ahead of the `dev` branch. [more](https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase)
+	- fix any merge conflicts and run all unit tests again
+	- create a pull request on jira, and assign someone to review your code
+	- make changes as discussed with the reviewer
+	- The person who reviews the code can then accept your pull request to the dev branch.
+	- `git merge -ff` when accepting a pull request, make sure to merge with fast forward. That way (together with `rebase`), your changes will appear as a single commit at the time when your feature appears on the dev branch.
+	- `git checkout dev` go back to the dev branch
+	- `git pull` the changes that happened
+	- `git branch -d FEATURE_BRANCH_NAME` delete the feature branch
+	- done!
+
+
+
+
+### IDE setup
 
 - This documentation assumes you're using VSCode as your IDE
 	- Download VScode
