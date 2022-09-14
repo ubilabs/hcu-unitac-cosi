@@ -272,6 +272,7 @@ export default {
                 :format="weekFormat"
                 :initial-dates="dates"
                 :show-week-number="true"
+                :max-selection="5"
                 @change="change"
             >
                 <template #currentSwitch="{momentDate}">

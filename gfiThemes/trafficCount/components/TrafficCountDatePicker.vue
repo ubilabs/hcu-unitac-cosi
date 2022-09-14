@@ -34,6 +34,11 @@ export default {
             type: Array,
             required: false,
             default: () => []
+        },
+        maxSelection: {
+            type: Number,
+            required: false,
+            default: 5
         }
     },
     data () {
@@ -70,9 +75,30 @@ export default {
          * @returns {Boolean} true if the toggle was successful, false if not.
          */
         toggleSelectedDateWeek (momentDate) {
-            if (!Array.isArray(this.selectedDates)) {
+            if (typeof momentDate?.format !== "function" || !Array.isArray(this.selectedDates)) {
                 return false;
             }
+            const dayPointer = moment(momentDate);
+
+            this.toggleWeek(dayPointer);
+            if (typeof this.maxSelection === "number") {
+                while (this.selectedDates.length > this.maxSelection * 7) {
+                    this.selectedDates.shift();
+                }
+            }
+            this.inputDates = [];
+            for (let i = 0; i < this.selectedDates.length; i++) {
+                this.inputDates.push(moment(this.selectedDates[i], "YYYY-MM-DD").format(this.format));
+                i += 6;
+            }
+            return true;
+        },
+        /**
+         * Toggles the dates for a whole week based on given date.
+         * @param {Object} momentDate The moment date.
+         * @returns {void}
+         */
+        toggleWeek (momentDate) {
             const dayPointer = moment(momentDate);
 
             dayPointer.startOf("isoWeek");
@@ -80,13 +106,6 @@ export default {
                 this.toggleSelectedDateDay(dayPointer);
                 dayPointer.add(1, "days");
             }
-
-            this.inputDates = [];
-            for (let i = 0; i < this.selectedDates.length; i++) {
-                this.inputDates.push(moment(this.selectedDates[i], "YYYY-MM-DD").format(this.format));
-                i += 6;
-            }
-            return true;
         },
         /**
          * Toggles the day of the given date.
