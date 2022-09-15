@@ -32,12 +32,23 @@ function addElemWithDataAppToBody () {
     document.body.append(app);
 }
 
-before(() => {
-    addElemWithDataAppToBody();
-});
-
 describe("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
-    let store, vuetify, wrapper;
+    before(() => {
+        mapCollection.clear();
+        const map = {
+            id: "ol",
+            mode: "2D",
+            updateSize: () => sinon.stub(),
+            addEventListener: () => sinon.stub(),
+            removeInteraction: () => sinon.stub(),
+            removeEventListener: () => sinon.stub()
+        };
+
+        mapCollection.addMap(map, "2D");
+        addElemWithDataAppToBody();
+    });
+
+    let store, vuetify, wrapper, sourceStub;
 
     const
         factory = {
@@ -112,6 +123,9 @@ describe("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
 
     beforeEach(async () => {
         vuetify = new Vuetify();
+        sourceStub = {
+            clear: sinon.stub()
+        };
         store = new Vuex.Store({
             namespaced: true,
             modules: {
@@ -154,15 +168,30 @@ describe("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
                         projectionCode: sinon.stub().returns("EPSG:25832")
                     },
                     mutations: {
-                        setCenter: sinon.stub()
+                        setCenter: sinon.stub(),
+                        removeLayerFromMap: () => sinon.stub()
+                    }
+                },
+                Maps: {
+                    namespaced: true,
+                    getters: {
+                        projectionCode: () => "EPSG:25832"
                     },
                     actions: {
-                        removeHighlightFeature: () => sinon.stub(),
+                        removeInteraction: () => sinon.stub(),
                         addNewLayerIfNotExists: () => {
-                            return Promise.resolve(new Layer({
-                                source: new Source()
-                            }));
+                            return Promise.resolve({
+                                setVisible: () => sinon.stub(),
+                                setZIndex: () => sinon.stub(),
+                                setStyle: () => sinon.stub(),
+                                setSource: () => sinon.stub(),
+                                addEventListener: sinon.stub(),
+                                getSource: () => sourceStub
+                            });
                         }
+                    },
+                    mutations: {
+                        removeLayerFromMap: () => sinon.stub()
                     }
                 },
                 MapMarker: {
@@ -207,9 +236,9 @@ describe("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
             await wrapper.vm.$nextTick();
 
             expect(wrapper.vm.workingLayer).to.deep.equal(layerMap);
-            expect(wrapper.vm.featureTypeDescSorted.optional).to.have.lengthOf(1);
-            expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(3);
-            expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(3);
+            expect(wrapper.vm.featureTypeDescSorted.optional).to.have.lengthOf(3);
+            expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(1);
+            expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(1);
             expect(wrapper.vm.valuesForFields.schulname).to.deep.equal(["placeholder"]);
         });
     });

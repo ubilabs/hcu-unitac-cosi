@@ -206,7 +206,9 @@ export default {
                         >
                             <template #activator>
                                 <v-list-item-content>
-                                    <v-list-item-title v-text="template.meta.title" />
+                                    <v-list-item-title>
+                                        {{ template.meta.title }}
+                                    </v-list-item-title>
                                 </v-list-item-content>
                             </template>
 

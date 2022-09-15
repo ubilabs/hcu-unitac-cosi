@@ -520,7 +520,7 @@ export default {
                                                 >
                                                     <div class="btn_grp">
                                                         <v-btn
-                                                            v-for="svg, key in imgObj"
+                                                            v-for="(svg, key) in imgObj"
                                                             :key="key"
                                                             :class="{highlight: svgFile === 'geo_pin_' + key.toUpperCase() + '.svg'}"
                                                             @click="setLayerSVG('geo_pin_' + key.toUpperCase() + '.svg')"

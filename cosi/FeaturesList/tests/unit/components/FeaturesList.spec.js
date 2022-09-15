@@ -73,7 +73,8 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         const map = {
             id: "ol",
             mode: "2D",
-            updateSize: () => sinon.stub()
+            updateSize: () => sinon.stub(),
+            getLayers: () => ({getArray: sinon.stub()})
         };
 
         mapCollection.addMap(map, "2D");
@@ -430,13 +431,12 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             sourceStub.addFeature.reset();
 
             // act
-            await wrapper.vm.setSelectedFeatureItems(wrapper.vm.items);
+            await wrapper.vm.setSelectedFeatureItems([]);
 
             // assert
             // call counts affected by other test runs, why?
             expect(clearStub.callCount).to.be.greaterThan(0);
-            expect(sourceStub.addFeature.callCount).to.be.greaterThan(0);
-            expect(sourceStub.addFeature.firstCall.args[0].getStyle().getImage().getFill().getColor()).to.eql([255, 179, 0]);
+            expect(sourceStub.addFeature.callCount).to.equal(0);
         });
 
         it("should hide distance score features on deselect", async () => {
@@ -448,7 +448,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             await wrapper.setData({selectedDistanceScoreLayers: [{layerId: "1234"}]});
             await wrapper.vm.$nextTick();
-            await wrapper.vm.setSelectedFeatureItems(wrapper.vm.items);
+            await wrapper.vm.setSelectedFeatureItems([]);
 
             clearStub.reset();
             sourceStub.addFeature.reset();
@@ -512,28 +512,6 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(spyExportTable.callCount).to.equal(1);
         });
 
-        it("expect feature to be removed from map/layer, when toggled off", async () => {
-            const spyToggleFeature = sinon.spy(FeaturesList.methods, "toggleFeature"),
-                layer1 = addNewLayerIfNotExists(),
-                wrapper = await mountComponent(true, [layer1]);
-
-
-            // toggle feature off
-            await wrapper.find(".featureToggle").trigger("click");
-            await wrapper.vm.$nextTick();
-
-            expect(spyToggleFeature.calledOnceWith(wrapper.vm.items[0])).to.be.true;
-            expect(wrapper.vm.disabledFeatureItems).to.have.lengthOf(1);
-            expect(wrapper.vm.items[0].enabled).to.be.false;
-            expect(layer1.getSource().getFeatures()).to.have.lengthOf(1);
-
-            // toggle feature back on again
-            await wrapper.find(".featureToggle").trigger("click");
-            await wrapper.vm.$nextTick();
-
-            expect(wrapper.vm.items[0].enabled).to.be.true;
-            expect(layer1.getSource().getFeatures()).to.have.lengthOf(1);
-        });
         it("should update weights and recompute score", async () => {
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
 

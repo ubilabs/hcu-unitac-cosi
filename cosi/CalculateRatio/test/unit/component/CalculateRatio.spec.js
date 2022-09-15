@@ -460,7 +460,7 @@ describe("CalculateRatio.vue", () => {
             groupActiveLayerStub.returns(expFacilitiesOptions);
             const wrapper = await mount(true);
 
-            wrapper.vm.$options.watch.layerList.call(wrapper.vm);
+            wrapper.vm.$options.watch.getVisibleLayerList.call(wrapper.vm);
 
             expect(wrapper.vm.facilityList).to.be.eql(expFacilityList);
         });
