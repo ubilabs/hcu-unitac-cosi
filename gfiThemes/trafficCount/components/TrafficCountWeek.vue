@@ -147,6 +147,8 @@ export default {
         this.weekFormat = "YYYY [KW] WW";
         moment.locale(i18next.language);
         this.initializeDates();
+        this.maxDate = this.checkGurlittInsel ? moment().subtract(1, "days").format("YYYY-MM-DD") : moment().format("YYYY-MM-DD");
+        this.minDate = moment().subtract(1, "year").startOf("year").format("YYYY-MM-DD");
     },
     methods: {
         /**
@@ -273,6 +275,8 @@ export default {
                 :initial-dates="dates"
                 :show-week-number="true"
                 :max-selection="5"
+                :min-date="minDate"
+                :max-date="maxDate"
                 @change="change"
             >
                 <template #currentSwitch="{momentDate}">

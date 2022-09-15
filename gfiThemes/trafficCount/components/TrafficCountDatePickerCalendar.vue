@@ -20,6 +20,16 @@ export default {
             type: Boolean,
             required: false,
             default: false
+        },
+        minDate: {
+            type: String,
+            required: false,
+            default: ""
+        },
+        maxDate: {
+            type: String,
+            required: false,
+            default: ""
         }
     },
     data () {
@@ -60,7 +70,9 @@ export default {
             const result = [],
                 currentMoment = moment(currentSwitch, "YYYY-MM"),
                 datePointer = currentMoment.isValid() ? moment(currentMoment) : moment(),
-                endDate = moment(datePointer);
+                endDate = moment(datePointer),
+                minMoment = moment(this.minDate, "YYYY-MM-DD"),
+                maxMoment = moment(this.maxDate, "YYYY-MM-DD");
 
             datePointer.startOf("isoWeek");
             endDate.startOf("isoWeek").add(41, "days");
@@ -76,7 +88,8 @@ export default {
                     day: datePointer.format("D"),
                     momentDate: moment(datePointer),
                     selected: selectedDates.includes(datePointer.format("YYYY-MM-DD")),
-                    inCurrentMonth: currentMoment.format("M") === datePointer.format("M")
+                    inCurrentMonth: currentMoment.format("M") === datePointer.format("M"),
+                    disabled: this.isDisabledDate(datePointer, minMoment, maxMoment)
                 });
                 datePointer.add(1, "days");
             }
@@ -85,10 +98,27 @@ export default {
         /**
          * Emits on click.
          * @param {Object} momentDate A moment object of the clicked date.
+         * @param {Boolean} disabled true if disabled, false if enabled.
          * @returns {void}
          */
-        onClick (momentDate) {
+        onClick (momentDate, disabled) {
+            if (disabled) {
+                return;
+            }
             this.$emit("onClick", momentDate);
+        },
+        /**
+         * Checks if the date should be disabled.
+         * @param {Object} day The day as moment object.
+         * @param {Object} minDate The min date as moment object.
+         * @param {Object} maxDate The max date as moment object.
+         * @returns {Boolean} true if date is not between minDate and maxDate, false if date is between.
+         */
+        isDisabledDate (day, minDate, maxDate) {
+            if (typeof day?.isBefore !== "function" || typeof day?.isAfter !== "function") {
+                return false;
+            }
+            return day.isBefore(minDate) || day.isAfter(maxDate);
         }
     }
 };
@@ -130,9 +160,9 @@ export default {
                 <td
                     v-for="dateObj in dateRow.days"
                     :key="'dateObj-' + dateObj.day"
-                    :class="{dateField: true, outOfMonth: !dateObj.inCurrentMonth, selected: dateObj.selected}"
-                    @click="onClick(dateObj.momentDate)"
-                    @keypress.enter="onClick(dateObj.momentDate)"
+                    :class="{dateField: true, outOfMonth: !dateObj.inCurrentMonth, selected: dateObj.selected, disabled: dateObj.disabled}"
+                    @click="onClick(dateObj.momentDate, dateObj.disabled)"
+                    @keypress.enter="onClick(dateObj.momentDate, dateObj.disabled)"
                 >
                     <slot
                         name="dateField"
@@ -140,6 +170,7 @@ export default {
                         :moment-date="dateObj.momentDate"
                         :selected="dateObj.selected"
                         :in-current-month="dateObj.inCurrentMonth"
+                        :disabled="dateObj.disabled"
                     >
                         {{ dateObj.day }}
                     </slot>
@@ -169,6 +200,11 @@ export default {
             }
             &.outOfMonth {
                 color: $light_grey;
+            }
+            &.disabled {
+                color: #ccc;
+                background-color: #f3f3f3;
+                cursor: not-allowed;
             }
             &.selected {
                 color: $white;

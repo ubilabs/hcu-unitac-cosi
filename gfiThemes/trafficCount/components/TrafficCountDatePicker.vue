@@ -39,6 +39,16 @@ export default {
             type: Number,
             required: false,
             default: 5
+        },
+        minDate: {
+            type: String,
+            required: false,
+            default: ""
+        },
+        maxDate: {
+            type: String,
+            required: false,
+            default: ""
         }
     },
     data () {
@@ -59,13 +69,22 @@ export default {
         });
     },
     created () {
-        window.addEventListener("click", (e) => {
-            if (this.isCalendarVisible && !this.$el.contains(e.target)) {
-                this.isCalendarVisible = false;
-            }
+        window.addEventListener("click", this.clickOutsideHandler);
+        this.$once("hook:destroyed", () => {
+            window.removeEventListener("click", this.clickOutsideHandler);
         });
     },
     methods: {
+        /**
+         * Handler for click outside event.
+         * @param {Event} e The event.
+         * @returns {void}
+         */
+        clickOutsideHandler (e) {
+            if (this.isCalendarVisible && !this.$el.contains(e.target)) {
+                this.isCalendarVisible = false;
+            }
+        },
         /**
          * Triggered when a date picker calendar date is clicked.
          * @param {Object} momentDate A moment instance of this date.
@@ -165,6 +184,8 @@ export default {
             v-if="isCalendarVisible"
             :show-week-number="showWeekNumber"
             :selected-dates="selectedDates"
+            :min-date="minDate"
+            :max-date="maxDate"
             @toggleSelectedDate="toggleSelectedDate"
         >
             <template #currentSwitch="{momentDate}">
@@ -185,13 +206,14 @@ export default {
                     :week-number="weekNumber"
                 />
             </template>
-            <template #dateField="{day, momentDate, selected, inCurrentMonth}">
+            <template #dateField="{day, momentDate, selected, inCurrentMonth, disabled}">
                 <slot
                     name="dateField"
                     :day="day"
                     :moment-date="momentDate"
                     :selected="selected"
                     :in-current-month="inCurrentMonth"
+                    :disabled="disabled"
                 />
             </template>
         </TrafficCountDatePickerWeek>

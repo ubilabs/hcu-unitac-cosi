@@ -19,6 +19,16 @@ export default {
             type: Array,
             required: false,
             default: () => []
+        },
+        minDate: {
+            type: String,
+            required: false,
+            default: ""
+        },
+        maxDate: {
+            type: String,
+            required: false,
+            default: ""
         }
     },
     data () {
@@ -101,6 +111,8 @@ export default {
             :current-switch="currentSwitch"
             :selected-dates="selectedDates"
             :show-week-number="showWeekNumber"
+            :max-date="maxDate"
+            :min-date="minDate"
             @onClick="toggleSelectedDate"
         >
             <template #weekdayName="{weekdayName}">
@@ -115,13 +127,14 @@ export default {
                     :week-number="weekNumber"
                 />
             </template>
-            <template #dateField="{day, momentDate, selected, inCurrentMonth}">
+            <template #dateField="{day, momentDate, selected, inCurrentMonth, disabled}">
                 <slot
                     name="dateField"
                     :day="day"
                     :moment-date="momentDate"
                     :selected="selected"
                     :in-current-month="inCurrentMonth"
+                    :disabled="disabled"
                 />
             </template>
         </TrafficCountDatePickerCalendar>
