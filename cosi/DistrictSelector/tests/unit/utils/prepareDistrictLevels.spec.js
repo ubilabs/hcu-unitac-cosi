@@ -374,19 +374,20 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
     });
 
     describe("prepareDistrictLevels", () => {
-        const layerOne = new Layer({id: "123", source: new Source()}),
-            spyOnSource = sinon.spy(layerOne.getSource(), "on"),
-            layerList = [layerOne];
-
         it("should call on listener", async () => {
-            const testArray = [{layerId: "123", stats: {}}];
+            const testArray = [{layerId: "123", stats: {}}],
+                layerOne = new Layer({id: "123", source: new Source()}),
+                spyOnSource = sinon.spy(layerOne.getSource(), "on"),
+                layerList = [layerOne];
 
             await prepareDistrictLevels(testArray, layerList);
             expect(spyOnSource.calledOnce).to.be.true;
         });
 
         it("should return an object with the properties 'nameList', 'layer' , 'featureTypes', 'propertyNameList', 'referenceLevel' and 'districts'", async () => {
-            const testArray = [{layerId: "123", stats: {}}];
+            const testArray = [{layerId: "123", stats: {}}],
+                layerOne = new Layer({id: "123", source: new Source()}),
+                layerList = [layerOne];
 
             await prepareDistrictLevels(testArray, layerList);
 
@@ -399,7 +400,9 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
         });
 
         it("should do nothing if layer already there", () => {
-            const testArray = [{layer: {}, stats: {}}];
+            const testArray = [{layer: {}, stats: {}}],
+                layerOne = new Layer({id: "123", source: new Source()}),
+                layerList = [layerOne];
 
             prepareDistrictLevels(testArray, layerList);
             expect(testArray[0]).to.have.not.property("nameList");
