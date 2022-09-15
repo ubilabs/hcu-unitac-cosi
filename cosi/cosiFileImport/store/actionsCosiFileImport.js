@@ -1,4 +1,3 @@
-import {Radio} from "backbone";
 import {KML, GeoJSON, GPX} from "ol/format.js";
 import uniqueId from "../../../../src/utils/uniqueId.js";
 import {Fill, Stroke, Style, Circle, Icon} from "ol/style.js";

@@ -1,5 +1,5 @@
 import Vuex from "vuex";
-import {config, mount, shallowMount, createLocalVue} from "@vue/test-utils";
+import {config, mount, createLocalVue} from "@vue/test-utils";
 import ScenarioBuilderStore from "../../../store/indexScenarioBuilder";
 import ScenarioBuilder from "../../../components/ScenarioBuilder.vue";
 import {expect} from "chai";
@@ -10,8 +10,6 @@ import Layer from "ol/layer/Vector.js";
 import Source from "ol/source/Vector.js";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
-import ScenarioManager from "../../../components/ScenarioManager.vue";
-import FeatureEditor from "../../../components/FeatureEditor.vue";
 import mockFeatureTypeDesc from "./mockFeatureTypeDesc.json";
 
 config.mocks.$t = key => key;
@@ -192,25 +190,27 @@ describe("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
         }
     });
 
-    it("should render Component", async () => {
-        await factory.initialize();
+    describe("Component DOM", () => {
+        it("should render Component", async () => {
+            await factory.initialize();
 
-        expect(wrapper.find("#scenario-builder-wrapper").exists()).to.be.true;
-        expect(wrapper.find("#scenario-builder-wrapper").html()).to.not.be.empty;
-        expect(wrapper.find("#scenario-manager").exists()).to.be.true;
-        expect(wrapper.find("form").exists()).to.be.true;
-    });
+            expect(wrapper.find("#scenario-builder-wrapper").exists()).to.be.true;
+            expect(wrapper.find("#scenario-builder-wrapper").html()).to.not.be.empty;
+            expect(wrapper.find("#scenario-manager").exists()).to.be.true;
+            expect(wrapper.find("form").exists()).to.be.true;
+        });
 
-    it("should add property fields when layer is selected", async () => {
-        setStubs();
-        await factory.initialize();
-        await wrapper.setData({workingLayer: layerMap});
-        await wrapper.vm.$nextTick();
+        it("should add property fields when layer is selected", async () => {
+            setStubs();
+            await factory.initialize();
+            await wrapper.setData({workingLayer: layerMap});
+            await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.workingLayer).to.deep.equal(layerMap);
-        expect(wrapper.vm.featureTypeDescSorted.optional).to.have.lengthOf(1);
-        expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(3);
-        expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(3);
-        expect(wrapper.vm.valuesForFields.schulname).to.deep.equal(["placeholder"]);
+            expect(wrapper.vm.workingLayer).to.deep.equal(layerMap);
+            expect(wrapper.vm.featureTypeDescSorted.optional).to.have.lengthOf(1);
+            expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(3);
+            expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(3);
+            expect(wrapper.vm.valuesForFields.schulname).to.deep.equal(["placeholder"]);
+        });
     });
 });
