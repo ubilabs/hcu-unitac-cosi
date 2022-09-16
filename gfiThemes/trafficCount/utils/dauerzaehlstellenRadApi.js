@@ -36,8 +36,8 @@ export class DauerzaehlstellenRadApi {
 
         this.feature = feature;
         this.offsetOfCsvDataYear = -88000;
-        this.offsetOfCsvDataWeek = -8800;
-        this.offsetOfCsvDataDay = -192;
+        this.offsetOfCsvDataWeek = -17600;
+        this.offsetOfCsvDataDay = -360;
         this.gurlittMomentsYear = [];
         this.gurlittMomentsWeek = [];
         this.gurlittMomentsDay = [];

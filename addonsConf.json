@@ -1,6 +1,5 @@
 {
   "bauforum": "changeGUI/loader.js",
-  "boris": "bodenrichtwertabfrage/view.js",
   "formular": "view.js",
   "showParcelGFI": "showParcelGFI.js",
   "verkehrsfunctions": {
@@ -11,6 +10,9 @@
   },
   "cosiFileImport": {
     "path": "cosi/cosiFileImport",
+    "type": "tool"
+  },
+  "boris": {
     "type": "tool"
   },
   "populationRequest": {
@@ -76,16 +78,22 @@
   "streetSmart": {
     "type": "tool"
   },
+  "refugeeHomes": {
+    "type": "tool"
+  },
   "hochWasserPrint": {
     "type": "tool"
   },
   "valuationPrint": {
     "type": "tool"
   },
+  "sessionTool": {
+    "type": "tool"
+  },
   "oktagonKartenportal": {
     "type": "tool"
   },
-  "valuationPrint": {
+  "quickResponseCode": {
     "type": "tool"
   },
   "bildungsatlas": {
@@ -165,9 +173,7 @@
     "type": "control"
   },
   "addLayerRemotely": "addLayerRemotely.js",
-  "qr": "view.js",
-  "obliqueControl": {
-    "path":"controls/obliqueControl",
-    "type": "control"
+  "obliqueViewer": {
+    "type": "tool"
   }
 }

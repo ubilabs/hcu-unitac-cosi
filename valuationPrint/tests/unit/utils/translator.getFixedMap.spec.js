@@ -43,7 +43,7 @@ describe("addons/valuationPrint/utils/translator.getFixedMap.js", () => {
                         "2426"
                     ]
                 },
-                result = getFixedMap(config.coordinates, config.projection, config.style, config.bbox, config.LayerIds, undefined);
+                result = getFixedMap(config.coordinates, config.projection, config.style, config.bbox, config.layerIds, undefined);
 
             expect(result).to.be.an("object").that.is.not.empty;
             expect(result.dpi).to.equal(200);

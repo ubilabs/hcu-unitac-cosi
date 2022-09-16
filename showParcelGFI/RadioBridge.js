@@ -3,7 +3,7 @@ import {getWmsFeaturesByMimeType} from "../../src/api/gfi/getWmsFeaturesByMimeTy
 
 Radio.channel("GFI").on({
     "layerAtPosition": async function (layerId, attributes) {
-        store.commit("Maps/setGfiFeatures", null);
+        store.commit("Tools/Gfi/setGfiFeatures", null);
 
         const coordinate = attributes.coordinate,
             layerList = mapCollection.getMap("2D").getLayers().getArray(),
@@ -22,11 +22,11 @@ Radio.channel("GFI").on({
                 const properties = feature.getProperties();
 
                 return properties.gemarkung === attributes.gemarkung &&
-                    properties.flurstueck.replace(" ", "") === attributes.flurstuecksnummer;
+                    properties.flurstueck.replaceAll(" ", "") === attributes.flurstuecksnummer;
             });
 
         store.commit("Tools/Gfi/setActive", true);
         store.commit("Maps/setClickCoordinate", [coordinate[0], coordinate[1]]);
-        store.commit("Maps/setGfiFeatures", [targetFeature]);
+        store.commit("Tools/Gfi/setGfiFeatures", [targetFeature]);
     }
 });

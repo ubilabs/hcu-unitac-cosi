@@ -9,20 +9,36 @@ export default function getPrintedLayers (layerIds) {
     const printedLayers = [];
 
     if (Array.isArray(layerIds) && layerIds.length) {
-        layerIds.forEach(id => {
-            if (typeof id !== "string" && !isObject(id)) {
+        layerIds.forEach(layerId => {
+            let layerObj = null,
+                layer = {};
+
+            if (isObject(layerId)) {
+                layerObj = Object.assign({
+                    opacity: 1,
+                    dpi: 200
+                }, layerId);
+            }
+            else if (typeof layerId === "string") {
+                layerObj = {
+                    layerId,
+                    opacity: 1,
+                    dpi: 200
+                };
+            }
+            else {
                 return;
             }
 
-            const layerId = typeof id === "string" ? id : Object.keys(id)[0],
-                opacity = isObject(id) ? Object.values(id)[0] : 1;
-            let layer = {};
-
-            Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
-            layer = Radio.request("ModelList", "getModelByAttributes", {id: layerId})?.layer;
+            Radio.trigger("ModelList", "addModelsByAttributes", {id: layerObj.layerId});
+            layer = Radio.request("ModelList", "getModelByAttributes", {id: layerObj.layerId})?.layer;
 
             if (typeof layer !== "undefined") {
-                printedLayers.push([layer, opacity]);
+                printedLayers.push({
+                    layer,
+                    opacity: layerObj.opacity,
+                    dpi: layerObj.dpi
+                });
             }
         });
     }

@@ -65,7 +65,7 @@ export default {
         },
 
         close () {
-            const model = getComponent("streetsmart");
+            const model = getComponent("streetSmart");
 
             this.destroyApi();
             this.setActive(false);
@@ -108,8 +108,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-#streetsmart{
-    height: 84vh;
+#streetsmart {
+    height: 100%;
 }
 #sidebarloader {
     position:absolute;
@@ -128,16 +128,54 @@ export default {
 </style>
 
 <style lang="scss">
-.expandable-navbar {
-    display: flex;
-    align-items: start;
-    .navbar-nav {
-        flex-direction: row;
-        width: auto !important;
-    }
-    .navbar-right {
+/* FIX:
+    These are overrides repairing the issues presented by Masterportal using
+    Bootstrap 5 and SmartCityAPI using Bootstrap <=3. */
+
+#streetsmart {
+    .expandable-navbar, .cmt-navbar {
         display: flex;
-        justify-content: end;
+        align-items: start;
+        font-family: inherit;
+
+        .navbar-nav {
+            flex-direction: row;
+            width: auto;
+            align-items: center;
+
+            &.navbar-flex-reverse {
+                flex-direction: row-reverse;
+            }
+        }
+
+        .navbar-right {
+            display: flex;
+            justify-content: end;
+        }
+
+        .switch-button {
+            height: 20px;
+        }
+
+        .measurement-dropdown {
+            .btn-default, .dropdown-menu a {
+                display: flex;
+                align-items: center;
+            }
+        }
+    }
+
+    .cmtViewerPanel {
+        .btn-secondary-right {
+            position: unset;
+            margin: 0;
+        }
+
+        .wrapperproperty > div {
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
     }
 }
 </style>
