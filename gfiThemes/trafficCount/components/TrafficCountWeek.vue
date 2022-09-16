@@ -134,6 +134,9 @@ export default {
         }
     },
     watch: {
+        reset () {
+            this.initializeDates();
+        },
         dates (value) {
             if (value) {
                 this.weekDatepickerValueChanged([value]);
@@ -145,15 +148,21 @@ export default {
     },
     mounted () {
         moment.locale(i18next.language);
-
-        if (moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday) {
-            this.dates = moment().subtract(7, "days").toDate();
-        }
-        else {
-            this.dates = moment().toDate();
-        }
+        this.initializeDates();
     },
     methods: {
+        /**
+         * Initializes the calendar / resets the date.
+         * @returns {void}
+         */
+        initializeDates () {
+            if (moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday) {
+                this.dates = moment().subtract(7, "days").toDate();
+            }
+            else {
+                this.dates = moment().toDate();
+            }
+        },
         /**
          * Function is initially triggered and on update
          * @param   {Date[]} dates an unsorted array of selected dates of weekday

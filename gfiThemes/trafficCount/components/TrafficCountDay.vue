@@ -126,15 +126,25 @@ export default {
         };
     },
     watch: {
+        reset () {
+            this.initializeDates();
+        },
         dates (value) {
             this.dayDatepickerValueChanged(value);
         }
     },
     mounted () {
         moment.locale(i18next.language);
-        this.dates.push(this.checkGurlittInsel ? moment().subtract(1, "days").toDate() : moment().toDate());
+        this.initializeDates();
     },
     methods: {
+        /**
+         * Initializes the calendar / resets the date.
+         * @returns {void}
+         */
+        initializeDates () {
+            this.dates = [this.checkGurlittInsel ? moment().subtract(1, "days").toDate() : moment().toDate()];
+        },
         /**
          * Function is initially triggered and on update
          * @param   {Date[]} dates an unsorted array of selected dates of weekday
