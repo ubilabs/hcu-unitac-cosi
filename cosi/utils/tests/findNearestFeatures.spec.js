@@ -5,7 +5,7 @@ import {expect} from "chai";
 import * as Proj from "ol/proj.js";
 import {registerProjections} from "../registerProjections";
 
-describe("findNearestFeature", () => {
+describe.skip("findNearestFeature", () => {
     before(async function () {
         this.timeout(10000);
         await initializeLayerList();
