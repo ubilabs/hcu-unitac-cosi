@@ -168,11 +168,11 @@
     "path": "cosi/AreaSelector",
     "type": "tool"
   },
+  "addLayerRemotely": "addLayerRemotely.js",
   "obliqueControl": {
     "path":"controls/obliqueControl",
     "type": "control"
   },
-  "addLayerRemotely": "addLayerRemotely.js",
   "obliqueViewer": {
     "type": "tool"
   }

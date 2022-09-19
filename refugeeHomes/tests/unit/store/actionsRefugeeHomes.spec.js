@@ -4,7 +4,6 @@ import sinon from "sinon";
 import actions from "../../../store/actionsRefugeeHomes";
 
 describe("ADDONS: addons/refugeeHomes/store/actionsRefugeeHomes", () => {
-
     let dispatch;
 
     beforeEach(() => {
