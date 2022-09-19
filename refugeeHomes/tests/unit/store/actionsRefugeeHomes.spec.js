@@ -3,7 +3,7 @@ import state from "../../../store/stateRefugeeHomes";
 import sinon from "sinon";
 import actions from "../../../store/actionsRefugeeHomes";
 
-describe("ADDONS: addons/refugeeHomes/store/mutationsRefugeeHomes", () => {
+describe("ADDONS: addons/refugeeHomes/store/actionsRefugeeHomes", () => {
 
     let dispatch;
 
