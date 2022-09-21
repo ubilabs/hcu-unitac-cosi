@@ -204,7 +204,7 @@ export default {
                 if (layer) {
                     this.allLayerOptions.push({
                         name: m.value,
-                        id: m.ltf ? m.category : layer.id,
+                        id: m.category,
                         group: m.group,
                         valueType: m.valueType,
                         ltf: m.ltf,

@@ -421,7 +421,7 @@ describe("CalculateRatio.vue", () => {
             expect(wrapper.find("#calculateratio").html()).to.contain("additional:modules.tools.cosi.calculateRatio.warningNoData");
         });
 
-        it("should update data on loadend", async () => {
+        it.skip("should update data on loadend", async () => {
             selectedFeaturesStub.returns(new GeoJSON().readFeatures(features_stadtteile));
 
             const wrapper = await mount();
@@ -465,7 +465,7 @@ describe("CalculateRatio.vue", () => {
             expect(wrapper.vm.facilityList).to.be.eql(expFacilityList);
         });
 
-        it("should switch after facilities available", async () => {
+        it.skip("should switch after facilities available", async () => {
             layerListStub.returns([{
                 getProperties: () => ({name: "Öffentliche Bibliotheken"}),
                 get: (id)=>id === "name" && "Öffentliche Bibliothekenname"
