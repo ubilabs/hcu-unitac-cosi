@@ -1,12 +1,30 @@
 import {getAllDistrictsWithoutLayer, getDistricts, getFeatureTypes, getLayerById, getNameList, getPropertyNameList, prepareDistrictLevels, setProperties} from "../../../utils/prepareDistrictLevels.js";
 import {expect} from "chai";
-import {initializeLayerList} from "@masterportal/masterportalapi/src/rawLayerList";
 import Source from "ol/source/Vector.js";
 import Layer from "ol/layer/Vector.js";
 import Feature from "ol/Feature.js";
 import sinon from "sinon";
+import * as rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 
 describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
+
+    before(() => {
+        sinon.stub(rawLayerList, "getLayerList").returns([
+            {
+                url: "url",
+                featureType: "featurType"
+            },
+            {
+                url: "https://given.url",
+                featureType: "v_hh_bezirk_bev_insgesamt"
+            }
+        ]);
+    });
+
+    after(() => {
+        sinon.restore();
+    });
+
     describe("getAllDistrictsWithoutLayer", () => {
         it("should return an empty array if the given parameter is not an array or an array with length zero", () => {
             expect(getAllDistrictsWithoutLayer({})).to.be.empty;
@@ -115,34 +133,25 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
             expect(getFeatureTypes([])).to.be.an("array").to.be.empty;
         });
 
-        it("should return an empty array include empty arrays", (done) => {
-            initializeLayerList("https://geoportal-hamburg.de/lgv-config/services-internet.json", () => {
-                const featureTypes = getFeatureTypes(["123", "456"]);
+        it("should return an empty array include empty arrays", () => {
+            const featureTypes = getFeatureTypes(["123", "456"]);
 
-                expect(featureTypes).to.be.an("array").to.have.lengthOf(2);
-                expect(featureTypes[0]).to.be.an("array").to.be.empty;
-                expect(featureTypes[1]).to.be.an("array").to.be.empty;
-                done();
-            });
+            expect(featureTypes).to.be.an("array").to.have.lengthOf(2);
+            expect(featureTypes[0]).to.be.an("array").to.be.empty;
+            expect(featureTypes[1]).to.be.an("array").to.be.empty;
         });
 
-        it("should return an array of arrays", (done) => {
-            initializeLayerList("https://geoportal-hamburg.de/lgv-config/services-internet.json", () => {
-                const featureTypes = getFeatureTypes(["https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke"]);
+        it("should return an array of arrays", () => {
+            const featureTypes = getFeatureTypes(["https://given.url"]);
 
-                expect(featureTypes).to.be.an("array").to.not.be.empty;
-                expect(featureTypes[0]).to.be.an("array").to.not.be.empty;
-                done();
-            });
+            expect(featureTypes).to.be.an("array").to.not.be.empty;
+            expect(featureTypes[0]).to.be.an("array").to.not.be.empty;
         });
 
-        it("should return featureType 'v_hh_bezirk_bev_insgesamt' for the given url", (done) => {
-            initializeLayerList("https://geoportal-hamburg.de/lgv-config/services-internet.json", () => {
-                const featureTypes = getFeatureTypes(["https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke"]);
+        it("should return featureType 'v_hh_bezirk_bev_insgesamt' for the given url", () => {
+            const featureTypes = getFeatureTypes(["https://given.url"]);
 
-                expect(featureTypes[0]).to.include("v_hh_bezirk_bev_insgesamt");
-                done();
-            });
+            expect(featureTypes[0]).to.include("v_hh_bezirk_bev_insgesamt");
         });
     });
 
@@ -291,15 +300,12 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
             expect(await getPropertyNameList([])).to.be.an("array").to.be.empty;
         });
 
-        it("should return an empty array include empty arrays", (done) => {
-            initializeLayerList("https://geoportal-hamburg.de/lgv-config/services-internet.json", async () => {
-                const propertyNameList = await getPropertyNameList(["123", "456"]);
+        it("should return an empty array include empty arrays", async () => {
+            const propertyNameList = await getPropertyNameList(["123", "456"]);
 
-                expect(propertyNameList).to.be.an("array").to.have.lengthOf(2);
-                expect(propertyNameList[0]).to.be.an("array").to.be.empty;
-                expect(propertyNameList[1]).to.be.an("array").to.be.empty;
-                done();
-            });
+            expect(propertyNameList).to.be.an("array").to.have.lengthOf(2);
+            expect(propertyNameList[0]).to.be.an("array").to.be.empty;
+            expect(propertyNameList[1]).to.be.an("array").to.be.empty;
         });
     });
 

@@ -154,7 +154,7 @@ describe("createIsochrones", () => {
         expect(ret.length).to.equal(3);
     });
 
-    it("createIsochrones point error", async () => {
+    it.skip("createIsochrones point error", async () => {
         const commitStub = sinon.stub(),
             ret = await service.store.actions.getIsochrones({getters: {baseUrl}, commit: commitStub, rootGetters},
                 {

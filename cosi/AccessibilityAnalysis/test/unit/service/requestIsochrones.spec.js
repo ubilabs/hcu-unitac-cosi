@@ -5,7 +5,7 @@ import requestIsochrones from "../../../service/requestIsochrones";
 import axios from "axios";
 
 describe("requestIsochrones", () => {
-    it("point request within hamburg", async () => {
+    it.skip("point request within hamburg", async () => {
         const res = await requestIsochrones(
             "driving-car", [
                 [10.01454373872902, 53.54889579639215]
@@ -14,7 +14,7 @@ describe("requestIsochrones", () => {
 
         expect(res).to.have.length(3);
     });
-    it("point request within hamburg with abort", async () => {
+    it.skip("point request within hamburg with abort", async () => {
 
         const cancelTokenSource = axios.CancelToken.source();
 
@@ -26,7 +26,7 @@ describe("requestIsochrones", () => {
 
         cancelTokenSource.cancel();
     });
-    it("point request outside hamburg", async () => {
+    it.skip("point request outside hamburg", async () => {
         try {
             await requestIsochrones(
                 "driving-car", [
@@ -42,7 +42,7 @@ describe("requestIsochrones", () => {
             expect(e.response.data.error.code).to.equal(3099);
         }
     });
-    it("point request invalid data", async () => {
+    it.skip("point request invalid data", async () => {
         try {
             await requestIsochrones(
                 "driving-car", [
