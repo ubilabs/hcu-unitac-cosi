@@ -210,6 +210,9 @@ export default {
                 color: $white;
                 background-color: $light_blue;
             }
+            &.weekNumber {
+                opacity: 0.5;
+            }
         }
     }
 </style>

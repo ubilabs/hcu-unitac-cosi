@@ -225,3 +225,61 @@ export default {
     @import "~variables";
 
 </style>
+
+<style lang="scss">
+@import "~/css/mixins.scss";
+@import "~variables";
+
+.mx-datepicker-main {
+    color: $secondary_contrast;
+    font-family: "HamburgSans";
+}
+
+.mx-btn {
+    color: #337ab7;
+    &:hover {
+        color: $dark_blue;
+    }
+}
+
+.mx-calendar-content {
+    .cell{
+        &.active {
+            background: $dark_blue;
+        }
+        &:not(.disabled) {
+            &:hover {
+                color: #ffffff;
+                background: $dark_blue;
+            }
+        }
+    }
+}
+
+.mx-input-wrapper {
+    input {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #ffffff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        appearance: none;
+        border-radius: 0;
+        box-shadow: inset 0 1px 2px rgb(0 0 0 / 8%);
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        &:hover, &:focus {
+            color: $black;
+            background-color: $white;
+            border-color: $light_blue;
+            outline: 0;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08), 0 0 0 0.25rem rgba(0, 48, 99, 0.25);
+        }
+    }
+}
+
+</style>

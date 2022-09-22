@@ -144,6 +144,7 @@ export default {
 <style scoped lang="scss">
 .datePickerWeek {
     position: absolute;
+    right: 34px;
     background-color: white;
     z-index: 100;
     border: thin grey;

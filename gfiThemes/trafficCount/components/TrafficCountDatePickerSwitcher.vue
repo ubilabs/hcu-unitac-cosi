@@ -103,8 +103,9 @@ export default {
             border: 0;
             box-shadow: none;
             background: none;
+            color: #337ab7;
             &:hover {
-                color: $blue;
+                color: $dark_blue;
             }
         }
         .date-label {
