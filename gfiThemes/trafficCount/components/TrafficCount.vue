@@ -125,6 +125,10 @@ export default {
         },
 
         downloadFilename () {
+            if (this.checkGurlittInsel && this.feature?.getProperties()?.link_download) {
+                return false;
+            }
+
             return this.propMeansOfTransport + "_" + this.propThingId + "_" + this.direction;
         }
     },
