@@ -17,9 +17,17 @@ const actions = {
                     mapMenu = iframe.contentWindow.document.getElementsByClassName("vcm-btn-icon single-first maptool-btn vcm-btn-base-default vcm-btn-base-splash-hover vcm-border vcm-border-dye03 vcm-btn-icon-font-default vcm-btn-icon-font-dye01-hover vcm-no-select vcm-btn-map-Oblique")[0],
                     overviewMap = iframe.contentWindow.document.getElementsByClassName("overview-map-wrap")[0],
                     vcs = document.getElementById("obliqueIframe").contentWindow.vcs,
-                    map = vcs.vcm.Framework.getInstance().getActiveMap(),
-                    pixelCoordinate = mapCollection.getMap("2D").getPixelFromCoordinate(rootGetters["Maps/initialCenter"]);
+                    map = vcs.vcm.Framework.getInstance().getActiveMap();
+                let pixelCoordinate = mapCollection.getMap("2D").getPixelFromCoordinate(rootGetters["Maps/initialCenter"]);
 
+                mapCollection.getMap("2D").on("moveend", function () {
+                    mapCollection.getMap("2D").getLayers().forEach((layer) => {
+                        if (layer.getProperties().id === "marker_point_layer") {
+                            pixelCoordinate = mapCollection.getMap("2D").getPixelFromCoordinate(rootGetters["Maps/clickCoordinate"]);
+                            commit("Maps/setClickCartesianCoordinate", pixelCoordinate, {root: true});
+                        }
+                    });
+                });
                 commit("Maps/setClickCartesianCoordinate", pixelCoordinate, {root: true});
 
                 if (map) {
