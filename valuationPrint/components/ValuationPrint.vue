@@ -161,10 +161,9 @@ export default {
                     this.defaultValue = response.data.settings.defaultValue;
                     this.fileprefix = response.data.settings.fileprefix;
                 })
-                .catch(error => {
+                .catch(() => {
                     const message = "Could not load the config file config.valuation.json";
 
-                    console.error("Error: ", error);
                     this.addMessage(message, true);
                     this.addSingleAlert({
                         category: "error",
