@@ -1,4 +1,5 @@
 import {transform} from "@masterportal/masterportalapi/src/crs";
+import getProxyUrl from "../../../src/utils/getProxyUrl";
 
 const actions = {
     /**
@@ -134,7 +135,12 @@ const actions = {
             let startCoordinates = "";
 
             startCoordinates = transformedCoordinates[0] + ", " + transformedCoordinates[1];
-            commit("setObliqueViewerURL", rootGetters.getRestServiceById(getters.serviceId).url + "?groundPosition=" + startCoordinates);
+            if (document.location.hostname === "localhost") {
+                commit("setObliqueViewerURL", getProxyUrl(rootGetters.getRestServiceById(getters.serviceId).url) + "?groundPosition=" + startCoordinates);
+            }
+            else {
+                commit("setObliqueViewerURL", rootGetters.getRestServiceById(getters.serviceId).url + "?groundPosition=" + startCoordinates);
+            }
         }
     }
 };
