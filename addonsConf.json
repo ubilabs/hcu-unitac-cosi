@@ -169,10 +169,6 @@
     "type": "tool"
   },
   "addLayerRemotely": "addLayerRemotely.js",
-  "obliqueControl": {
-    "path":"controls/obliqueControl",
-    "type": "control"
-  },
   "obliqueViewer": {
     "type": "tool"
   }
