@@ -822,7 +822,7 @@ export default {
     </Tool>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../../utils/variables.scss";
 
 #dashboard-wrapper {
@@ -842,7 +842,7 @@ export default {
             min-width: 40vw;
         }
     }
-}
+
 
 .dashboard-table {
     height: 100%;
@@ -931,6 +931,7 @@ export default {
             display: none;
         }
     }
+}
 }
 </style>
 
