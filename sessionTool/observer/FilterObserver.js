@@ -27,7 +27,7 @@ function getFilterState () {
  */
 function setFilter (payload) {
     if (!Array.isArray(payload?.rulesOfFilters) || payload?.rulesOfFilters.length === 0
-        && !isObject(payload?.geometryFeature) || Object.keys(payload.geometryFeature).length === 0) {
+        && (!isObject(payload?.geometryFeature) || Object.keys(payload.geometryFeature).length === 0)) {
         return;
     }
 
