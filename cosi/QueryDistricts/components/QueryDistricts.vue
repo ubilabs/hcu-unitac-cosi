@@ -12,7 +12,12 @@ import {Fill, Stroke, Style} from "ol/style.js";
 import {getAllFeatures as _getAllFeatures} from "../../utils/getAllFeatures.js";
 import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
-import * as turf from "@turf/turf";
+import {
+    polygon as turfPolygon,
+    multiPolygon as turfMultiPolygon,
+    point as turfPoint
+} from "@turf/helpers";
+import {default as turfBooleanPointInPolygon} from "@turf/boolean-point-in-polygon";
 import ToolInfo from "../../components/ToolInfo.vue";
 import {getFeaturePOST} from "../../../../src/api/wfs/getFeature.js";
 import {WFS} from "ol/format.js";
@@ -265,15 +270,15 @@ export default {
 
                     if (feature.getGeometry().getType() === "MultiPolygon") {
                         // expect multipolygon, try polygon if exception
-                        polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
+                        polygon = turfMultiPolygon(feature.getGeometry().getCoordinates());
                     }
                     else if (feature.getGeometry().getType() === "Polygon") {
-                        polygon = turf.polygon(feature.getGeometry().getCoordinates());
+                        polygon = turfPolygon(feature.getGeometry().getCoordinates());
                     }
 
                     if (
                         polygon &&
-                        turf.booleanPointInPolygon(turf.point(this.getCoordinate(ffeature)), polygon)
+                        turfBooleanPointInPolygon(turfPoint(this.getCoordinate(ffeature)), polygon)
                     ) {
                         val = property ? parseFloat(ffeature.get(property)) : 1;
                         val = !isNaN(val) ? val : 1;
