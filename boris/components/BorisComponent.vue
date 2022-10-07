@@ -330,9 +330,11 @@ export default {
                 <div
                     v-if="Object.keys(selectedBrwFeature).length !== 0"
                 >
-                    <div class="pt-2">
-                        {{ $t("additional:modules.tools.boris.referenceNumber") }}: {{ selectedBrwFeature.get("richtwertnummer") }}
-                    </div>
+                    <h6 class="pt-4">
+                        <strong>
+                            {{ $t("additional:modules.tools.boris.referenceNumber") }}: {{ selectedBrwFeature.get("richtwertnummer") }}
+                        </strong>
+                    </h6>
                     <hr>
                     <div
                         class="d-flex mb-2"
@@ -382,7 +384,12 @@ export default {
                         />
                     </div>
                     <div v-if="buttonValue === 'euro'">
-                        <h4>{{ $t('additional:modules.tools.boris.landCalculation.title') }} </h4>
+                        <h4 class="pb-2 mb-0">
+                            {{ $t('additional:modules.tools.boris.landCalculation.title') }}
+                        </h4>
+                        <h6 class="pb-2">
+                            {{ $t('additional:modules.tools.boris.landCalculation.subtitle') }}
+                        </h6>
                         <dl>
                             <div
                                 v-if="selectedBrwFeature.get('zBauweise')"

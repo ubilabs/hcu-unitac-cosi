@@ -42,7 +42,7 @@ const state = {
     icon: "bi-vinyl",
     renderToWindow: false,
     resizableWindow: true,
-    initialWidth: 620,
+    initialWidth: 520,
     initialWidthMobile: 240,
     keepOpen: true,
     isVisibleInMenu: true,
