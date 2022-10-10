@@ -330,11 +330,9 @@ export default {
                 <div
                     v-if="Object.keys(selectedBrwFeature).length !== 0"
                 >
-                    <h6 class="pt-4">
-                        <strong>
-                            {{ $t("additional:modules.tools.boris.referenceNumber") }}: {{ selectedBrwFeature.get("richtwertnummer") }}
-                        </strong>
-                    </h6>
+                    <div class="pt-4 larger">
+                        {{ $t("additional:modules.tools.boris.referenceNumber") }}: {{ selectedBrwFeature.get("richtwertnummer") }}
+                    </div>
                     <hr>
                     <div
                         class="d-flex mb-2"
@@ -534,6 +532,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "~variables";
+.larger {
+    font-size: $font_size_big;
+    font-family: $font_family_accent;
+}
 ::v-deep dt {
     background-color: $secondary_table_style;
     font-family: $font_family_accent;
