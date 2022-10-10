@@ -19,7 +19,6 @@ import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
-import Vue from "vue";
 
 import
 {
@@ -300,9 +299,6 @@ export default {
         this.distScoreLayer = await this.addNewLayerIfNotExists({layerName: "distance-score-features"});
         this.distScoreLayer.setVisible(true);
         this.distScoreLayer.setZIndex(22);
-
-        console.log(this.mapping)
-        console.log(this.$store)
 
     },
     methods: {
