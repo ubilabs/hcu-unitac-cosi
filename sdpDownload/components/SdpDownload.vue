@@ -193,7 +193,7 @@ export default {
                     <button
                         id="button-neuwerk"
                         type="button"
-                        class="w-100 btn btn-sm btn-outline-default btn-sm btn-block center-block"
+                        class="w-100 btn btn-sm btn-outline-default btn-block center-block"
                         @click="requestCompressIslandData('Neuwerk')"
                     >
                         {{ translate(neuwerkDataPackage) }}
@@ -203,7 +203,7 @@ export default {
                     <button
                         id="button-scharhoern"
                         type="button"
-                        class="w-100 btn btn-sm btn-outline-default btn-sm btn-block center-block"
+                        class="w-100 btn btn-sm btn-outline-default btn-block center-block"
                         @click="requestCompressIslandData('Scharhoern')"
                     >
                         {{ $t(scharhoernDataPackage) }}
