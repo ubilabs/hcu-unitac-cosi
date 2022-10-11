@@ -41,17 +41,6 @@ export default {
         ...mapState(["easyReadMode"]),
         ...mapGetters("Tools/AreaSelector", {areaSelectorGeom: "geometry"}),
 
-        /**
-         * Gets the names of the districts of the selected district level.
-         * @returns {String[]} The district names or an empty array.
-         */
-        namesOfDistricts: function () {
-            if (this.selectedDistrictLevel?.nameList) {
-                return this.selectedDistrictLevel.nameList;
-            }
-            return [];
-        },
-
         selectedNames: {
             get () {
                 return this.selectedDistrictNames;
@@ -119,6 +108,7 @@ export default {
          */
         layerList: function (newLayerList) {
             prepareDistrictLevels(this.districtLevels, newLayerList);
+            this.$forceUpdate();
         },
 
         selectedDistrictsCollection: "transferFeatures",
@@ -522,7 +512,7 @@ export default {
                     />
                     <v-autocomplete
                         :value="selectedNames"
-                        :items="namesOfDistricts"
+                        :items="selectedDistrictLevel.nameList"
                         :label="$t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel')"
                         outlined
                         dense
