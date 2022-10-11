@@ -208,7 +208,7 @@ export default {
     watch: {
         active () {
             if (this.active) {
-                this.registerListener({type: "click", listener: this.setCoordinateFromClick});
+                mapCollection.getMap("2D").on("click", this.setCoordinateFromClick);
                 onSearchbar(this.setSearchResultToOrigin);
 
                 if (this.mode === "path") {
@@ -216,7 +216,7 @@ export default {
                 }
             }
             else {
-                this.unregisterListener({type: "click", listener: this.setCoordinateFromClick});
+                mapCollection.getMap("2D").un("click", this.setCoordinateFromClick);
                 offSearchbar(this.setSearchResultToOrigin);
                 this.removePointMarker();
                 this.select.getFeatures().clear();
