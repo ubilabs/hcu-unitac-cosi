@@ -81,6 +81,10 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/AreaSelector", Object.keys(mutations)),
+        ...mapMutations("Tools/PopulationRequest", {
+            setPopulationRequestGeometry: "setGeometry",
+            setPopulationRequestActive: "setActive"
+        }),
         ...mapActions("Maps", ["addNewLayerIfNotExists"]),
 
         /**
@@ -116,7 +120,8 @@ export default {
 
             this.close();
             await this.$nextTick();
-            this.$root.$emit("populationRequest", geoJson.geometry);
+            this.setPopulationRequestActive(true);
+            this.setPopulationRequestGeometry(geoJson.geometry);
         },
 
         /**

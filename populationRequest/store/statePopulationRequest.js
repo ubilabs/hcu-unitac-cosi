@@ -13,6 +13,7 @@
  * @property {Number} populationReqServiceId id of the population Request
  * @property {String} wpsId The id of the used web processing service.
  * @property {String} fmwProcess FME process triggered via the WPS.
+ * @property {GeoJSON|undefined} The area as GeoJSON object in which the inhabitants are requested.
  */
 const state = {
     active: false,
@@ -28,7 +29,8 @@ const state = {
     alkisAdressesActive: false,
     populationReqServiceId: 2,
     wpsId: "1001",
-    fmwProcess: "einwohner_ermitteln.fmw"
+    fmwProcess: "einwohner_ermitteln.fmw",
+    geometry: undefined
 };
 
 export default state;
