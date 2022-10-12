@@ -385,7 +385,8 @@ describe("CalculateRatio.vue", () => {
                 configJson: mockConfigJson
             },
             getters: {
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
         store.commit("Tools/CalculateRatio/setActive", true);

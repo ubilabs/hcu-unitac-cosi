@@ -105,7 +105,8 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
                 }
             },
             getters: {
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
     });

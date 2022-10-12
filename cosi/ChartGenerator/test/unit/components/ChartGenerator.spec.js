@@ -81,7 +81,7 @@ describe("CharGenerator.vue", () => {
                 Language: {
                     namespaced: true,
                     getters: {
-                        currentLocale: () => sinon.stub()
+                        currentLocale: () => "de"
                     }
                 }
             },
@@ -89,7 +89,8 @@ describe("CharGenerator.vue", () => {
                 configJson: mockConfigJson
             },
             getters: {
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
 
