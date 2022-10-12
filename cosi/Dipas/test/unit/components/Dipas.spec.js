@@ -230,8 +230,7 @@ describe("Dipas.vue", () => {
             },
             getters: {
                 isDefaultStyle: () => true,
-                uiStyle: () => true,
-                mobile: () => sinon.stub()
+                uiStyle: () => true
             }
         });
         store.commit("Tools/Dipas/setActive", true);

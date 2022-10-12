@@ -1,6 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {prepareDistrictLevels} from "../utils/prepareDistrictLevels";
 import calculateExtent from "../../utils/calculateExtent.js";
 import getBoundingGeometry from "../../utils/getBoundingGeometry.js";
@@ -40,6 +40,17 @@ export default {
         ...mapGetters("Maps", ["getVisibleLayerList"]),
         ...mapState(["easyReadMode"]),
         ...mapGetters("Tools/AreaSelector", {areaSelectorGeom: "geometry"}),
+
+        /**
+         * Gets the names of the districts of the selected district level.
+         * @returns {String[]} The district names or an empty array.
+         */
+        namesOfDistricts: function () {
+            if (this.selectedDistrictLevel?.nameList) {
+                return this.selectedDistrictLevel.nameList;
+            }
+            return [];
+        },
 
         selectedNames: {
             get () {
@@ -108,7 +119,6 @@ export default {
          */
         layerList: function (newLayerList) {
             prepareDistrictLevels(this.districtLevels, newLayerList);
-            this.$forceUpdate();
         },
 
         selectedDistrictsCollection: "transferFeatures",
@@ -512,7 +522,7 @@ export default {
                     />
                     <v-autocomplete
                         :value="selectedNames"
-                        :items="selectedDistrictLevel.nameList"
+                        :items="namesOfDistricts"
                         :label="$t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel')"
                         outlined
                         dense

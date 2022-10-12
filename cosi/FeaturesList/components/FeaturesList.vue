@@ -1,6 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {mapState, mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersFeaturesList";
 import mutations from "../store/mutationsFeaturesList";
@@ -15,7 +15,7 @@ import LayerWeights from "./LayerWeights.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
-import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
+import {rawLayerList} from "@masterportal/masterportalapi/src";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
@@ -299,7 +299,6 @@ export default {
         this.distScoreLayer = await this.addNewLayerIfNotExists({layerName: "distance-score-features"});
         this.distScoreLayer.setVisible(true);
         this.distScoreLayer.setZIndex(22);
-
     },
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
@@ -601,7 +600,7 @@ export default {
 
             for (const g of groups) {
                 for (const l of g.layer) {
-                    const layer = getLayerWhere({id: l.layerId});
+                    const layer = rawLayerList.getLayerWhere({id: l.layerId});
 
                     if (layer) {
                         allLayers.push({id: l.id, layerId: l.layerId, url: layer.url, group: g.group, featureType: layer.featureType});

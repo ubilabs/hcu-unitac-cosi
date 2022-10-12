@@ -201,8 +201,7 @@ describe("addons/cosi/QueryDistricts/", () => {
                 }
             },
             getters: {
-                uiStyle: () => true,
-                mobile: () => sinon.stub()
+                uiStyle: () => true
             }
         });
         store.commit("Tools/QueryDistricts/setActive", false);

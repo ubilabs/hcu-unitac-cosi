@@ -1,5 +1,4 @@
 import store from "../../../src/app-store";
-import isObject from "../../../src/utils/isObject";
 
 /**
  * Registers the Observer.
@@ -26,8 +25,7 @@ function getFilterState () {
  * @returns {void}
  */
 function setFilter (payload) {
-    if (!Array.isArray(payload?.rulesOfFilters) || payload?.rulesOfFilters.length === 0
-        && (!isObject(payload?.geometryFeature) || Object.keys(payload.geometryFeature).length === 0)) {
+    if (!Array.isArray(payload?.rulesOfFilters) || payload?.rulesOfFilters.length === 0) {
         return;
     }
 

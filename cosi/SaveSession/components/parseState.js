@@ -1,4 +1,4 @@
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {GeoJSON} from "ol/format";
 import ScenarioNeighborhood from "../../ScenarioBuilder/classes/ScenarioNeighborhood";
 import ScenarioFeature from "../../ScenarioBuilder/classes/ScenarioFeature";

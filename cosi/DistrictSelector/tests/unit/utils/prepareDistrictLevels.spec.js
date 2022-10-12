@@ -4,7 +4,7 @@ import Source from "ol/source/Vector.js";
 import Layer from "ol/layer/Vector.js";
 import Feature from "ol/Feature.js";
 import sinon from "sinon";
-import * as rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 
 describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
 

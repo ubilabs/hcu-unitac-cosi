@@ -17,7 +17,7 @@ export default {
         },
         fieldValues: {
             type: Array,
-            default: () => []
+            default: null
         },
         min: {
             type: Number,
@@ -53,7 +53,7 @@ export default {
         },
         quotientLayers: {
             type: Array,
-            default: () => []
+            default: null
         },
         quotientLayer: {
             type: String,
@@ -61,7 +61,7 @@ export default {
         },
         properties: {
             type: Array,
-            default: () => []
+            default: null
         },
         property: {
             type: String,

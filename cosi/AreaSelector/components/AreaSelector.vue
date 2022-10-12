@@ -1,7 +1,7 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersAreaSelector";
 import mutations from "../store/mutationsAreaSelector";

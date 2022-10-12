@@ -179,7 +179,6 @@ describe("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
                     },
                     actions: {
                         removeInteraction: () => sinon.stub(),
-                        removeHighlightFeature: () => sinon.stub(),
                         addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: () => sinon.stub(),
@@ -205,8 +204,7 @@ describe("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
             },
             getters: {
                 isDefaultStyle: () => true,
-                uiStyle: () => true,
-                mobile: () => sinon.stub()
+                uiStyle: () => true
             }
         });
         store.commit("Tools/ScenarioBuilder/setActive", true);

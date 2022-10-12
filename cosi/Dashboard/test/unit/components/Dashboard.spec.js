@@ -35,7 +35,6 @@ function addElemWithDataAppToBody () {
 
 describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
     before(() => {
-        global.ShadowRoot = () => "";
         mapCollection.clear();
         const map = {
             id: "ol",
@@ -146,8 +145,7 @@ describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             },
             getters: {
                 isDefaultStyle: () => true,
-                uiStyle: () => true,
-                mobile: () => sinon.stub()
+                uiStyle: () => true
             }
         });
         store.commit("Tools/Dashboard/setActive", true);
