@@ -67,7 +67,7 @@ function createFeature (key) {
     return feature;
 }
 
-describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
+describe.skip("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
     before(() => {
         mapCollection.clear();
         const map = {
