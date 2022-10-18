@@ -1,5 +1,5 @@
 import {collectFeatures} from "./collectFeatures.js";
-import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
+import {rawLayerList} from "@masterportal/masterportalapi/src";
 import nextFeatureByDistance from "./precompiler.nextFeatureByDistance.js";
 import allFeaturesByDuration from "./precompiler.allFeaturesByDuration.js";
 import {nextGroupedFeaturesByDistance} from "./precompiler.nextGroupedFeaturesByDistance.js";
@@ -34,7 +34,7 @@ export function createKnowledgeBase (parcelData, services, mapProjection, onstar
         onstart(config?.onstart);
     }
 
-    collectFeatures(parcelData, config, mapProjection, getLayerWhere({id: config.layerId}), features => {
+    collectFeatures(parcelData, config, mapProjection, rawLayerList.getLayerWhere({id: config.layerId}), features => {
         if (features.length === 0) {
             config.propertyName.forEach(attributeKey => {
                 knowledgeBase[prefix + "." + attributeKey] = undefined;

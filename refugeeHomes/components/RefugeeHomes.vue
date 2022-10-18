@@ -1,6 +1,6 @@
 <script>
 import {mapGetters, mapActions, mapMutations} from "vuex";
-import getComponent from "../../../src/utils/getComponent";
+import {getComponent} from "../../../src/utils/getComponent";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import getters from "../store/gettersRefugeeHomes";
 import mutations from "../store/mutationsRefugeeHomes";
