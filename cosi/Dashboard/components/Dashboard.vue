@@ -848,7 +848,7 @@ export default {
             min-width: 40vw;
         }
     }
-}
+
 
 .dashboard-table {
     height: 100%;
@@ -937,6 +937,7 @@ export default {
             display: none;
         }
     }
+}
 }
 </style>
 

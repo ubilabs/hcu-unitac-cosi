@@ -35,6 +35,7 @@ function addElemWithDataAppToBody () {
 
 describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
     before(() => {
+        global.ShadowRoot = () => "";
         mapCollection.clear();
         const map = {
             id: "ol",
