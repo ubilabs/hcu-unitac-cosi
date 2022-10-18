@@ -321,7 +321,7 @@ export default {
                     };
                 });
             }
-            else if (layer.ltf) {
+            else {
                 const wfsReader = new WFS();
 
                 let features = await getFeaturePOST(layer.url, {
@@ -347,17 +347,6 @@ export default {
                     ret.feature = feature;
                     ret[this.selectorField] = this.keyOfAttrNameStats;
                     ret.kategorie = layer.category;
-                    ret.id = ret[this.keyOfAttrNameStats];
-                    return ret;
-                });
-            }
-            else {
-                const features = await this.getAllFeatures(layer.id);
-
-                this.propertiesMap[layer.id] = features.map(feature => {
-                    const ret = feature.getProperties();
-
-                    ret.feature = feature;
                     ret.id = ret[this.keyOfAttrNameStats];
                     return ret;
                 });
