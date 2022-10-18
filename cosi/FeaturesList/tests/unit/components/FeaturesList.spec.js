@@ -20,6 +20,7 @@ import mockConfigJson from "./mock.config.json";
 import districtLevel from "./mock.districtLevel";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
 import {VChip} from "vuetify/lib";
+import Map from "ol/Map";
 
 Vue.use(Vuetify);
 
@@ -41,7 +42,8 @@ function addNewLayerIfNotExists (feature) {
         id: "1234",
         source: new Source({
             features: [feature || createFeature()]
-        })
+        }),
+        visible: true
     });
 }
 
@@ -67,21 +69,28 @@ function createFeature (key) {
     return feature;
 }
 
-describe.skip("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
+/**
+ * mocks vuetify data-app attr
+ * @returns {void}
+ */
+function addElemWithDataAppToBody () {
+    const app = document.createElement("div");
+
+    app.setAttribute("data-app", true);
+    document.body.append(app);
+}
+
+describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
     before(() => {
         mapCollection.clear();
-        const map = {
-            id: "ol",
-            mode: "2D",
-            updateSize: () => sinon.stub(),
-            getLayers: () => ({getArray: sinon.stub()})
-        };
+
+        const map = new Map();
 
         mapCollection.addMap(map, "2D");
+        addElemWithDataAppToBody();
     });
 
     let store, sandbox, vuetify, layerListStub, getDistanceScoreStub, sourceStub, clearStub, _wrapper;
-
 
     const expMapping = [{
             group: "Bildung und Wissenschaft",
@@ -172,6 +181,12 @@ describe.skip("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                             actions: {
                                 channelGraphData: sinon.stub()
                             }
+                        },
+                        Alerting: {
+                            namespaced: true,
+                            actions: {
+                                addSingleAlert: () => sinon.stub()
+                            }
                         }
                     }
                 },
@@ -198,7 +213,8 @@ describe.skip("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                 configJson: mockConfigJson
             },
             getters: {
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
     });
@@ -305,10 +321,12 @@ describe.skip("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("layer should be read out if active", async () => {
-            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
+            mapCollection.getMap("2D").addLayer(addNewLayerIfNotExists());
+
+            const wrapper = await mountComponent(true);
+
 
             await wrapper.vm.$nextTick();
-
 
             // flatActiveLayerMapping has length 1 if 1 layer is active
             expect(wrapper.vm.flatActiveLayerMapping).to.have.lengthOf(1);
