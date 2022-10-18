@@ -145,7 +145,8 @@ describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             },
             getters: {
                 isDefaultStyle: () => true,
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
         store.commit("Tools/Dashboard/setActive", true);

@@ -828,7 +828,7 @@ export default {
     </Tool>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../../utils/variables.scss";
 
 #dashboard-wrapper {

@@ -142,7 +142,8 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                 }
             },
             getters: {
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
     });
