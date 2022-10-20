@@ -178,7 +178,7 @@ export default {
                 const layerToHide = this.map.getLayers().getArray().filter(layer => layer.get("name") === layerName);
                 console.log("just to test", layerToHide);
                 // note this
-                /*if (layerToHide.length > 0) {
+                /* if (layerToHide.length > 0) {
                     this.removeLayerFromMap(layerToHide[0]);
                 }*/
 
@@ -190,10 +190,10 @@ export default {
             storedLayers.forEach(layerName => {
                 const layerToShow = this.map.getLayers().getArray().filter(layer => layer.get("name") === layerName);
 
-                /*if (layerToShow.length > 0) {
+                /* if (layerToShow.length > 0) {
                     this.addLayerToMap(layerToShow[0]);
                 }*/
-                
+
                 if (layerToShow.length > 0) {
                     layerToShow[0].setVisible(true);
                 }
