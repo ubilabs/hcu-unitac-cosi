@@ -59,6 +59,10 @@
     "path": "cosi/SaveSession",
     "type": "tool"
   },
+  "SelectionManager": {
+    "path": "cosi/SelectionManager",
+    "type": "tool"
+  },
   "TemplateManager": {
     "path": "cosi/TemplateManager",
     "type": "tool"

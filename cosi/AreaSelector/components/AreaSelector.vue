@@ -69,6 +69,7 @@ export default {
                 this.drawingLayer.getSource().addFeature(this.feature);
             }
 
+            this.addNewSelection({selection: [new Feature(geom)], source: this.$t("additional:modules.tools.cosi.areaSelector.title"), id: "areaselector-index"});
             setBBoxToGeom.call(this, geom || this.boundingGeometry);
         }
     },
@@ -82,6 +83,7 @@ export default {
     methods: {
         ...mapMutations("Tools/AreaSelector", Object.keys(mutations)),
         ...mapActions("Maps", ["addNewLayerIfNotExists"]),
+        ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
 
         /**
          * Updates the geometry from the geomPicker in the data for later use when instantiating a new feature

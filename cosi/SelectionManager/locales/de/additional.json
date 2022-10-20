@@ -1,0 +1,13 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "selectionManager": {
+                    "title": "Auswahlverwaltung",
+                    "infoTooltip": "Werkzeuginformationen",
+                    "noData": "Keine Daten vorhanden"
+                }
+            }
+        }
+    }
+}
