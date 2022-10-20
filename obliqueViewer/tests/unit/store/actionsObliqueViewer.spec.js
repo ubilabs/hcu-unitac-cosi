@@ -45,9 +45,7 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
         rootGetters = {
             getRestServiceById: () => {
                 return {
-                    params: {
-                        url: "https://this.could.be.your.url"
-                    }
+                    url: "https://this.could.be.your.url/examplePortal"
                 };
             }
         };
@@ -56,33 +54,12 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
         sinon.restore();
     });
 
-    describe("initObliqueView", () => {
-        it("initObliqueView shall dispatch once", () => {
-            const callback = {
-                type: "click",
-                listener: "setClickCoordinate",
-                listenerType: "commit"};
-
-            actions.initObliqueView({commit, dispatch, getters, rootGetters});
-
-            expect(dispatch.calledOnce).to.be.true;
-            expect(dispatch.args[0][0]).to.equal("Maps/registerListener");
-            expect(dispatch.args[0][1]).to.deep.equal(callback);
-        });
-    });
     describe("resetObliqueViewer", () => {
-        it("resetObliqueViewer shall unregister the map listener, reset the mapMarker style and remove the mapMarker", () => {
-            const callback = {
-                type: "click",
-                listener: "setClickCoordinate",
-                listenerType: "commit"};
-
+        it("resetObliqueViewer shall reset the mapMarker style and remove the mapMarker", () => {
             actions.resetObliqueViewer({commit, dispatch, getters});
 
-            expect(dispatch.calledTwice).to.be.true;
-            expect(dispatch.args[0][0]).to.equal("Maps/unregisterListener");
-            expect(dispatch.args[0][1]).to.deep.equal(callback);
-            expect(dispatch.args[1][0]).to.equal("MapMarker/removePointMarker");
+            expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.args[0][0]).to.equal("MapMarker/removePointMarker");
             expect(commit.calledOnce).to.be.true;
             expect(commit.args[0][0]).to.equal("MapMarker/setPointStyleId");
         });
@@ -133,43 +110,72 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
         it("setObliqueViewerURL shall do nothing, if coordinates are null", () => {
             const initialCenter = null;
 
-            actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
+            actions.setObliqueViewerURL({commit, dispatch, getters, rootGetters}, initialCenter);
 
-            expect(commit.calledOnce).to.be.false;
+            expect(commit.notCalled).to.be.true;
+            expect(dispatch.notCalled).to.be.true;
 
         });
         it("setObliqueViewerURL shall do nothing, if coordinates are undefined", () => {
             const initialCenter = undefined;
 
-            actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
+            actions.setObliqueViewerURL({commit, dispatch, getters, rootGetters}, initialCenter);
 
-            expect(commit.calledOnce).to.be.false;
+            expect(commit.notCalled).to.be.true;
+            expect(dispatch.notCalled).to.be.true;
 
         });
         it("setObliqueViewerURL shall do nothing, if coordinates are no array", () => {
             const initialCenter = "";
 
-            actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
+            actions.setObliqueViewerURL({commit, dispatch, getters, rootGetters}, initialCenter);
 
-            expect(commit.calledOnce).to.be.false;
+            expect(commit.notCalled).to.be.true;
+            expect(dispatch.notCalled).to.be.true;
 
         });
         it("setObliqueViewerURL shall do nothing, if coordinates array length is smaller two", async () => {
             const initialCenter = [565874];
 
-            actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
+            actions.setObliqueViewerURL({commit, dispatch, getters, rootGetters}, initialCenter);
 
-            expect(commit.calledOnce).to.be.false;
+            expect(commit.notCalled).to.be.true;
+            expect(dispatch.notCalled).to.be.true;
 
         });
-        it("setObliqueViewerURL shall commit the oblique url", async () => {
+        it("setObliqueViewerURL shall commit the oblique url", () => {
             const initialCenter = [565874, 5934140];
 
-            await actions.setObliqueViewerURL({commit, getters, rootGetters}, initialCenter);
+            actions.setObliqueViewerURL({commit, dispatch, getters, rootGetters}, initialCenter);
+
+            expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.firstCall.args[0]).to.equal("setObliqueViewerURLWithSameHostname");
+            expect(dispatch.firstCall.args[1]).to.equal("9.99431966511419, 53.55201216725377");
+        });
+    });
+
+    describe("setObliqueViewerURLWithSameHostname", () => {
+        it("should print an alerting if url hostnames are different", () => {
+            const startCoordinates = "9.99431966511419, 53.55201216725377";
+
+            actions.setObliqueViewerURLWithSameHostname({commit, dispatch, getters, rootGetters}, startCoordinates);
+
+            expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.firstCall.args[0]).to.equal("Alerting/addSingleAlert");
+            expect(dispatch.firstCall.args[1]).to.equal("modules.tools.obliqueViewer.sameOrigin");
+        });
+    });
+
+    describe("setObliqueViewerURLWithReplacedHostname", () => {
+        it("should replace the ", () => {
+            const urlParts = ["geoportal-example.de", "examplePortal"],
+                startCoordinates = "9.99431966511419, 53.55201216725377";
+
+            actions.setObliqueViewerURLWithReplacedHostname({commit}, {urlParts, startCoordinates});
 
             expect(commit.calledOnce).to.be.true;
-            expect(commit.args[0][0]).to.equal("setObliqueViewerURL");
-
+            expect(commit.firstCall.args[0]).to.equals("setObliqueViewerURL");
+            expect(commit.firstCall.args[1]).to.equals("https:///examplePortal?groundPosition=9.99431966511419, 53.55201216725377");
         });
     });
 });

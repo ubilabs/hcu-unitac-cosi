@@ -1,14 +1,21 @@
 <script>
+import moment from "moment";
+
 export default {
     name: "TrafficCountDatePickerSwitcher",
     props: {
-        year: {
+        currentSwitch: {
             type: String,
             required: true
         },
-        month: {
+        currentSwitchFormat: {
             type: String,
             required: true
+        }
+    },
+    computed: {
+        currentSwitchMoment () {
+            return moment(this.currentSwitch, this.currentSwitchFormat);
         }
     },
     methods: {
@@ -19,7 +26,6 @@ export default {
         yearDown () {
             this.$emit("yearDown");
         },
-
         /**
          * Emits the "yearUp" event.
          * @returns {void}
@@ -27,7 +33,6 @@ export default {
         yearUp () {
             this.$emit("yearUp");
         },
-
         /**
          * Emits the "monthDown" event.
          * @returns {void}
@@ -35,7 +40,6 @@ export default {
         monthDown () {
             this.$emit("monthDown");
         },
-
         /**
          * Emits the "monthUp" event.
          * @returns {void}
@@ -80,7 +84,14 @@ export default {
         >
             <i class="bi bi-chevron-right" />
         </button>
-        <span class="date-label">{{ month }} {{ year }}</span>
+        <span class="date-label">
+            <slot
+                name="currentSwitch"
+                :moment-date="currentSwitchMoment"
+            >
+                {{ currentSwitch }}
+            </slot>
+        </span>
     </div>
 </template>
 
@@ -92,8 +103,9 @@ export default {
             border: 0;
             box-shadow: none;
             background: none;
+            color: #337ab7;
             &:hover {
-                color: $blue;
+                color: $dark_blue;
             }
         }
         .date-label {

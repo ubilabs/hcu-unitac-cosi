@@ -1224,7 +1224,7 @@
   {
     "category": "bevb_geburten_anz",
     "value": "Geburten",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1233,7 +1233,7 @@
   {
     "category": "bevb_sterbefaelle_anz",
     "value": "Sterbefälle",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1242,7 +1242,7 @@
   {
     "category": "bevb_zuzuege_ueber_stadtteilgrenze_anz",
     "value": "Zuzüge über Stadteilgrenze",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1251,7 +1251,7 @@
   {
     "category": "bevb_fortzuege_ueber_stadtteilgrenze_anz",
     "value": "Fortzüge über Stadteilgrenze",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1260,7 +1260,7 @@
   {
     "category": "bevb_diff_zuzuege_fortzuege_anz",
     "value": "Differenz Zuzüge/Fortzüge",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1269,7 +1269,7 @@
   {
     "category": "bevb_zuzuege_u6_anz",
     "value": "Zuzüge über Stadteilgrenze unter 6 Jahren",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1278,7 +1278,7 @@
   {
     "category": "bevb_zuzuege_u18_anz",
     "value": "Zuzüge über Stadteilgrenze unter 18 Jahren",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1287,7 +1287,7 @@
   {
     "category": "bevb_zuzuege_18_bis_u65_anz",
     "value": "Zuzüge über Stadteilgrenze 18 bis unter 65 Jahren",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1296,7 +1296,7 @@
   {
     "category": "bevb_zuzuege_ab65_anz",
     "value": "Zuzüge über Stadteilgrenze ab 65 Jahren",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1305,7 +1305,7 @@
   {
     "category": "bevb_fortzuege_u6_anz",
     "value": "Fortzüge über Stadteilgrenze unter 6 Jahren",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1314,7 +1314,7 @@
   {
     "category": "bevb_fortzuege_u18_anz",
     "value": "Fortzüge über Stadteilgrenze unter 18 Jahren",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1323,7 +1323,7 @@
   {
     "category": "bevb_fortzuege_18_bis_u65_anz",
     "value": "Fortzüge über Stadteilgrenze 18 Jahren bis unter 65 Jahren",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -1332,7 +1332,7 @@
   {
     "category": "bevb_fortzuege_ab65_anz",
     "value": "Fortzüge über Stadteilgrenze ab 65 Jahren",
-    "group": "Vorschläge bitte",
+    "group": "Bevölkerungsbewegung",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",

@@ -1,4 +1,4 @@
-import {buffer} from "@turf/turf";
+import {default as turfBuffer} from "@turf/buffer";
 import GeoJSON from "ol/format/GeoJSON";
 import GeometryCollection from "ol/geom/GeometryCollection";
 
@@ -29,7 +29,7 @@ export default function getBoundingGeometry (features, bufferValue = 0, portalCr
             ),
         geometryCollection = new GeometryCollection(geometries),
         geoJson = parser.writeGeometryObject(geometryCollection),
-        bufferedGeoJson = buffer(geoJson, bufferVal, {units: "meters"}),
+        bufferedGeoJson = turfBuffer(geoJson, bufferVal, {units: "meters"}),
         bufferedGeometries = bufferedGeoJson.features
             .map(feature => parser
                 .readGeometry(feature.geometry)

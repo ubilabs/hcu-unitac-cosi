@@ -11,7 +11,6 @@ import service, {setWorker, setWorkerFactory} from "../../../service/index";
 // import features from "./featuresPoint.json";
 import featuresRegion from "./featuresRegion.json";
 import GeoJSON from "ol/format/GeoJSON";
-// import * as turf from "@turf/turf";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
 import {getAllFeatures} from "../../../../utils/getAllFeatures";
 import * as Proj from "ol/proj.js";
