@@ -702,7 +702,7 @@ export default {
                                     fill: new Fill({color: colorMap[layerId]})
                                 }),
                                 text: new Text({
-                                    text: getLayerWhere({id: layerId})?.name,
+                                    text: rawLayerList.getLayerWhere({id: layerId})?.name,
                                     placement: "point",
                                     offsetY: -10,
                                     offsetX: 10,
