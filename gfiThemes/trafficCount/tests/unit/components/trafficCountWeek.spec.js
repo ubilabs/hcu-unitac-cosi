@@ -84,6 +84,7 @@ describe("addons/trafficCount/components/TrafficCountWeek.vue", () => {
                     }
                 ];
 
+            wrapper.vm.weekFormat = undefined;
             wrapper.vm.weekDatepickerValueChanged(dates);
 
             expect(wrapper.vm.apiData).to.deep.equal(data);

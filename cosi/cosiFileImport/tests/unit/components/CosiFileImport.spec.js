@@ -3,7 +3,6 @@ import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import CosiFileImportComponent from "../../../components/CosiFileImport.vue";
 import CosiFileImport from "../../../store/indexCosiFileImport";
 import {expect} from "chai";
-import sinon from "sinon";
 import * as crs from "@masterportal/masterportalapi/src/crs";
 import Vuetify from "vuetify";
 import Vue from "vue";
@@ -67,7 +66,7 @@ describe("addons/cosi/cosiFileImport/components/CosiFileImport.vue", () => {
                 Language: {
                     namespaced: true,
                     getters: {
-                        currentLocale: () => sinon.stub()
+                        currentLocale: () => "de"
                     }
                 }
             },

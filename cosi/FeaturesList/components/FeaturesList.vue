@@ -299,6 +299,7 @@ export default {
         this.distScoreLayer = await this.addNewLayerIfNotExists({layerName: "distance-score-features"});
         this.distScoreLayer.setVisible(true);
         this.distScoreLayer.setZIndex(22);
+
     },
     methods: {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),

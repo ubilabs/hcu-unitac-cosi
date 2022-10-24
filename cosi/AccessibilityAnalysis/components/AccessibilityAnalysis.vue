@@ -209,7 +209,7 @@ export default {
     watch: {
         active () {
             if (this.active) {
-                this.registerListener({type: "click", listener: this.setCoordinateFromClick});
+                mapCollection.getMap("2D").on("click", this.setCoordinateFromClick);
                 onSearchbar(this.setSearchResultToOrigin);
 
                 if (this.mode === "path") {
@@ -217,7 +217,7 @@ export default {
                 }
             }
             else {
-                this.unregisterListener({type: "click", listener: this.setCoordinateFromClick});
+                mapCollection.getMap("2D").un("click", this.setCoordinateFromClick);
                 offSearchbar(this.setSearchResultToOrigin);
                 this.removePointMarker();
                 this.select.getFeatures().clear();
@@ -435,7 +435,11 @@ export default {
             }
 
             this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
+<<<<<<< HEAD
             this.addNewSelection({selection: analysisSet.results, source: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.title"), id: this._mode + ", " + this._transportType + ", [...]"});
+=======
+            this.addNewSelection({selection: analysisSet.results, source: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.title"), id: `${this._mode}, ${this._transportType}, [...]`});
+>>>>>>> 1c2b5d5a21d7ea025a9559eb9b6d361f473d9a0d
         },
         exportAsGeoJson,
         // pagination features

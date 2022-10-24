@@ -489,6 +489,12 @@ export default {
             if (evt) {
                 this.toolOffset = window.innerWidth - evt.targetElement.clientWidth;
             }
+            if (this.$el.querySelector("#dashboard-toolbar").clientHeight > 50) {
+                this.$el.querySelector(".dashboard-table-wrapper").style.height = "calc(100% - 116px)";
+            }
+            else {
+                this.$el.querySelector(".dashboard-table-wrapper").style.height = "calc(100% - 80px)";
+            }
         },
 
         /**

@@ -4,171 +4,128 @@ import sinon from "sinon";
 import TrafficCountDatePickerSwitcher from "../../../components/TrafficCountDatePickerSwitcher.vue";
 
 describe("addons/trafficCount/components/TrafficCountDatePickerSwitcher.vue", () => {
+    let wrapper;
+
+    beforeEach(() => {
+        wrapper = shallowMount(TrafficCountDatePickerSwitcher, {
+            propsData: {
+                currentSwitch: "2022-09",
+                currentSwitchFormat: "YYYY-MM"
+            }
+        });
+    });
+    afterEach(() => {
+        wrapper.destroy();
+    });
+
     describe("Component DOM", () => {
         it("should exist", () => {
-            const wrapper = shallowMount(TrafficCountDatePickerSwitcher, {
-                propsData: {
-                    year: "2022",
-                    month: "Sep"
-                }
-            });
-
             expect(wrapper.exists()).to.be.true;
-
-            wrapper.destroy();
         });
-
         it("should render the given props", () => {
-            const wrapper = shallowMount(TrafficCountDatePickerSwitcher, {
+            expect(wrapper.find(".date-label").text()).to.be.equal("2022-09");
+        });
+        it("should render its slot", () => {
+            const wrapperTemp = shallowMount(TrafficCountDatePickerSwitcher, {
                 propsData: {
-                    year: "2022",
-                    month: "Sep"
+                    currentSwitch: "2022-09",
+                    currentSwitchFormat: "YYYY-MM"
+                },
+                scopedSlots: {
+                    currentSwitch: `
+                        <template slot-scope="{ momentDate }">CurrentSwitch: {{ momentDate.format('DD.MM.YYYY') }}</template>
+                    `
                 }
             });
 
-            expect(wrapper.find(".date-label").text()).to.be.equal("Sep 2022");
-
-            wrapper.destroy();
+            expect(wrapperTemp.find(".date-label").text()).to.be.equal("CurrentSwitch: 01.09.2022");
+            wrapperTemp.destroy();
         });
     });
 
     describe("User Interactions", () => {
-        it("should call the method yearDown", async () => {
+        it("should call the method yearDown", () => {
             const spyYearDown = sinon.spy(TrafficCountDatePickerSwitcher.methods, "yearDown"),
-                wrapper = shallowMount(TrafficCountDatePickerSwitcher, {
+                wrapperTemp = shallowMount(TrafficCountDatePickerSwitcher, {
                     propsData: {
-                        year: "2022",
-                        month: "Sep"
+                        currentSwitch: "2022-09",
+                        currentSwitchFormat: "YYYY-MM"
                     }
                 }),
-                buttonWrapperArray = wrapper.findAll("button");
+                buttonWrapperArray = wrapperTemp.findAll("button");
 
-            await buttonWrapperArray.at(0).trigger("click");
-
+            buttonWrapperArray.at(0).trigger("click");
             expect(spyYearDown.calledOnce).to.be.true;
 
-            wrapper.destroy();
+            wrapperTemp.destroy();
             spyYearDown.restore();
         });
-
-        it("should call the method yearUp", async () => {
+        it("should call the method yearUp", () => {
             const spyYearUp = sinon.spy(TrafficCountDatePickerSwitcher.methods, "yearUp"),
-                wrapper = shallowMount(TrafficCountDatePickerSwitcher, {
+                wrapperTemp = shallowMount(TrafficCountDatePickerSwitcher, {
                     propsData: {
-                        year: "2022",
-                        month: "Sep"
+                        currentSwitch: "2022-09",
+                        currentSwitchFormat: "YYYY-MM"
                     }
                 }),
-                buttonWrapperArray = wrapper.findAll("button");
+                buttonWrapperArray = wrapperTemp.findAll("button");
 
-            await buttonWrapperArray.at(2).trigger("click");
-
+            buttonWrapperArray.at(2).trigger("click");
             expect(spyYearUp.calledOnce).to.be.true;
 
-            wrapper.destroy();
+            wrapperTemp.destroy();
             spyYearUp.restore();
         });
-
-        it("should call the method monthDown", async () => {
+        it("should call the method monthDown", () => {
             const spyMonthDown = sinon.spy(TrafficCountDatePickerSwitcher.methods, "monthDown"),
-                wrapper = shallowMount(TrafficCountDatePickerSwitcher, {
+                wrapperTemp = shallowMount(TrafficCountDatePickerSwitcher, {
                     propsData: {
-                        year: "2022",
-                        month: "Sep"
+                        currentSwitch: "2022-09",
+                        currentSwitchFormat: "YYYY-MM"
                     }
                 }),
-                buttonWrapperArray = wrapper.findAll("button");
+                buttonWrapperArray = wrapperTemp.findAll("button");
 
-            await buttonWrapperArray.at(1).trigger("click");
-
+            buttonWrapperArray.at(1).trigger("click");
             expect(spyMonthDown.calledOnce).to.be.true;
 
-            wrapper.destroy();
+            wrapperTemp.destroy();
             spyMonthDown.restore();
         });
-
-        it("should call the method monthUp", async () => {
+        it("should call the method monthUp", () => {
             const spymonthUp = sinon.spy(TrafficCountDatePickerSwitcher.methods, "monthUp"),
-                wrapper = shallowMount(TrafficCountDatePickerSwitcher, {
+                wrapperTemp = shallowMount(TrafficCountDatePickerSwitcher, {
                     propsData: {
-                        year: "2022",
-                        month: "Sep"
+                        currentSwitch: "2022-09",
+                        currentSwitchFormat: "YYYY-MM"
                     }
                 }),
-                buttonWrapperArray = wrapper.findAll("button");
+                buttonWrapperArray = wrapperTemp.findAll("button");
 
-            await buttonWrapperArray.at(3).trigger("click");
-
+            buttonWrapperArray.at(3).trigger("click");
             expect(spymonthUp.calledOnce).to.be.true;
 
-            wrapper.destroy();
+            wrapperTemp.destroy();
             spymonthUp.restore();
         });
     });
 
-    describe("Methdos", () => {
-        it("should emitted the event yearDown", async () => {
-            const wrapper = shallowMount(TrafficCountDatePickerSwitcher, {
-                propsData: {
-                    year: "2022",
-                    month: "Sep"
-                }
-            });
-
+    describe("methods", () => {
+        it("should emitted the event yearDown", () => {
             wrapper.vm.yearDown();
-            await wrapper.vm.$nextTick();
-
             expect(wrapper.emitted()).to.have.property("yearDown");
-
-            wrapper.destroy();
         });
-
-        it("should emitted the event yearUp", async () => {
-            const wrapper = shallowMount(TrafficCountDatePickerSwitcher, {
-                propsData: {
-                    year: "2022",
-                    month: "Sep"
-                }
-            });
-
+        it("should emitted the event yearUp", () => {
             wrapper.vm.yearUp();
-            await wrapper.vm.$nextTick();
-
             expect(wrapper.emitted()).to.have.property("yearUp");
-
-            wrapper.destroy();
         });
-
-        it("should emitted the event monthDown", async () => {
-            const wrapper = shallowMount(TrafficCountDatePickerSwitcher, {
-                propsData: {
-                    year: "2022",
-                    month: "Sep"
-                }
-            });
-
+        it("should emitted the event monthDown", () => {
             wrapper.vm.monthDown();
-            await wrapper.vm.$nextTick();
-
             expect(wrapper.emitted()).to.have.property("monthDown");
-
-            wrapper.destroy();
         });
-
-        it("should emitted the event monthUp", async () => {
-            const wrapper = shallowMount(TrafficCountDatePickerSwitcher, {
-                propsData: {
-                    year: "2022",
-                    month: "Sep"
-                }
-            });
-
+        it("should emitted the event monthUp", () => {
             wrapper.vm.monthUp();
-            await wrapper.vm.$nextTick();
-
             expect(wrapper.emitted()).to.have.property("monthUp");
-
-            wrapper.destroy();
         });
     });
 });

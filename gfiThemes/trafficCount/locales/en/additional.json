@@ -55,6 +55,7 @@
                             "dataNotAvailableA": "(not",
                             "dataNotAvailableB": "received)",
                             "apiFunction": "The value for \"{{category}}\" wasn't received due to an api error.",
+                            "apiGeneral": "The requested data was not received correctly due to an API error.",
                             "subscribeLastUpdate": "The date of the last update received from the sensor server cannot be output due to an API error."
                         },
                         "datepicker": {

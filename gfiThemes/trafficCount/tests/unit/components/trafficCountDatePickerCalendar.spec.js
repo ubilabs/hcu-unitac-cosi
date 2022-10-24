@@ -5,7 +5,7 @@ import TrafficCountDatePickerCalendar from "../../../components/TrafficCountDate
 config.mocks.$t = key => key;
 
 describe("addons/trafficCount/components/TrafficCountDatePickerCalendar.vue", () => {
-    describe("constructor", () => {
+    describe("Component DOM", () => {
         it("should initialize with given props", () => {
             const wrapper = shallowMount(TrafficCountDatePickerCalendar, {
                 propsData: {
@@ -36,7 +36,7 @@ describe("addons/trafficCount/components/TrafficCountDatePickerCalendar.vue", ()
 
             wrapper.destroy();
         });
-        it("should not render with weeknumbers by default", async () => {
+        it("should render without weeknumbers by default", async () => {
             const wrapper = shallowMount(TrafficCountDatePickerCalendar);
 
             await wrapper.vm.$nextTick();
@@ -44,7 +44,7 @@ describe("addons/trafficCount/components/TrafficCountDatePickerCalendar.vue", ()
 
             wrapper.destroy();
         });
-        it("should not render with weeknumbers if requested", async () => {
+        it("should render with weeknumbers if requested", async () => {
             const wrapper = shallowMount(TrafficCountDatePickerCalendar, {
                 propsData: {
                     showWeekNumber: true
@@ -127,6 +127,51 @@ describe("addons/trafficCount/components/TrafficCountDatePickerCalendar.vue", ()
             expect(wrapper.find(".dateField-momentDate").text()).to.equal("momentDate: 29.08.2022");
             expect(wrapper.find(".dateField-selected").text()).to.equal("selected: true");
             expect(wrapper.find(".dateField-inCurrentMonth").text()).to.equal("inCurrentMonth: false");
+        });
+    });
+    describe("methods", () => {
+        describe("isDisabledDate", () => {
+            it("should return false if first param is not an object", () => {
+                const wrapper = shallowMount(TrafficCountDatePickerCalendar);
+
+                expect(wrapper.vm.isDisabledDate(null)).to.be.false;
+                expect(wrapper.vm.isDisabledDate(undefined)).to.be.false;
+                expect(wrapper.vm.isDisabledDate(true)).to.be.false;
+                expect(wrapper.vm.isDisabledDate(false)).to.be.false;
+                expect(wrapper.vm.isDisabledDate(1234)).to.be.false;
+                expect(wrapper.vm.isDisabledDate("string")).to.be.false;
+                expect(wrapper.vm.isDisabledDate([])).to.be.false;
+            });
+            it("should return false if first param is an object but has no isBefore and isAfter function", () => {
+                const wrapper = shallowMount(TrafficCountDatePickerCalendar);
+
+                expect(wrapper.vm.isDisabledDate({})).to.be.false;
+            });
+            it("should return true if first param isBefore or/and isAfter", () => {
+                const wrapper = shallowMount(TrafficCountDatePickerCalendar),
+                    day = {
+                        isBefore: () => true,
+                        isAfter: () => false
+                    };
+
+                expect(wrapper.vm.isDisabledDate(day)).to.be.true;
+                day.isBefore = () => false;
+                day.isAfter = () => true;
+                expect(wrapper.vm.isDisabledDate(day)).to.be.true;
+                day.isBefore = () => true;
+                day.isAfter = () => true;
+                expect(wrapper.vm.isDisabledDate(day)).to.be.true;
+
+            });
+            it("should return false if first param is not before and not is after", () => {
+                const wrapper = shallowMount(TrafficCountDatePickerCalendar),
+                    day = {
+                        isBefore: () => false,
+                        isAfter: () => false
+                    };
+
+                expect(wrapper.vm.isDisabledDate(day)).to.be.false;
+            });
         });
     });
 });

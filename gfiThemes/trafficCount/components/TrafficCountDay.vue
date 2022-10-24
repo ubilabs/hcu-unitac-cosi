@@ -191,8 +191,8 @@ export default {
                     this.apiData = [];
 
                     console.warn("The data received from api are incomplete:", errormsg);
-                    Radio.trigger("Alert", "alert", {
-                        content: "Die gewünschten Daten wurden wegen eines API-Fehlers nicht korrekt empfangen.",
+                    this.$store.dispatch("Alerting/addSingleAlert", {
+                        content: this.$t("additional:modules.tools.gfi.themes.trafficCount.error.apiGeneral"),
                         category: "Info"
                     });
                 });

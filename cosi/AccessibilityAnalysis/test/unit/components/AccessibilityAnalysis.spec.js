@@ -208,7 +208,8 @@ describe("AccessibilityAnalysis.vue", () => {
                 }
             },
             getters: {
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             },
             state: {
                 configJson: mockConfigJson

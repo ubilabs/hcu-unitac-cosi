@@ -105,7 +105,8 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
                 }
             },
             getters: {
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
     });
@@ -195,7 +196,7 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
             await wrapper.setData({
                 selectedDistrictLevel: dummyDistrictTwo
             });
-            expect(wrapper.vm.namesOfDistricts).to.deep.equal(["Mario", "und", "Luigi"]);
+            expect(wrapper.vm.selectedDistrictLevel.nameList).to.deep.equal(["Mario", "und", "Luigi"]);
         });
 
         it("should update 'selectedNames' if 'selectedDistrictName' was changed", () => {

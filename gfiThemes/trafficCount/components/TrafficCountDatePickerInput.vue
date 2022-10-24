@@ -1,18 +1,12 @@
 <script>
-import moment from "moment";
 
 export default {
     name: "TrafficCountDatePickerInput",
     props: {
-        dates: {
+        inputDates: {
             type: Array,
             required: false,
             default: () => []
-        },
-        format: {
-            type: String,
-            required: false,
-            default: "DD.MM.YYYY"
         },
         delimiter: {
             type: String,
@@ -27,15 +21,10 @@ export default {
     },
     computed: {
         dateComputed () {
-            if (!Array.isArray(this.dates)) {
+            if (!Array.isArray(this.inputDates)) {
                 return "";
             }
-            const result = [];
-
-            this.dates.forEach(date =>{
-                result.push(moment(date).format(this.format));
-            });
-            return result.join(this.delimiter);
+            return this.inputDates.join(this.delimiter);
         }
     },
     methods: {
@@ -75,7 +64,7 @@ export default {
     >
         <input
             v-model="dateComputed"
-            class="date-input"
+            class="date-input form-control"
             readonly="true"
             @click="toggleCalendar"
         >
@@ -89,26 +78,24 @@ export default {
 </template>
 
 <style scoped lang="scss">
+@import "~/css/mixins.scss";
+@import "~variables";
+
 .input-wrapper {
     position: relative;
     display: inline-block;
     width: 210px;
-}
-.date-input {
-    width: 100%;
-    height: 34px;
-    padding: 6px 30px;
-    padding-left: 10px;
-    font-size: 14px;
-    line-height: 1.4;
-    color: #555;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    &:hover, &:focus-within {
-        outline: none;
-        border-color: #409aff;
+    input {
+        &:hover {
+            color: $black;
+            background-color: $white;
+            border-color: $light_blue;
+            outline: 0;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08), 0 0 0 0.25rem rgba(0, 48, 99, 0.25);
+        }
     }
 }
+
 i {
     position: absolute;
     top: 50%;

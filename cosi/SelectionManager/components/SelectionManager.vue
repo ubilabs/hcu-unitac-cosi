@@ -175,6 +175,7 @@ export default {
              * @returns {void}
              */
         setStoredLayersActive (storedLayers) {
+<<<<<<< HEAD
             //  inverse the stored layers to get the theme data layers that are about to hideflat().filter(layer => !storedLayers.includes(layer.id)),
             this.activeVectorLayerList.forEach(layer => {
                 const layerId = layer.getProperties().id,
@@ -182,14 +183,41 @@ export default {
 
                 if (model) {
                     model.set("isSelected", false);
+=======
+            //  inverse the stored layers to get the theme data layers that are about to hide
+            const inverseActiveLayers = this.facilitiesMapping.map(map => map.layer).flat().filter(layer => !storedLayers.includes(layer.id)),
+                inverseLayerNames = inverseActiveLayers.map(layer => layer.id);
+
+            inverseLayerNames.forEach(layerName => {
+                const layerToHide = this.map.getLayers().getArray().filter(layer => layer.get("name") === layerName);
+                console.log("just to test", layerToHide);
+                // note this
+                /* if (layerToHide.length > 0) {
+                    this.removeLayerFromMap(layerToHide[0]);
+                }*/
+
+                if (layerToHide.length > 0) {
+                    layerToHide[0].setVisible(false);
+>>>>>>> 1c2b5d5a21d7ea025a9559eb9b6d361f473d9a0d
                 }
             });
 
             storedLayers.forEach(layerName => {
+<<<<<<< HEAD
                 const model = getModelByAttributes({type: "layer", name: layerName});
 
                 if (model) {
                     model.set("isSelected", true);
+=======
+                const layerToShow = this.map.getLayers().getArray().filter(layer => layer.get("name") === layerName);
+
+                /* if (layerToShow.length > 0) {
+                    this.addLayerToMap(layerToShow[0]);
+                }*/
+
+                if (layerToShow.length > 0) {
+                    layerToShow[0].setVisible(true);
+>>>>>>> 1c2b5d5a21d7ea025a9559eb9b6d361f473d9a0d
                 }
             });
         },
