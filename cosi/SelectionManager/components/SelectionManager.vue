@@ -8,8 +8,7 @@ import VectorSource from "ol/source/Vector.js";
 import getBoundingGeometry from "../../utils/getBoundingGeometry.js";
 import setBBoxToGeom from "../../utils/setBBoxToGeom.js";
 import ToolInfo from "../../components/ToolInfo.vue";
-import * as turf from "@turf/turf";
-import {GeoJSON} from "ol/format";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
 import Feature from "ol/Feature";
 import {Fill, Stroke, Style} from "ol/style.js";
 
@@ -21,7 +20,9 @@ export default {
     data () {
         return {
             openAddon: false,
-            extendedOptions: []
+            extendedOptions: [],
+            mergeable: false,
+            selectionsToMerge: []
         };
     },
     computed: {
@@ -30,7 +31,7 @@ export default {
         ...mapGetters("Tools/ColorCodeMap", ["upperEdge"]),
         ...mapGetters("Tools/DistrictSelector", ["name", "selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "metadataUrls", "boundingGeometry"]),
         ...mapGetters("Maps", ["getVisibleLayerList"]),
-        ...mapGetters("Tools/FeaturesList", {facilitiesMapping: "mapping"}),
+        ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", {facilitiesMapping: "mapping"}]),
         dashboardOpen () {
             return this.$store.getters["Tools/Dashboard/active"] || this.$store.getters["Tools/FeaturesList/active"];
         },
@@ -38,10 +39,7 @@ export default {
             return [... new Set(this.selections.map(selection => selection.source).sort())];
         },
         activeLayerList () {
-            const layerNames = this.getVisibleLayerList.map(layer => layer.getProperties().name),
-                activeLayers = this.facilitiesMapping.map(map => map.layer).flat().filter(layer => layerNames.includes(layer.id));
-
-            return activeLayers.map(layer => layer.id);
+            return this.activeVectorLayerList.map(layer => layer.getProperties().name);
         }
     },
     watch: {
@@ -91,26 +89,62 @@ export default {
              */
         highlightSelection (index) {
             if (this.activeSelection !== index) {
+                this.setActiveSelection(index);
                 if (this.selections[index].storedLayers.length > 0) {
                     this.setStoredLayersActive(this.selections[index].storedLayers);
                 }
+                if (this.selections[index].settings.scaleActive) {
+                    this.rerenderSelection(index);
+                }
+                else {
 
-                //  remove layers from selection manager
-                this.setActiveSelection(index);
+                    //  remove layers from selection manager
+                    this.map.getLayers().getArray().filter(layer => layer.get("name") === "selection_manager").forEach(layer => this.map.removeLayer(layer));
+
+                    const vectorSource = new VectorSource({
+                            features: this.selections[index].selection
+                        }),
+                        layer = new VectorLayer({
+                            name: "selection_manager",
+                            source: vectorSource,
+                            style: new Style({
+                                fill: new Fill({
+                                    color: "rgba(214, 96, 93, 0.35)"
+                                }),
+                                stroke: new Stroke({
+                                    color: "#D6605D",
+                                    width: 3
+                                })
+                            })
+                        });
+
+                    layer.setZIndex(9999);
+                    this.map.addLayer(layer);
+
+                    setBBoxToGeom.call(this, getBoundingGeometry(this.selections[index].selection, 0));
+                }
+            }
+            else {
+                this.removeLayer();
+                this.setActiveSelection(null);
+            }
+        },
+        rerenderSelection (index) {
+            if (this.activeSelection === index) {
                 this.map.getLayers().getArray().filter(layer => layer.get("name") === "selection_manager").forEach(layer => this.map.removeLayer(layer));
 
                 const vectorSource = new VectorSource({
-                        features: this.selections[index].selection
+                        features: this.selections[index].scaledSelection
                     }),
                     layer = new VectorLayer({
                         name: "selection_manager",
                         source: vectorSource,
                         style: new Style({
                             fill: new Fill({
-                                color: "rgba(214, 96, 93, 0.35)"
+                                color: "rgba(214, 187, 47, 0.35)"
                             }),
                             stroke: new Stroke({
-                                color: "#D6605D",
+                                color: "#D6B62F",
                                 width: 3
                             })
                         })
@@ -119,37 +153,8 @@ export default {
                 layer.setZIndex(9999);
                 this.map.addLayer(layer);
 
-                setBBoxToGeom.call(this, getBoundingGeometry(this.selections[index].selection, 0));
+                setBBoxToGeom.call(this, getBoundingGeometry(this.selections[index].scaledSelection));
             }
-            else {
-                this.removeLayer();
-            }
-        },
-        rerenderSelection (index) {
-            console.log("i am trying to rerender", this.selections[index]);
-            this.map.getLayers().getArray().filter(layer => layer.get("name") === "selection_manager").forEach(layer => this.map.removeLayer(layer));
-
-            const vectorSource = new VectorSource({
-                    features: this.selections[index].scaledSelection
-                }),
-                layer = new VectorLayer({
-                    name: "selection_manager",
-                    source: vectorSource,
-                    style: new Style({
-                        fill: new Fill({
-                            color: "rgba(214, 96, 93, 0.35)"
-                        }),
-                        stroke: new Stroke({
-                            color: "#D6605D",
-                            width: 3
-                        })
-                    })
-                });
-
-            layer.setZIndex(9999);
-            this.map.addLayer(layer);
-
-            setBBoxToGeom.call(this, getBoundingGeometry(this.selections[index].scaledSelection, 0));
         },
         /**
              * @description Stores current layers or resets the stored layers in chosen selection
@@ -170,32 +175,21 @@ export default {
              * @returns {void}
              */
         setStoredLayersActive (storedLayers) {
-            //  inverse the stored layers to get the theme data layers that are about to hide
-            const inverseActiveLayers = this.facilitiesMapping.map(map => map.layer).flat().filter(layer => !storedLayers.includes(layer.id)),
-                inverseLayerNames = inverseActiveLayers.map(layer => layer.id);
+            //  inverse the stored layers to get the theme data layers that are about to hideflat().filter(layer => !storedLayers.includes(layer.id)),
+            this.activeVectorLayerList.forEach(layer => {
+                const layerId = layer.getProperties().id,
+                    model = getModelByAttributes({type: "layer", id: layerId});
 
-            inverseLayerNames.forEach(layerName => {
-                const layerToHide = this.map.getLayers().getArray().filter(layer => layer.get("name") === layerName);
-                console.log("just to test", layerToHide);
-                // note this
-                /*if (layerToHide.length > 0) {
-                    this.removeLayerFromMap(layerToHide[0]);
-                }*/
-
-                if (layerToHide.length > 0) {
-                    layerToHide[0].setVisible(false);
+                if (model) {
+                    model.set("isSelected", false);
                 }
             });
 
             storedLayers.forEach(layerName => {
-                const layerToShow = this.map.getLayers().getArray().filter(layer => layer.get("name") === layerName);
+                const model = getModelByAttributes({type: "layer", name: layerName});
 
-                /*if (layerToShow.length > 0) {
-                    this.addLayerToMap(layerToShow[0]);
-                }*/
-                
-                if (layerToShow.length > 0) {
-                    layerToShow[0].setVisible(true);
+                if (model) {
+                    model.set("isSelected", true);
                 }
             });
         },
@@ -208,31 +202,24 @@ export default {
             }
         },
         polygonChange (index) {
-            const newGeometry = this.transformPolygon(this.selections[index].selection, this.selections[index].settings.scale);
-
-            this.selections[index].scaledSelection = newGeometry;
-            this.rerenderSelection(index);
-        },
-        transformPolygon (selections, factor) {
-            const format = new GeoJSON(),
-                alteredGeometry = [];
-
-            selections.forEach(selection => {
-                const turfObj = format.writeGeometryObject(selection),
-                    feature = turf.buffer(turfObj, factor, {units: "meters"});
-                    // feature = turf.transformScale(turfObj.geometry, factor);
-
-                if (format.readFeature(feature).getGeometry().getType() === "MultiPolygon") {
-                    format.readFeature(feature).getGeometry().getPolygons().forEach(polygon => {
-                        alteredGeometry.push(new Feature(polygon));
-                    });
+            if (this.selections[index].settings.scaleActive) {
+                this.selections[index].settings.scaleActive = false;
+                if (this.activeSelection === index) {
+                    this.highlightSelection(index);
                 }
-                else {
-                    alteredGeometry.push(format.readFeature(feature));
-                }
-            });
+            }
+            else {
+                this.selections[index].settings.scaleActive = true;
+                const newGeometry = getBoundingGeometry(this.selections[index].selection, this.selections[index].settings.scale),
+                    transformedPolygons = [];
 
-            return alteredGeometry;
+                newGeometry.getGeometries().forEach(geometry => {
+                    transformedPolygons.push(new Feature(geometry));
+                });
+
+                this.selections[index].scaledSelection = transformedPolygons;
+                this.rerenderSelection(index);
+            }
         },
         /**
              * @description Removes the selection_manager layer from the map
@@ -253,6 +240,26 @@ export default {
             if (this.selections.length === 0) {
                 this.removeLayer();
             }
+        },
+        indicateMergeSelections () {
+            if (this.activeSelection !== null && this.selections.length > 1) {
+                this.mergeable = true;
+            }
+            else {
+                this.mergeable = false;
+            }
+        },
+        addMergedSelection (index) {
+            this.selectionsToMerge.push(this.selections[index].selection);
+            const flatArray = this.selectionsToMerge.flat();
+
+            this.addNewSelection({selection: flatArray, source: this.$t("additional:modules.tools.cosi.selectionManager.title"), id: this.$t("additional:modules.tools.cosi.selectionManager.mergedSelections") + " (" + this.selectionsToMerge.length + ")"});
+            this.mergeable = false;
+            this.selectionsToMerge = [];
+            this.highlightSelection(this.selections.length - 1);
+        },
+        mergeSelections (index) {
+            this.selectionsToMerge.push(this.selections[index].selection);
         }
     }
 };
@@ -260,7 +267,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="!dashboardOpen && selections.length > 0 && activeLayerList.length > 0"
+        v-if="!dashboardOpen && selections.length > 0 && activeVectorLayerList.length > 0"
         id="sm"
         class="sm_addon_container"
         :style="{bottom: upperEdge + 10 + 'px'}"
@@ -276,7 +283,10 @@ export default {
         <div
             id="sm_wrapper"
             class="addon_wrapper"
-            :class="{open: openAddon}"
+            :class="{
+                open: openAddon,
+                mergeHover: mergeable
+            }"
         >
             <div class="selection_menu">
                 <div class="addon_head">
@@ -301,7 +311,14 @@ export default {
                                     v-if="selection.source === group"
                                     :key="i"
                                     class="selectionlevel"
-                                    :class="{extended: extendedOptions.includes(i)}"
+                                    :class="{
+                                        extended: extendedOptions.includes(i),
+                                        hoverHighlight: mergeable && activeSelection !== i
+                                    }"
+                                    @focusin.ctrl="indicateMergeSelections"
+                                    @mouseover.ctrl="indicateMergeSelections"
+                                    @click.ctrl="mergeSelections(i)"
+                                    @keyup.ctrl.exact="addMergedSelection(i)"
                                 >
                                     <p>{{ selection.id }}</p>
                                     <ul
@@ -309,14 +326,25 @@ export default {
                                     >
                                         <button
                                             class="view_btn"
-                                            :class="{highlight: activeSelection === i}"
-                                            @click="highlightSelection(i)"
+                                            :class="{
+                                                highlight: activeSelection === i,
+                                                scaledHighlight: selection.settings.scaleActive,
+                                            }"
+                                            @click.exact="highlightSelection(i)"
                                         >
                                             <v-icon>mdi-eye-outline</v-icon>
                                         </button>
                                         <button
+                                            v-if="selectionsToMerge.length > 0 && activeSelection === i"
+                                            class="combine_btn"
+                                            @click.exact="addMergedSelection(i)"
+                                        >
+                                            <v-icon>mdi-vector-combine</v-icon>
+                                        </button>
+                                        <button
                                             class="freeze_btn"
                                             :class="{highlight: selection.storedLayers.length > 0}"
+                                            :title="selection.storedLayers.join(', ')"
                                             @click="storeLayers(i)"
                                         >
                                             <template v-if="selection.storedLayers.length > 0">
@@ -331,7 +359,7 @@ export default {
                                             :class="{highlight: extendedOptions.includes(i)}"
                                             @click="setExtendedOptions(i)"
                                         >
-                                            <v-icon>mdi-cog</v-icon>
+                                            <v-icon>mdi-tools</v-icon>
                                         </button>
                                         <button
                                             class="remove_btn"
@@ -339,21 +367,22 @@ export default {
                                         >
                                             <v-icon>mdi-close</v-icon>
                                         </button>
-                                        <div class="extended_options">
-                                            <v-slider
-                                                v-model="selection.settings.scale"
-                                                max="5000"
-                                                min="-5000"
-                                                step="10"
-                                            />
-                                        </div>
+                                    </ul>
+                                    <div class="extended_options">
+                                        <v-slider
+                                            v-model="selection.settings.scale"
+                                            max="2500"
+                                            min="-2500"
+                                            step="10"
+                                        />
                                         <button
                                             class="activate_btn"
+                                            :class="{highlight: selection.settings.scaleActive}"
                                             @click="polygonChange(i)"
                                         >
                                             <v-icon>mdi-selection-drag</v-icon>
                                         </button>
-                                    </ul>
+                                    </div>
                                 </li>
                             </template>
                         </ul>
@@ -403,6 +432,12 @@ export default {
                 overflow:hidden;
                 @include drop_shadow;
 
+                &.mergeHover {
+                    background:rgba(255,255,255,0.85);
+                    backdrop-filter:blur(5px);
+                    outline:2px solid $masterportal_blue;
+                }
+
                 .addon_head {
                     p {
                         font-size: 120%;
@@ -442,7 +477,6 @@ export default {
                         color:black;
                         font-weight:700;
                         padding-left:10px;
-                        background:white;
                         border-bottom:1px solid #aaa;
                     }
 
@@ -460,31 +494,63 @@ export default {
                             padding-left:20px;
                             text-align:left;
                             box-sizing:border-box;
+                            overflow:hidden;
+                            transition:0.15s;
+
+                            &.hoverHighlight {
+                                &:hover {
+                                    cursor:pointer;
+                                    background:#D6605D;
+                                    border:1px solid #222;;
+                                    z-index:10;
+                                    transform:scale(1.01);
+                                    transition:0.15s;
+
+                                    p {
+                                        color:white;
+                                    }
+                                }
+                            }
 
                             &.extended {
                                 height:70px;
+                            }
 
-                                .extended_options {
+                            .extended_options {
                                     display:flex;
                                     flex-flow:row wrap;
                                     justify-content:flex-end;
                                     height:40px;
                                     padding:5px;
+                                    flex:1 0 100%;
                                     box-sizing:border-box;
 
-                                    .v-icon {
-                                        flex-basis:30px;
-                                        color:#424242;
-                                        margin-right:5px;
+                                    button.activate_btn {
+                                        flex-basis:20px;
+                                        height:20px;
+                                        background:#424242;
+                                        margin:5px 0px 0px 5px;
+
+                                        &.highlight {
+                                            background:#D6B62F;
+                                        }
+
+                                        .v-icon {
+                                            color:whitesmoke;
+                                            font-size:16px;
+                                        }
                                     }
 
                                     .v-input__slider {
                                         height:30px;
                                         width:110px;
-                                        flex-basis:110px;
+                                        flex:0 0 110px;
+
+                                        .v-slider__thumb:before {
+                                            display:none;
+                                        }
                                     }
                                 }
-                            }
 
                             p {
                                 flex-basis:auto;
@@ -508,10 +574,35 @@ export default {
 
                                     &.view_btn {
                                         &.highlight {
-                                            background:$brightblue;
+                                            background:#D6605D;
+
+                                            &.scaledHighlight {
+                                                background:#D6B62F;
+
+                                                .v-icon {
+                                                    color:#222;
+                                                }
+                                            }
 
                                             &:hover {
                                                 filter:invert(0);
+                                            }
+                                        }
+                                    }
+
+                                    &.combine_btn {
+                                        background:$brightred;
+
+                                        .v-icon {
+                                            color:whitesmoke;
+                                        }
+
+                                        &:hover {
+                                            border:1px solid $brightred;
+                                            background:whitesmoke;
+
+                                            .v-icon {
+                                                color:$brightred;
                                             }
                                         }
                                     }
@@ -522,12 +613,14 @@ export default {
                                         }
                                     }
 
-                                    &.options_btn {
-                                        background: whitesmoke;
-                                        border:1px solid #222;
+                                    &.option_btn {
+                                        &.highlight {
+                                            background:whitesmoke;
+                                            border:1px solid #222;
 
-                                        .v-icon {
-                                            color:#222;
+                                            .v-icon {
+                                                color:#222;
+                                            }
                                         }
                                     }
 

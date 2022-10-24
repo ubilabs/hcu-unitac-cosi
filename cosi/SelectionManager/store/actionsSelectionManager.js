@@ -21,7 +21,8 @@ const actions = {
                 storedLayers: [],
                 filterSettings: [],
                 settings: {
-                    scale: 1
+                    scale: 1,
+                    scaleActive: false
                 }
             },
             mergedPolygons = [];

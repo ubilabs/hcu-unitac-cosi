@@ -5,7 +5,8 @@
                 "selectionManager": {
                     "title": "Auswahlverwaltung",
                     "infoTooltip": "Werkzeuginformationen",
-                    "noData": "Keine Daten vorhanden"
+                    "noData": "Keine Daten vorhanden",
+                    "mergedSelections": "Kombinierte Auswahl"
                 }
             }
         }
