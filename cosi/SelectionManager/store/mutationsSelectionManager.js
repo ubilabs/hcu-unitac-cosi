@@ -26,6 +26,11 @@ const mutations = {
         state.visualizationState = !state.visualizationState;
     },
 
+    /**
+     * @param {object} state of this component
+     * @param {string} payload selection object that has been created through the addNewSelection action
+     * @returns {void}
+     */
     addSelection: (state, payload) => {
         state.selections.push(payload);
     }
