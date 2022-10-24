@@ -20,6 +20,7 @@ export default {
     data () {
         return {
             openAddon: false,
+            hoverLayerSource: new VectorSource(),
             extendedOptions: [],
             mergeable: false,
             selectionsToMerge: []
@@ -77,6 +78,18 @@ export default {
     },
     created () {
         this.map = mapCollection.getMap("2D");
+
+        const hoverLayer = new VectorLayer({
+            name: "selection_manager_hover_layer",
+            source: this.hoverLayerSource,
+            style: new Style({
+                fill: new Fill({
+                    color: "rgba(214, 187, 47, 0.1)"
+                })
+            })
+        });
+
+        this.map.addLayer(hoverLayer);
     },
     methods: {
         ...mapMutations("Tools/SelectionManager", Object.keys(mutations)),
@@ -93,7 +106,7 @@ export default {
                 if (this.selections[index].storedLayers.length > 0) {
                     this.setStoredLayersActive(this.selections[index].storedLayers);
                 }
-                if (this.selections[index].settings.scaleActive) {
+                if (this.selections[index].settings.bufferActive) {
                     this.rerenderSelection(index);
                 }
                 else {
@@ -134,7 +147,7 @@ export default {
                 this.map.getLayers().getArray().filter(layer => layer.get("name") === "selection_manager").forEach(layer => this.map.removeLayer(layer));
 
                 const vectorSource = new VectorSource({
-                        features: this.selections[index].scaledSelection
+                        features: this.selections[index].bufferedSelection
                     }),
                     layer = new VectorLayer({
                         name: "selection_manager",
@@ -153,8 +166,30 @@ export default {
                 layer.setZIndex(9999);
                 this.map.addLayer(layer);
 
-                setBBoxToGeom.call(this, getBoundingGeometry(this.selections[index].scaledSelection));
+                setBBoxToGeom.call(this, getBoundingGeometry(this.selections[index].bufferedSelection));
             }
+        },
+        hoverSelection (index) {
+            this.map.getLayers().getArray().filter(layer => layer.get("name") === "selection_manager_hover_layer").forEach(layer => this.map.removeLayer(layer));
+
+            const vectorSource = new VectorSource({
+                    features: this.selections[index].selection
+                }),
+                layer = new VectorLayer({
+                    name: "selection_manager_hover_layer",
+                    source: vectorSource,
+                    style: new Style({
+                        fill: new Fill({
+                            color: "rgba(214, 96, 93, 0.2)"
+                        })
+                    })
+                });
+
+            layer.setZIndex(9999);
+            this.map.addLayer(layer);
+        },
+        resetHovers () {
+            this.map.getLayers().getArray().filter(layer => layer.get("name") === "selection_manager_hover_layer").forEach(layer => this.map.removeLayer(layer));
         },
         /**
              * @description Stores current layers or resets the stored layers in chosen selection
@@ -202,22 +237,22 @@ export default {
             }
         },
         polygonChange (index) {
-            if (this.selections[index].settings.scaleActive) {
-                this.selections[index].settings.scaleActive = false;
+            if (this.selections[index].settings.bufferActive) {
+                this.selections[index].settings.bufferActive = false;
                 if (this.activeSelection === index) {
                     this.highlightSelection(index);
                 }
             }
             else {
-                this.selections[index].settings.scaleActive = true;
-                const newGeometry = getBoundingGeometry(this.selections[index].selection, this.selections[index].settings.scale),
+                this.selections[index].settings.bufferActive = true;
+                const newGeometry = getBoundingGeometry(this.selections[index].selection, this.selections[index].settings.buffer),
                     transformedPolygons = [];
 
                 newGeometry.getGeometries().forEach(geometry => {
                     transformedPolygons.push(new Feature(geometry));
                 });
 
-                this.selections[index].scaledSelection = transformedPolygons;
+                this.selections[index].bufferedSelection = transformedPolygons;
                 this.rerenderSelection(index);
             }
         },
@@ -315,7 +350,11 @@ export default {
                                         extended: extendedOptions.includes(i),
                                         hoverHighlight: mergeable && activeSelection !== i
                                     }"
+                                    @mouseenter.exact="hoverSelection(i)"
+                                    @mouseover.exact="hoverSelection(i)"
+                                    @mouseleave="resetHovers"
                                     @focusin.ctrl="indicateMergeSelections"
+                                    @focusout="resetHovers"
                                     @mouseover.ctrl="indicateMergeSelections"
                                     @click.ctrl="mergeSelections(i)"
                                     @keyup.ctrl.exact="addMergedSelection(i)"
@@ -328,7 +367,7 @@ export default {
                                             class="view_btn"
                                             :class="{
                                                 highlight: activeSelection === i,
-                                                scaledHighlight: selection.settings.scaleActive,
+                                                scaledHighlight: selection.settings.bufferActive,
                                             }"
                                             @click.exact="highlightSelection(i)"
                                         >
@@ -370,14 +409,14 @@ export default {
                                     </ul>
                                     <div class="extended_options">
                                         <v-slider
-                                            v-model="selection.settings.scale"
+                                            v-model="selection.settings.buffer"
                                             max="2500"
                                             min="-2500"
                                             step="10"
                                         />
                                         <button
                                             class="activate_btn"
-                                            :class="{highlight: selection.settings.scaleActive}"
+                                            :class="{highlight: selection.settings.bufferActive}"
                                             @click="polygonChange(i)"
                                         >
                                             <v-icon>mdi-selection-drag</v-icon>

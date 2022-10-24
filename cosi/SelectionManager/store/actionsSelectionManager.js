@@ -15,14 +15,14 @@ const actions = {
         const format = new GeoJSON(),
             selectionObject = {
                 selection: Array,
-                scaledSelection: Array,
+                bufferedSelection: Array,
                 source: String,
                 id: String,
                 storedLayers: [],
                 filterSettings: [],
                 settings: {
-                    scale: 1,
-                    scaleActive: false
+                    buffer: 0,
+                    bufferActive: false
                 }
             },
             mergedPolygons = [];
