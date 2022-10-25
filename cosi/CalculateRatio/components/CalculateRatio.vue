@@ -1,5 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
+import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersCalculateRatio";
 import mutations from "../store/mutationsCalculateRatio";
@@ -9,7 +10,6 @@ import DataTable from "./DataTable.vue";
 import {exportAsGeoJson} from "../utils/exportResults";
 import mapping from "../../assets/mapping.json";
 import ToolInfo from "../../components/ToolInfo.vue";
-import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {getCenter} from "ol/extent";
 import getClusterSource from "../../utils/getClusterSource";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
