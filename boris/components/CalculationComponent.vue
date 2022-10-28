@@ -128,7 +128,7 @@ export default {
                         type="text"
                         class="form-control"
                         :value="selectedBrwFeature.get(subject).toString().replace('.', ',')"
-                        @keydown="handleChange($event, subject)"
+                        @change="handleChange($event, subject)"
                     >
                 </label>
                 <div
