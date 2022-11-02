@@ -37,7 +37,7 @@ export default {
         GeometryPicker,
         FeatureEditor
     },
-    data () {
+    data () {           //data: function() as alternative
         return {
             workingLayer: null,
             featureTypeDesc: [],

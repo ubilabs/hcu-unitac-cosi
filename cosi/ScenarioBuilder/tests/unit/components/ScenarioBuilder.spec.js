@@ -36,6 +36,16 @@ function addElemWithDataAppToBody () {
 
 before(() => {
     addElemWithDataAppToBody();
+    mapCollection.getMap = () => ({
+        updateSize: sinon.stub(),
+
+        getLayers: () => ({getArray: sinon.stub()}),
+        addEventListener: sinon.stub(),
+        removeEventListener: sinon.stub(),
+        addInteraction: sinon.stub(),
+        removeInteraction: sinon.stub()
+    })
+    console.log(mapCollection)
 });
 
 describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
@@ -142,17 +152,10 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
                         }
                     }
                 },
-                mockFeatureTypeDesc: {
+                Maps: {
                     namespaced: true,
                     getters: {
                         getLayerById: () => sinon.stub().returns(layer),
-                        // ol2DMap: () => ({
-                        //     getLayers: () => ({getArray: sinon.stub()}),
-                        //     addEventListener: sinon.stub(),
-                        //     removeEventListener: sinon.stub(),
-                        //     addInteraction: sinon.stub(),
-                        //     removeInteraction: sinon.stub()
-                        // }),
                         projectionCode: sinon.stub().returns("EPSG:25832")
                     },
                     mutations: {
@@ -160,10 +163,10 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
                     },
                     actions: {
                         removeHighlightFeature: () => sinon.stub(),
-                        addNewLayerIfNotExists: () => {
-                            return Promise.resolve(new Layer({
+                        addNewLayerIfNotExists: async () => {
+                            return new Layer({
                                 source: new Source()
-                            }));
+                            });
                         }
                     }
                 },

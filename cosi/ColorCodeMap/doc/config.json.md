@@ -12,9 +12,6 @@ Die ColorCodeMap Component färbt die Karte basierend auf ausgewählten Gebieten
 ```
 "colorCodeMap": {
   "name": "ColorCodeMap",
-<<<<<<< HEAD
-  "icon": "bi-map"
-=======
-  "icon": "bi bi-map
+  "icon": "bi-map",
   "isVisibleInMenu": false
 ***

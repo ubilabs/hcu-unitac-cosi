@@ -1,0 +1,27 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "exportPDF": {
+                    "captions": {
+                    "title": "Export as PDF",
+                    "introInfo": "Upload a file of your choice to convert and export it as PDF",
+                    "description": "Upload a file of your choice to convert and export it as PDF"
+                    }
+                },
+                "alertingMessages": {
+                    "success": "The file \"{{filename}}\" has been successfully imported.",
+                    "successPartly": "The file \"{{filename}}\" was partially imported.",
+                    "formatError": "File \"{{filename}}\" could not be read. Please check if actual filetype is matching your chosen filetype.",
+                    "missingFileContent": "There was an error loading your file \"{{filename}}\". Please check its filetype and content. If still not working, please contact the support.",
+                    "missingFormat": "The chosen filetype {{format}} is not supported. Please contact the support.",
+                    "featureError": "A feature in this file could not be read.",
+                    "sameName": "A File with the same name \"{{filename}}\" is already imported, please insert another file or change the file name"
+                },
+                "title": "Import file",
+                "cancel": "Cancel",
+                "layerButton": "Add Layer"
+            }
+        }
+    }
+}
