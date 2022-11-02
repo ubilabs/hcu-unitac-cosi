@@ -2,7 +2,7 @@
 import {mapGetters} from "vuex";
 import getters from "../store/gettersQuickResponseCode";
 import QRCode from "qrcode";
-import {transform} from "@masterportal/masterportalapi/src/crs";
+import crs from "@masterportal/masterportalapi/src/crs";
 import Overlay from "ol/Overlay.js";
 
 export default {
@@ -67,7 +67,7 @@ export default {
          * @returns {Number[]} The transformed coordinates
          */
         transformCoords (coordinates) {
-            return transform("EPSG:25832", this.projection, coordinates);
+            return crs.transform("EPSG:25832", this.projection, coordinates);
         },
 
         /**

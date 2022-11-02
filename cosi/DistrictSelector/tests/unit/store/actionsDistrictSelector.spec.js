@@ -1,7 +1,7 @@
 import sinon from "sinon";
 import {expect} from "chai";
 import actions from "../../../store/actionsDistrictSelector.js";
-import {registerProjections} from "@masterportal/masterportalapi/src/crs";
+import crs from "@masterportal/masterportalapi/src/crs";
 
 describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
     const fs = require("fs"),
@@ -13,7 +13,7 @@ describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
         spyGetStatFeatures;
 
     before(function () {
-        registerProjections();
+        crs.registerProjections();
         // test statFeatures
         xmlDoc = fs.readFileSync("./addons/cosi/DistrictSelector/tests/unit/store/testFeatures.xml", "utf8");
         // payload for loadStatFeatures

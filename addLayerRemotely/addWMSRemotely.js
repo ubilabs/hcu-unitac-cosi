@@ -1,6 +1,6 @@
 import {WMSCapabilities} from "ol/format.js";
 import {intersects} from "ol/extent";
-import {transform as transformCoord, getProjection} from "@masterportal/masterportalapi/src/crs";
+import crsModule from "@masterportal/masterportalapi/src/crs";
 import axios from "axios";
 import store from "../../src/app-store";
 
@@ -179,7 +179,7 @@ function isVersionEnabled (version) {
  */
 function getIfInExtent (capability, currentExtent, projection) {
     const definedExtents = capability?.Capability?.Layer?.BoundingBox?.filter(bbox => {
-        return bbox?.crs && bbox?.crs.includes("EPSG") && getProjection(bbox?.crs) !== undefined && Array.isArray(bbox?.extent) && bbox?.extent.length === 4;
+        return bbox?.crs && bbox?.crs.includes("EPSG") && crsModule.getProjection(bbox?.crs) !== undefined && Array.isArray(bbox?.extent) && bbox?.extent.length === 4;
     });
 
     let layerExtent;
@@ -196,8 +196,8 @@ function getIfInExtent (capability, currentExtent, projection) {
         });
 
         if (!minCoords.length && !maxCoords.length) {
-            minCoords = transformCoord(definedExtents[0].crs, projection, [definedExtents[0].extent[0], definedExtents[0].extent[1]]);
-            maxCoords = transformCoord(definedExtents[0].crs, projection, [definedExtents[0].extent[2], definedExtents[0].extent[3]]);
+            minCoords = crsModule.transformCoord(definedExtents[0].crs, projection, [definedExtents[0].extent[0], definedExtents[0].extent[1]]);
+            maxCoords = crsModule.transformCoord(definedExtents[0].crs, projection, [definedExtents[0].extent[2], definedExtents[0].extent[3]]);
         }
 
         layerExtent = [minCoords[0], minCoords[1], maxCoords[0], maxCoords[1]];

@@ -2,12 +2,12 @@
 import {getFeatureInfos} from "../../../service/getFeatureInfo";
 import {expect} from "chai";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
-import {registerProjections} from "@masterportal/masterportalapi/src/crs";
+import crs from "@masterportal/masterportalapi/src/crs";
 
 describe.skip("getFeatureInfos", () => {
     before(async function () {
         await initializeLayerList();
-        registerProjections();
+        crs.registerProjections();
     });
 
     it.skip("should return one feature info", async () => {

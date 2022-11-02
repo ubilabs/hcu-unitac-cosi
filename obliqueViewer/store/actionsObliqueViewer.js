@@ -1,4 +1,4 @@
-import {transform} from "@masterportal/masterportalapi/src/crs";
+import crs from "@masterportal/masterportalapi/src/crs";
 import getProxyUrl from "../../../src/utils/getProxyUrl";
 
 const actions = {
@@ -31,7 +31,7 @@ const actions = {
 
                 if (map) {
                     map.olMap.on("moveend", () => {
-                        const transformedCooridnates = transform("EPSG:4326", mapCollection.getMapView("2D").getProjection().getCode(), map.getViewPointSync().groundPosition);
+                        const transformedCooridnates = crs.transform("EPSG:4326", mapCollection.getMapView("2D").getProjection().getCode(), map.getViewPointSync().groundPosition);
 
                         transformedCooridnates.every((coordinate, index) => {
                             if (Math.round(coordinate) !== Math.round(getters.lastCoordinates[index]) && (coordinate - getters.lastCoordinates[index] > 50 || coordinate - getters.lastCoordinates[index] < -50)) {
@@ -114,7 +114,7 @@ const actions = {
             commit("setLastCoordinates", coordinate);
             if (vcs?.vcm?.util) {
                 viewPoint = new vcs.vcm.util.ViewPoint({
-                    groundPosition: transform(mapCollection.getMapView("2D").getProjection().getCode(), "EPSG:4326", coordinate),
+                    groundPosition: crs.transform(mapCollection.getMapView("2D").getProjection().getCode(), "EPSG:4326", coordinate),
                     heading: getters.heading,
                     distance: map.getViewPointSync().distance
                 });
@@ -146,7 +146,7 @@ const actions = {
     */
     setObliqueViewerURL ({commit, dispatch, getters, rootGetters}, initialCenter) {
         if (initialCenter && Array.isArray(initialCenter) && initialCenter.length > 1) {
-            const transformedCoordinates = transform(mapCollection.getMapView("2D").getProjection().getCode(), "EPSG:4326", initialCenter),
+            const transformedCoordinates = crs.transform(mapCollection.getMapView("2D").getProjection().getCode(), "EPSG:4326", initialCenter),
                 startCoordinates = transformedCoordinates[0] + ", " + transformedCoordinates[1];
 
             if (document.location.hostname === "localhost") {

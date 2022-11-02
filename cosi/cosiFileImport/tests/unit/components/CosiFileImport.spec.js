@@ -3,7 +3,7 @@ import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import CosiFileImportComponent from "../../../components/CosiFileImport.vue";
 import CosiFileImport from "../../../store/indexCosiFileImport";
 import {expect} from "chai";
-import * as crs from "@masterportal/masterportalapi/src/crs";
+import crs from "@masterportal/masterportalapi/src/crs";
 import Vuetify from "vuetify";
 import Vue from "vue";
 
