@@ -102,7 +102,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
         store = new Vuex.Store({
             namespaced: true,
             modules: {
-                Map: {
+                Maps: {
                     namespaced: true
                 },
                 Tools: {
@@ -142,7 +142,8 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                 }
             },
             getters: {
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
     });
@@ -178,7 +179,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                 wrapper = factory.getMount();
                 store.commit("Tools/SaveSession/setActive", true);
                 await wrapper.vm.$nextTick();
-                wrapper.find("#save-session").trigger("click");
+                await wrapper.find("#save-session").trigger("click");
                 expect(stubQuickSave.calledOnce).to.be.true;
             });
 

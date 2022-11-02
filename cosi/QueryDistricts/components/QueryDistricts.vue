@@ -4,7 +4,7 @@ import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import getters from "../store/gettersQueryDistricts";
 import mutations from "../store/mutationsQueryDistricts";
-import {getLayerList as _getLayerList} from "@masterportal/masterportalapi/src/rawLayerList";
+import {rawLayerList} from "@masterportal/masterportalapi/src";
 import compareFeatures from "./compareFeatures.js";
 import LayerFilter from "./LayerFilter.vue";
 import Info from "text-loader!./info.html";
@@ -12,11 +12,17 @@ import {Fill, Stroke, Style} from "ol/style.js";
 import {getAllFeatures as _getAllFeatures} from "../../utils/getAllFeatures.js";
 import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
-import * as turf from "@turf/turf";
+import {
+    polygon as turfPolygon,
+    multiPolygon as turfMultiPolygon,
+    point as turfPoint
+} from "@turf/helpers";
+import {default as turfBooleanPointInPolygon} from "@turf/boolean-point-in-polygon";
 import ToolInfo from "../../components/ToolInfo.vue";
 import {getFeaturePOST} from "../../../../src/api/wfs/getFeature.js";
 import {WFS} from "ol/format.js";
 import getAvailableYears from "../../utils/getAvailableYears";
+import {groupBy, getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "QueryDistricts",
@@ -163,7 +169,7 @@ export default {
         },
 
         getLayerList: function () {
-            return _getLayerList();
+            return rawLayerList.getLayerList();
         },
 
         getAllFeatures: async function (id) {
@@ -171,7 +177,7 @@ export default {
 
             return features.length > 0
                 ? features
-                : Radio.request("ModelList", "getModelByAttributes", {id})?.get("features")
+                : getModelByAttributes({id})?.get("features")
                 || [];
         },
 
@@ -203,7 +209,7 @@ export default {
                 if (layer) {
                     this.allLayerOptions.push({
                         name: m.value,
-                        id: m.ltf ? m.category : layer.id,
+                        id: m.category,
                         group: m.group,
                         valueType: m.valueType,
                         ltf: m.ltf,
@@ -264,15 +270,15 @@ export default {
 
                     if (feature.getGeometry().getType() === "MultiPolygon") {
                         // expect multipolygon, try polygon if exception
-                        polygon = turf.multiPolygon(feature.getGeometry().getCoordinates());
+                        polygon = turfMultiPolygon(feature.getGeometry().getCoordinates());
                     }
                     else if (feature.getGeometry().getType() === "Polygon") {
-                        polygon = turf.polygon(feature.getGeometry().getCoordinates());
+                        polygon = turfPolygon(feature.getGeometry().getCoordinates());
                     }
 
                     if (
                         polygon &&
-                        turf.booleanPointInPolygon(turf.point(this.getCoordinate(ffeature)), polygon)
+                        turfBooleanPointInPolygon(turfPoint(this.getCoordinate(ffeature)), polygon)
                     ) {
                         val = property ? parseFloat(ffeature.get(property)) : 1;
                         val = !isNaN(val) ? val : 1;
@@ -315,7 +321,7 @@ export default {
                     };
                 });
             }
-            else if (layer.ltf) {
+            else {
                 const wfsReader = new WFS();
 
                 let features = await getFeaturePOST(layer.url, {
@@ -327,7 +333,7 @@ export default {
 
                 features = wfsReader.readFeatures(features);
                 // group features by district
-                groupedFeatures = Radio.request("Util", "groupBy", features, (feature) => {
+                groupedFeatures = groupBy(features, (feature) => {
                     return feature.get([this.keyOfAttrNameStats]);
                 });
 
@@ -341,17 +347,6 @@ export default {
                     ret.feature = feature;
                     ret[this.selectorField] = this.keyOfAttrNameStats;
                     ret.kategorie = layer.category;
-                    ret.id = ret[this.keyOfAttrNameStats];
-                    return ret;
-                });
-            }
-            else {
-                const features = await this.getAllFeatures(layer.id);
-
-                this.propertiesMap[layer.id] = features.map(feature => {
-                    const ret = feature.getProperties();
-
-                    ret.feature = feature;
                     ret.id = ret[this.keyOfAttrNameStats];
                     return ret;
                 });
@@ -565,7 +560,7 @@ export default {
 
             // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
             // else the menu-entry for this tool is always highlighted
-            const model = Radio.request("ModelList", "getModelByAttributes", {
+            const model = getModelByAttributes({
                 id: this.$store.state.Tools.QueryDistricts.id
             });
 
@@ -628,7 +623,7 @@ export default {
         },
 
         async getFacilityFeatures (name) {
-            const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
+            const selectedLayerModel = getModelByAttributes({
                 name: name
             });
 

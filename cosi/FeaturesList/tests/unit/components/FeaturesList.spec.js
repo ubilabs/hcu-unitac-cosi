@@ -6,10 +6,8 @@ import {
 } from "@vue/test-utils";
 import FeaturesList from "../../../components/FeaturesList.vue";
 import FeaturesListStore from "../../../store/indexFeaturesList";
-import DetailView from "../../../components/DetailView.vue";
 import chai from "chai";
 import sinon from "sinon";
-import sinonChai from "sinon-chai";
 import Vuetify from "vuetify";
 import Vue from "vue";
 import Tool from "../../../../../../src/modules/tools/ToolTemplate.vue";
@@ -22,6 +20,7 @@ import mockConfigJson from "./mock.config.json";
 import districtLevel from "./mock.districtLevel";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
 import {VChip} from "vuetify/lib";
+import Map from "ol/Map";
 
 Vue.use(Vuetify);
 
@@ -29,7 +28,6 @@ const localVue = createLocalVue(),
     expect = chai.expect;
 
 localVue.use(Vuex);
-chai.use(sinonChai);
 
 config.mocks.$t = key => key;
 
@@ -44,7 +42,8 @@ function addNewLayerIfNotExists (feature) {
         id: "1234",
         source: new Source({
             features: [feature || createFeature()]
-        })
+        }),
+        visible: true
     });
 }
 
@@ -70,10 +69,28 @@ function createFeature (key) {
     return feature;
 }
 
+/**
+ * mocks vuetify data-app attr
+ * @returns {void}
+ */
+function addElemWithDataAppToBody () {
+    const app = document.createElement("div");
+
+    app.setAttribute("data-app", true);
+    document.body.append(app);
+}
 
 describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
-    let store, sandbox, vuetify, layerListStub, getDistanceScoreStub, sourceStub, clearStub, _wrapper;
+    before(() => {
+        mapCollection.clear();
 
+        const map = new Map();
+
+        mapCollection.addMap(map, "2D");
+        addElemWithDataAppToBody();
+    });
+
+    let store, sandbox, vuetify, layerListStub, getDistanceScoreStub, sourceStub, clearStub, _wrapper;
 
     const expMapping = [{
             group: "Bildung und Wissenschaft",
@@ -164,13 +181,19 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                             actions: {
                                 channelGraphData: sinon.stub()
                             }
+                        },
+                        Alerting: {
+                            namespaced: true,
+                            actions: {
+                                addSingleAlert: () => sinon.stub()
+                            }
                         }
                     }
                 },
                 Maps: {
                     namespaced: true,
                     getters: {
-                        getLayerById: () => sinon.stub().returns(createLayer()),
+                        getLayerById: () => sinon.stub().returns(addNewLayerIfNotExists()),
                         getVisibleLayerList: layerListStub
                     },
                     actions: {
@@ -178,6 +201,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                         addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: sinon.stub(),
+                                setZIndex: sinon.stub(),
                                 addEventListener: sinon.stub(),
                                 getSource: () => sourceStub
                             });
@@ -189,7 +213,8 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
                 configJson: mockConfigJson
             },
             getters: {
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
     });
@@ -296,10 +321,12 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("layer should be read out if active", async () => {
-            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
+            mapCollection.getMap("2D").addLayer(addNewLayerIfNotExists());
+
+            const wrapper = await mountComponent(true);
+
 
             await wrapper.vm.$nextTick();
-
 
             // flatActiveLayerMapping has length 1 if 1 layer is active
             expect(wrapper.vm.flatActiveLayerMapping).to.have.lengthOf(1);
@@ -422,13 +449,12 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             sourceStub.addFeature.reset();
 
             // act
-            await wrapper.vm.setSelectedFeatureItems(wrapper.vm.items);
+            await wrapper.vm.setSelectedFeatureItems([]);
 
             // assert
             // call counts affected by other test runs, why?
             expect(clearStub.callCount).to.be.greaterThan(0);
-            expect(sourceStub.addFeature.callCount).to.be.greaterThan(0);
-            expect(sourceStub.addFeature.firstCall.args[0].getStyle().getImage().getFill().getColor()).to.eql([255, 179, 0]);
+            expect(sourceStub.addFeature.callCount).to.equal(0);
         });
 
         it("should hide distance score features on deselect", async () => {
@@ -440,7 +466,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
 
             await wrapper.setData({selectedDistanceScoreLayers: [{layerId: "1234"}]});
             await wrapper.vm.$nextTick();
-            await wrapper.vm.setSelectedFeatureItems(wrapper.vm.items);
+            await wrapper.vm.setSelectedFeatureItems([]);
 
             clearStub.reset();
             sourceStub.addFeature.reset();
@@ -490,37 +516,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(tableWrapper.exists()).to.be.true;
             // table has 2 rows (1 header, 1 content)
             expect(tableWrapper.findAll("tr")).to.have.lengthOf(2);
-        });
-
-        sinon.stub(DetailView.methods, "gfiOrBeautifyKey");
-
-        it("table row should be expanded to detail view", async () => {
-            const wrapper = await mountComponent(true, [addNewLayerIfNotExists()]),
-                tableWrapper = wrapper.findComponent({name: "v-data-table"});
-
-            // await wrapper.vm.$nextTick();
-            await wrapper.find("button.mdi-chevron-down").trigger("click");
-
-            // expand the table on expand button click
-            expect(tableWrapper.findAll(".v-data-table__expanded")).to.have.lengthOf(2);
-            // render detail view in the expanded row
-            expect(wrapper.findComponent(DetailView).findAll("tr")).to.have.lengthOf(6);
-        });
-
-        it("selecting a field in expanded view should emit the 'filterProps' event", async () => {
-            const spyUpdateFilterProps = sinon.spy(FeaturesList.methods, "updateFilterProps"),
-                wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
-
-            // await wrapper.vm.$nextTick();
-            await wrapper.find("button.mdi-chevron-down").trigger("click");
-            await wrapper.findComponent(DetailView).find("input").trigger("click");
-
-            // event should be emitted once
-            expect(wrapper.findComponent(DetailView).emitted("filterProps").length).to.equal(1);
-            // event should emit the layerId and prop selected
-            expect(wrapper.findComponent(DetailView).emitted("filterProps")[0]).deep.to.equal([{"1234": ["id"]}]);
-            // updateFilterProps called
-            expect(spyUpdateFilterProps.calledOnce).to.be.true;
+            wrapper.destroy();
         });
 
         it("expect download prompt to open when table is exported", async () => {
@@ -534,28 +530,6 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(spyExportTable.callCount).to.equal(1);
         });
 
-        it("expect feature to be removed from map/layer, when toggled off", async () => {
-            const spyToggleFeature = sinon.spy(FeaturesList.methods, "toggleFeature"),
-                layer1 = addNewLayerIfNotExists(),
-                wrapper = await mountComponent(true, [layer1]);
-
-
-            // toggle feature off
-            await wrapper.find(".featureToggle").trigger("click");
-            await wrapper.vm.$nextTick();
-
-            expect(spyToggleFeature.calledOnceWith(wrapper.vm.items[0])).to.be.true;
-            expect(wrapper.vm.disabledFeatureItems).to.have.lengthOf(1);
-            expect(wrapper.vm.items[0].enabled).to.be.false;
-            expect(layer1.getSource().getFeatures()).to.have.lengthOf(1);
-
-            // toggle feature back on again
-            await wrapper.find(".featureToggle").trigger("click");
-            await wrapper.vm.$nextTick();
-
-            expect(wrapper.vm.items[0].enabled).to.be.true;
-            expect(layer1.getSource().getFeatures()).to.have.lengthOf(1);
-        });
         it("should update weights and recompute score", async () => {
             await initializeLayerList([{"id": "1234", "url": "url", "featureType": "type"}]);
 

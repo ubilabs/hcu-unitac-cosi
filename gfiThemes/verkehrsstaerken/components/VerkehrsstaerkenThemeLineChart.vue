@@ -53,7 +53,7 @@ export default {
 
             this.category = evt.currentTarget.id;
 
-            buttons.forEach((button) => {
+            Array.prototype.slice.call(buttons).forEach((button) => {
                 if (button.id !== evt.currentTarget.id) {
                     button.className = button.className.replace("active", "");
                 }

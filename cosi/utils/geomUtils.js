@@ -1,10 +1,8 @@
-import {
-    union as turfUnion,
-    intersect as turfIntersect,
-    circle as turfCircle,
-    centroid as turfCentroid,
-    centerOfMass as turfCenterOfMass
-} from "@turf/turf";
+import {default as turfUnion} from "@turf/union";
+import {default as turfIntersect} from "@turf/intersect";
+import {default as turfCircle} from "@turf/circle";
+import {default as turfCentroid} from "@turf/centroid";
+import {default as turfCenterOfMass} from "@turf/center-of-mass";
 import {GeoJSON} from "ol/format";
 import {getCenter} from "ol/extent";
 

@@ -1,6 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersCosiFileImport";
 import mutations from "../store/mutationsCosiFileImport";
@@ -8,6 +8,7 @@ import ToolInfo from "../../components/ToolInfo.vue";
 // import ImportManager from "./ImportManager.vue";
 // import EditLayer from "./EditLayer.vue";
 import InlineSvg from "vue-inline-svg";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "CosiFileImport",
@@ -190,6 +191,7 @@ export default {
         ...mapActions("Tools/FeaturesList", ["addVectorlayerToMapping", "removeVectorLayerFromMapping"]),
         ...mapMutations("Tools/CosiFileImport", Object.keys(mutations)),
         ...mapMutations("Tools/CalculateRatio", ["setFacilityMappingUpdate"]),
+
         onDZDragenter () {
             this.dzIsDropHovering = true;
         },
@@ -326,7 +328,7 @@ export default {
          * @returns {void}
          */
         removeLayer (filename) {
-            const layerModel = Radio.request("ModelList", "getModelByAttributes", {type: "layer", filename: filename}),
+            const layerModel = getModelByAttributes({type: "layer", filename: filename}),
                 layerMap = this.layerMapById(layerModel.get("id"));
 
             this.removeVectorLayerFromMapping(layerMap);
@@ -518,7 +520,7 @@ export default {
                                                 >
                                                     <div class="btn_grp">
                                                         <v-btn
-                                                            v-for="svg, key in imgObj"
+                                                            v-for="(svg, key) in imgObj"
                                                             :key="key"
                                                             :class="{highlight: svgFile === 'geo_pin_' + key.toUpperCase() + '.svg'}"
                                                             @click="setLayerSVG('geo_pin_' + key.toUpperCase() + '.svg')"

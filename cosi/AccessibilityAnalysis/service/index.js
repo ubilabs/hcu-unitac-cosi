@@ -2,6 +2,7 @@ import Worker from "worker-loader!./isochronesWorker.js";
 import {readFeatures} from "../components/util";
 import axios from "axios";
 import {WFS} from "ol/format.js";
+import {getServiceUrl} from "../../utils/radioBridge.js";
 
 let worker,
     // eslint-disable-next-line func-style, require-jsdoc
@@ -210,7 +211,7 @@ const id = "AccessibilityAnalysisService",
                 return s.filterPoly;
             },
             baseUrl: s => serviceId => {
-                return Radio.request("RestReader", "getServiceById", serviceId || s.fallbackServiceId).get("url") + "/v2/";
+                return getServiceUrl(serviceId || s.fallbackServiceId) + "/v2/";
             },
             serviceId: s => {
                 return s.serviceId;

@@ -1,6 +1,6 @@
 {
   "name": "addons",
-  "version": "2.22.2",
+  "version": "2.27.0",
   "description": "Addons to the Masterportal of Landesbetrieb Geoinformation und Vermessung Freie und Hansestadt Hamburg",
   "license": "MIT",
   "repository": {
@@ -12,15 +12,15 @@
     "versionMinor": "npm version minor && npm run versionLatest && git push --tags -f",
     "versionMajor": "npm version major && npm run versionLatest && git push --tags -f",
     "versionLatest": "git tag latest -f",
-    "postinstall": "cd cosi && npm install && cd .. && cd qr && npm install && cd .. && cd sdpDownload && npm install && cd .. && cd valuationPrint && npm install",
+    "postinstall": "cd cosi && npm install --legacy-peer-deps && cd .. && cd quickResponseCode && npm install && cd .. && cd sdpDownload && npm install && cd .. && cd valuationPrint && npm install && cd .. && cd obliqueViewer && npm install",
     "prePushHook": "cd .. && npm run prePushHook",
     "prepare": "husky install"
   },
   "devDependencies": {
-    "husky": "^7.0.4"
+    "husky": "^8.0.1"
   },
   "engines": {
-    "node": "^16.13.2",
-    "npm": "^8.1.2"
+    "node": ">= 16.13.2 <= 16.18.0",
+    "npm": ">= 8.1.2 <= 8.19.2"
   }
 }

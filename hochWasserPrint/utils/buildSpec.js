@@ -213,7 +213,7 @@ const BuildSpecModel = {
                     returnLayer = this.buildWmts(layer, source);
                 }
             }
-            else if (typeof layer?.get === "function" && layer.get("name") === "import_draw_layer") {
+            else if (typeof layer?.get === "function" && layer.get("name") === "importDrawLayer") {
                 returnLayer = this.getDrawLayerInfo(layer, extent);
             }
             else if (layer instanceof Vector) {

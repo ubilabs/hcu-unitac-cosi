@@ -8,6 +8,7 @@ import Point from "ol/geom/Point";
 import {Draw, Select} from "ol/interaction";
 import {getSearchResultsCoordinates, getSearchResultsGeometry} from "../utils/getSearchResultsGeom";
 import {circleToPolygon} from "../utils/geomUtils";
+import {onSearchbar, offSearchbar} from "../utils/radioBridge.js";
 
 export default {
     name: "GeometryPicker",
@@ -145,13 +146,13 @@ export default {
                 this.map.addEventListener("click", this.pickLocation);
 
                 // Get coords from searchbar if geom type is "Point"
-                Radio.on("Searchbar", "hit", this.pickLocationBySearchbar.bind(this));
+                onSearchbar(this.pickLocationBySearchbar.bind(this));
             }
             else if (this.geometry.type === "Polygon") {
                 this.drawPolygon();
 
                 // Get coords from searchbar if geom type is "Point"
-                Radio.on("Searchbar", "hit", this.pickPolygonBySearchbar.bind(this));
+                onSearchbar(this.pickPolygonBySearchbar.bind(this));
             }
             else {
                 // don't toggle location picker active if geom type is not implemented
@@ -176,7 +177,7 @@ export default {
             }
 
             // unlisten to the searchbar
-            Radio.off("Searchbar", "hit");
+            offSearchbar();
         },
 
         /**

@@ -5,12 +5,12 @@ import mutations from "../store/mutationsSchoolRoutePlanning";
 import actions from "../store/actionsSchoolRoutePlanning";
 
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
-import Address from "./SchoolRoutePlanningAddress.vue";
+import SchoolRoutePlanningAddress from "./SchoolRoutePlanningAddress.vue";
 import RouteInformation from "./SchoolRoutePlanningRouteInformation.vue";
 import Schools from "./SchoolRoutePlanningSchools.vue";
 import ToggleCheckbox from "../../../src/share-components/toggleCheckbox/components/ToggleCheckbox.vue";
 
-import getComponent from "../../../src/utils/getComponent";
+import {getComponent} from "../../../src/utils/getComponent";
 import {addRouteFeatures, routeStyle} from "../utils/routeLayer";
 import axios from "axios";
 
@@ -18,7 +18,7 @@ export default {
     name: "SchoolRoutePlanning",
     components: {
         ToolTemplate,
-        Address,
+        SchoolRoutePlanningAddress,
         RouteInformation,
         Schools,
         ToggleCheckbox
@@ -252,7 +252,7 @@ export default {
                 v-if="active"
                 class="content-school-route-planning"
             >
-                <Address :layer="layer" />
+                <SchoolRoutePlanningAddress :layer="layer" />
                 <Schools :layer="layer" />
                 <div class="d-flex justify-content-between mb-3">
                     <label

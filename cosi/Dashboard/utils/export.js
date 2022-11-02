@@ -65,6 +65,7 @@ export function prepareTableExportWithTimeline (data, districtNames, timestamps,
         console.error("prepareTableExport: data must be an array");
         return null;
     }
+
     const
         ctimestamps = timestamps.slice().reverse(),
         exportData = data.reduce((items, item) => {

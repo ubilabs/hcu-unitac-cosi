@@ -2,7 +2,7 @@
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import mutations from "../store/mutationsOktagonKartenportal";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../src/utils/getComponent";
+import {getComponent} from "../../../src/utils/getComponent";
 import {extractEventCoordinates} from "../../../src/utils/extractEventCoordinates";
 import findWhereJs from "../../../src/utils/findWhereJs";
 
@@ -42,7 +42,6 @@ export default {
 
         /**
         * Hides the sidebar.
-        * @fires Sidebar#RadioTriggerSidebarToggle
         * @returns {void}
         */
         close () {

@@ -1,22 +1,21 @@
 <script>
-import TrafficCountCalendarButtonGroup from "./TrafficCountCalendarButtonGroup.vue";
 import TrafficCountCompDiagram from "./TrafficCountCompDiagram.vue";
 import TrafficCountCompTable from "./TrafficCountCompTable.vue";
 import TrafficCountCheckbox from "./TrafficCountCheckbox.vue";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
 import moment from "moment";
-import DatepickerModel from "../../../../modules/snippets/datepicker/model";
-import DatepickerView from "../../../../modules/snippets/datepicker/view";
 import {addMissingDataWeek} from "../utils/addMissingData.js";
 import {getPublicHoliday} from "../../../../src/utils/calendar.js";
+import TrafficCountDatePicker from "./TrafficCountDatePicker.vue";
+import isObject from "../../../../src/utils/isObject";
 
 export default {
     name: "TrafficCountWeek",
     components: {
-        TrafficCountCalendarButtonGroup,
         TrafficCountCompDiagram,
         TrafficCountCompTable,
-        TrafficCountCheckbox
+        TrafficCountCheckbox,
+        TrafficCountDatePicker
     },
     props: {
         api: {
@@ -43,8 +42,8 @@ export default {
     data () {
         return {
             tab: "week",
-            weekDatepicker: null,
             apiData: [],
+            dates: null,
             showPreviousWeekUntilThisWeekday: 1,
 
             // props for diagram
@@ -136,70 +135,34 @@ export default {
     },
     watch: {
         reset () {
-            this.weekDatepicker = null;
-            this.setWeekdatepicker();
+            this.initializeDates();
+        },
+        dates (value) {
+            if (Array.isArray(value)) {
+                this.weekDatepickerValueChanged(value);
+            }
         }
     },
-    mounted () {
+    created () {
+        this.weekFormat = "YYYY [KW] WW";
         moment.locale(i18next.language);
-        this.setWeekdatepicker();
+        this.initializeDates();
+        this.maxDate = this.checkGurlittInsel ? moment().subtract(1, "days").format("YYYY-MM-DD") : moment().format("YYYY-MM-DD");
+        this.minDate = moment().subtract(1, "year").startOf("year").format("YYYY-MM-DD");
     },
     methods: {
-        setWeekdatepicker: function () {
-            const startDate = moment("2020-01-01") > moment().subtract(1, "year") ? moment("2020-01-01") : moment().subtract(1, "year"),
-                preselectedValue = moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday ? moment().subtract(7, "days").toDate() : moment().toDate();
-
-            if (!this.weekDatepicker) {
-                this.weekDatepicker = new DatepickerModel({
-                    preselectedValue: preselectedValue,
-                    multidate: 5,
-                    startDate: startDate.toDate(),
-                    endDate: moment().toDate(),
-                    type: "datepicker",
-                    selectWeek: true,
-                    inputs: $(document.getElementById("weekDateInput")),
-                    calendarWeeks: true,
-                    format: {
-                        toDisplay: function (date) {
-                            return moment(date).startOf("isoWeek").format("DD.MM.YYYY") + "-" + moment(date).endOf("isoWeek").format("DD.MM.YYYY");
-                        },
-                        toValue: function (date) {
-                            return moment.utc(date, "DD.MM.YYYY").toDate();
-                        }
-                    },
-                    todayHighlight: false,
-                    language: i18next.language,
-                    beforeShowDay: date => {
-                        const holiday = getPublicHoliday(date, this.holidays);
-
-                        if (holiday?.translationKey) {
-                            return {classes: "holiday", tooltip: i18next.t(holiday.translationKey)};
-                        }
-
-                        return true;
-                    }
-                });
-
-                this.weekDatepicker.on("valuesChanged", function (evt) {
-                    let date = evt.attributes.date;
-
-                    if (date && !Array.isArray(date)) {
-                        date = [date];
-                    }
-                    this.weekDatepickerValueChanged(date);
-                }.bind(this));
-
-                if (document.querySelector("#weekDateSelector")) {
-                    document.querySelector("#weekDateSelector").appendChild(new DatepickerView({model: this.weekDatepicker}).render().el);
-                }
-
-                this.weekDatepicker.updateValues(moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday ? moment().subtract(7, "days").toDate() : moment().toDate());
+        /**
+         * Initializes the calendar / resets the date.
+         * @returns {void}
+         */
+        initializeDates () {
+            if (moment().isoWeekday() <= this.showPreviousWeekUntilThisWeekday) {
+                this.dates = [moment().subtract(7, "days").format(this.weekFormat)];
             }
-            else if (document.querySelector("#weekDateSelector")) {
-                document.querySelector("#weekDateSelector").appendChild(new DatepickerView({model: this.weekDatepicker}).render().el);
+            else {
+                this.dates = [moment().format(this.weekFormat)];
             }
         },
-
         /**
          * Function is initially triggered and on update
          * @param   {Date[]} dates an unsorted array of selected dates of weekday
@@ -212,18 +175,18 @@ export default {
                 meansOfTransport = this.meansOfTransport,
                 timeSettings = [];
 
-            if (dates.length === 0) {
+            if (!Array.isArray(dates) || dates.length === 0) {
                 this.apiData = [];
             }
             else {
-                dates.sort((earlyDate, lateDate) => {
+                [...dates].sort((earlyDate, lateDate) => {
                     // Showing earlier date first
                     return earlyDate - lateDate;
                 }).forEach(date => {
                     timeSettings.push({
                         interval: this.weekInterval,
-                        from: moment(date).startOf("isoWeek").format("YYYY-MM-DD"),
-                        until: moment(date).endOf("isoWeek").format("YYYY-MM-DD")
+                        from: moment(date, this.weekFormat).startOf("isoWeek").format("YYYY-MM-DD"),
+                        until: moment(date, this.weekFormat).endOf("isoWeek").format("YYYY-MM-DD")
                     });
                 });
 
@@ -243,22 +206,57 @@ export default {
                     this.apiData = [];
 
                     console.warn("The data received from api are incomplete:", errormsg);
-                    Radio.trigger("Alert", "alert", {
-                        content: "Die gewünschten Daten wurden wegen eines API-Fehlers nicht korrekt empfangen.",
+                    this.$store.dispatch("Alerting/addSingleAlert", {
+                        content: this.$t("additional:modules.tools.gfi.themes.trafficCount.error.apiGeneral"),
                         category: "Info"
                     });
                 });
             }
         },
-
         /**
-         * opens the calender
-         * @returns {Void}  -
+         * Changes the dates array with given dates.
+         * @param {String[]} dates The dates.
+         * @returns {void}
          */
-        toggleCalendar: function () {
-            const input = this.$el.querySelector("input");
+        change (dates) {
+            if (!Array.isArray(dates)) {
+                return;
+            }
+            this.dates = dates;
+        },
+        /**
+         * Gets the date field title based on given moment date.
+         * @param {Object} momentDate The moment date.
+         * @returns {String} The date field title.
+         */
+        getDateFieldTitle (momentDate) {
+            if (typeof momentDate?.format !== "function") {
+                return "";
+            }
+            const holidayName = getPublicHoliday(momentDate.toDate(), this.holidays);
 
-            input.focus();
+            if (isObject(holidayName)) {
+                return `${this.$t(holidayName.translationKey)}, ${momentDate.format("DD.MM.YYYY")}`;
+            }
+            return momentDate.format("DD.MM.YYYY");
+        },
+        /**
+         * Returns if the given moment date is a holiday.
+         * @param {Object} momentDate The moment date.
+         * @returns {Boolean} True if it is a holiday.
+         */
+        isPublicHoliday (momentDate) {
+            return Boolean(getPublicHoliday(momentDate.toDate(), this.holidays));
+        },
+        /**
+         * Gets the current switch as formatted string.
+         * @param {Object} momentDate A moment date.
+         * @returns {String} The formatted string.
+         */
+        getCurrentSwitchFormatted (momentDate) {
+            const months = this.$t("additional:modules.tools.gfi.themes.trafficCount.datepicker.monthsShort", {returnObjects: true});
+
+            return `${months[momentDate.get("month")]} ${momentDate.format("YYYY")}`;
         }
     }
 };
@@ -270,16 +268,31 @@ export default {
             id="weekDateSelector"
             class="dateSelector"
         >
-            <div class="input-group">
-                <input
-                    id="weekDateInput"
-                    aria-label="Datum"
-                    type="text"
-                    class="form-control dpinput"
-                    placeholder="Datum"
-                >
-                <TrafficCountCalendarButtonGroup id-prefix="week" />
-            </div>
+            <TrafficCountDatePicker
+                type="week"
+                input-delimiter=", "
+                :format="weekFormat"
+                :initial-dates="dates"
+                :show-week-number="true"
+                :max-selection="5"
+                :min-date="minDate"
+                :max-date="maxDate"
+                @change="change"
+            >
+                <template #currentSwitch="{momentDate}">
+                    {{ getCurrentSwitchFormatted(momentDate) }}
+                </template>
+                <template #dateField="{day, momentDate}">
+                    <span
+                        v-if="isPublicHoliday(momentDate)"
+                        :title="getDateFieldTitle(momentDate)"
+                    ><strong>{{ day }}</strong></span>
+                    <span
+                        v-else
+                        :title="getDateFieldTitle(momentDate)"
+                    >{{ day }}</span>
+                </template>
+            </TrafficCountDatePicker>
         </div>
         <TrafficCountCheckbox
             :table-diagram-id="diagramWeek"
@@ -314,8 +327,10 @@ export default {
     </div>
 </template>
 
-<style lang="scss" scoped>
-#weekDateInputButton{
-    padding: 6px 12px 5px 12px
+<style lang="scss">
+#weekDateSelector {
+    .mx-input {
+        border-radius: 0px;
+    }
 }
 </style>

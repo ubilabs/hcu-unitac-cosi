@@ -158,16 +158,13 @@ describe("AccessibilityAnalysis.vue", () => {
                         }
                     }
                 },
-                Map: {
+                Maps: {
                     namespaced: true,
                     getters: {
-                        map: () => ({
-                            addEventListener: () => sinon.stub(),
-                            removeEventListener: () => sinon.stub()
-                        }),
                         projectionCode: () => "EPSG:25832"
                     },
                     actions: {
+                        removeInteraction: () => sinon.stub(),
                         addNewLayerIfNotExists: () => {
                             return Promise.resolve({
                                 setVisible: () => sinon.stub(),
@@ -178,6 +175,9 @@ describe("AccessibilityAnalysis.vue", () => {
                                 getSource: () => sourceStub
                             });
                         }
+                    },
+                    mutations: {
+                        removeLayerFromMap: () => sinon.stub()
                     }
                 },
                 Alerting: {
@@ -208,7 +208,8 @@ describe("AccessibilityAnalysis.vue", () => {
                 }
             },
             getters: {
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             },
             state: {
                 configJson: mockConfigJson
@@ -218,7 +219,7 @@ describe("AccessibilityAnalysis.vue", () => {
     });
 
     afterEach(function () {
-        component.destroy();
+        // component.destroy();
         sandbox.restore();
     });
 
@@ -243,12 +244,12 @@ describe("AccessibilityAnalysis.vue", () => {
         sandbox.stub(AccessibilityAnalysisComponent.computed, "directionsRouteLayer").returns(
             {getStyleFunction: () => sinon.stub()}
         );
-        sandbox.stub(AccessibilityAnalysisComponent.computed, "map").returns(
-            {
-                removeLayer: () => sinon.stub(),
-                removeInteraction: () => sinon.stub()
-            }
-        );
+        // sandbox.stub(AccessibilityAnalysisComponent.data, "map").returns(
+        //     {
+        //         removeLayer: () => sinon.stub(),
+        //         removeInteraction: () => sinon.stub()
+        //     }
+        // );
         component = shallowMount(AccessibilityAnalysisComponent, {
             stubs: {Tool},
             store,

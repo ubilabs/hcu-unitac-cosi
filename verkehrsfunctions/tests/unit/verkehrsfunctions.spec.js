@@ -4,7 +4,7 @@ import {
     getKfzTrafficCount,
     getPhenomenonTimeRange
 } from "../../verkehrsfunctions";
-import * as moment from "moment";
+import moment from "moment";
 
 describe("ADDON: Verkehrsfunctions", () => {
     describe("getPhenomenonTimeRange", () => {

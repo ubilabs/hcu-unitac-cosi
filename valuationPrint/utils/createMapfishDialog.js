@@ -24,13 +24,13 @@ export function createMapfishDialog (parcel, knowledgeBase, transformer, default
     Object.entries(transformer).forEach(([prefix, obj]) => {
         Object.entries(obj).forEach(([postfix, transformerConfig]) => {
             if (transformerConfig.type === "mapWalker") {
-                mapfishDialog[prefix + "." + postfix] = getWalkerMap(parcel?.feature, parcel?.center, mapProjection, transformerConfig.style, transformerConfig.scale, transformerConfig.layerIds);
+                mapfishDialog[prefix + "." + postfix] = getWalkerMap(parcel?.feature, parcel?.center, mapProjection, transformerConfig.style, transformerConfig.scale, transformerConfig.layerIds, transformerConfig.dpi);
             }
             else if (transformerConfig.type === "mapProportion") {
-                mapfishDialog[prefix + "." + postfix] = getProportionMap(parcel?.feature, parcel?.extent, mapProjection, transformerConfig.style, transformerConfig.proportion, transformerConfig.layerIds);
+                mapfishDialog[prefix + "." + postfix] = getProportionMap(parcel?.feature, parcel?.extent, mapProjection, transformerConfig.style, transformerConfig.proportion, transformerConfig.layerIds, transformerConfig.dpi);
             }
             else if (transformerConfig.type === "mapFixed") {
-                mapfishDialog[prefix + "." + postfix] = getFixedMap(parcel?.center, mapProjection, transformerConfig.style, transformerConfig.bbox, transformerConfig.layerIds);
+                mapfishDialog[prefix + "." + postfix] = getFixedMap(parcel?.center, mapProjection, transformerConfig.style, transformerConfig.bbox, transformerConfig.layerIds, transformerConfig.dpi);
             }
             else if (transformerConfig.type === "concat") {
                 const resultConcat = concatStringByDatakey(knowledgeBase, transformerConfig.datakey, transformerConfig.default, defaultValue, transformerConfig.delimitor ? transformerConfig.delimitor : defaultDelimitor, transformerConfig.options);

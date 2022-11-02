@@ -1,6 +1,7 @@
 import LoaderOverlay from "../../../src/utils/loaderOverlay";
 import {WFS} from "ol/format.js";
-import * as turf from "@turf/turf/";
+import {default as turfIntersect} from "@turf/intersect";
+import {polygon as turfPolygon} from "@turf/helpers";
 import axios from "axios";
 
 const actions = {
@@ -107,13 +108,13 @@ const actions = {
             rasterNames = [];
 
         if (selectedAreaGeoJson && selectedAreaGeoJson.coordinates) {
-            const turfGeoSelection = turf.polygon([selectedAreaGeoJson.coordinates[0]]);
+            const turfGeoSelection = turfPolygon([selectedAreaGeoJson.coordinates[0]]);
 
             rasterLayerFeatures.forEach(async feature => {
                 const featureGeojson = await dispatch("GraphicalSelect/featureToGeoJson", feature, {root: true}),
-                    turfRaster = turf.polygon([featureGeojson.coordinates[0]]);
+                    turfRaster = turfPolygon([featureGeojson.coordinates[0]]);
 
-                if (turf.intersect(turfGeoSelection, turfRaster)) {
+                if (turfIntersect(turfGeoSelection, turfRaster)) {
                     await dispatch("addFeaturenameToRasternames", {feature: feature, rasterNames: rasterNames});
                 }
             });

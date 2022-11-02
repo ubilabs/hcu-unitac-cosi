@@ -1,7 +1,7 @@
 <script>
 /* eslint-disable vue/multi-word-component-names */
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersDashboard";
 import mutations from "../store/mutationsDashboard";
@@ -489,6 +489,12 @@ export default {
             if (evt) {
                 this.toolOffset = window.innerWidth - evt.targetElement.clientWidth;
             }
+            if (this.$el.querySelector("#dashboard-toolbar").clientHeight > 50) {
+                this.$el.querySelector(".dashboard-table-wrapper").style.height = "calc(100% - 116px)";
+            }
+            else {
+                this.$el.querySelector(".dashboard-table-wrapper").style.height = "calc(100% - 80px)";
+            }
         },
 
         /**
@@ -822,7 +828,7 @@ export default {
     </Tool>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "../../utils/variables.scss";
 
 #dashboard-wrapper {
@@ -842,7 +848,7 @@ export default {
             min-width: 40vw;
         }
     }
-}
+
 
 .dashboard-table {
     height: 100%;
@@ -931,6 +937,7 @@ export default {
             display: none;
         }
     }
+}
 }
 </style>
 

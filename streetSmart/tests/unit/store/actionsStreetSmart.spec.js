@@ -8,6 +8,8 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
     const addFeaturesSpy = sinon.spy(),
         clearMarkerPointSpy = sinon.spy(),
         setRotationSpy = sinon.spy(),
+        toggle3DCursorSpy = sinon.spy(),
+        toggleAddressesVisibleSpy = sinon.spy(),
         icon = {
             setRotation: setRotationSpy
         };
@@ -25,6 +27,11 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
             open: () => sinon.stub(),
             init: () => sinon.stub(),
             destroy: sinon.spy(),
+            getViewers: () => [{
+                getRecording: () => ({xyz: "TEST_DATA"}),
+                toggle3DCursor: toggle3DCursorSpy,
+                toggleAddressesVisible: toggleAddressesVisibleSpy
+            }],
             ViewerType: {
                 PANORAMA: "PANORAMA"
             }
@@ -104,7 +111,7 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
             expect(checked).to.be.true;
 
         });
-        it.skip("setPosition shall call commit and dispatch once, if StreetSmartApi.open result has one entry", async () => {
+        it("setPosition shall call commit and dispatch once, if StreetSmartApi.open result has one entry; 3D cursor and address visibility are toggled", async () => {
             const payload = [100, 200],
                 result = [true];
             let promise,
@@ -124,6 +131,8 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
                 expect(commit.calledOnce).to.be.true;
                 expect(commit.args[0][0]).to.equal("setLastCoordinates");
                 expect(commit.args[0][1]).to.deep.equal(payload);
+                expect(toggle3DCursorSpy.calledOnce).to.be.true;
+                expect(toggleAddressesVisibleSpy.calledOnce).to.be.true;
                 checked = true;
             });
             expect(checked).to.be.true;
@@ -235,7 +244,7 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
             expect(dispatch.args[1][0]).to.equal("MapMarker/rotatePointMarker");
             expect(dispatch.args[1][1]).to.deep.equal(evt.detail.recording.relativeYaw + getters.lastYaw);
         });
-        it.skip("rotateMarker shall commit and dispatch once and rotate icon", () => {
+        it("rotateMarker shall commit and dispatch twice and rotate icon", () => {
             const evt = {
                 detail: {
                     yaw: 2
@@ -243,12 +252,21 @@ describe("ADDONS: addons/streetSmart/store/actionsStreetSmart", () => {
             };
 
             actions.rotateMarker({commit, dispatch}, evt);
-            expect(dispatch.calledOnce).to.be.true;
-            expect(dispatch.args[0][0]).to.equal("MapMarker/rotatePointMarker");
-            expect(dispatch.args[0][1]).to.deep.equal(evt.detail.yaw);
-            expect(commit.calledOnce).to.be.true;
-            expect(commit.args[0][0]).to.equal("setLastYaw");
-            expect(commit.args[0][1]).to.equal(evt.detail.yaw);
+
+            expect(dispatch.calledTwice).to.be.true;
+            expect(commit.calledTwice).to.be.true;
+
+            // calls with recording data
+            expect(dispatch.args[0][0]).to.equal("MapMarker/placingPointMarker");
+            expect(dispatch.args[0][1]).to.deep.equal("TEST_DATA");
+            expect(commit.args[0][0]).to.equal("setLastCoordinates");
+            expect(commit.args[0][1]).to.equal("TEST_DATA");
+
+            // calls with event data
+            expect(dispatch.args[1][0]).to.equal("MapMarker/rotatePointMarker");
+            expect(dispatch.args[1][1]).to.deep.equal(evt.detail.yaw);
+            expect(commit.args[1][0]).to.equal("setLastYaw");
+            expect(commit.args[1][1]).to.equal(evt.detail.yaw);
         });
     });
     describe("onInitSuccess", () => {

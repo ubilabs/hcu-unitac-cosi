@@ -17,19 +17,20 @@ const localVue = createLocalVue();
 Vue.use(Vuetify);
 localVue.use(Vuex);
 
+
 global.requestAnimationFrame = (fn) => fn();
 
 describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
     let vuetify, store;
 
     const mockMapGetters = {
-            visibleLayerList: () => sinon.stub()
+            getVisibleLayerList: () => sinon.stub()
         },
         mockMapActions = {
             addInteraction: () => sinon.stub(),
-            resetView: () => sinon.stub()
-        },
-        mockMapMutations = {
+            removeInteraction: () => sinon.stub(),
+            resetView: () => sinon.stub(),
+            zoomToExtent: () => sinon.stub()
         },
         layerOne = new Layer({id: "123", source: new Source()}),
         layerTwo = new Layer({id: "456", source: new Source()}),
@@ -85,16 +86,15 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
                         DistrictSelector: DistrictSelectorStore
                     }
                 },
-                Map: {
+                Maps: {
                     namespaced: true,
                     getters: mockMapGetters,
-                    mutations: mockMapMutations,
                     actions: mockMapActions
                 },
                 Language: {
                     namespaced: true,
                     getters: {
-                        currentLocale: () => sinon.stub()
+                        currentLocale: () => "de"
                     }
                 },
                 Alerting: {
@@ -105,7 +105,8 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
                 }
             },
             getters: {
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
     });
@@ -177,10 +178,10 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
                 buttonWrapperArray = wrapper.findAllComponents({name: "v-btn"});
 
             expect(buttonWrapperArray.exists()).to.be.true;
-            expect(buttonWrapperArray).to.have.lengthOf(3);
-            expect(buttonWrapperArray.wrappers[0].text()).to.equal("additional:modules.tools.cosi.districtSelector.buttonConfirm");
-            expect(buttonWrapperArray.wrappers[1].text()).to.equal("additional:modules.tools.cosi.districtSelector.buttonReset");
-            expect(buttonWrapperArray.wrappers[2].findComponent({name: "v-icon"}).classes("mdi-pencil")).to.be.true;
+            expect(buttonWrapperArray).to.have.lengthOf(4);
+            expect(buttonWrapperArray.wrappers[1].text()).to.equal("additional:modules.tools.cosi.districtSelector.buttonConfirm");
+            expect(buttonWrapperArray.wrappers[2].text()).to.equal("additional:modules.tools.cosi.districtSelector.buttonReset");
+            expect(buttonWrapperArray.wrappers[3].findComponent({name: "v-icon"}).classes("mdi-pencil")).to.be.true;
 
         });
     });
@@ -195,7 +196,7 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
             await wrapper.setData({
                 selectedDistrictLevel: dummyDistrictTwo
             });
-            expect(wrapper.vm.namesOfDistricts).to.deep.equal(["Mario", "und", "Luigi"]);
+            expect(wrapper.vm.selectedDistrictLevel.nameList).to.deep.equal(["Mario", "und", "Luigi"]);
         });
 
         it("should update 'selectedNames' if 'selectedDistrictName' was changed", () => {
@@ -287,7 +288,7 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
             const wrapper = factory.getMount(),
                 btnWrapperArray = wrapper.findAllComponents({name: "v-btn"});
 
-            await btnWrapperArray.at(2).trigger("click");
+            await btnWrapperArray.at(3).trigger("click");
             expect(wrapper.vm.dragBox.getActive()).to.be.true;
         });
     });

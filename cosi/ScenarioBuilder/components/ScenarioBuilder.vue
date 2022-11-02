@@ -1,6 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersScenarioBuilder";
 import mutations from "../store/mutationsScenarioBuilder";
@@ -25,6 +25,7 @@ import ToolInfo from "../../components/ToolInfo.vue";
 import {unpackCluster} from "../../utils/getClusterSource";
 import {getAddress} from "../../utils/geocode";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "ScenarioBuilder",
@@ -336,7 +337,7 @@ export default {
 
         getDescriptionBySource (layerId) {
             const layer = this.getLayerById({layerId: layerId}),
-                feature = layer.getSource().getFeatures()[0] || Radio.request("ModelList", "getModelByAttributes", {id: layerId})?.get("features")[0];
+                feature = layer.getSource().getFeatures()[0] || getModelByAttributes({id: layerId})?.get("features")[0];
             let props, desc;
 
             if (feature) {

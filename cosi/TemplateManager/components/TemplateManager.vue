@@ -1,6 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersTemplateManager";
 import mutations from "../store/mutationsTemplateManager";
@@ -206,7 +206,9 @@ export default {
                         >
                             <template #activator>
                                 <v-list-item-content>
-                                    <v-list-item-title v-text="template.meta.title" />
+                                    <v-list-item-title>
+                                        {{ template.meta.title }}
+                                    </v-list-item-title>
                                 </v-list-item-content>
                             </template>
 

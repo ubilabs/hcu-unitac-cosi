@@ -1,16 +1,17 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
+import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
 import methods from "./methodsAnalysis";
 import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
-import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {exportAsGeoJson, downloadGeoJson} from "../utils/exportResults";
 import {Select} from "ol/interaction";
 import ToolInfo from "../../components/ToolInfo.vue";
 import travelTimeIndex from "../assets/inrix_traveltimeindex_2021.json";
+import {onSearchbar, offSearchbar, getServiceUrl, onShowFeaturesById, onShowAllFeatures, onFeaturesLoaded, getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -91,8 +92,8 @@ export default {
             abortController: null,
             currentCoordinates: null,
             select: null,
-            hide: false,
-            map: undefined
+            hide: false
+            // map: undefined
         };
     },
     computed: {
@@ -207,19 +208,19 @@ export default {
     watch: {
         active () {
             if (this.active) {
-                this.map.addEventListener("click", this.setCoordinateFromClick);
-                Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
+                mapCollection.getMap("2D").on("click", this.setCoordinateFromClick);
+                onSearchbar(this.setSearchResultToOrigin);
 
                 if (this.mode === "path") {
-                    this.map.addLayer(this.directionsLayer);
+                    this.addLayer(this.directionsLayer);
                 }
             }
             else {
-                this.map.removeEventListener("click", this.setCoordinateFromClick);
-                Radio.off("Searchbar", "hit", this.setSearchResultToOrigin);
+                mapCollection.getMap("2D").un("click", this.setCoordinateFromClick);
+                offSearchbar(this.setSearchResultToOrigin);
                 this.removePointMarker();
                 this.select.getFeatures().clear();
-                this.map.removeLayer(this.directionsLayer);
+                this.removeLayerFromMap(this.directionsLayer);
             }
         },
         activeSet (newValue) {
@@ -258,13 +259,13 @@ export default {
             if (this.mode === "path") {
                 this._scaleUnit = "distance";
                 this._transportType = "foot-walking";
-                this.map.addLayer(this.directionsLayer);
+                this.addLayer(this.directionsLayer);
             }
             else {
-                this.map.removeLayer(this.directionsLayer);
+                this.removeLayerFromMap(this.directionsLayer);
 
                 if (!this.setByFeature) {
-                    this.map.removeInteraction(this.select);
+                    this.removeInteraction(this.select);
                     this.select.un("select", this.pickDirections.bind(this));
                 }
             }
@@ -274,13 +275,13 @@ export default {
         },
         setByFeature (val) {
             if (val && this.mode === "point") {
-                this.map.addInteraction(this.select);
+                this.addInteraction(this.select);
             }
             else {
                 if (this.select?.getFeatures().getLength() > 0) {
                     this.select.getFeatures().removeAt(0);
                 }
-                this.map.removeInteraction(this.select);
+                this.removeInteraction(this.select);
             }
         },
         activeVectorLayerList (newValues) {
@@ -304,8 +305,8 @@ export default {
             filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
         });
 
-        this.baseUrl = Radio.request("RestReader", "getServiceById", "bkg_ors").get("url") + "/v2/";
-        this.map = mapCollection.getMap("2D");
+        this.baseUrl = getServiceUrl("bkg_ors") + "/v2/";
+        // this.map = mapCollection.getMap("2D");
     },
 
     /**
@@ -323,19 +324,20 @@ export default {
         this.directionsLayer.setZIndex(10);
         this.directionsLayer.setStyle(this.directionsRouteLayer.getStyleFunction());
         this.directionsLayer.setSource(this.directionsRouteSource);
-        this.map.removeLayer(this.directionsLayer);
+        this.removeLayerFromMap(this.directionsLayer);
 
-        Radio.on("Searchbar", "hit", this.setSearchResultToOrigin);
+        onSearchbar(this.setSearchResultToOrigin);
 
         this.$root.$on("updateFeature", this.tryUpdateIsochrones);
-        Radio.on("ModelList", "showFeaturesById", this.tryUpdateIsochrones);
-        Radio.on("ModelList", "showAllFeatures", this.tryUpdateIsochrones);
-        Radio.on("VectorLayer", "featuresLoaded", this.tryUpdateIsochrones);
+        onShowFeaturesById(this.tryUpdateIsochrones);
+        onShowAllFeatures(this.tryUpdateIsochrones);
+        onFeaturesLoaded(this.tryUpdateIsochrones);
     },
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapActions("Tools/AccessibilityAnalysisService", ["getIsochrones"]),
-        ...mapMutations("Maps", ["setCenter"]),
+        ...mapActions("Maps", ["setCenter", "removeInteraction", "addInteraction", "addLayer", "registerListener", "unregisterListener"]),
+        ...mapMutations("Maps", ["removeLayerFromMap"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         ...mapActions("GraphicalSelect", ["featureToGeoJson"]),
         ...mapActions("Maps", ["addNewLayerIfNotExists"]),
@@ -368,7 +370,7 @@ export default {
 
             // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
             // else the menu-entry for this tool is always highlighted
-            const model = Radio.request("ModelList", "getModelByAttributes", {
+            const model = getModelByAttributes({
                 id: this.$store.state.Tools.AccessibilityAnalysis.id
             });
 
@@ -452,7 +454,7 @@ export default {
             this.mapLayer.getSource().clear();
             this.resetIsochroneBBox();
             this.removePointMarker();
-            this.map.removeLayer(this.directionsLayer);
+            this.removeLayerFromMap(this.directionsLayer);
         },
         downloadSet (index) {
             downloadGeoJson(this.dataSets[index].geojson);

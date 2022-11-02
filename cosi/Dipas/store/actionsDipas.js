@@ -1,3 +1,5 @@
+import {addVectorLayer, getModelByAttributes} from "../../utils/radioBridge.js";
+
 /**
  * Sets additional attributes on the new layer
  * @param {Object} model - the layer from the imported file
@@ -46,9 +48,9 @@ function addLayerToTree (newLayer) {
 
     gfiAttributes = newLayer.project ? projectGfiAttributes() : contributionsGfiAttributes();
 
-    Radio.trigger("Parser", "addVectorLayer", layerName, layerId, features, "dipas", undefined, gfiAttributes, {isNeverVisibleInTree: true, isBaseLayer});
+    addVectorLayer(layerName, layerId, features, "dipas", undefined, gfiAttributes, {isNeverVisibleInTree: true, isBaseLayer});
 
-    return Radio.request("ModelList", "getModelByAttributes", {type: "layer", id: newLayer.id});
+    return getModelByAttributes({type: "layer", id: newLayer.id});
 }
 
 /**

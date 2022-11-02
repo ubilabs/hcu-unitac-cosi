@@ -18,6 +18,7 @@ import axios from "axios";
 import {exportAsGeoJson} from "../utils/exportResults";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
 import {getCenterOfMass} from "../../utils/geomUtils";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "Dipas",
@@ -60,7 +61,7 @@ export default {
         selectedStyling: function () {
             for (const [id, value] of Object.entries(this.contributions)) {
                 if (value.features.length > 0) {
-                    const model = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"});
+                    const model = getModelByAttributes({id: id + "-contributions"});
 
                     model.get("layerSource").changed();
                 }
@@ -111,7 +112,7 @@ export default {
 
             // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
             // else the menu-entry for this tool is always highlighted
-            const model = Radio.request("ModelList", "getModelByAttributes", {
+            const model = getModelByAttributes({
                 id: this.$store.state.Tools.Dipas.id
             });
 
@@ -240,7 +241,7 @@ export default {
 
             for (const feature of features) {
                 if (!feature.get("dipasLocated")) {
-                    const model = Radio.request("ModelList", "getModelByAttributes", {id: id}),
+                    const model = getModelByAttributes({id: id}),
                         center = getCenterOfMass(model.get("features")[0], this.projectionCode, this.projectionCode);
 
                     feature.setGeometry(new Point(center));
@@ -261,7 +262,7 @@ export default {
          * @returns {void}
          */
         async changeProjectVisibility (id, value) {
-            const model = Radio.request("ModelList", "getModelByAttributes", {id: id});
+            const model = getModelByAttributes({id: id});
 
             model.set("isSelected", value);
         },
@@ -313,7 +314,7 @@ export default {
                     features: []
                 };
 
-            let model = Radio.request("ModelList", "getModelByAttributes", {id: layer.id});
+            let model = getModelByAttributes({id: layer.id});
 
             if (!model) {
                 await this.updateContributionFeatures(id);
@@ -468,7 +469,7 @@ export default {
         async changeHeatmapVisibility (id, value) {
             const
                 layerId = id + "-heatmap",
-                contributionsModel = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"}),
+                contributionsModel = getModelByAttributes({id: id + "-contributions"}),
                 isFeatureActive = this.isFeatureActive;
             let
                 layer = this.getLayerById(this.map.getLayers().getArray(), layerId);
@@ -625,7 +626,7 @@ export default {
         setPolling () {
             return setInterval(() => {
                 for (const id in this.contributions) {
-                    const model = Radio.request("ModelList", "getModelByAttributes", {id: id + "-contributions"});
+                    const model = getModelByAttributes({id: id + "-contributions"});
 
                     this.updateContributionFeatures(id, true);
                     if (model) {
@@ -708,12 +709,14 @@ export default {
                                         <v-list-item-content>
                                             <v-list-item-title
                                                 class="text-wrap"
-                                                v-text="feature.get('nameFull')"
-                                            />
+                                            >
+                                                {{ feature.get("nameFull") }}
+                                            </v-list-item-title>
                                             <v-list-item-subtitle
                                                 class="text-wrap"
-                                                v-text="getDateString(feature)"
-                                            />
+                                            >
+                                                {{ getDateString(feature) }}
+                                            </v-list-item-subtitle>
                                         </v-list-item-content>
                                         <v-list-item-icon>
                                             <v-btn

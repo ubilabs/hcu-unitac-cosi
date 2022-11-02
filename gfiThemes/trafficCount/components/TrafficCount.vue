@@ -1,6 +1,5 @@
 <script>
 import {mapGetters} from "vuex";
-
 import axios from "axios";
 import {TrafficCountCache} from "../utils/trafficCountCache";
 import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
@@ -9,6 +8,7 @@ import TrafficCountDay from "./TrafficCountDay.vue";
 import TrafficCountWeek from "./TrafficCountWeek.vue";
 import TrafficCountYear from "./TrafficCountYear.vue";
 import TrafficCountFooter from "./TrafficCountFooter.vue";
+import TrafficCountDownloads from "./TrafficCountDownloads.vue";
 import convertHttpLinkToSSL from "../../../../src/utils/convertHttpLinkToSSL";
 
 export default {
@@ -18,7 +18,8 @@ export default {
         TrafficCountDay,
         TrafficCountWeek,
         TrafficCountYear,
-        TrafficCountFooter
+        TrafficCountFooter,
+        TrafficCountDownloads
     },
     props: {
         feature: {
@@ -40,6 +41,7 @@ export default {
             keyDay: "day",
             keyWeek: "week",
             keyYear: "year",
+            keyDownloads: "downloads",
             dayCheckReset: false,
             weekCheckReset: false,
             yearCheckReset: false,
@@ -78,6 +80,10 @@ export default {
 
         yearLabel: function () {
             return this.$t("additional:modules.tools.gfi.themes.trafficCount.yearLabel");
+        },
+
+        downloadsLabel: function () {
+            return this.$t("additional:modules.tools.gfi.themes.trafficCount.downloads");
         },
 
         typeAssoc: function () {
@@ -119,6 +125,10 @@ export default {
         },
 
         downloadFilename () {
+            if (this.checkGurlittInsel && this.feature?.getProperties()?.link_download) {
+                return false;
+            }
+
             return this.propMeansOfTransport + "_" + this.propThingId + "_" + this.direction;
         }
     },
@@ -384,6 +394,7 @@ export default {
             this.keyDay = value + "day";
             this.keyWeek = value + "week";
             this.keyYear = value + "year";
+            this.keyDownloads = value + "downloads";
         },
 
         /**
@@ -494,6 +505,17 @@ export default {
                         href="#year"
                     >{{ yearLabel }}</a>
                 </li>
+                <li
+                    value="downloads"
+                    class="nav-item"
+                >
+                    <a
+                        class="nav-link"
+                        :class="{ active: isActiveTab('downloads'), 'nav-link': true }"
+                        data-toggle="tab"
+                        href="#downloads"
+                    >{{ downloadsLabel }}</a>
+                </li>
             </ul>
             <div class="tab-content">
                 <TrafficCountInfo
@@ -537,6 +559,17 @@ export default {
                     :holidays="holidays"
                     :check-gurlitt-insel="checkGurlittInsel"
                 />
+                <TrafficCountDownloads
+                    id="downloads"
+                    :key="keyDownloads"
+                    :class="{ 'tab-pane': true, 'active': currentTabId === 'downloads' }"
+                    :api="api"
+                    :holidays="holidays"
+                    :thing-id="propThingId"
+                    :means-of-transport="propMeansOfTransport"
+                    :download-url="downloadUrl"
+                    :download-filename="downloadFilename"
+                />
             </div>
         </div>
         <TrafficCountFooter
@@ -545,9 +578,6 @@ export default {
             :api="api"
             :thing-id="propThingId"
             :means-of-transport="propMeansOfTransport"
-            :holidays="holidays"
-            :download-url="downloadUrl"
-            :download-filename="downloadFilename"
             @resetTab="resetTab"
         />
     </div>
@@ -570,6 +600,7 @@ export default {
             height: inherit;
         }
     }
+
     .nav-pills {
         @include active-pill(0.625rem, 1.25em);
 

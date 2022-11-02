@@ -32,11 +32,21 @@ function addElemWithDataAppToBody () {
     document.body.append(app);
 }
 
-before(() => {
-    addElemWithDataAppToBody();
-});
 
 describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
+    before(() => {
+        global.ShadowRoot = () => "";
+        mapCollection.clear();
+        const map = {
+            id: "ol",
+            mode: "2D",
+            updateSize: () => sinon.stub()
+        };
+
+        mapCollection.addMap(map, "2D");
+        addElemWithDataAppToBody();
+    });
+
     let store, vuetify, wrapper, selectedDistrictLabelsStub, selectedDistrictNamesStub;
 
     const factory = {
@@ -136,7 +146,8 @@ describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             },
             getters: {
                 isDefaultStyle: () => true,
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
         store.commit("Tools/Dashboard/setActive", true);
@@ -211,7 +222,7 @@ describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             // test 1
             expect(wrapper.vm.currentTimeStamp).to.equal(2020);
             expect(row.text()).to.equal(
-                parseFloat(selectedDistrictLevel.districts[0].statFeatures[0].get("jahr_2020")).toLocaleString("en-US")
+                parseFloat(selectedDistrictLevel.districts[0].statFeatures[0].get("jahr_2020")).toLocaleString("de-DE")
             );
 
             // act
@@ -221,7 +232,7 @@ describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             // test 2
             expect(store.getters["Tools/ColorCodeMap/selectedYear"]).to.equal(2018);
             expect(row.text()).to.equal(
-                parseFloat(selectedDistrictLevel.districts[0].statFeatures[0].get("jahr_2018")).toLocaleString("en-US")
+                parseFloat(selectedDistrictLevel.districts[0].statFeatures[0].get("jahr_2018")).toLocaleString("de-DE")
             );
         });
         it("should highlight data changed by simulation", async () => {

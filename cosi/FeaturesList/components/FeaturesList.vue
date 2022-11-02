@@ -1,6 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {mapState, mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersFeaturesList";
 import mutations from "../store/mutationsFeaturesList";
@@ -15,11 +15,10 @@ import LayerWeights from "./LayerWeights.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
 import arrayIsEqual from "../../utils/arrayIsEqual";
-import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
+import {rawLayerList} from "@masterportal/masterportalapi/src";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
-import Vue from "vue";
 
 import
 {
@@ -31,6 +30,7 @@ import
 } from "ol/style.js";
 import Feature from "ol/Feature";
 import ToolInfo from "../../components/ToolInfo.vue";
+import {onFeaturesLoaded, onResetFeatures, onShowFeaturesById, onShowAllFeatures} from "../../utils/radioBridge.js";
 
 export default {
     name: "FeaturesList",
@@ -280,7 +280,7 @@ export default {
     },
     async mounted () {
         // initally set the facilities mapping based on the config.json
-        this.setMapping(this.getVectorlayerMapping(this.configJson.Themenconfig));
+        this.setMapping(getVectorlayerMapping(this.configJson.Themenconfig));
         this.updateFeaturesList();
 
         /**
@@ -289,10 +289,10 @@ export default {
          * @todo refactor to vuex, there should be an event on the map calling out loaded features
          * @deprecated
          */
-        Radio.on("VectorLayer", "featuresLoaded", this.updateFeaturesList);
-        Radio.on("VectorLayer", "resetFeatures", this.updateFeaturesList);
-        Radio.on("ModelList", "showFeaturesById", this.updateFeaturesList);
-        Radio.on("ModelList", "showAllFeatures", this.updateFeaturesList);
+        onFeaturesLoaded(this.updateFeaturesList);
+        onResetFeatures(this.updateFeaturesList);
+        onShowFeaturesById(this.updateFeaturesList);
+        onShowAllFeatures(this.updateFeaturesList);
 
         this.$root.$on("updateFeaturesList", this.updateFeaturesList);
 
@@ -308,7 +308,6 @@ export default {
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...chartMethods,
 
-        getVectorlayerMapping,
         getNumericalColumns () {
             const numCols = this.getActiveLayers().reduce((cols, mappingObj) => {
                 const _numCols = mappingObj.numericalValues.map(v => ({
@@ -523,6 +522,13 @@ export default {
             this.$root.$emit("updateFeature");
         },
 
+        /**
+         * Searches for any match in the table in all feature properties, not only the columns
+         * @param {*} value - the value of the feature (not needed)
+         * @param {String} search - the value to search for
+         * @param {Object} item - the feature to search in
+         * @return {Boolean} match or no match
+         */
         searchAllAttributes (value, search, item) {
             const allProps = {...item.feature.getProperties(), ...item};
 
@@ -594,7 +600,7 @@ export default {
 
             for (const g of groups) {
                 for (const l of g.layer) {
-                    const layer = getLayerWhere({id: l.layerId});
+                    const layer = rawLayerList.getLayerWhere({id: l.layerId});
 
                     if (layer) {
                         allLayers.push({id: l.id, layerId: l.layerId, url: layer.url, group: g.group, featureType: layer.featureType});
@@ -696,7 +702,7 @@ export default {
                                     fill: new Fill({color: colorMap[layerId]})
                                 }),
                                 text: new Text({
-                                    text: getLayerWhere({id: layerId})?.name,
+                                    text: rawLayerList.getLayerWhere({id: layerId})?.name,
                                     placement: "point",
                                     offsetY: -10,
                                     offsetX: 10,

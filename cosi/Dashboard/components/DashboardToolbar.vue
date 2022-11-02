@@ -61,60 +61,64 @@ export default {
         id="dashboard-toolbar"
         dense
     >
-        <v-autocomplete
-            v-model="_statsFeatureFilter"
-            :items="statsMapping"
-            item-text="value"
-            class="float-left"
-            :label="$t('additional:modules.tools.cosi.featuresList.layerFilter')"
-            outlined
-            dense
-            multiple
-            clearable
-            hide-details
-        >
-            <template #selection="{ item, index }">
-                <v-chip
-                    v-if="index === 0"
-                    small
-                >
-                    <span>{{ item.value }}</span>
-                </v-chip>
-                <span
-                    v-if="index === 1"
-                    class="grey--text text-caption"
-                >
-                    (+{{ statsFeatureFilter.length - 1 }} weitere)
-                </span>
-            </template>
-        </v-autocomplete>
-        <v-icon
-            title="Metadaten öffnen"
-            class="float-left mt-2"
-            @click="openMetadata()"
-        >
-            mdi-information
-        </v-icon>
-        <v-checkbox
-            id="export-details"
-            v-model="exportTimeline"
-            class="float-right"
-            dense
-            hide-details
-            :label="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
-            :title="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
-        />
-        <v-btn
-            dense
-            small
-            tile
-            class="float-right"
-            color="grey lighten-1"
-            :title="$t('additional:modules.tools.cosi.dashboard.exportTable')"
-            @click="exportTable"
-        >
-            {{ $t('additional:modules.tools.cosi.dashboard.exportTable') }}
-        </v-btn>
+        <v-col>
+            <v-autocomplete
+                v-model="_statsFeatureFilter"
+                :items="statsMapping"
+                item-text="value"
+                :label="$t('additional:modules.tools.cosi.featuresList.layerFilter')"
+                outlined
+                dense
+                multiple
+                clearable
+                hide-details
+            >
+                <template #selection="{ item, index }">
+                    <v-chip
+                        v-if="index === 0"
+                        small
+                    >
+                        <span>{{ item.value }}</span>
+                    </v-chip>
+                    <span
+                        v-if="index === 1"
+                        class="grey--text text-caption"
+                    >
+                        (+{{ statsFeatureFilter.length - 1 }} weitere)
+                    </span>
+                </template>
+                <template #append-outer>
+                    <v-icon
+                        title="Metadaten öffnen"
+                        @click="openMetadata"
+                    >
+                        mdi-information
+                    </v-icon>
+                </template>
+            </v-autocomplete>
+        </v-col>
+        <v-col cols="auto">
+            <v-checkbox
+                id="export-details"
+                v-model="exportTimeline"
+                dense
+                hide-details
+                :label="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
+                :title="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
+            />
+        </v-col>
+        <v-col cols="auto">
+            <v-btn
+                dense
+                small
+                tile
+                color="grey lighten-1"
+                :title="$t('additional:modules.tools.cosi.dashboard.exportTable')"
+                @click="exportTable"
+            >
+                {{ $t('additional:modules.tools.cosi.dashboard.exportTable') }}
+            </v-btn>
+        </v-col>
     </v-row>
 </template>
 

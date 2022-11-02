@@ -1,4 +1,5 @@
 import axios from "axios";
+import {getServiceUrl} from "../../utils/radioBridge.js";
 
 /**
  *
@@ -20,11 +21,11 @@ async function fetchMatrix (sources, destinations, profile, serviceId, fallbackI
         return response;
     }, function (error) {
         const originalRequest = error.config,
-            bkg_url = Radio.request("RestReader", "getServiceById", serviceId).get("url");
+            bkg_url = getServiceUrl(serviceId);
 
         if (originalRequest.url.indexOf(bkg_url) === 0 && error.response.status !== 200 && !originalRequest._retry) {
             originalRequest._retry = true;
-            const uri = originalRequest.url.replace(bkg_url, Radio.request("RestReader", "getServiceById", fallbackId).get("url"));
+            const uri = originalRequest.url.replace(bkg_url, getServiceUrl(fallbackId));
 
             return axios.post(uri, originalRequest.data,
                 {
@@ -33,7 +34,7 @@ async function fetchMatrix (sources, destinations, profile, serviceId, fallbackI
         }
         return Promise.reject(error);
     });
-    const baseUrl = Radio.request("RestReader", "getServiceById", serviceId).get("url") + "/v2/",
+    const baseUrl = getServiceUrl(serviceId) + "/v2/",
         service = "matrix",
         uri = baseUrl + service + "/" + (profile || "foot-walking"),
         opts = {

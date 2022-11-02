@@ -1,5 +1,6 @@
 import {Fill, Stroke, Style} from "ol/style.js";
 import {asArray} from "ol/color";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 const defaultsStyleValues = {fill: {color: [255, 255, 255, 0]}, stroke: {color: "#3399CC", width: 3}};
 
@@ -55,7 +56,7 @@ export default function styleSelectedDistrictLevels (districtLevels, selectedLev
             level.layer.setStyle(selectedStyle);
         }
         else {
-            const model = Radio.request("ModelList", "getModelByAttributes", {id: level.layerId});
+            const model = getModelByAttributes({id: level.layerId});
 
             if (model) {
                 model.styling();

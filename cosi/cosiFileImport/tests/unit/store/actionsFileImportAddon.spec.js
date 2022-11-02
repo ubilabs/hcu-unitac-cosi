@@ -1,9 +1,11 @@
 /**/
 import testAction from "../../../../../../test/unittests/VueTestUtils";
 import actions from "../../../store/actionsCosiFileImport";
-import importedState from "../../../store/stateCosiFileImport";
+import state from "../../../store/stateCosiFileImport";
 import rawSources from "../../resources/rawSources.js";
 import * as crs from "@masterportal/masterportalapi/src/crs";
+import sinon from "sinon";
+import {expect} from "chai";
 
 const
     {importKML} = actions,
@@ -12,7 +14,10 @@ const
         ["EPSG:25832", "+title=ETRS89/UTM 32N +proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"],
         ["EPSG:8395", "+title=ETRS89/Gauß-Krüger 3 +proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=GRS80 +datum=GRS80 +units=m +no_defs"],
         ["EPSG:4326", "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"]
-    ];
+    ],
+    rootGetters = {
+        "Maps/projectionCode": "EPSG:25832"
+    };
 
 before(() => {
     crs.registerProjections(namedProjections);
@@ -49,129 +54,101 @@ describe("addons/cosiFileImport/store/actionsCosiFileImport.js", () => {
                 gross: 1.3
             };
 
-        it("preset \"auto\", correct kml file, correct filename", done => {
-            const payload = {raw: rawSources[0], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
+        it("preset \"auto\", correct kml file, correct filename", () => {
+            const commit = sinon.spy(),
+                dispatch = sinon.spy(),
+                payload = {raw: rawSources[0], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
-            testAction(importKML, payload, importedState, {}, [{
-                type: "Alerting/addSingleAlert",
-                payload: {
+            importKML({dispatch, commit, state, rootGetters}, payload);
+            expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.args).to.deep.equal([
+                ["Alerting/addSingleAlert", {
                     category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.success", {filename: payload.filename})},
-                dispatch: true
-            }], {}, done);
+                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.success", {filename: payload.filename})}, {root: true}]
+            ]);
         });
 
         it("preset \"auto\", correct kml file, wrong filename", done => {
             const payload = {raw: rawSources[0], checkSameLayer: checkSameLayer, layerName: "bogus_file", filename: "bogus_file.bog", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
-            testAction(importKML, payload, importedState, {}, [{
+            testAction(importKML, payload, state, {}, [{
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.error"),
                     content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.missingFormat")
                 },
                 dispatch: true
-            }], {}, done);
+            }], {}, done, rootGetters);
         });
 
         it("preset \"auto\", broken kml file, correct filename", done => {
             const payload = {raw: rawSources[1], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
-            testAction(importKML, payload, importedState, {}, [{
+            testAction(importKML, payload, state, {}, [{
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.error"),
                     content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.missingFileContent")
                 },
                 dispatch: true
-            }], {}, done);
+            }], {}, done, rootGetters);
         });
 
         it("preset \"auto\", empty kml file, correct filename", done => {
             const payload = {raw: "", checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
-            testAction(importKML, payload, importedState, {}, [{
+            testAction(importKML, payload, state, {}, [{
                 type: "Alerting/addSingleAlert",
                 payload: {
                     category: i18next.t("common:modules.alerting.categories.error"),
                     content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.missingFileContent")
                 },
                 dispatch: true
-            }], {}, done);
+            }], {}, done, rootGetters);
         });
 
-        it("preset \"auto\", correct gpx file, correct filename", done => {
-            const payload = {raw: rawSources[2], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.gpx", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
+        it("preset \"auto\", correct gpx file, correct filename", () => {
+            const commit = sinon.spy(),
+                dispatch = sinon.spy(),
+                payload = {raw: rawSources[2], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.gpx", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
-            testAction(importKML, payload, importedState, {}, [{
-                type: "Alerting/addSingleAlert",
-                payload: {
+            importKML({dispatch, commit, state, rootGetters}, payload);
+            expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.args).to.deep.equal([
+                ["Alerting/addSingleAlert", {
                     category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.success", {filename: payload.filename})},
-                dispatch: true
-            }], {}, done);
+                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.success", {filename: payload.filename})}, {root: true}]
+            ]);
         });
 
-        it("preset \"auto\", correct geojson file, correct filename", done => {
-            const payload = {raw: rawSources[3], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.json", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
+        it("preset \"auto\", correct geojson file, correct filename", () => {
+            const commit = sinon.spy(),
+                dispatch = sinon.spy(),
+                payload = {raw: rawSources[3], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.json", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
-            testAction(importKML, payload, importedState, {}, [{
-                type: "Alerting/addSingleAlert",
-                payload: {
+            importKML({dispatch, commit, state, rootGetters}, payload);
+            expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.args).to.deep.equal([
+                ["Alerting/addSingleAlert", {
                     category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.success", {filename: payload.filename})},
-                dispatch: true
-            }], {}, done);
+                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.success", {filename: payload.filename})}, {root: true}]
+            ]);
         });
 
-        it("preset \"gpx\", correct kml file, correct filename", done => {
+        it("preset \"gpx\", correct kml file, correct filename", () => {
             const
-                payload = {raw: rawSources[3], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.json", pointImages: pointImages, textColors: textColors, textSizes: textSizes},
-                tmpState = {...importedState, ...{selectedFiletype: "gpx"}};
+                commit = sinon.spy(),
+                dispatch = sinon.spy(),
+                payload = {raw: rawSources[3], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.json", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
 
-            testAction(importKML, payload, tmpState, {}, [{
-                type: "Alerting/addSingleAlert",
-                payload: {
+            state.selectedFiletype = "gpx";
+            importKML({dispatch, commit, state, rootGetters}, payload);
+            expect(dispatch.calledOnce).to.be.true;
+            expect(dispatch.args).to.deep.equal([
+                ["Alerting/addSingleAlert", {
                     category: i18next.t("common:modules.alerting.categories.error"),
-                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.missingFileContent")},
-                dispatch: true
-            }], {}, done);
-        });
-
-        it("test the function getParsedData for old atlas innere sicherheit Polygon style", done => {
-            const payload = {raw: rawSources[4], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
-
-            testAction(importKML, payload, importedState, {}, [{
-                type: "Alerting/addSingleAlert",
-                payload: {
-                    category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.success", {filename: payload.filename})},
-                dispatch: true
-            }], {}, done);
-        });
-
-        it("test the function getParsedData for old atlas innere sicherheit Line style", done => {
-            const payload = {raw: rawSources[5], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
-
-            testAction(importKML, payload, importedState, {}, [{
-                type: "Alerting/addSingleAlert",
-                payload: {
-                    category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.success", {filename: payload.filename})},
-                dispatch: true
-            }], {}, done);
-        });
-
-        it("test the function getParsedData for old atlas innere sicherheit Point style", done => {
-            const payload = {raw: rawSources[6], checkSameLayer: checkSameLayer, layerName: "TestFile1", filename: "TestFile1.kml", pointImages: pointImages, textColors: textColors, textSizes: textSizes};
-
-            testAction(importKML, payload, importedState, {}, [{
-                type: "Alerting/addSingleAlert",
-                payload: {
-                    category: i18next.t("common:modules.alerting.categories.info"),
-                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.success", {filename: payload.filename})},
-                dispatch: true
-            }], {}, done);
+                    content: i18next.t("additional:modules.tools.cosiFileImport.alertingMessages.missingFileContent", {filename: payload.filename})}, {root: true}]
+            ]);
         });
     });
 });

@@ -9,9 +9,17 @@ import
     Style
 } from "ol/style.js";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
-import * as turf from "@turf/turf";
+import {
+    polygon as turfPolygon,
+    multiPolygon as turfMultiPolygon,
+    lineString as turfLineString,
+    featureCollection as turfFeatureCollection
+} from "@turf/helpers";
+import {default as turfSimplify} from "@turf/simplify";
+import {default as turfBuffer} from "@turf/buffer";
 import {readFeatures, transformFeatures} from "../components/util.js";
 import getClusterSource from "../../utils/getClusterSource";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 export const methodConfig = {
     store: null
@@ -189,14 +197,14 @@ export default {
         let simplified, geojson;
 
         if (geom.getType() === "Polygon") {
-            geojson = turf.polygon(geom.getCoordinates());
-            simplified = turf.simplify(geojson, {tolerance});
+            geojson = turfPolygon(geom.getCoordinates());
+            simplified = turfSimplify(geojson, {tolerance});
 
             return simplified.geometry.coordinates.flat(1).map(p => [p[0], p[1]]);
         }
         if (geom.getType() === "MultiPolygon") {
-            geojson = turf.multiPolygon(geom.getCoordinates());
-            simplified = turf.simplify(geojson, {tolerance});
+            geojson = turfMultiPolygon(geom.getCoordinates());
+            simplified = turfSimplify(geojson, {tolerance});
 
             return simplified.geometry.coordinates.flat(2).map(p => [p[0], p[1]]);
         }
@@ -215,8 +223,8 @@ export default {
             steps = [distance, distance * 2 / 3, distance / 3],
             coords = this.selectedDirections?.lineString
                 .map(pt => Proj.transform(pt, this.projectionCode, "EPSG:4326")),
-            lineString = turf.lineString(coords),
-            buffer = turf.featureCollection(steps.map(dist => turf.buffer(lineString, dist)));
+            lineString = turfLineString(coords),
+            buffer = turfFeatureCollection(steps.map(dist => turfBuffer(lineString, dist)));
 
         bufferFeatures = readFeatures(JSON.stringify(buffer));
         bufferFeatures = transformFeatures(bufferFeatures, "EPSG:4326", this.projectionCode);
@@ -388,7 +396,7 @@ export default {
         return {distance, maxDistance, minDistance, steps};
     },
     getCoordinates: function (setByFeature) {
-        const selectedLayerModel = Radio.request("ModelList", "getModelByAttributes", {
+        const selectedLayerModel = getModelByAttributes({
             name: this.selectedFacilityName,
             type: "layer"
         });

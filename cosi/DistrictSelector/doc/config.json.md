@@ -20,10 +20,7 @@ Mit dem DistrictSelector kann ein Gebiet auf Basis einer Verwaltungsebene (z.B.:
 **Beispiel**
 ```
 "districtSelector": {
-<<<<<<< HEAD
   "icon": "bi-image",
-=======
-  "icon": "bi bi-map",
   "districtLevels": [
       "keyOfAttrName": "statgebiet",
       "stats": {

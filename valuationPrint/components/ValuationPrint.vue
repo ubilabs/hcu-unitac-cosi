@@ -1,7 +1,7 @@
 <script>
 import {Fill, Stroke, Style} from "ol/style";
 import {getCenter as getCenterOfExtent} from "ol/extent";
-import getComponent from "../../../src/utils/getComponent";
+import {getComponent} from "../../../src/utils/getComponent";
 import getters from "../store/gettersValuationPrint";
 import Feature from "ol/Feature";
 import {mapActions, mapGetters, mapMutations} from "vuex";
@@ -161,10 +161,9 @@ export default {
                     this.defaultValue = response.data.settings.defaultValue;
                     this.fileprefix = response.data.settings.fileprefix;
                 })
-                .catch(error => {
+                .catch(() => {
                     const message = "Could not load the config file config.valuation.json";
 
-                    console.error("Error: ", error);
                     this.addMessage(message, true);
                     this.addSingleAlert({
                         category: "error",

@@ -17,9 +17,6 @@ Das Tool kann angesprochen werden, indem der State newDataset im Store (stateCha
 ```
 "chartGenerator": {
   "name": "Graphenvisualisierung",
-<<<<<<< HEAD
-  "icon": ""bi-bar-chart,
-=======
-  "icon": "bi bi-map,
+  "icon": "bi-bar-chart",
   "isVisibleInMenu", false
 ***

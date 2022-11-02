@@ -510,7 +510,11 @@ export default {
                             v-if="active"
                             class="form-group"
                         >
+                            <label for="CommuterFlows-select-district">
+                                {{ translate("additional:modules.tools.CommuterFlows.labelDistrict") }}
+                            </label>
                             <select
+                                id="CommuterFlows-select-district"
                                 ref="select-district"
                                 v-model="currentDistrict"
                                 class="form-select"
@@ -538,7 +542,11 @@ export default {
                     <div class="d-grid section">
                         <div class="col">
                             <div class="form-group">
+                                <label for="CommuterFlows-select-city">
+                                    {{ translate("additional:modules.tools.CommuterFlows.labelCity") }}
+                                </label>
                                 <select
+                                    id="CommuterFlows-select-city"
                                     v-model="currentCity"
                                     class="form-select"
                                 >

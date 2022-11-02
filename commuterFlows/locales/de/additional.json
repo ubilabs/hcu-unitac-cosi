@@ -4,7 +4,9 @@
             "CommuterFlows": {
                 "title": "Pendlerströme",
                 "selectDistrict": "Landkreis/kreisfreie Stadt auswählen",
+                "labelDistrict": "Landkreis/kreisfreie Stadt",
                 "selectCity": "Stadt/Gemeinde auswählen",
+                "labelCity": "Stadt/Gemeinde",
                 "checkName": "Namen anzeigen",
                 "checkNumber": "Werte anzeigen",
                 "checkBeams": "Linien anzeigen",

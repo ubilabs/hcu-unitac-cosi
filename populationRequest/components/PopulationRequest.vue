@@ -115,6 +115,9 @@ export default {
                 // forced delete of tooltip overlay
                 $("#tooltip-overlay").remove();
             }
+        },
+        geometry (newValue) {
+            this.makeRequest(newValue);
         }
     },
     /**
@@ -125,7 +128,7 @@ export default {
         this.$on("close", this.close);
 
         this.$on("onDrawEnd", function (geoJson) {
-            this.makeRequest(geoJson);
+            this.setGeometry(geoJson);
         });
 
         const service = Radio.request("RestReader", "getServiceById", this.populationReqServiceId);

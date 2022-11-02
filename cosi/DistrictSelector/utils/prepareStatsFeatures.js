@@ -56,10 +56,9 @@ export function prepareStatsFeatures (feature) {
  * @returns {module:ol/feature[]} The statistical features.
  */
 export function createStatFeaturesFromLTF (ltfFeatures, districtLevel) {
-    const statFeatureList = [],
-        mappingLtf = mapping.filter(obj => obj.ltf);
+    const statFeatureList = [];
 
-    mappingLtf.forEach(obj => {
+    mapping.forEach(obj => {
         const statFeature = new Feature({
             kategorie: obj.value,
             group: obj.group

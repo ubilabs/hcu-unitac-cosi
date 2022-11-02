@@ -1,5 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
+import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersChartGenerator";
 import mutations from "../store/mutationsChartGenerator";
@@ -11,9 +12,9 @@ import PieChart from "./charts/PieChart.vue";
 import ScatterChart from "./charts/ScatterChart.vue";
 import RadarChart from "./charts/RadarChart.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
-import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import JSZip from "jszip";
 import {saveAs} from "file-saver";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "ChartGenerator",
@@ -90,7 +91,7 @@ export default {
             // TODO replace trigger when Menu is migrated
             // set the backbone model to active false for changing css class in menu (menu/desktop/tool/view.toggleIsActiveClass)
             // else the menu-entry for this tool is always highlighted
-            const model = Radio.request("ModelList", "getModelByAttributes", {id: this.id});
+            const model = getModelByAttributes({id: this.id});
 
             if (model) {
                 model.set("isActive", false);

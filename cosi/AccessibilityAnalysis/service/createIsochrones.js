@@ -1,6 +1,8 @@
 import requestIsochrones from "./requestIsochrones";
 import {readFeatures, transformFeatures} from "../components/util.js";
-import * as turf from "@turf/turf";
+import {polygon as turfPolygon} from "@turf/helpers";
+import {default as turfUnion} from "@turf/union";
+import {default as turfBooleanPointInPolygon} from "@turf/boolean-point-in-polygon";
 import axios from "axios";
 import * as Proj from "ol/proj.js";
 import GeoJSON from "ol/format/GeoJSON";
@@ -24,7 +26,7 @@ export function getFilterPoly () {
  * @return {void}
  */
 export function setFilterPoly (coords) {
-    filterPoly = turf.polygon(coords);
+    filterPoly = turfPolygon(coords);
 }
 
 
@@ -131,7 +133,7 @@ async function createIsochronesPoints (args) {
         coordinatesList = [],
         groupedFeaturesList = [],
         filteredCoordinates = filterPoly === undefined ? args.coordinates :
-            args.coordinates.filter(c => turf.booleanPointInPolygon(
+            args.coordinates.filter(c => turfBooleanPointInPolygon(
                 Proj.transform(c, "EPSG:4326", args.projectionCode), filterPoly));
 
     for (let i = 0; i < filteredCoordinates.length; i += args.batchSize) {
@@ -196,7 +198,7 @@ async function createIsochronesPoints (args) {
 
             for (let j = 0; j < layeredList.length; j++) {
                 try {
-                    layerUnion = turf.union(layerUnion, format.writeFeatureObject(layeredList[j]));
+                    layerUnion = turfUnion(layerUnion, format.writeFeatureObject(layeredList[j]));
                 }
                 catch (e) {
                     console.error(e); // turf chokes one some resulting geometries

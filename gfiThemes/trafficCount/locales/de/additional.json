@@ -45,11 +45,24 @@
                         "reset": "zurücksetzen",
                         "holidaySign": "Feiertagseinfluss",
                         "trucksStatus": "** SV-Anzahl (Beta-Status)",
+                        "downloads": "Downloads",
+                        "downloadsAll": "Alles herunterladen",
+                        "downloadsMin": "Intervall: 15 Minuten",
+                        "downloadsHour": "Intervall: 1 Stunde",
+                        "downloadsDay": "Intervall: 1 Tag",
+                        "downloadsWeek": "Intervall: 1 Woche",
                         "error": {
                             "dataNotAvailableA": "(nicht",
                             "dataNotAvailableB": "empfangen)",
                             "apiFunction": "Der Wert für \"{{category}}\" wurde wegen eines API-Fehlers nicht empfangen.",
+                            "apiGeneral": "Die gewünschten Daten wurden wegen eines API-Fehlers nicht korrekt empfangen.",
                             "subscribeLastUpdate": "Das vom Sensor-Server erhaltene Datum der letzten Aktualisierung kann wegen eines API-Fehlers nicht ausgegeben werden."
+                        },
+                        "datepicker": {
+                            "months": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+                            "monthsShort": ["Jan", "Feb", "März", "Apr", "Mai", "Juni", "Juli", "Aug", "Sep", "Okt", "Nov", "Dez"],
+                            "weekdays": ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+                            "weekdaysShort": ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
                         }
                     }
                 }

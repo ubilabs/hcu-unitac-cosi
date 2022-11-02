@@ -1,6 +1,6 @@
 <script>
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../src/utils/getComponent";
+import {getComponent} from "../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersFileImportAddon";
 import mutations from "../store/mutationsFileImportAddon";
@@ -67,7 +67,7 @@ export default {
             }
         },
         addFile (files) {
-            files.forEach(file => {
+            Array.from(files).forEach(file => {
                 const reader = new FileReader();
 
                 reader.onload = f => {

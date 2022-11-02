@@ -1,6 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {prepareDistrictLevels} from "../utils/prepareDistrictLevels";
 import calculateExtent from "../../utils/calculateExtent.js";
 import getBoundingGeometry from "../../utils/getBoundingGeometry.js";
@@ -14,6 +14,7 @@ import {Fill, Stroke, Style} from "ol/style.js";
 import styleSelectedDistrictLevels from "../utils/styleSelectedDistrictLevels";
 import {getFeaturePOST as wfsGetFeature} from "../../../../src/api/wfs/getFeature.js";
 import ToolInfo from "../../components/ToolInfo.vue";
+import {onFeaturesLoaded, addModelsByAttributes, getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
     name: "DistrictSelector",
@@ -39,17 +40,6 @@ export default {
         ...mapGetters("Maps", ["getVisibleLayerList"]),
         ...mapState(["easyReadMode"]),
         ...mapGetters("Tools/AreaSelector", {areaSelectorGeom: "geometry"}),
-
-        /**
-         * Gets the names of the districts of the selected district level.
-         * @returns {String[]} The district names or an empty array.
-         */
-        namesOfDistricts: function () {
-            if (this.selectedDistrictLevel?.nameList) {
-                return this.selectedDistrictLevel.nameList;
-            }
-            return [];
-        },
 
         selectedNames: {
             get () {
@@ -118,6 +108,7 @@ export default {
          */
         layerList: function (newLayerList) {
             prepareDistrictLevels(this.districtLevels, newLayerList);
+            this.$forceUpdate();
         },
 
         selectedDistrictsCollection: "transferFeatures",
@@ -160,7 +151,7 @@ export default {
          * @todo refactor to vuex, there should be an event on the map calling out loaded features
          * @deprecated
          */
-        Radio.on("VectorLayer", "featuresLoaded", (layerId) => {
+        onFeaturesLoaded((layerId) => {
             if (!this.districtLevelLayersLoaded && this.selectedLevelId === layerId) {
                 styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId, 0.6, this.selectedDistrictLevel.activeStyle);
                 this.districtLevelLayersLoaded = true;
@@ -410,7 +401,7 @@ export default {
                 const state = this.visibleInfoLayers.includes(key);
 
                 for (const layerId of this.additionalInfoLayers[key]) {
-                    const model = Radio.request("ModelList", "getModelByAttributes", {id: layerId});
+                    const model = getModelByAttributes({id: layerId});
 
                     if (model) {
                         model.set("isSelected", state);
@@ -431,7 +422,7 @@ export default {
                 states = [];
 
                 for (const layerId of this.additionalInfoLayers[key]) {
-                    state = Radio.request("ModelList", "getModelByAttributes", {id: layerId})?.get("isSelected");
+                    state = getModelByAttributes({id: layerId})?.get("isSelected");
                     states = states.includes(state) ? states : [...states, state];
                 }
 
@@ -456,8 +447,8 @@ export default {
         initializeAdditionalInfoLayers () {
             for (const key in this.additionalInfoLayers) {
                 for (const layerId of this.additionalInfoLayers[key]) {
-                    if (!Radio.request("ModelList", "getModelByAttributes", {id: layerId})) {
-                        Radio.trigger("ModelList", "addModelsByAttributes", {id: layerId});
+                    if (!getModelByAttributes({id: layerId})) {
+                        addModelsByAttributes({id: layerId});
                     }
                 }
             }
@@ -521,7 +512,7 @@ export default {
                     />
                     <v-autocomplete
                         :value="selectedNames"
-                        :items="namesOfDistricts"
+                        :items="selectedDistrictLevel.nameList"
                         :label="$t('additional:modules.tools.cosi.districtSelector.multiDropdownLabel')"
                         outlined
                         dense

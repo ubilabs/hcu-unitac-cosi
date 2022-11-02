@@ -1,5 +1,5 @@
 import Vuex from "vuex";
-import {config, mount, shallowMount, createLocalVue} from "@vue/test-utils";
+import {config, mount, createLocalVue} from "@vue/test-utils";
 import ScenarioBuilderStore from "../../../store/indexScenarioBuilder";
 import ScenarioBuilder from "../../../components/ScenarioBuilder.vue";
 import {expect} from "chai";
@@ -10,8 +10,6 @@ import Layer from "ol/layer/Vector.js";
 import Source from "ol/source/Vector.js";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
-import ScenarioManager from "../../../components/ScenarioManager.vue";
-import FeatureEditor from "../../../components/FeatureEditor.vue";
 import mockFeatureTypeDesc from "./mockFeatureTypeDesc.json";
 
 config.mocks.$t = key => key;
@@ -34,22 +32,23 @@ function addElemWithDataAppToBody () {
     document.body.append(app);
 }
 
-before(() => {
-    addElemWithDataAppToBody();
-    mapCollection.getMap = () => ({
-        updateSize: sinon.stub(),
+describe("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
+    before(() => {
+        mapCollection.clear();
+        const map = {
+            id: "ol",
+            mode: "2D",
+            updateSize: () => sinon.stub(),
+            addEventListener: () => sinon.stub(),
+            removeInteraction: () => sinon.stub(),
+            removeEventListener: () => sinon.stub()
+        };
 
-        getLayers: () => ({getArray: sinon.stub()}),
-        addEventListener: sinon.stub(),
-        removeEventListener: sinon.stub(),
-        addInteraction: sinon.stub(),
-        removeInteraction: sinon.stub()
-    })
-    console.log(mapCollection)
-});
+        mapCollection.addMap(map, "2D");
+        addElemWithDataAppToBody();
+    });
 
-describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
-    let store, vuetify, wrapper;
+    let store, vuetify, wrapper, sourceStub;
 
     const
         factory = {
@@ -124,6 +123,9 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
 
     beforeEach(async () => {
         vuetify = new Vuetify();
+        sourceStub = {
+            clear: sinon.stub()
+        };
         store = new Vuex.Store({
             namespaced: true,
             modules: {
@@ -159,15 +161,31 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
                         projectionCode: sinon.stub().returns("EPSG:25832")
                     },
                     mutations: {
-                        setCenter: sinon.stub()
+                        setCenter: sinon.stub(),
+                        removeLayerFromMap: () => sinon.stub()
+                    }
+                },
+                Maps: {
+                    namespaced: true,
+                    getters: {
+                        projectionCode: () => "EPSG:25832"
                     },
                     actions: {
+                        removeInteraction: () => sinon.stub(),
                         removeHighlightFeature: () => sinon.stub(),
-                        addNewLayerIfNotExists: async () => {
-                            return new Layer({
-                                source: new Source()
+                        addNewLayerIfNotExists: () => {
+                            return Promise.resolve({
+                                setVisible: () => sinon.stub(),
+                                setZIndex: () => sinon.stub(),
+                                setStyle: () => sinon.stub(),
+                                setSource: () => sinon.stub(),
+                                addEventListener: sinon.stub(),
+                                getSource: () => sourceStub
                             });
                         }
+                    },
+                    mutations: {
+                        removeLayerFromMap: () => sinon.stub()
                     }
                 },
                 MapMarker: {
@@ -180,7 +198,8 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
             },
             getters: {
                 isDefaultStyle: () => true,
-                uiStyle: () => true
+                uiStyle: () => true,
+                mobile: () => sinon.stub()
             }
         });
         store.commit("Tools/ScenarioBuilder/setActive", true);
@@ -195,25 +214,27 @@ describe.only("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () =
         }
     });
 
-    it("should render Component", async () => {
-        await factory.initialize();
+    describe("Component DOM", () => {
+        it("should render Component", async () => {
+            await factory.initialize();
 
-        expect(wrapper.find("#scenario-builder-wrapper").exists()).to.be.true;
-        expect(wrapper.find("#scenario-builder-wrapper").html()).to.not.be.empty;
-        expect(wrapper.find("#scenario-manager").exists()).to.be.true;
-        expect(wrapper.find("form").exists()).to.be.true;
-    });
+            expect(wrapper.find("#scenario-builder-wrapper").exists()).to.be.true;
+            expect(wrapper.find("#scenario-builder-wrapper").html()).to.not.be.empty;
+            expect(wrapper.find("#scenario-manager").exists()).to.be.true;
+            expect(wrapper.find("form").exists()).to.be.true;
+        });
 
-    it("should add property fields when layer is selected", async () => {
-        setStubs();
-        await factory.initialize();
-        await wrapper.setData({workingLayer: layerMap});
-        await wrapper.vm.$nextTick();
+        it("should add property fields when layer is selected", async () => {
+            setStubs();
+            await factory.initialize();
+            await wrapper.setData({workingLayer: layerMap});
+            await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.workingLayer).to.deep.equal(layerMap);
-        expect(wrapper.vm.featureTypeDescSorted.optional).to.have.lengthOf(1);
-        expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(3);
-        expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(3);
-        expect(wrapper.vm.valuesForFields.schulname).to.deep.equal(["placeholder"]);
+            expect(wrapper.vm.workingLayer).to.deep.equal(layerMap);
+            expect(wrapper.vm.featureTypeDescSorted.optional).to.have.lengthOf(3);
+            expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(1);
+            expect(wrapper.vm.featureTypeDescSorted.required).to.have.lengthOf(1);
+            expect(wrapper.vm.valuesForFields.schulname).to.deep.equal(["placeholder"]);
+        });
     });
 });

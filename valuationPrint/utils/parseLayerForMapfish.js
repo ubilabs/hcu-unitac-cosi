@@ -1,9 +1,10 @@
 import BuildSpec from "./../../../src/modules/tools/print/utils/buildSpec";
 import store from "../../../src/app-store";
+import isObject from "../../../src/utils/isObject.js";
 
 /**
  * Parses the layers into mapfisch format
- * @param {[ol/layer, opacity]} layerList the printed layer and its opacity in an Array list
+ * @param {Object[]} layerList an array of objects with layer, opacity and dpi
  * @returns {ol/layer[]} the parsed layers in an Array for mapfish
  */
 async function buildLayers (layerList) {
@@ -11,17 +12,17 @@ async function buildLayers (layerList) {
         currentResolution = store.getters["Maps/getView"].getResolution();
 
     if (Array.isArray(layerList)) {
-        for (const layer of layerList) {
+        for (const item of layerList) {
             const printLayers = [];
 
-            if (!Array.isArray(layer) || layer.length !== 2) {
+            if (!isObject(item)) {
                 return [];
             }
 
-            printLayers.push(await BuildSpec.buildLayerType(layer[0], currentResolution));
+            printLayers.push(await BuildSpec.buildLayerType(item.layer, currentResolution, item.dpi));
             printLayers.forEach(printLayer => {
                 if (typeof printLayer !== "undefined") {
-                    printLayer.opacity = layer[1];
+                    printLayer.opacity = item.opacity;
                     layers.push(printLayer);
                 }
 

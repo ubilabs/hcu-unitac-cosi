@@ -435,9 +435,8 @@ export default {
         width: 230px;
         height: 35px;
         float: right;
-        margin-right: 30px;
+        margin-right: 10px;
         margin-top: -3.7em;
-        font-family: "MasterPortalFont Bold", "Arial Narrow", Arial, sans-serif;
     }
 
     @media (max-width: 580px) {

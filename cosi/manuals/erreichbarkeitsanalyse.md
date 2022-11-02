@@ -34,7 +34,7 @@ Das Modul kann verwendet werden, ohne vorherige Gebietsauswahl.
 2. **Referenzpunkt setzen**
    > Durch Klicken auf der Karte wird der Punkt gesetzt, von dem aus berechnet wird.
 3. **Verkehrsmittel festlegen** 
-   > Das Verkehrsmittel wird ausgewählt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Gehen, Rollstuhl.
+   > Das Verkehrsmittel wird ausgewählt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Gehen, Rollstuhl / Kinderwagen.
 4. **Maßeinheit der Entfernung festlegen**
    > Festlegen, ob die Entfernung in Minuten oder in Metern angegeben wird
 5. **Entfernung**
@@ -65,7 +65,7 @@ Zeigt die Abdeckung und Erreichbarkeit von einer zuvor festgelegten Einrichtungs
 2. **Thema auswählen**
    > Damit dieses Modul verwendet werden kann muss mindestens ein Thema aktiv sein.
 3. **Verkehrsmittel festlegen**
-   > Das Verkehrsmittel wird ausgewählt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Gehen, Rollstuhl.
+   > Das Verkehrsmittel wird ausgewählt aus einer Liste. Folgende Verkehrsmittel stehen aktuell zur Verfügung: Auto, Rad, Gehen, Rollstuhl / Kinderwagen.
 4. **Maßeinheit der Entfernung festlegen**
    > Festlegen, ob die Entfernung in Minuten oder in Metern angegeben wird.
 5. **Entfernung**
