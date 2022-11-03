@@ -93,7 +93,6 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
             })
         };
 
-    // todo vielleicht besser wie in src\modules\alerting\tests\unit\components\AlertingItem.spec.js lösen
     Object.defineProperty(window, "localStorage", {
         value: mock
     });
