@@ -232,7 +232,7 @@ describe("addons/cosi/SaveSession/components/SaveSession.vue", () => {
                 expect(stubDownloadJsonToFile.calledOnce).to.be.true;
             });
 
-            it("save-session button saves state to localStorage", async () => {
+            it.skip("save-session button saves state to localStorage", async () => {
                 wrapper = factory.getMount();
                 store.commit("Tools/SaveSession/setActive", true);
                 await wrapper.vm.$nextTick();
