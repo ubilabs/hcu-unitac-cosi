@@ -16,6 +16,8 @@ export default {
     docDefinition: {
         content: [
             {
+                // image: "../assets/cat.png",
+
                 table: {
                     body: [
                         ["Column 1", "Column 2", "Column 3"],
@@ -53,6 +55,11 @@ export default {
                 }
             }
         ]
-    }
+    },
+
+    dataDefinition: {
+        content: [
+            html
+        ]}
 
 };

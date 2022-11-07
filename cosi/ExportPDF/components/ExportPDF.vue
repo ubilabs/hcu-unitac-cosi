@@ -23,7 +23,8 @@ export default {
         return {
             isSelecting: false,
             message: "",
-            template: undefined
+            template: undefined,
+            user: null
         };
     },
 
@@ -42,6 +43,9 @@ export default {
         rawDocDefinition (content) {
             this.$store.dispatch("convertHTMLToPDF", content);
         }
+        // tableDefinition (id) {
+        //     this.$store.dispatch("convertHTMLToPDF2", id);
+        // }
     },
 
     created () {
@@ -51,11 +55,16 @@ export default {
     },
 
     methods: {
-        ...mapActions("Tools/ExportPDF", ["makeHTMLToPDF"]),
+        // ...mapActions("Tools/ExportPDF", ["makeHTMLToPDF"]),
+        // ...mapMutations("Tools/ExportPDF", Object.keys(mutations)),
+        ...mapActions("Tools/ExportPDF", ["pdfTest"]),
         ...mapMutations("Tools/ExportPDF", Object.keys(mutations)),
 
-        exportPDF () {
-            this.$store.dispatch("Tools/ExportPDF/convertHTMLToPDF", this.docDefinition);
+        ExportPDF () {
+            // this.$store.dispatch("Tools/ExportPDF/convertHTMLToPDF2", this.docDefinition);
+            // this.$store.dispatch("Tools/ExportPDF/convertHTMLToPDF2", this.id);
+            // console.log(this.id);
+            this.pdfTest();
         }
     }
 
@@ -78,10 +87,11 @@ export default {
         >
             <div>
                 <v-btn
+                    id="ReportTable"
                     color="orange"
                     rounded
                     dark
-                    @click="exportPDF"
+                    @click="ExportPDF"
                 >
                     Convert File
                 </v-btn>
@@ -91,7 +101,7 @@ export default {
                 <img
                     id="pic"
                     alt=""
-                    src="https://pbs.twimg.com/media/DUfDNvTVQAA2osS.jpg"
+                    src="../assets/cat.png"
                     width="250"
                     height="250"
                 >
