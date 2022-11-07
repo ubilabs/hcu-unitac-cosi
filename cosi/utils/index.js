@@ -1,7 +1,7 @@
 import unifyString from "./unifyString";
 import getRgbArray from "./getRgbArray";
 import getBoundingGeometry from "./getBoundingGeometry";
-import calculateExtent from "./calculateExtent";
+import calculateExtent from "./features/calculateExtent";
 import calculateRatio from "./calculateRatio";
 import setBBoxToGeom, {setBboxGeometryToLayer} from "./setBBoxToGeom";
 import downloadBlobToFile from "./downloadBlobToFile";

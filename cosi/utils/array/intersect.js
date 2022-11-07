@@ -8,7 +8,7 @@
  */
 export default function intersect (arr1, arr2) {
     if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
-        console.error("intersect: Both passed parameters must be an array, but got " + typeof arr1 + " and " + typeof arr2);
+        console.error("utils/array/intersect: Both passed parameters must be an array, but got " + typeof arr1 + " and " + typeof arr2);
         return [];
     }
 

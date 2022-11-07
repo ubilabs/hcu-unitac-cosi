@@ -2,7 +2,7 @@
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import {getComponent} from "../../../../src/utils/getComponent";
 import {prepareDistrictLevels} from "../utils/prepareDistrictLevels";
-import calculateExtent from "../../utils/calculateExtent.js";
+import calculateExtent from "../../utils/features/calculateExtent.js";
 import getBoundingGeometry from "../../utils/getBoundingGeometry.js";
 import setBBoxToGeom from "../../utils/setBBoxToGeom.js";
 import {mapGetters, mapActions, mapMutations, mapState} from "vuex";
@@ -361,7 +361,7 @@ export default {
          * @returns {void}
          */
         updateExtent (zoomToExtent = true) {
-            const extent = calculateExtent(this.selectedFeatures, this.bufferVal),
+            const extent = calculateExtent(this.selectedFeatures, parseInt(this.bufferVal, 10)),
                 bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferVal),
                 selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
 
