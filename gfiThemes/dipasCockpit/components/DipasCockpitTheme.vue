@@ -59,7 +59,7 @@ export default {
                 <span class="dipas-cockpit-status-label">{{ attributes.status }}</span>
             </div>
             <span class="dipas-cockpit-dateRange">
-                {{ dateStart }} - {{ dateEnd }}
+                Verfahrenslaufzeit: {{ dateStart }} - {{ dateEnd }}
             </span>
         </div>
         <div class="dipas-cockpit-title">
@@ -87,7 +87,10 @@ export default {
             {{ attributes.numberContributions }} {{ $t("additional:addons.gfiThemes.dipasCockpit.contributions") }} |
             {{ attributes.numberComments }} {{ $t("additional:addons.gfiThemes.dipasCockpit.comments") }}
         </div>
-        <div class="dipas-cockpit-documentation">
+        <div
+            v-if="attributes.documentation.length"
+            class="dipas-cockpit-documentation"
+        >
             {{ $t("additional:addons.gfiThemes.dipasCockpit.documentation") }}:
             <div
                 v-for="document in attributes.documentation"
@@ -120,6 +123,7 @@ export default {
      max-width: 615px;
      color: $dark_grey;
      font-family: Roboto, sans-serif;
+     font-size: 0.75rem;
      padding-left: 24px;
      padding-right: 15px;
 
@@ -131,7 +135,7 @@ export default {
     .dipas-cockpit-proceeding-status {
         background-color: $dark_blue;
         width: fit-content;
-        padding: 6px 8px;
+        padding: 6px 6px;
         margin: 10px 0px;
         color: $white;
 
@@ -149,19 +153,18 @@ export default {
 
     .dipas-cockpit-dateRange {
         margin: 18px 10px;
-        font-size: 10px;
         position: relative;
         top: 1px;
     }
 
     .dipas-cockpit-title {
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: bold;
         color: $dark_blue;
     }
 
     .dipas-cockpit-themes {
-        font-size: 14px;
+        font-size: 0.875rem;
         color: $dark_grey;
         margin: 3px 0px;
 
@@ -171,12 +174,11 @@ export default {
     }
 
     .dipas-cockpit-description {
+        font-size: 0.875rem;
         margin-bottom: 26px;
-        font-size: 14px;
     }
 
     .dipas-cockpit-initiators {
-        font-size: 10px;
         margin-bottom: 8px;
         display: inline-flex;
 
@@ -186,7 +188,6 @@ export default {
     }
 
     a.dipas-cockpit-proceedingLink {
-        font-size: 10px;
         color: $dark_blue;
         text-decoration: underline;
         cursor: pointer;
@@ -194,12 +195,10 @@ export default {
     }
 
     .dipas-cockpit-proceedingNumbers {
-        font-size: 10px;
         margin: 8px 0px 14px 0px;
     }
 
     .dipas-cockpit-documentation {
-        font-size: 10px;
         font-weight: bold;
         margin-bottom: 20px;
         display: flex;
@@ -207,13 +206,13 @@ export default {
         align-items: baseline;
 
         .dipas-cockpit-document {
-            font-size: 10px;
             font-weight: normal;
             background-color: $dark_blue;
             border-radius: 15px;
             color: $white;
-            padding: 6px 15px;
+            padding: 6px 6px;
             text-overflow: ellipsis;
+            white-space: nowrap;
             height: 28px;
             max-width: 145px;
             overflow: hidden;
