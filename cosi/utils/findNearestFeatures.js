@@ -1,4 +1,4 @@
-import {getAllFeatures} from "./getAllFeatures";
+import {getAllFeaturesByLayerId} from "./features/getAllFeaturesByLayerId";
 import calculateExtent from "./features/calculateExtent";
 
 /**
@@ -19,7 +19,7 @@ export async function findNearestFeatures (layerId, feature, initialBuffer, buff
     while (++iter < maxIter) {
         const extent = calculateExtent([feature], parseInt(buffer, 10));
 
-        features = await getAllFeatures(layerId, extent, srsName);
+        features = await getAllFeaturesByLayerId(layerId, formatBbox(extent, srsName), srsName);
 
         if (features.length) {
             return features;
@@ -30,4 +30,20 @@ export async function findNearestFeatures (layerId, feature, initialBuffer, buff
 
     return features;
 
+}
+
+
+/**
+ * @param {String} bbox bbox
+ * @param {String} srsName srsName
+ * @returns {String} bbox
+ */
+function formatBbox (bbox, srsName) {
+    if (Array.isArray(bbox) && bbox.length === 4) {
+        if (srsName) {
+            return bbox.join(",") + "," + srsName;
+        }
+        return bbox.join(",");
+    }
+    return undefined;
 }
