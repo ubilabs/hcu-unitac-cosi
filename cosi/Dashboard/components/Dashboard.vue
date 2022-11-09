@@ -1,7 +1,7 @@
 <script>
 /* eslint-disable vue/multi-word-component-names */
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersDashboard";
 import mutations from "../store/mutationsDashboard";

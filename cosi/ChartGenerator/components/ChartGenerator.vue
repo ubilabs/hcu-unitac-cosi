@@ -1,5 +1,6 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
+import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersChartGenerator";
 import mutations from "../store/mutationsChartGenerator";
@@ -11,7 +12,6 @@ import PieChart from "./charts/PieChart.vue";
 import ScatterChart from "./charts/ScatterChart.vue";
 import RadarChart from "./charts/RadarChart.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
-import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import JSZip from "jszip";
 import {saveAs} from "file-saver";
 import {getModelByAttributes} from "../../utils/radioBridge.js";

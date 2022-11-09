@@ -1,4 +1,4 @@
-import {initializeLayerList as initializeLayerList_} from "@masterportal/masterportalapi/src/rawLayerList";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import defaults from "@masterportal/masterportalapi/src/defaults";
 
 /**
@@ -10,7 +10,7 @@ import defaults from "@masterportal/masterportalapi/src/defaults";
 export async function initializeLayerList (layerConf = defaults.layerConf) {
     return new Promise((resolve, reject) => {
         try {
-            initializeLayerList_(layerConf, () => {
+            rawLayerList.initializeLayerList(layerConf, () => {
                 resolve();
             });
         }

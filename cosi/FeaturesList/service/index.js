@@ -2,7 +2,7 @@ import * as Proj from "ol/proj.js";
 import {fetchDistances} from "./fetchDistances";
 import {findNearestFeatures} from "../../utils/findNearestFeatures";
 import {getFeatureInfos} from "./getFeatureInfo";
-import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import {getConverter} from "../utils/converters";
 
 /**
@@ -145,7 +145,7 @@ function aggregate (values, type) {
  * @return {*} score
  */
 async function featureValues ({getters, rootGetters}, {feature, layerId}) {
-    const layer = getLayerWhere({id: layerId}),
+    const layer = rawLayerList.getLayerWhere({id: layerId}),
         coord = feature.getGeometry().flatCoordinates.slice(0, 2),
         wmsAttrs = getters.wmsLayers.find(l => l.id === layerId),
         converter = getConverter(wmsAttrs.converter),

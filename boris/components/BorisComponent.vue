@@ -330,7 +330,7 @@ export default {
                 <div
                     v-if="Object.keys(selectedBrwFeature).length !== 0"
                 >
-                    <div class="pt-2">
+                    <div class="pt-4 larger">
                         {{ $t("additional:modules.tools.boris.referenceNumber") }}: {{ selectedBrwFeature.get("richtwertnummer") }}
                     </div>
                     <hr>
@@ -382,7 +382,12 @@ export default {
                         />
                     </div>
                     <div v-if="buttonValue === 'euro'">
-                        <h4>{{ $t('additional:modules.tools.boris.landCalculation.title') }} </h4>
+                        <h4 class="pb-2 mb-0">
+                            {{ $t('additional:modules.tools.boris.landCalculation.title') }}
+                        </h4>
+                        <h6 class="pb-2">
+                            {{ $t('additional:modules.tools.boris.landCalculation.subtitle') }}
+                        </h6>
                         <dl>
                             <div
                                 v-if="selectedBrwFeature.get('zBauweise')"
@@ -527,6 +532,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "~variables";
+.larger {
+    font-size: $font_size_big;
+    font-family: $font_family_accent;
+}
 ::v-deep dt {
     background-color: $secondary_table_style;
     font-family: $font_family_accent;

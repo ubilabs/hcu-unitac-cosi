@@ -1,6 +1,6 @@
 <script>
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../src/utils/getComponent";
+import {getComponent} from "../../../src/utils/getComponent";
 import {mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersSessionTool";
 import mutations from "../store/mutationsSessionTool";

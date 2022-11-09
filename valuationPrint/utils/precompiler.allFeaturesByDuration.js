@@ -1,5 +1,5 @@
 import {fetchRoutingOrsDirections} from "../../../src/modules/tools/routing/utils/directions/routing-ors-directions.js";
-import {getMapProjection, transform} from "@masterportal/masterportalapi/src/crs";
+import crs from "@masterportal/masterportalapi/src/crs";
 import {getCenter as getCenterOfExtent} from "ol/extent";
 import thousandsSeparator from "../../../src/utils/thousandsSeparator";
 import isObject from "../../../src/utils/isObject.js";
@@ -100,12 +100,12 @@ function requestRoutingByFeature (coordinate, feature, speedProfile, onsuccess, 
     const extent = feature.getGeometry().getExtent(),
         featureCenter = getCenterOfExtent(extent),
         targetProjection = "EPSG:4326",
-        sourceProjection = getMapProjection(mapCollection.getMap("2D"));
+        sourceProjection = crs.getMapProjection(mapCollection.getMap("2D"));
 
     fetchRoutingOrsDirections({
         coordinates: [
-            transform(sourceProjection, targetProjection, coordinate),
-            transform(sourceProjection, targetProjection, featureCenter)
+            crs.transform(sourceProjection, targetProjection, coordinate),
+            crs.transform(sourceProjection, targetProjection, featureCenter)
         ],
         transformCoordinatesToLocal: coords => coords,
         speedProfile,

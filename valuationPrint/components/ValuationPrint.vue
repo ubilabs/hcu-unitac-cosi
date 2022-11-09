@@ -1,7 +1,7 @@
 <script>
 import {Fill, Stroke, Style} from "ol/style";
 import {getCenter as getCenterOfExtent} from "ol/extent";
-import getComponent from "../../../src/utils/getComponent";
+import {getComponent} from "../../../src/utils/getComponent";
 import getters from "../store/gettersValuationPrint";
 import Feature from "ol/Feature";
 import {mapActions, mapGetters, mapMutations} from "vuex";

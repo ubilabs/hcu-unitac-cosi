@@ -1,5 +1,5 @@
 import {getAllFeatures} from "./getAllFeatures";
-import calculateExtent from "./calculateExtent";
+import calculateExtent from "./features/calculateExtent";
 
 /**
  *
@@ -17,7 +17,7 @@ export async function findNearestFeatures (layerId, feature, initialBuffer, buff
         iter = 0;
 
     while (++iter < maxIter) {
-        const extent = calculateExtent([feature], buffer);
+        const extent = calculateExtent([feature], parseInt(buffer, 10));
 
         features = await getAllFeatures(layerId, extent, srsName);
 

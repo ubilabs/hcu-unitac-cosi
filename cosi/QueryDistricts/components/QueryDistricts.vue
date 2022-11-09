@@ -4,7 +4,7 @@ import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import getters from "../store/gettersQueryDistricts";
 import mutations from "../store/mutationsQueryDistricts";
-import {getLayerList as _getLayerList} from "@masterportal/masterportalapi/src/rawLayerList";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import compareFeatures from "./compareFeatures.js";
 import LayerFilter from "./LayerFilter.vue";
 import Info from "text-loader!./info.html";
@@ -169,7 +169,7 @@ export default {
         },
 
         getLayerList: function () {
-            return _getLayerList();
+            return rawLayerList.getLayerList();
         },
 
         getAllFeatures: async function (id) {

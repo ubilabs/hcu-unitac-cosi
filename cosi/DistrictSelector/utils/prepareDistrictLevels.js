@@ -1,6 +1,6 @@
 import {unByKey} from "ol/Observable";
 import {describeFeatureType, getFeatureDescription} from "../../../../src/api/wfs/describeFeatureType.js";
-import {getLayerList} from "@masterportal/masterportalapi/src/rawLayerList";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import {getContainingDistrictForExtent} from "../../utils/geomUtils.js";
 
 const eventKeys = {};
@@ -152,7 +152,7 @@ export function getFeatureTypes (urls, typeNames) {
     for (let i = 0; i < urls.length; i++) {
         featureTypes[i] = Array.isArray(typeNames?.[i]) ?
             typeNames[i] :
-            getLayerList().reduce((_typeNames, layer) => {
+            rawLayerList.getLayerList().reduce((_typeNames, layer) => {
                 return layer?.url === urls[i] ? [..._typeNames, layer.featureType] : _typeNames;
             }, []);
     }
@@ -221,7 +221,7 @@ export async function getPropertyNameList (urls, typeNames) {
     for (let i = 0; i < urls.length; i++) {
         propertyNameList[i] = [];
 
-        const layer = getLayerList().find(rawlayer => {
+        const layer = rawLayerList.getLayerList().find(rawlayer => {
             if (rawlayer.url === urls[i]) {
                 if (Array.isArray(typeNames?.[i])) {
                     return rawlayer.featureType === typeNames?.[i][0];

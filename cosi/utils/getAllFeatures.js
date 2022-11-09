@@ -1,5 +1,5 @@
 import {WFS} from "ol/format.js";
-import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import axios from "axios";
 
 /**
@@ -56,7 +56,7 @@ function formatBbox (bbox, srsName) {
  */
 export async function getAllFeatures (layerId, bbox, srsName) {
 
-    const layer = getLayerWhere({id: layerId}),
+    const layer = rawLayerList.getLayerWhere({id: layerId}),
         wfsReader = new WFS({
             featureNS: layer?.featureNS
         }),

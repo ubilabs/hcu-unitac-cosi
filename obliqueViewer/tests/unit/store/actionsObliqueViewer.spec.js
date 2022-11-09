@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import sinon from "sinon";
 import actions from "../../../store/actionsObliqueViewer";
-import * as crs from "@masterportal/masterportalapi/src/crs";
+import crs from "@masterportal/masterportalapi/src/crs";
 
 
 describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {

@@ -1,14 +1,14 @@
 import unifyString from "./unifyString";
 import getRgbArray from "./getRgbArray";
 import getBoundingGeometry from "./getBoundingGeometry";
-import calculateExtent from "./calculateExtent";
+import calculateExtent from "./features/calculateExtent";
 import calculateRatio from "./calculateRatio";
 import setBBoxToGeom, {setBboxGeometryToLayer} from "./setBBoxToGeom";
 import downloadBlobToFile from "./downloadBlobToFile";
 import exportXlsx from "./exportXlsx";
 import getAvailableYears, {getLastAvailableYear} from "./getAvailableYears";
 import compensateLackingData from "./compensateLackingData";
-import arrayIntersect from "./arrayIntersect";
+import intersect from "./array/intersect";
 import arrayIsEqual from "./arrayIsEqual";
 import describeFeatureTypeByLayerId from "./describeFeatureType";
 import downloadUtils from "./download";
@@ -40,7 +40,7 @@ export default {
     exportXlsx,
     getAvailableYears,
     getLastAvailableYear,
-    arrayIntersect,
+    intersect,
     arrayIsEqual,
     describeFeatureTypeByLayerId,
     getTimestamps,

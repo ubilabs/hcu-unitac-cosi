@@ -15,9 +15,12 @@ export async function preparePrint (getResponse) {
         feature = borisState.selectedBrwFeature,
         selectedOption = borisState.selectedOption,
         defaultString = "",
+        date = new Date(),
+        month = date.getMonth() + 1,
         attributes = {
             "layout": "A4 Hochformat",
             "outputFormat": "pdf",
+            "outputFilename": "Auszug_aus_BORIS_HH-" + date.getDate() + "-" + month + "-" + date.getFullYear(),
             "attributes": {
                 "richtwertnummer": "Bodenrichtwertnummer: " + feature.get("richtwertnummer"),
                 "scale": "Maßstab 1:" + scale,
