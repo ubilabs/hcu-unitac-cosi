@@ -9,7 +9,7 @@ import {geomPickerUnlisten, geomPickerSetGeometry, geomPickerGetFeature} from ".
 import setBBoxToGeom from "../../utils/setBBoxToGeom.js";
 import GeometryPicker from "../../components/GeometryPicker.vue";
 import {Stroke, Style} from "ol/style.js";
-import {featureToGeoJson} from "../../utils/geomUtils";
+import {featureToGeoJson} from "../../utils/features/convertToGeoJson";
 import Feature from "ol/Feature";
 
 export default {
