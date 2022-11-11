@@ -9,7 +9,7 @@ import exportXlsx from "./exportXlsx";
 import getAvailableYears, {getLastAvailableYear} from "./getAvailableYears";
 import compensateLackingData from "./compensateLackingData";
 import intersect from "./array/intersect";
-import arrayIsEqual from "./arrayIsEqual";
+import {isEqual} from "./array/isEqual";
 import describeFeatureTypeByLayerId from "./describeFeatureType";
 import downloadUtils from "./download";
 import geomUtils from "./geomUtils";
@@ -41,7 +41,7 @@ export default {
     getAvailableYears,
     getLastAvailableYear,
     intersect,
-    arrayIsEqual,
+    isEqual,
     describeFeatureTypeByLayerId,
     getTimestamps,
     getTimestampRange,
