@@ -1,5 +1,5 @@
 import {describeFeatureType, getFeatureDescription} from "../../../src/api/wfs/describeFeatureType.js";
-import {getLayerList} from "@masterportal/masterportalapi/src/rawLayerList";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 
 /**
  * Gets the featureType description of a layer via its layerId. Uses WFS describeFeatureTypeRequest
@@ -7,7 +7,7 @@ import {getLayerList} from "@masterportal/masterportalapi/src/rawLayerList";
  * @returns {Object[]} the featureType description as array of Objects
  */
 export default async function describeFeatureTypeByLayerId (layerId) {
-    const rawLayer = getLayerList().find(l => l.id === layerId);
+    const rawLayer = rawLayerList.getLayerList().find(l => l.id === layerId);
 
     if (rawLayer) {
         const json = await describeFeatureType(rawLayer.url),
