@@ -1,0 +1,111 @@
+<script>
+// Developer Documentation in ./doc/ToolBridge.md
+import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
+import {mapGetters, mapActions, mapMutations} from "vuex";
+import getters from "../store/gettersToolBridge";
+import actions from "../store/actionsToolBridge";
+import mutations from "../store/mutationsToolBridge";
+import tableify from "tableify"; // generate html tables from js objects // only needed for debugging UI
+
+export default {
+    name: "ToolBridge",
+    components: {
+        Tool
+    },
+    data () {
+        return {
+            storePath: this.$store.state.Tools.ToolBridge,
+            retrievedSettings: [], // only needed for debugging UI
+            selectedItem: "Dashboard", // only needed for debugging UI
+            selectedSettings: "", // only needed for debugging UI
+            resultDisplay: "" //  only needed for debugging UI
+        };
+    },
+    computed: {
+        ...mapGetters("Language", ["currentLocale"]),
+        ...mapGetters("Tools/ToolBridge", Object.keys(getters)),
+
+        activeSetting () { // only needed for debugging UI
+            return this.retrievedSettings[parseInt(this.selectedSettings, 10)];
+        }
+    },
+    watch: {
+        receivedResults (newResult) {
+            // when a new request to a tool is made, a callback function is passed along, defining what to do with the results at the very end.
+            // whenever a result is received, we run that callback.
+            // that way, the requests/results are self contained - i.e. we don't need to keep track of what requests we made when and what we were supposed to do with them.
+            newResult.request.outputCallback(newResult);
+        }
+    },
+    created () {
+        // ...
+    },
+    mounted () {
+        // ...
+    },
+    methods: {
+        ...mapMutations("Tools/ToolBridge", Object.keys(mutations)),
+        ...mapActions("Tools/ToolBridge", Object.keys(actions)),
+        getToolSettingsButton () {
+            // when the button is clicked, read toolbridge interface, get settings of the selected tool, store them to array
+            const settings = this.currentSettings(this.selectedItem);
+
+            this.retrievedSettings.push(settings);
+        },
+        runToolButton (toolName, settings, outputCallback) {
+            this.$store.dispatch("Tools/ToolBridge/runTool", {
+                toolName: toolName,
+                settings: settings,
+                outputCallback: outputCallback
+            });
+
+        },
+        defaultOutputCallback (result) {
+            if (result.type === "table") {
+                const table_html = tableify(result.result);
+
+                this.resultDisplay = table_html;
+
+            }
+        }
+    },
+    render: () => null
+};
+</script>
+
+<!-- <template lang="html">
+    <Tool
+        :id="id"
+        :title="$t('additional:modules.tools.ToolBridge.title')"
+        :icon="icon"
+        :active="active"
+        :render-to-window="renderToWindow"
+        :resizable-window="resizableWindow"
+        :deactivate-gfi="deactivateGFI"
+    >
+        <template #toolBody>
+            Welches Tool soll verwendet werden?<br>
+            <v-select
+                v-model="selectedItem"
+                label="Tool wählen"
+                :items="supportedTools"
+            />
+            <v-btn @click="getToolSettingsButton">
+                aktuelle Tool Einstellungen speichern
+            </v-btn>
+            <v-text-field
+                v-model="selectedSettings"
+                label="use retrieved settings #"
+                default="0"
+                clearable
+            />
+            <v-btn @click="runToolButton(selectedItem, activeSetting, defaultOutputCallback)">
+                Tool anwenden
+            </v-btn>
+            <div v-html="resultDisplay" />
+        </template>
+    </Tool>
+</template> -->
+
+<style lang="scss" scoped>
+</style>
