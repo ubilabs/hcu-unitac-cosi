@@ -1,17 +1,19 @@
 <script>
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersAccessibilityAnalysis";
 import mutations from "../store/mutationsAccessibilityAnalysis";
 import methods from "./methodsAnalysis";
 import * as Proj from "ol/proj.js";
 import deepEqual from "deep-equal";
+import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import {exportAsGeoJson, downloadGeoJson} from "../utils/exportResults";
 import {Select} from "ol/interaction";
 import ToolInfo from "../../components/ToolInfo.vue";
 import travelTimeIndex from "../assets/inrix_traveltimeindex_2021.json";
 import {onSearchbar, offSearchbar, getServiceUrl, onShowFeaturesById, onShowAllFeatures, onFeaturesLoaded, getModelByAttributes} from "../../utils/radioBridge.js";
+import mapCollection from "../../../../src/core/maps/mapCollection";
+import mapCanvasToImage, {exportMapView} from "../../utils/mapCanvasToImage";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -26,6 +28,7 @@ export default {
             facilityNames: [],
             mapLayer: null,
             directionsLayer: null,
+            toolName: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.title"),
             transportTypes: [
                 {
                     type: "",
@@ -294,6 +297,62 @@ export default {
                 this.askUpdate = true;
             }
         },
+        // This watcher makes the addon compatible with toolBridge (see toolbridge docs).
+        // The watcher receives a request
+        // It has three steps: 1. update interface based on the received settings, 2. run this addon's analysis, 3. send the results back to toolBridge
+        toolBridgeIn (newRequest) {
+            /**
+             * 1. update the interface based on the settings received from toolBridge
+             * @param {Object} request the toolBridge request {id:..., settings:{...}}
+             * @returns {Object} (run for side effects only, passes along the request)
+             */
+            const updateInterface = (request) => {
+                    this._mode = request.settings.mode;
+                    this._coordinate = request.settings.coordinate;
+                    this._selectedFacilityName = request.settings.selectedFacilityName;
+                    this._selectedDirections = request.settings.selectedDirections;
+                    this._transportType = request.settings.transportType;
+                    this._scaleUnit = request.settings.scaleUnit;
+                    this._distance = request.settings.distance;
+                    this._timefi = request.settings.time;
+                    this._useTravelTimeIndex = request.settings.useTravelTimeIndex;
+                    this._setByFeature = request.settings.setByFeature;
+                    this._steps = request.settings.steps;
+                    return request; // (we care about the side effects only)
+                },
+                /**
+                * 2. run the specific analysis of this addon
+                * @returns {String} imgDataUrl the map canvas as image
+                */
+                runTool = async () => {
+                    await this.createAnalysisSet();
+
+                    return mapCanvasToImage();
+                },
+
+                //
+                /**
+                * 3. hand the results back to toolBridge, in the form of: {request: ..., type: ..., result: ...}
+                * @param {String} imgDataUrl the map canvas as image
+                * @returns {Object} null (runs for side effects only)
+                */
+                returnResults = (imgDataUrl) => {
+                // (todo mb: should this maybe be a toolbridge action? could simplify creating the bridge)
+                    return this.$store.commit("Tools/ToolBridge/setReceivedResults", // this is where toolBridge expects requested results to arrive
+                        {
+                            // result: this.dataSets[this.activeSet].geojson,
+                            result: imgDataUrl,
+                            type: "image", // see toolBridge docs for supported output types
+                            request: newRequest // we need to give back the original request as well
+                        }
+                    );
+                };
+
+            // Run the three steps, making sure they happen synchronously (so we don't try to return results before analysis is finished)
+            updateInterface(newRequest);
+            runTool().then(returnResults);
+            return null; // we care about the side effects only.
+        },
         hide: "hideResults"
     },
     /**
@@ -311,7 +370,7 @@ export default {
 
     /**
    * Put initialize here if mounting occurs after config parsing
-   * @returns {void}
+    * @returns {void}
    */
     async mounted () {
         this.applyTranslationKey(this.name);
@@ -327,8 +386,6 @@ export default {
         this.removeLayerFromMap(this.directionsLayer);
 
         onSearchbar(this.setSearchResultToOrigin);
-
-        this.$root.$on("updateFeature", this.tryUpdateIsochrones);
         onShowFeaturesById(this.tryUpdateIsochrones);
         onShowAllFeatures(this.tryUpdateIsochrones);
         onFeaturesLoaded(this.tryUpdateIsochrones);
@@ -336,6 +393,7 @@ export default {
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapActions("Tools/AccessibilityAnalysisService", ["getIsochrones"]),
+        ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
         ...mapActions("Maps", ["setCenter", "removeInteraction", "addInteraction", "addLayer", "registerListener", "unregisterListener"]),
         ...mapMutations("Maps", ["removeLayerFromMap"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
@@ -344,7 +402,10 @@ export default {
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
 
-        tryUpdateIsochrones: function () {
+        downloadMap () {
+            exportMapView("Erreichbarkeitsanalyse_CoSI");
+        },
+        tryUpdateIsochrones () {
             if (this.mode === "region" && this.currentCoordinates && this.dataSets.length > 0) {
                 const newCoordinates = this.getCoordinates(this.setByFeature);
 
@@ -354,7 +415,7 @@ export default {
             }
         },
 
-        resetMarkerAndZoom: function () {
+        resetMarkerAndZoom () {
             const icoord = Proj.transform(this.coordinate[0], "EPSG:4326", this.projectionCode);
 
             this.placingPointMarker(icoord);
@@ -433,6 +494,7 @@ export default {
             }
 
             this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
+            this.addNewSelection({selection: analysisSet.results, source: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.title"), id: this._mode + ", " + this._transportType + ", [...]"});
         },
         exportAsGeoJson,
         // pagination features
@@ -653,6 +715,10 @@ export default {
                                     </v-btn>
                                 </v-col>
                             </v-row>
+
+                            <v-btn @click="downloadMap">
+                                PNG
+                            </v-btn>
                             <v-row
                                 v-if="isochroneFeatures.length > 0"
                                 dense
@@ -694,26 +760,27 @@ export default {
                                     <strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong>
                                 </h5>
                                 <div id="legend">
-                                    <template v-for="(j, i) in _steps">
-                                        <span :key="i">
-                                            <svg
-                                                width="15"
-                                                height="15"
-                                            >
-                                                <circle
-                                                    cx="7.5"
-                                                    cy="7.5"
-                                                    r="7.5"
-                                                    :style="`fill: ${
-                                                        legendColors[i]
-                                                    }; stroke-width: 0.5; stroke: #e3e3e3;`"
-                                                />
-                                            </svg>
-                                            <span :key="i * 2 + _steps.length">
-                                                {{ j }}
-                                            </span>
+                                    <span
+                                        v-for="(j, i) in _steps"
+                                        :key="i"
+                                    >
+                                        <svg
+                                            width="15"
+                                            height="15"
+                                        >
+                                            <circle
+                                                cx="7.5"
+                                                cy="7.5"
+                                                r="7.5"
+                                                :style="`fill: ${
+                                                    legendColors[i]
+                                                }; stroke-width: 0.5; stroke: #e3e3e3;`"
+                                            />
+                                        </svg>
+                                        <span :key="i * 2 + _steps.length">
+                                            {{ j }}
                                         </span>
-                                    </template>
+                                    </span>
                                 </div>
                             </v-col>
                         </v-row>
