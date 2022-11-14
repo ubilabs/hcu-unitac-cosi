@@ -45,13 +45,13 @@ export default {
     methods: {
         ...mapMutations("Tools/ToolBridge", Object.keys(mutations)),
         ...mapActions("Tools/ToolBridge", Object.keys(actions)),
-        getToolSettingsButton () {
+        getToolSettingsButton () { // only needed for debugging UI
             // when the button is clicked, read toolbridge interface, get settings of the selected tool, store them to array
             const settings = this.currentSettings(this.selectedItem);
 
             this.retrievedSettings.push(settings);
         },
-        runToolButton (toolName, settings, outputCallback) {
+        runToolButton (toolName, settings, outputCallback) { // only needed for debugging UI
             this.$store.dispatch("Tools/ToolBridge/runTool", {
                 toolName: toolName,
                 settings: settings,
@@ -59,7 +59,7 @@ export default {
             });
 
         },
-        defaultOutputCallback (result) {
+        defaultOutputCallback (result) { // only needed for debugging UI
             if (result.type === "table") {
                 const table_html = tableify(result.result);
 
@@ -72,6 +72,7 @@ export default {
 };
 </script>
 
+<!-- interface for debugging only-->
 <template lang="html">
     <Tool
         :id="id"

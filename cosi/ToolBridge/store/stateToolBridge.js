@@ -24,7 +24,7 @@ export default {
     renderToWindow: true,
     resizableWindow: false,
     title: "Tool Brücke",
-    receivedResults: [],
+    receivedResults: [], // when tools are finished running a request, they commit the results here; a watcher on this variable calls the callback given in the request.
     supportedTools: ["AccessibilityAnalysis", "Dashboard"],
     readmeUrl: {
         "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/fileimport.md",
