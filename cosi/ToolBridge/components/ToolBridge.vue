@@ -14,7 +14,6 @@ export default {
     },
     data () {
         return {
-            storePath: this.$store.state.Tools.ToolBridge,
             retrievedSettings: [], // only needed for debugging UI
             selectedItem: "Dashboard", // only needed for debugging UI
             selectedSettings: "", // only needed for debugging UI
