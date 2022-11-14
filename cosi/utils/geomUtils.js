@@ -202,6 +202,41 @@ export function intersect (features, resetProperties = false, returnsFeature = f
 }
 
 /**
+ * Parses an OL feature to a raw geojson object or string
+ * @param {module:ol/Feature} feature - the feature to convert
+ * @param {Boolean} [asString=false] - defines whether the result should be returned as Object or String
+ * @param {String} [sourceCrs="EPSG:25832"] - the CRS of the input
+ * @param {String} [targetCrs="EPSG:4326"] - the CRS of the output
+ * @returns {GeoJSONFeature | String} the converted feature as GeoJSON
+ */
+export function featureToGeoJson (feature, asString = false, sourceCrs = "EPSG:25832", targetCrs = "EPSG:4326") {
+    const parser = new GeoJSON({
+        dataProjection: targetCrs,
+        featureProjection: sourceCrs
+    });
+
+    return asString ? parser.writeFeature(feature) : parser.writeFeatureObject(feature);
+}
+
+/**
+ * Parses an OL feature to a raw geojson featureCollection object or string
+ * @param {module:ol/Feature | module:ol/Feature[]} features - the feature or features to convert
+ * @param {Boolean} [asString=false] - defines whether the result should be returned as Object or String
+ * @param {String} [sourceCrs="EPSG:25832"] - the CRS of the input
+ * @param {String} [targetCrs="EPSG:4326"] - the CRS of the output
+ * @returns {GeoJSONFeatureCollection | String} the converted features as GeoJSON featureCollection
+ */
+export function featuresToGeoJsonCollection (features, asString = false, sourceCrs = "EPSG:25832", targetCrs = "EPSG:4326") {
+    const parser = new GeoJSON({
+            dataProjection: targetCrs,
+            featureProjection: sourceCrs
+        }),
+        _features = Array.isArray(features) ? features : [features];
+
+    return asString ? parser.writeFeatures(_features) : parser.writeFeaturesObject(_features);
+}
+
+/**
  * Converts a circle, defined by center and radius to a apporx. polygon
  * @param {module:ol/geom/Circle} circle - the original geometry
  * @param {String} [steps=64] - the number of edge points
@@ -223,6 +258,8 @@ export function circleToPolygon (circle, steps = 64, crs = "EPSG:25832") {
 }
 
 export default {
+    featureToGeoJson,
+    featuresToGeoJsonCollection,
     intersect,
     union,
     getContainingDistrictForFeature
