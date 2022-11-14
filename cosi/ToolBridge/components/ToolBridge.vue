@@ -73,10 +73,10 @@ export default {
 };
 </script>
 
-<!-- <template lang="html">
+<template lang="html">
     <Tool
         :id="id"
-        :title="$t('additional:modules.tools.ToolBridge.title')"
+        :title="$t('additional:modules.tools.cosi.toolBridge.title')"
         :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
@@ -105,7 +105,7 @@ export default {
             <div v-html="resultDisplay" />
         </template>
     </Tool>
-</template> -->
+</template>
 
 <style lang="scss" scoped>
 </style>

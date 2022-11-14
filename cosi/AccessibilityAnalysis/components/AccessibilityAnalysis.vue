@@ -393,7 +393,7 @@ export default {
     methods: {
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapActions("Tools/AccessibilityAnalysisService", ["getIsochrones"]),
-        ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
+        // ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
         ...mapActions("Maps", ["setCenter", "removeInteraction", "addInteraction", "addLayer", "registerListener", "unregisterListener"]),
         ...mapMutations("Maps", ["removeLayerFromMap"]),
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
@@ -494,7 +494,7 @@ export default {
             }
 
             this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
-            this.addNewSelection({selection: analysisSet.results, source: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.title"), id: this._mode + ", " + this._transportType + ", [...]"});
+            // this.addNewSelection({selection: analysisSet.results, source: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.title"), id: this._mode + ", " + this._transportType + ", [...]"});
         },
         exportAsGeoJson,
         // pagination features
