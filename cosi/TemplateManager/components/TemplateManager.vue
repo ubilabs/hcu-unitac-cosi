@@ -104,8 +104,8 @@ export default {
                 statsCategories = Object.keys(filter.statsCategories).filter(key => filter.statsCategories[key]),
                 calculations = this.getCalculations(template).filter(calc => filter.calculations[calc.id]);
 
-            if (_template.state.Map?.layerIds) {
-                _template.state.Map.layerIds = activeLayerList;
+            if (_template.state.Maps?.layerIds) {
+                _template.state.Maps.layerIds = activeLayerList;
             }
             if (_template.state.Tools.DistrictSelector?.selectedDistrictNames) {
                 _template.state.Tools.DistrictSelector.selectedDistrictNames = selectedDistrictNames;
@@ -137,7 +137,7 @@ export default {
 
         getActiveLayerList (template) {
             return this.flatLayerMapping
-                .filter(layer => (template.state?.Map?.layerIds || []).includes(layer.layerId));
+                .filter(layer => (template.state?.Maps?.layerIds || []).includes(layer.layerId));
         },
 
         getActiveTool (template) {
@@ -212,7 +212,7 @@ export default {
                                 </v-list-item-content>
                             </template>
 
-                            <v-list-item>
+                            <v-list-item class="template">
                                 <v-list-item-content class="no-flex">
                                     <v-row>
                                         <v-simple-table
@@ -359,6 +359,9 @@ export default {
     }
     .info-table {
         max-width: 640px;
+    }
+    .clamp-40vw .v-list-group--no-action >.v-list-group__items >.v-list-item.template {
+        padding-left: 0;
     }
     .no-flex {
         display: block;
