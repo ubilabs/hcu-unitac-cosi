@@ -1,48 +1,8 @@
 import {default as turfUnion} from "@turf/union";
 import {default as turfIntersect} from "@turf/intersect";
 import {default as turfCircle} from "@turf/circle";
-import {default as turfCentroid} from "@turf/centroid";
-import {default as turfCenterOfMass} from "@turf/center-of-mass";
 import {GeoJSON} from "ol/format";
 import {getCenter} from "ol/extent";
-
-/**
- * Gets the centroid of any OL feature
- * @param {module:ol/Feature} feature - the polygon feature to get the centroid of
- * @param {String} [sourceCrs="EPSG:25832"] - the CRS of the input
- * @param {String} [targetCrs="EPSG:4326"] - the CRS of the output
- * @returns {[Number, Number]} the centroid coord
- */
-export function getCenterOfMass (feature, sourceCrs = "EPSG:25832", targetCrs = "EPSG:4326") {
-    const
-        parser = new GeoJSON({
-            dataProjection: targetCrs,
-            featureProjection: sourceCrs
-        }),
-        geojson = parser.writeFeatureObject(feature),
-        centroid = turfCenterOfMass(geojson);
-
-    return centroid?.geometry.coordinates;
-}
-
-/**
- * Gets the centroid of any OL feature
- * @param {module:ol/Feature} feature - the polygon feature to get the centroid of
- * @param {String} [sourceCrs="EPSG:25832"] - the CRS of the input
- * @param {String} [targetCrs="EPSG:4326"] - the CRS of the output
- * @returns {[Number, Number]} the centroid coord
- */
-export function getCentroid (feature, sourceCrs = "EPSG:25832", targetCrs = "EPSG:4326") {
-    const
-        parser = new GeoJSON({
-            dataProjection: targetCrs,
-            featureProjection: sourceCrs
-        }),
-        geojson = parser.writeFeatureObject(feature),
-        centroid = turfCentroid(geojson);
-
-    return centroid?.geometry.coordinates;
-}
 
 /**
  * Checks which district contains a given feature
