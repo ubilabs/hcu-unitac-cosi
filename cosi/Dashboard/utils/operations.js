@@ -1,5 +1,5 @@
 import Feature from "ol/Feature";
-import arrayIntersect from "../../utils/arrayIntersect";
+import intersect from "../../utils/array/intersect";
 import mathutils from "../../utils/math";
 
 const operationSymbols = {
@@ -138,7 +138,7 @@ export function calculateStats (calculation) {
     }
 
     this.addCategoryToMapping(mappingObject);
-    timestamps = arrayIntersect(field_A.years, field_B.years);
+    timestamps = intersect(field_A.years, field_B.years);
 
     for (const col of this.districtColumns) {
         properties = {
@@ -186,7 +186,7 @@ export function sumUpSelected (calculation) {
     }
 
     this.addCategoryToMapping(mappingObject);
-    timestamps = selectedItems.reduce((years, item) => arrayIntersect(years, item.years), [...selectedItems[0].years]);
+    timestamps = selectedItems.reduce((years, item) => intersect(years, item.years), [...selectedItems[0].years]);
 
     for (const col of this.districtColumns) {
         // skip columns for which not all properties are available
@@ -269,7 +269,7 @@ export function getXYPairs (datasetA, datasetB, districts, timestamps, timestamp
  * @returns {Object} the correlation dataset
  */
 export function calculateCorrelation () {
-    const timestamps = arrayIntersect(this.fields.A.years, this.fields.B.years),
+    const timestamps = intersect(this.fields.A.years, this.fields.B.years),
         data = getXYPairs(this.fields.A, this.fields.B, this.selectedColumns
             .map(col => col.value)
             .filter(colName => colName !== "average" && colName !== "total"),
