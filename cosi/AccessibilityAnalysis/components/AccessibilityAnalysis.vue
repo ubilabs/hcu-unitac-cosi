@@ -715,10 +715,6 @@ export default {
                                     </v-btn>
                                 </v-col>
                             </v-row>
-
-                            <v-btn @click="downloadMap">
-                                PNG
-                            </v-btn>
                             <v-row
                                 v-if="isochroneFeatures.length > 0"
                                 dense
