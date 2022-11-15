@@ -34,7 +34,7 @@ before(() => {
     registerProjections();
 });
 
-describe.only("AccessibilityAnalysis.vue", () => {
+describe("AccessibilityAnalysis.vue", () => {
     // eslint-disable-next-line no-unused-vars
     let component, store, clearStub, sandbox, sourceStub, addSingleAlertStub, cleanupStub, vuetify, progressStub, createIsochronesStub,
         coordiantes = [0, 0];
