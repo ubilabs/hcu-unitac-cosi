@@ -34,7 +34,7 @@ before(() => {
     registerProjections();
 });
 
-describe("AccessibilityAnalysis.vue", () => {
+describe.only("AccessibilityAnalysis.vue", () => {
     // eslint-disable-next-line no-unused-vars
     let component, store, clearStub, sandbox, sourceStub, addSingleAlertStub, cleanupStub, vuetify, progressStub, createIsochronesStub,
         coordiantes = [0, 0];
@@ -350,7 +350,8 @@ describe("AccessibilityAnalysis.vue", () => {
         expect(wrapper.vm.askUpdate).to.be.false;
 
         coordiantes = [1, 1];
-        wrapper.vm.$root.$emit("updateFeaturesList");
+        wrapper.vm.tryUpdateIsochrones();
+        // wrapper.vm.$root.$emit("updateFeaturesList");
         expect(wrapper.vm.askUpdate).to.be.true;
 
         await wrapper.find("#create-isochrones").trigger("click");
