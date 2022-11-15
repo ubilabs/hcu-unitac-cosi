@@ -50,7 +50,7 @@ this.$store.dispatch("Tools/ToolBridge/runTool", {
 ```
 
 Or to send the results to a specific store variable:
-```
+```js
 this.$store.dispatch("Tools/ToolBridge/runTool", {
                 toolName: "AccessibilityAnalysis",
                 settings: settings,
@@ -67,6 +67,7 @@ To make a new addon accessible through the toolBridge, you need to add the follo
 1. add `toolBridgeIn` and `toolBridgeOut` to your addon's store state.
     1. `toolBridgeOut` hands settings for your tool to other tools via a getter. 
     2. `toolBridgeIn` receives settings from other tools; a watcher on this variable should run your analysis with the received settings and hand back the results to the toolBridge.
+2. You should also add the name of your tool as a string to to `supportedTools` array in the toolBridge store (`Tools/ToolBridge/supportedTools`)
 
 *A) add `toolBridgeIn` and `toolBridgeOut` to your addon's store STATE*
 
