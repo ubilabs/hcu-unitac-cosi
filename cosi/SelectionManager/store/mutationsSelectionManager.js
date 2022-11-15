@@ -33,6 +33,13 @@ const mutations = {
      */
     addSelection: (state, payload) => {
         state.selections.push(payload);
+    },
+    /**
+    * @param {object} state of this component
+    * @returns {void}
+    */
+    clearAllSelections: (state) => {
+        state.selections = [];
     }
 };
 

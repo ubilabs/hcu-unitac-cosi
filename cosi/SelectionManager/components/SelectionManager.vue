@@ -10,6 +10,9 @@ import setBBoxToGeom from "../../utils/setBBoxToGeom.js";
 import ToolInfo from "../../components/ToolInfo.vue";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
 import Feature from "ol/Feature";
+import Polygon from "ol/geom/Polygon";
+import {default as turfCenterOfMass} from "@turf/center-of-mass";
+import GeoJSON from "ol/format/GeoJSON";
 import {Fill, Stroke, Style} from "ol/style.js";
 
 export default {
@@ -19,11 +22,14 @@ export default {
     },
     data () {
         return {
+            // Bool if the addon is open in the frontend or not
             openAddon: false,
-            hoverLayerSource: new VectorSource(),
+            // array that stores the indexes of selections with extend options active
             extendedOptions: [],
-            mergeable: false,
-            selectionsToMerge: []
+            // array that stores the indexes of selections that are about to be merged
+            selectionsToMerge: [],
+            // Bool that reacts to changes in the this.selections array
+            allSelectionsPossible: true
         };
     },
     computed: {
@@ -44,6 +50,10 @@ export default {
         }
     },
     watch: {
+        /**
+             * @description Changes the style of the selection manager VectorLayer based on if the addon is active or not.
+             * @returns {void}
+             */
         openAddon () {
             const selectionLayer = this.map.getLayers().getArray().filter(layer => layer.get("name") === "selection_manager");
 
@@ -74,22 +84,17 @@ export default {
                     selectionLayer[0].setStyle(style);
                 }
             }
+        },
+        /**
+             * @description Sets the all selections button active again if the this.selections array changes.
+             * @returns {void}
+             */
+        selections () {
+            this.allSelectionsPossible = true;
         }
     },
     created () {
         this.map = mapCollection.getMap("2D");
-
-        const hoverLayer = new VectorLayer({
-            name: "selection_manager_hover_layer",
-            source: this.hoverLayerSource,
-            style: new Style({
-                fill: new Fill({
-                    color: "rgba(214, 187, 47, 0.1)"
-                })
-            })
-        });
-
-        this.map.addLayer(hoverLayer);
     },
     methods: {
         ...mapMutations("Tools/SelectionManager", Object.keys(mutations)),
@@ -111,7 +116,7 @@ export default {
                 }
                 else {
 
-                    //  remove layers from selection manager
+                    //  remove selection manager layers
                     this.map.getLayers().getArray().filter(layer => layer.get("name") === "selection_manager").forEach(layer => this.map.removeLayer(layer));
 
                     const vectorSource = new VectorSource({
@@ -142,8 +147,15 @@ export default {
                 this.setActiveSelection(null);
             }
         },
+        /**
+             * @description Creates VectorLayer for the chosen selection if there is a buffer value and overwrites standard selection.
+             * @param {Integer} index - Index of the chosen selection in this.selections
+             * @returns {void}
+             */
         rerenderSelection (index) {
             if (this.activeSelection === index) {
+
+                //  remove selection manager layers
                 this.map.getLayers().getArray().filter(layer => layer.get("name") === "selection_manager").forEach(layer => this.map.removeLayer(layer));
 
                 const vectorSource = new VectorSource({
@@ -169,6 +181,11 @@ export default {
                 setBBoxToGeom.call(this, getBoundingGeometry(this.selections[index].bufferedSelection));
             }
         },
+        /**
+             * @description Creates VectorLayer for the chosen selection on hover in the selection menu.
+             * @param {Integer} index - Index of the chosen selection in this.selections
+             * @returns {void}
+             */
         hoverSelection (index) {
             this.map.getLayers().getArray().filter(layer => layer.get("name") === "selection_manager_hover_layer").forEach(layer => this.map.removeLayer(layer));
 
@@ -188,6 +205,10 @@ export default {
             layer.setZIndex(9999);
             this.map.addLayer(layer);
         },
+        /**
+             * @description Removes the hover selection layer.
+             * @returns {void}
+             */
         resetHovers () {
             this.map.getLayers().getArray().filter(layer => layer.get("name") === "selection_manager_hover_layer").forEach(layer => this.map.removeLayer(layer));
         },
@@ -228,6 +249,11 @@ export default {
                 }
             });
         },
+        /**
+             * @description Adds index of selection to extendedOptions to extend to option menu in the frontend.
+             * @param {Integer} index - Index of the chosen selection in this.selections
+             * @returns {void}
+             */
         setExtendedOptions (index) {
             if (this.extendedOptions.includes(index)) {
                 this.extendedOptions.splice(this.extendedOptions.indexOf(index), 1);
@@ -236,25 +262,89 @@ export default {
                 this.extendedOptions.push(index);
             }
         },
-        polygonChange (index) {
+        /**
+             * @description Creates new single selection from all avaible selections in the this.selections array.
+             * @returns {void}
+             */
+        allSelections () {
+            const flatArray = this.selections.map(selection => selection.selection).flat();
+
+            this.addNewSelection({selection: flatArray, source: this.$t("additional:modules.tools.cosi.selectionManager.title"), id: this.$t("additional:modules.tools.cosi.selectionManager.allSelections") + " (" + flatArray.length + ")"});
+            this.highlightSelection(this.selections.length - 1);
+            this.allSelectionsPossible = false;
+        },
+        /**
+             * @description Calculates the center of each feature and draws a polygon along these points.
+             * @returns {void}
+             */
+        connectSelections () {
+            const format = new GeoJSON(),
+                newPolygonCoords = [],
+                selectionsCopy = this.selections.map(selection => selection.selection);
+
+            selectionsCopy.forEach(selection => {
+                if (Array.isArray(selection)) {
+                    selection.forEach(subSelection => {
+                        const centerOfPolygon = turfCenterOfMass(format.writeFeatureObject(subSelection));
+
+                        newPolygonCoords.push(centerOfPolygon);
+                    });
+                }
+                else {
+                    const centerOfPolygon = turfCenterOfMass(format.writeFeatureObject(selection));
+
+                    newPolygonCoords.push(centerOfPolygon);
+                }
+            });
+
+            selectionsCopy.push(new Feature(new Polygon([newPolygonCoords.map(point => point.geometry.coordinates)])));
+            this.addNewSelection({selection: selectionsCopy.flat(), source: this.$t("additional:modules.tools.cosi.selectionManager.title"), id: this.$t("additional:modules.tools.cosi.selectionManager.connectedSelections") + " (" + selectionsCopy.length - 1 + ")"});
+            this.highlightSelection(this.selections.length - 1);
+        },
+        /**
+             * @description Toggles the buffered selection to overwrite standard selection on the OL Layer.
+             * @param {Integer} index - Index of the chosen selection in this.selections
+             * @returns {void}
+             */
+        triggerBuffer (index) {
             if (this.selections[index].settings.bufferActive) {
                 this.selections[index].settings.bufferActive = false;
                 if (this.activeSelection === index) {
+                    this.setActiveSelection(null);
                     this.highlightSelection(index);
                 }
             }
             else {
                 this.selections[index].settings.bufferActive = true;
-                const newGeometry = getBoundingGeometry(this.selections[index].selection, this.selections[index].settings.buffer),
-                    transformedPolygons = [];
+                if (this.activeSelection === index) {
+                    this.rerenderSelection(index);
+                }
+            }
+        },
+        /**
+             * @description If the buffer value changes (at input v-slider) updates the buffered selection.
+             * @param {Integer} index - Index of the chosen selection in this.selections
+             * @returns {void}
+             */
+        polygonChange (index) {
+            const newGeometry = getBoundingGeometry(this.selections[index].selection, this.selections[index].settings.buffer),
+                transformedPolygons = [];
 
-                newGeometry.getGeometries().forEach(geometry => {
-                    transformedPolygons.push(new Feature(geometry));
-                });
+            newGeometry.getGeometries().forEach(geometry => {
+                transformedPolygons.push(new Feature(geometry));
+            });
 
-                this.selections[index].bufferedSelection = transformedPolygons;
+            this.selections[index].bufferedSelection = transformedPolygons;
+
+            if (this.selections[index].settings.bufferActive && this.activeSelection === index) {
                 this.rerenderSelection(index);
             }
+        },
+        addBufferAsSelection (index) {
+            this.addNewSelection({selection: this.selections[index].bufferedSelection, source: this.$t("additional:modules.tools.cosi.selectionManager.title"), id: this.$t("additional:modules.tools.cosi.selectionManager.buffer") + " " + this.selections[index].id});
+            this.selections[index].settings.buffer = 0;
+            this.selections[index].settings.bufferActive = false;
+            this.highlightSelection(this.selections.length - 1);
         },
         /**
              * @description Removes the selection_manager layer from the map
@@ -276,25 +366,41 @@ export default {
                 this.removeLayer();
             }
         },
-        indicateMergeSelections () {
-            if (this.activeSelection !== null && this.selections.length > 1) {
-                this.mergeable = true;
-            }
-            else {
-                this.mergeable = false;
-            }
+        /**
+         * @description Resets the whole this.selections array
+         * @returns {void}
+         */
+        removeAllSelections () {
+            this.clearAllSelections();
+            this.removeLayer();
+            this.setActiveSelection(null);
         },
+        /**
+             * @description Merges selections from selectionToMerge array into a single selection.
+             * @param {Integer} index - Index of the chosen selection in this.selections
+             * @returns {void}
+             */
         addMergedSelection (index) {
-            this.selectionsToMerge.push(this.selections[index].selection);
-            const flatArray = this.selectionsToMerge.flat();
+            this.selectionsToMerge.push(index);
+            const flatSelections = this.selections.filter((selection, i) => this.selectionsToMerge.includes(i)).map(selection => selection.selection),
+                flatArray = flatSelections.flat();
 
             this.addNewSelection({selection: flatArray, source: this.$t("additional:modules.tools.cosi.selectionManager.title"), id: this.$t("additional:modules.tools.cosi.selectionManager.mergedSelections") + " (" + this.selectionsToMerge.length + ")"});
-            this.mergeable = false;
             this.selectionsToMerge = [];
             this.highlightSelection(this.selections.length - 1);
         },
+        /**
+             * @description Adds index of single selection to the this.selectionsToMerge array (or removes it).
+             * @param {Integer} index - Index of the chosen selection in this.selections
+             * @returns {void}
+             */
         mergeSelections (index) {
-            this.selectionsToMerge.push(this.selections[index].selection);
+            if (this.selectionsToMerge.includes(index)) {
+                this.selectionsToMerge.splice(this.selectionsToMerge.indexOf(index), 1);
+            }
+            else {
+                this.selectionsToMerge.push(index);
+            }
         }
     }
 };
@@ -302,7 +408,7 @@ export default {
 
 <template lang="html">
     <div
-        v-if="!dashboardOpen && selections.length > 0 && activeVectorLayerList.length > 0"
+        v-if="!dashboardOpen && selections.length > 0"
         id="sm"
         class="sm_addon_container"
         :style="{bottom: upperEdge + 10 + 'px'}"
@@ -319,8 +425,7 @@ export default {
             id="sm_wrapper"
             class="addon_wrapper"
             :class="{
-                open: openAddon,
-                mergeHover: mergeable
+                open: openAddon
             }"
         >
             <div class="selection_menu">
@@ -330,6 +435,31 @@ export default {
                         :url="readmeUrl"
                         :locale="currentLocale"
                     />
+                </div>
+                <div class="function_buttons all_function_buttons">
+                    <button
+                        class="all_btn"
+                        :title="$t('additional:modules.tools.cosi.selectionManager.title_all_selections')"
+                        :class="{disabled: selections.length < 2 || !allSelectionsPossible}"
+                        @click="allSelections()"
+                    >
+                        <v-icon>mdi-selection-ellipse-arrow-inside</v-icon>
+                    </button>
+                    <button
+                        class="connect_btn"
+                        :title="$t('additional:modules.tools.cosi.selectionManager.title_connect_selections')"
+                        :class="{disabled: selections.map(selection => selection.selection).flat().length < 3}"
+                        @click="connectSelections()"
+                    >
+                        <v-icon>mdi-vector-selection</v-icon>
+                    </button>
+                    <button
+                        class="remove_all_btn"
+                        :title="$t('additional:modules.tools.cosi.selectionManager.title_remove_all')"
+                        @click="removeAllSelections()"
+                    >
+                        <v-icon>mdi-close-box-multiple</v-icon>
+                    </button>
                 </div>
                 <ul class="groups">
                     <li
@@ -348,16 +478,10 @@ export default {
                                     class="selectionlevel"
                                     :class="{
                                         extended: extendedOptions.includes(i),
-                                        hoverHighlight: mergeable && activeSelection !== i
+                                        hoverHighlight: selectionsToMerge.includes(i) && activeSelection !== i
                                     }"
-                                    @mouseenter.exact="hoverSelection(i)"
-                                    @mouseover.exact="hoverSelection(i)"
-                                    @mouseleave="resetHovers"
-                                    @focusin.ctrl="indicateMergeSelections"
-                                    @focusout="resetHovers"
-                                    @mouseover.ctrl="indicateMergeSelections"
-                                    @click.ctrl="mergeSelections(i)"
-                                    @keyup.ctrl.exact="addMergedSelection(i)"
+                                    @hover="hoverSelection(i)"
+                                    @focus="hoverSelection(i)"
                                 >
                                     <p>{{ selection.id }}</p>
                                     <ul
@@ -365,6 +489,7 @@ export default {
                                     >
                                         <button
                                             class="view_btn"
+                                            :title="$t('additional:modules.tools.cosi.selectionManager.title_view')"
                                             :class="{
                                                 highlight: activeSelection === i,
                                                 scaledHighlight: selection.settings.bufferActive,
@@ -374,16 +499,28 @@ export default {
                                             <v-icon>mdi-eye-outline</v-icon>
                                         </button>
                                         <button
+                                            v-if="activeSelection !== null && activeSelection !== i"
+                                            :title="$t('additional:modules.tools.cosi.selectionManager.title_add')"
+                                            class="add_btn"
+                                            :class="{
+                                                highlight: selectionsToMerge.includes(i),
+                                            }"
+                                            @click="mergeSelections(i)"
+                                        >
+                                            <v-icon>mdi-plus</v-icon>
+                                        </button>
+                                        <button
                                             v-if="selectionsToMerge.length > 0 && activeSelection === i"
+                                            :title="$t('additional:modules.tools.cosi.selectionManager.title_merge')"
                                             class="combine_btn"
-                                            @click.exact="addMergedSelection(i)"
+                                            @click="addMergedSelection(i)"
                                         >
                                             <v-icon>mdi-vector-combine</v-icon>
                                         </button>
                                         <button
                                             class="freeze_btn"
                                             :class="{highlight: selection.storedLayers.length > 0}"
-                                            :title="selection.storedLayers.join(', ')"
+                                            :title="selection.storedLayers.length > 0 ? selection.storedLayers.join(', ') : $t('additional:modules.tools.cosi.selectionManager.title_stored')"
                                             @click="storeLayers(i)"
                                         >
                                             <template v-if="selection.storedLayers.length > 0">
@@ -394,6 +531,7 @@ export default {
                                             </template>
                                         </button>
                                         <button
+                                            :title="$t('additional:modules.tools.cosi.selectionManager.title_extended_options')"
                                             class="option_btn"
                                             :class="{highlight: extendedOptions.includes(i)}"
                                             @click="setExtendedOptions(i)"
@@ -401,6 +539,7 @@ export default {
                                             <v-icon>mdi-tools</v-icon>
                                         </button>
                                         <button
+                                            :title="$t('additional:modules.tools.cosi.selectionManager.title_remove')"
                                             class="remove_btn"
                                             @click="removeSelection(i)"
                                         >
@@ -408,18 +547,36 @@ export default {
                                         </button>
                                     </ul>
                                     <div class="extended_options">
+                                        <v-text-field
+                                            v-model="selection.settings.buffer"
+                                            max="1500"
+                                            min="-1500"
+                                            type="number"
+                                            @input="polygonChange(i)"
+                                        />
                                         <v-slider
                                             v-model="selection.settings.buffer"
-                                            max="2500"
-                                            min="-2500"
+                                            max="1500"
+                                            min="-1500"
                                             step="10"
+                                            :title="$t('additional:modules.tools.cosi.selectionManager.title_slider')"
+                                            @input="polygonChange(i)"
                                         />
                                         <button
+                                            :title="$t('additional:modules.tools.cosi.selectionManager.title_toggle_buffer')"
                                             class="activate_btn"
                                             :class="{highlight: selection.settings.bufferActive}"
-                                            @click="polygonChange(i)"
+                                            @click="triggerBuffer(i)"
                                         >
                                             <v-icon>mdi-selection-drag</v-icon>
+                                        </button>
+                                        <button
+                                            v-if="selection.settings.bufferActive && selection.settings.buffer !== 0"
+                                            :title="$t('additional:modules.tools.cosi.selectionManager.title_buffer_selection')"
+                                            class="add_buffer_btn"
+                                            @click="addBufferAsSelection(i)"
+                                        >
+                                            <v-icon>mdi-plus-box-multiple</v-icon>
                                         </button>
                                     </div>
                                 </li>
@@ -464,7 +621,7 @@ export default {
                 position:absolute;
                 bottom:0;
                 left:50px;
-                width:410px;
+                width:450px;
                 height:0;
                 background:white;
                 transition:0.3s;
@@ -485,6 +642,38 @@ export default {
                         margin-left: 10px;
                         padding-top: 15px;
                         margin-bottom: -25px;
+                    }
+                }
+
+                .all_function_buttons {
+                    width:90px;
+                    height:30px;
+                    margin:0px 5px 0px auto;
+                    border-bottom: 1px solid #aaa;
+                    display:flex;
+                    flex-flow:row wrap;
+                    justify-content:flex-end;
+
+                    button {
+                        flex-basis:20px;
+                        height:20px;
+                        background:#424242;
+                        margin-top:5px;
+                        margin-left:5px;
+
+                        &.disabled {
+                            pointer-events:none;
+                            opacity:0.6;
+                        }
+
+                        &.remove_all_btn {
+                            background:#D6605D;
+                        }
+
+                        .v-icon {
+                            font-size:16px;
+                            color:whitesmoke;
+                        }
                     }
                 }
 
@@ -537,18 +726,8 @@ export default {
                             transition:0.15s;
 
                             &.hoverHighlight {
-                                &:hover {
-                                    cursor:pointer;
-                                    background:#D6605D;
-                                    border:1px solid #222;;
-                                    z-index:10;
-                                    transform:scale(1.01);
-                                    transition:0.15s;
-
-                                    p {
-                                        color:white;
-                                    }
-                                }
+                                background:#ddd;
+                                border-right:2px solid $brightred;
                             }
 
                             &.extended {
@@ -564,15 +743,11 @@ export default {
                                     flex:1 0 100%;
                                     box-sizing:border-box;
 
-                                    button.activate_btn {
+                                    button {
                                         flex-basis:20px;
                                         height:20px;
                                         background:#424242;
                                         margin:5px 0px 0px 5px;
-
-                                        &.highlight {
-                                            background:#D6B62F;
-                                        }
 
                                         .v-icon {
                                             color:whitesmoke;
@@ -580,10 +755,35 @@ export default {
                                         }
                                     }
 
+                                    button.activate_btn {
+                                        &.highlight {
+                                            background:#D6B62F;
+                                        }
+                                    }
+
+                                    .v-text-field {
+                                        background:white;
+                                        height:30px;
+                                        flex:0 0 50px;
+                                        padding: 0;
+                                        margin: 0;
+                                        border: 1px solid #ccc;
+
+                                        .v-input__slot {
+                                            &:before, &:after {
+                                                display:none;
+                                            }
+                                        }
+
+                                        input {
+                                            text-align:center;
+                                            font-size:100%;
+                                        }
+                                    }
+
                                     .v-input__slider {
                                         height:30px;
-                                        width:110px;
-                                        flex:0 0 110px;
+                                        flex:0 0 80px;
 
                                         .v-slider__thumb:before {
                                             display:none;
@@ -592,14 +792,14 @@ export default {
                                 }
 
                             p {
-                                flex-basis:auto;
+                                flex-basis:calc(100% - 140px);
                                 line-height:30px;
                             }
 
                             ul.function_buttons {
                                 display:flex;
                                 flex-flow:row wrap;
-                                flex-basis:110px;
+                                flex-basis:130px;
                                 justify-content: flex-end;
                                 padding-right: 5px;
                                 margin: 0px 0px 0px auto;
@@ -642,6 +842,23 @@ export default {
 
                                             .v-icon {
                                                 color:$brightred;
+                                            }
+                                        }
+                                    }
+
+                                    &.add_btn {
+                                        background:whitesmoke;
+                                        border:1px solid #ccc;
+
+                                        .v-icon {
+                                            color:$brightred;
+                                        }
+
+                                        &.highlight {
+                                            background:$brightred;
+
+                                            .v-icon {
+                                                color:whitesmoke;
                                             }
                                         }
                                     }

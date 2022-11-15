@@ -1,4 +1,4 @@
-import * as turf from "@turf/turf";
+import union from "@turf/union";
 import Feature from "ol/Feature";
 import GeoJSON from "ol/format/GeoJSON";
 /**
@@ -37,7 +37,7 @@ const actions = {
                 collection = turfObj;
             }
             else {
-                collection = turf.union(collection, turfObj);
+                collection = union(collection, turfObj);
             }
         }
         // rewrite elements to openlayers features
