@@ -1,5 +1,5 @@
 import {describeFeatureType, getFeatureDescription} from "../../../src/api/wfs/describeFeatureType.js";
-import {rawLayerList} from "@masterportal/masterportalapi/src";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 
 /**
  * Gets the featureType description of a layer via its layerId. Uses WFS describeFeatureTypeRequest

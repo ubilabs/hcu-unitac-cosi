@@ -4,12 +4,12 @@ import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import AnalysisPagination from "../../components/AnalysisPagination.vue";
 import getters from "../store/gettersQueryDistricts";
 import mutations from "../store/mutationsQueryDistricts";
-import {rawLayerList} from "@masterportal/masterportalapi/src";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import compareFeatures from "./compareFeatures.js";
 import LayerFilter from "./LayerFilter.vue";
 import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
-import {getAllFeatures as _getAllFeatures} from "../../utils/getAllFeatures.js";
+import {getAllFeaturesByLayerId as _getAllFeatures} from "../../utils/features/getAllFeaturesByLayerId";
 import exportXlsx from "../../utils/exportXlsx";
 import * as Extent from "ol/extent";
 import {

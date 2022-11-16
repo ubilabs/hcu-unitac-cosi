@@ -2,7 +2,7 @@ import * as Proj from "ol/proj.js";
 import {fetchDistances} from "./fetchDistances";
 import {findNearestFeatures} from "../../utils/findNearestFeatures";
 import {getFeatureInfos} from "./getFeatureInfo";
-import {rawLayerList} from "@masterportal/masterportalapi/src";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import {getConverter} from "../utils/converters";
 
 /**

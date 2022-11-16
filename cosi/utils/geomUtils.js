@@ -1,48 +1,8 @@
 import {default as turfUnion} from "@turf/union";
 import {default as turfIntersect} from "@turf/intersect";
 import {default as turfCircle} from "@turf/circle";
-import {default as turfCentroid} from "@turf/centroid";
-import {default as turfCenterOfMass} from "@turf/center-of-mass";
 import {GeoJSON} from "ol/format";
 import {getCenter} from "ol/extent";
-
-/**
- * Gets the centroid of any OL feature
- * @param {module:ol/Feature} feature - the polygon feature to get the centroid of
- * @param {String} [sourceCrs="EPSG:25832"] - the CRS of the input
- * @param {String} [targetCrs="EPSG:4326"] - the CRS of the output
- * @returns {[Number, Number]} the centroid coord
- */
-export function getCenterOfMass (feature, sourceCrs = "EPSG:25832", targetCrs = "EPSG:4326") {
-    const
-        parser = new GeoJSON({
-            dataProjection: targetCrs,
-            featureProjection: sourceCrs
-        }),
-        geojson = parser.writeFeatureObject(feature),
-        centroid = turfCenterOfMass(geojson);
-
-    return centroid?.geometry.coordinates;
-}
-
-/**
- * Gets the centroid of any OL feature
- * @param {module:ol/Feature} feature - the polygon feature to get the centroid of
- * @param {String} [sourceCrs="EPSG:25832"] - the CRS of the input
- * @param {String} [targetCrs="EPSG:4326"] - the CRS of the output
- * @returns {[Number, Number]} the centroid coord
- */
-export function getCentroid (feature, sourceCrs = "EPSG:25832", targetCrs = "EPSG:4326") {
-    const
-        parser = new GeoJSON({
-            dataProjection: targetCrs,
-            featureProjection: sourceCrs
-        }),
-        geojson = parser.writeFeatureObject(feature),
-        centroid = turfCentroid(geojson);
-
-    return centroid?.geometry.coordinates;
-}
 
 /**
  * Checks which district contains a given feature
@@ -202,41 +162,6 @@ export function intersect (features, resetProperties = false, returnsFeature = f
 }
 
 /**
- * Parses an OL feature to a raw geojson object or string
- * @param {module:ol/Feature} feature - the feature to convert
- * @param {Boolean} [asString=false] - defines whether the result should be returned as Object or String
- * @param {String} [sourceCrs="EPSG:25832"] - the CRS of the input
- * @param {String} [targetCrs="EPSG:4326"] - the CRS of the output
- * @returns {GeoJSONFeature | String} the converted feature as GeoJSON
- */
-export function featureToGeoJson (feature, asString = false, sourceCrs = "EPSG:25832", targetCrs = "EPSG:4326") {
-    const parser = new GeoJSON({
-        dataProjection: targetCrs,
-        featureProjection: sourceCrs
-    });
-
-    return asString ? parser.writeFeature(feature) : parser.writeFeatureObject(feature);
-}
-
-/**
- * Parses an OL feature to a raw geojson featureCollection object or string
- * @param {module:ol/Feature | module:ol/Feature[]} features - the feature or features to convert
- * @param {Boolean} [asString=false] - defines whether the result should be returned as Object or String
- * @param {String} [sourceCrs="EPSG:25832"] - the CRS of the input
- * @param {String} [targetCrs="EPSG:4326"] - the CRS of the output
- * @returns {GeoJSONFeatureCollection | String} the converted features as GeoJSON featureCollection
- */
-export function featuresToGeoJsonCollection (features, asString = false, sourceCrs = "EPSG:25832", targetCrs = "EPSG:4326") {
-    const parser = new GeoJSON({
-            dataProjection: targetCrs,
-            featureProjection: sourceCrs
-        }),
-        _features = Array.isArray(features) ? features : [features];
-
-    return asString ? parser.writeFeatures(_features) : parser.writeFeaturesObject(_features);
-}
-
-/**
  * Converts a circle, defined by center and radius to a apporx. polygon
  * @param {module:ol/geom/Circle} circle - the original geometry
  * @param {String} [steps=64] - the number of edge points
@@ -258,8 +183,6 @@ export function circleToPolygon (circle, steps = 64, crs = "EPSG:25832") {
 }
 
 export default {
-    featureToGeoJson,
-    featuresToGeoJsonCollection,
     intersect,
     union,
     getContainingDistrictForFeature

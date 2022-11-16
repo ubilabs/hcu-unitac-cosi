@@ -2,7 +2,7 @@
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import {getComponent} from "../../../../src/utils/getComponent";
 import {prepareDistrictLevels} from "../utils/prepareDistrictLevels";
-import calculateExtent from "../../utils/calculateExtent.js";
+import calculateExtent from "../../utils/features/calculateExtent.js";
 import getBoundingGeometry from "../../utils/getBoundingGeometry.js";
 import setBBoxToGeom from "../../utils/setBBoxToGeom.js";
 import {mapGetters, mapActions, mapMutations, mapState} from "vuex";
@@ -11,7 +11,7 @@ import mutations from "../store/mutationsDistrictSelector";
 import {DragBox, Select} from "ol/interaction";
 import {singleClick} from "ol/events/condition";
 import {Fill, Stroke, Style} from "ol/style.js";
-import styleSelectedDistrictLevels from "../utils/styleSelectedDistrictLevels";
+import {styleSelectedDistrictLevels} from "../utils/styleSelectedDistrictLevels";
 import {getFeaturePOST as wfsGetFeature} from "../../../../src/api/wfs/getFeature.js";
 import ToolInfo from "../../components/ToolInfo.vue";
 import {onFeaturesLoaded, addModelsByAttributes, getModelByAttributes} from "../../utils/radioBridge.js";
@@ -79,7 +79,7 @@ export default {
 
                 // add overlay if no districts are selected at this point
                 if (this.selectedNames.length === 0) {
-                    styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId, 0.6, this.selectedDistrictLevel.activeStyle);
+                    styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId, this.selectedDistrictLevel.activeStyle);
                 }
             }
             else {
@@ -132,7 +132,7 @@ export default {
          */
         easyReadMode () {
             if (this.selectedNames.length !== 0 || this.active) {
-                styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId, 0.6, this.selectedDistrictLevel.activeStyle);
+                styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId, this.selectedDistrictLevel.activeStyle);
             }
         }
     },
@@ -153,7 +153,7 @@ export default {
          */
         onFeaturesLoaded((layerId) => {
             if (!this.districtLevelLayersLoaded && this.selectedLevelId === layerId) {
-                styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId, 0.6, this.selectedDistrictLevel.activeStyle);
+                styleSelectedDistrictLevels(this.districtLevels, this.selectedLevelId, this.selectedDistrictLevel.activeStyle);
                 this.districtLevelLayersLoaded = true;
             }
         });
@@ -200,7 +200,7 @@ export default {
             const districtLevel = this.getDistrictLevelById(id);
 
             this.setSelectedDistrictLevel(districtLevel);
-            styleSelectedDistrictLevels(this.districtLevels, id, 0.6, districtLevel.activeStyle);
+            styleSelectedDistrictLevels(this.districtLevels, id, districtLevel.activeStyle);
         },
 
         /**
@@ -343,7 +343,7 @@ export default {
                 // shade all not selected districts
                 // before applying the new selection
                 if (this.selectedNames.length === 0 && !this.active) {
-                    styleSelectedDistrictLevels(this.districtLevels, this.selectedDistrictLevel.layerId, 0.6, this.selectedDistrictLevel.activeStyle);
+                    styleSelectedDistrictLevels(this.districtLevels, this.selectedDistrictLevel.layerId, this.selectedDistrictLevel.activeStyle);
                 }
                 this.select.getFeatures().clear();
                 featureCollection.forEach(feature => {
@@ -361,7 +361,7 @@ export default {
          * @returns {void}
          */
         updateExtent (zoomToExtent = true) {
-            const extent = calculateExtent(this.selectedFeatures, this.bufferVal),
+            const extent = calculateExtent(this.selectedFeatures, parseInt(this.bufferVal, 10)),
                 bboxGeom = getBoundingGeometry(this.selectedFeatures, this.bufferVal),
                 selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
 
