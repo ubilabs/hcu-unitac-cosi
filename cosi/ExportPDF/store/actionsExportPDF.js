@@ -1,11 +1,9 @@
-import html2canvas from "html2canvas";
 import pdfMake from "pdfmake";
-
 /**
  *
  * @param {*} context is just a vuex action context
  * @param {*} docDefinition is a variable which stores the actual HTML data in the state
- * @returns {*} returns value
+ * @returns {body} returns value
  */
 function convertHTMLToPDF (context, docDefinition) {
 
@@ -16,127 +14,76 @@ function convertHTMLToPDF (context, docDefinition) {
 
 /**
  *
+ *  This function converts data from reportTemplate to pdf
  *
- * This function converts html to pdf
- * @returns {void} returns value
- *
- */
-// function convertHTMLToPDF2 () {
-
-//     html2canvas({useCORS: true, allowTaint: true}, document.getElementById("ReportTable"), {
-//         onrendered: function (canvas) {
-//             const data = canvas.toDataUrl(),
-//                 dd = {
-//                     content: [{
-//                         text: data,
-//                         width: 300,
-//                         height: 300
-//                     }]
-//                 };
-
-//             pdfMake.createPdf(dd).download("NewReport.pdf");
-//         }
-//     });
-// }
-/**
- *
- *
- * This function converts html to pdf
- * @returns {void} returns value
- *
- */
-// function convertHTMLToPDF2 () {
-//     const data = [
-//             {Kategorie: "123"},
-//             {Gruppe: "456"},
-//             {Winterhude: "789"}
-//         ],
-
-//         doc2 = {
-//             content: [
-//                 {text: "Hiiii!!!", style: "header"},
-//                 table(data, ["Kategorie", "Gruppe", "Winterhude"])
-//             ]
-//         };
-
-//     pdfMake.createPdf(doc2).download("NewReport.pdf");
-// }
-/**
- *
- *
- * This function converts html to pdf
- * @param {*} data
- * @param {*} columns
- * @param {*} row
+ * @param {*} context is just a vuex action context
+ * @param {*} chapters holds the overall data of reporting tool after each iteration of chapter
  * @returns {body} returns value
  *
  */
-function tableBody (data, columns) {
-    const body = [];
+function reportTemplateToPdf (context, chapters) {
 
-    body.push(columns);
-
-    data.forEach(function (row) {
-        const dataRow = [];
-
-        columns.forEach(function (column) {
-            dataRow.push(row[column].toString());
-        });
-        body.push(dataRow);
-    });
-    return body;
-}
-
-/**
- *
- *
- * This function converts html to pdf
- * @param {*} data
- * @param {*} columns
- * @returns {body} returns value
- *
- */
-function table (data, columns) {
-    return {
-        table: {
-            headerRows: 1,
-            body: tableBody(data, columns)
-        }
+    const docDefinition = {
+        content: []
     };
+
+    /**
+     * @param {array} chapter is part that gets added to chapters after each iteration through the json array
+     * @return {array} the function returns value of chapter
+     */
+    function addChapter (chapter) {
+        let headers = [],
+            body = [];
+
+        // title, desc, tool, settings are attributes of json file of ReportTemplate with optional styles
+        const title = {text: chapter.title, style: "header", bold: true, fontSize: 14},
+            desc = {text: chapter.description, style: "header"},
+            tool = {text: chapter.tool, style: "header"},
+            settings = {text: chapter.settings, style: "header"};
+
+        docDefinition.content.push(title);
+        docDefinition.content.push(desc);
+        docDefinition.content.push(tool);
+        docDefinition.content.push(settings);
+
+        // if the property type is table, then we return the array of headers and body. Headers are for the table headers and body is set of values
+
+        if (chapter.output.type === "table") {
+            headers = Object.keys(chapter.output.result[0]).map(header => ({
+                border: [false, false, false, true],
+                fillColor: "#dddddd",
+                text: header
+            }));
+
+            body = chapter.output.result.map(row => Object.values(row));
+            docDefinition.content.push({
+                table: {
+                    headerRows: 1,
+                    body: [headers, ...body]
+                }
+            });
+        }
+
+        // if the property type is image, we put the image into content of docDefinition
+
+        if (chapter.output.type === "image") {
+
+            docDefinition.content.push({
+                image: chapter.output.result,
+                width: 300,
+                height: 300
+            });
+        }
+    }
+
+    chapters.forEach(addChapter);
+    // Here we call the pdfMake function to render pdf from the docDefinition
+    pdfMake.createPdf(docDefinition).download("ReportTemplate.pdf");
 }
 
-/**
- *
- *
- * This function converts html to pdf
- * @param {*} data
- * @param {*} columns
- * @param {*} row
- * @returns {body} returns value
- *
- */
-function pdfTest (dataDefinition) {
-    // var extData = [
-    //         // {name: "Bartek", age: 34, height: 1.78},
-    //         // {name: "John", age: 27, height: 1.79},
-    //         // {name: "Elizabeth", age: 30, height: 1.80}
-
-    //     ],
-    const extData = dataDefinition,
-
-        dd = {
-            content: [
-                {text: "Fancy Table", style: "header"},
-                table(extData, ["Kategorie", "Gruppe", "Winterhude"])
-            ]
-        };
-
-    pdfMake.createPdf(dd).download("FancyTable.pdf");
-}
 
 export default {
-    // convertHTMLToPDF,
-    // convertHTMLToPDF2,
-    pdfTest
+    convertHTMLToPDF,
+    reportTemplateToPdf
 
 };

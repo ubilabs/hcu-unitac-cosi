@@ -1,5 +1,6 @@
 // import html from "text-loader!../assets/test.html";
 import html from "text-loader!../assets/NotTestFile.html";
+import rawJson from "../assets/beispiel_report_template.json";
 
 export default {
     active: false,
@@ -60,6 +61,8 @@ export default {
     dataDefinition: {
         content: [
             html
-        ]}
+        ]},
+
+    jsonData: rawJson
 
 };

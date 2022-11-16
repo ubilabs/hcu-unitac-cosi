@@ -43,9 +43,6 @@ export default {
         rawDocDefinition (content) {
             this.$store.dispatch("convertHTMLToPDF", content);
         }
-        // tableDefinition (id) {
-        //     this.$store.dispatch("convertHTMLToPDF2", id);
-        // }
     },
 
     created () {
@@ -55,16 +52,13 @@ export default {
     },
 
     methods: {
-        // ...mapActions("Tools/ExportPDF", ["makeHTMLToPDF"]),
-        // ...mapMutations("Tools/ExportPDF", Object.keys(mutations)),
-        ...mapActions("Tools/ExportPDF", ["pdfTest"]),
+        ...mapActions("Tools/ExportPDF", ["reportTemplateToPdf"]),
         ...mapMutations("Tools/ExportPDF", Object.keys(mutations)),
 
+
         ExportPDF () {
-            // this.$store.dispatch("Tools/ExportPDF/convertHTMLToPDF2", this.docDefinition);
-            // this.$store.dispatch("Tools/ExportPDF/convertHTMLToPDF2", this.id);
-            // console.log(this.id);
-            this.pdfTest();
+            // this.$store.dispatch("Tools/ExportPDF/convertHTMLToPDF", this.docDefinition);
+            this.reportTemplateToPdf(this.jsonData);
         }
     }
 
@@ -73,7 +67,7 @@ export default {
 
 <template lang="html">
     <Tool
-        :title="$t('additional:modules.tools.cosi.ExportasPDF.title')"
+        :title="$t('additional:modules.tools.cosi.exportPDF.title')"
         :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
@@ -81,7 +75,6 @@ export default {
         :deactivate-gfi="deactivateGFI"
     >
         <template
-
             v-if="active"
             #toolBody
         >
@@ -96,22 +89,6 @@ export default {
                     Convert File
                 </v-btn>
             </div>
-
-            <div>
-                <img
-                    id="pic"
-                    alt=""
-                    src="../assets/cat.png"
-                    width="250"
-                    height="250"
-                >
-            </div>
-
-            <div
-                width="500"
-                height="500"
-                v-html="htmlToConvert1"
-            />
         </template>
     </Tool>
 </template>
