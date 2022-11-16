@@ -24,8 +24,8 @@ export default {
     renderToWindow: true,
     resizableWindow: true,
     title: "Report Templates",
-    supportedTools: ["AccessibilityAnalysis", "Dashboard"],
-    templateItems: [
+    supportedTools: ["AccessibilityAnalysis", "Dashboard"], // to support additional tools, you need to hook them up to the toolBridge. Then simply add them in this array.
+    templateItems: [ // the current template. It is always an array, each item a chapter with this general structure (see ../docs/ for details)
         {title: "", description: "", tool: "Dashboard", settings: {}, output: {}, dataSelection: null, id: 0}
     ],
     readmeUrl: {

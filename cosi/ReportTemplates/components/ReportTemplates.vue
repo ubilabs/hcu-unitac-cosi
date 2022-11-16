@@ -1,10 +1,9 @@
 <script>
-// Developer Documentation in ./doc/ReportTemplates.md
+// Documentation in ./doc/ReportTemplates.md
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersReportTemplates";
-import actions from "../store/actionsReportTemplates";
 import mutations from "../store/mutationsReportTemplates";
 import tableify from "tableify"; // generate html tables from js objects
 
@@ -15,8 +14,7 @@ export default {
     },
     data () {
         return {
-            storePath: this.$store.state.Tools.ReportTemplates,
-            uploadedTemplate: null
+            uploadedTemplate: null // file input field for report templates. This variable is watched and used to replace `templateItems` store variable
         };
     },
     computed: {
@@ -27,11 +25,27 @@ export default {
         ...mapGetters("Tools/SelectionManager", ["activeSelection", "selections"])
     },
     watch: {
-        // templateItems (x) { // for debugging
-        //     console.log(x);
-        // },
+        /**
+         * whenever the template file input changes, load the file and overwrite templateItems array
+         * @param {*} file file name (given in file input field)
+         * @return {*} side effect only: templateItems replaced
+         */
         uploadedTemplate (file) {
-            this.importTemplateFile(file);
+
+            const reader = new FileReader(),
+
+                updateTemplateItems = (() => { // callback when file is read: replace templateItem array
+                    return (newItems) => {
+                        this.$store.state.Tools.ReportTemplates.templateItems = newItems;
+                    };
+                })();
+
+            reader.onload = function () { // when file is read, parse json and run callback
+                const jsonObj = JSON.parse(reader.result);
+
+                updateTemplateItems(jsonObj);
+            };
+            reader.readAsText(file); // read file (and inherently run callback which replaces the templateItems array)
         }
     },
     created () {
@@ -42,32 +56,36 @@ export default {
     },
     methods: {
         ...mapMutations("Tools/ReportTemplates", Object.keys(mutations)),
-        ...mapActions("Tools/ReportTemplates", Object.keys(actions)),
+        // ...mapActions("Tools/ReportTemplates", Object.keys(actions)),
         ...mapActions("Maps", ["zoomToExtent"]),
         ...mapMutations("Tools/SelectionManager", ["addSelection", "setActiveSelection"]),
-        updateToolSettings (templateItemsIndex) { // templateItemsIndex should be an index of templateItems (used in v-for)
-            // call selected tool and get settings.
-            const toolSettings = this.currentSettings(this.templateItems[templateItemsIndex].tool); // get settings via ToolBridge currentSettings() method
+        // store settings from a different addon in the template
+        updateToolSettings (templateItemsIndex) {
+            // get settings via ToolBridge currentSettings() method
+            const toolSettings = this.currentSettings(this.templateItems[templateItemsIndex].tool);
 
-            this.templateItems[templateItemsIndex].settings = toolSettings; // store in array
+            // store in array
+            this.templateItems[templateItemsIndex].settings = toolSettings;
 
         },
+        // call toolBridge to run the selected tool with the given settings, save results to this.templateItems
         updateToolOutput (templateItemsIndex) {
             this.$store.dispatch("Tools/ToolBridge/runTool", {
-                toolName: this.templateItems[templateItemsIndex].tool,
-                settings: this.templateItems[templateItemsIndex].settings,
-                outputCallback: (output) => {
-                    const itemID = templateItemsIndex;
+                toolName: this.templateItems[templateItemsIndex].tool, // the selected tool
+                settings: this.templateItems[templateItemsIndex].settings, // the settings stored previously via the `updateToolSeetings()` method
+                outputCallback: (output) => { // in the end, store result in `this.templateItems` and  display them.
+                    const itemID = templateItemsIndex; // copy the item id into the function namespace
 
-                    if (output.type === "table") {
-                        output.result = tableify(output.result); // convert to html table
-                    }
+                    // if (output.type === "table") {
+                    //     output.result = tableify(output.result); // convert to html table
+                    // }
                     this.$store.commit("Tools/ReportTemplates/templateItemOutput", {output, itemID});
                 }
             });
         },
-        exportPDF () {
-            /**
+        exportHTML () { // to be depreciated: placeholder until exportPDF addons comes through
+
+            /** Don't allow html input by user, show it as plain text instead by escaping special html characters
              * @param {*} unsafe - todo
              * @return {String} save html
              */
@@ -79,22 +97,25 @@ export default {
                     .replace(/"/g, "&quot;")
                     .replace(/'/g, "&#039;");
             }
-
+            // manually assemble an html document.
+            // Hopefully to be deprecated - placeholder until exportPDF addons comes through
             const exportedHtml = this.templateItems.map((item) => {
+                    // for each chapter...
                     let resulthtml = "";
 
+                    // make table or image html..
                     if (item.output.type === "table") {
-                        resulthtml = item.output.result;
+                        resulthtml = tableify(item.output.result); // tableify converts an js object to a (string) html table
                     }
                     if (item.output.type === "image") {
                         resulthtml = "<img src='" + item.output.result + "'>";
                     }
-                    return "<h1>" + escapeHtml(item.title) + "</h1><br>" +
+                    return "<h1>" + escapeHtml(item.title) + "</h1><br>" + // title as h1 element
                     "<span>" + escapeHtml(item
-                        .description) + "</span><br><br>" +
+                        .description) + "</span><br><br>" + // description as span element
                         resulthtml;
-                }).join("<br>"),
-
+                }).join("<br>"), // concatenate resulting array of strings into a single string with line breaks
+                // open a new window and fill it with the constructed html
                 win = window.open("", "Export", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=" + (screen.height - 400) + ",left=" + (screen.width - 840));
 
             win.document.body.innerHTML = exportedHtml;
@@ -111,23 +132,6 @@ export default {
             document.body.appendChild(downloadAnchorNode); // required for firefox
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
-        },
-        importTemplateFile (file) {
-            const reader = new FileReader(),
-
-                updateTemplateItems = (() => {
-                    return (newItems) => {
-                        this.$store.state.Tools.ReportTemplates.templateItems = newItems;
-                    };
-                })();
-
-            reader.onload = function () {
-                const jsonObj = JSON.parse(reader.result);
-
-                updateTemplateItems(jsonObj);
-            };
-            reader.readAsText(file);
-
         },
         addEmptyTemplateItem () {
             const newID = 1 + Math.max(...this.templateItems.map(o => o.id)); // create an ID one larger than the highest id in array
@@ -298,9 +302,9 @@ export default {
                 </v-row>
                 <v-row>
                     <v-btn
-                        @click="exportPDF()"
+                        @click="exportHTML()"
                     >
-                        Als Dokument exportieren
+                        Als HTML exportieren
                     </v-btn>
                 </v-row>
                 <br>

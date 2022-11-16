@@ -2,146 +2,38 @@
 
 ## What ReportTemplates does
 
-ReportTemplates lets you retrieve the current settings of other addons, and later call those addons with the settings to receive some results. It functions as a single point of access to get results from different addons in a standardised way. 
-
+ReportTemplates lets you store analysis settings in a structured Document format. You can then repeat them later and export them as a PDF.
 
 ## Usage
 
+### Create a Template
 
-### retreive settings
+1. Select the districts and Datalayers you are interested in.
+2. Add a title and a description for an analysis, and select the tool you want to use (i.e. Accessibility Analysis, Dashboard,..)
+3. Open that tool and enter all the settings as you want them.
+4. Go back to the reportTemplates addon. Click the "refresh" button. The tool settings are now stored in the template.
+5. Click the "play" button. The tool is now run, and the results are copied into the template
+5. Click the "+" at the bottom to add another chapter and repeat
+6. Then you can either download the template as a JSON to use later, or export a PDF document.
 
-To retrieve settings from different Addons, you need to import the `currentSettings` getter from `ReportTemplates`:
-```
-// import getter
-mapGetters("Tools/ReportTemplates", ["currentSettings"])
-```
+### Use an existing template
 
-Then you can call the getter like this:
-```
-// call getter
-my_retreived_addon_settings = currentSettings("SomeAddonName");
-// for example:
-my_retreived_addon_settings = currentSettings("AccessibilityAnalyis");
-```
-
-### Run tool and retrieve results
-```
-this.$store.dispatch("Tools/ReportTemplates/runTool", {
-                toolName: toolName,
-                settings: settings,
-                outputCallback: outputCallback
-            });
-```
-- toolName: the name of the tool/addon you want to run as a character string
-- settings: the settings you want to use for the tool, as retrieved from `currentSettings` (see above)
-- outputCallback: a function defining what ReportTemplates should do with the other tool/addon's result once they are returned.
-
-`this.$store.dispatch(...)` does not return the result. Instead, ReportTemplates calls whatever function you pass into `outputCallback` on the output.
-
-So for example, this will log the outout to the console once the results are in:
-
-```
-this.$store.dispatch("Tools/ReportTemplates/runTool", {
-                toolName: "AccessibilityAnalysis",
-                settings: settings,
-                outputCallback: console.log
-            });
-
-```
-
-Or to send the results to a specific store variable:
-```
-this.$store.dispatch("Tools/ReportTemplates/runTool", {
-                toolName: "AccessibilityAnalysis",
-                settings: settings,
-                outputCallback: (output) => { store.commit("Tools/SomeToolName/someVariable", output) }
-            });
-
-```
+1. Upload the file through the "reportvorlage importieren" field
+2. Select the relevant Areas (DistrictSelector) and data layers ("Themen")
+3. Go through the chapters and click the "play" button to run each tool according to the given template
 
 
-## Making new addons compatible with ReportTemplates
+### Developers
 
-To make a new addon accessible through the ReportTemplates, add the following to that addon:
+So far, each report Template is an array, each item makes a chapter. Each chapter is an object with these fields:
 
-*A) add `ReportTemplatesIn` and `ReportTemplatesOut` to your addon's store STATE*
+1. `title`
+2. `description`
+3. `toolName` - the name of the tool used for analysis
+4. `settings` - the settings used to analyse the tool, as given/accepted by toolBridge `currentSettings()` `runTool()`
+5. `output` - the tools results
+5.1. `output.type` either "table" or "image" - the two output types currently supported
+5.2. `output.result` either the table data as a js object, or the image as a dataURL
+5.3. `output.request` the complete request originally made to the toolBridge addon, composed from `toolName` and `settings`
 
-```
-// you need to add two variables to the store state:
-/*
-* @property {object} ReportTemplatesIn: {settings: {}, type: "", outputCallback: ()=>{}} accepts settings from ReportTemplates (must have a *watcher*)
-* @property {object} ReportTemplatesOut: {}  pass current settings to ReportTemplates (must have a *getter*)
-*/
-const state = {
-    // ...
-    // ...
-    // these two variables are required to make this addon compatible with the ReportTemplates addon (for details see ReportTemplates documentation)
-    ReportTemplatesIn: {settings: {}, type: "", outputCallback: null}, // accepts settings from ReportTemplates - must have a *watcher*
-    ReportTemplatesOut: {},// pass current settings to ReportTemplates - must have a *getter*
-};
-```
-
-
-*B) Add a GETTER for ReportTemplatesOut*
-
-```
-const getters = {
-    // ...
-    // ...
-    // ...
-    // this is required to make this addon compatible with the ReportTemplates addon (see ReportTemplates documentation).
-    // the definition here must match the input expected by the watcher on the `ReportTemplatesIn` variable
-    ReportTemplatesOut: (state) => {
-        return {
-            // something that matches what the ReportTemplatesIn watcher expects in 'settings'.
-            // for example
-            someVariable: state.someVariable
-        };
-    }
-};
-```
-
-*C) Add a WATCHER for ReportTemplatesIn*
-
-```
-ReportTemplatesIn (newRequest) {
-    /**
-     * 1. update the interface based on the settings received from ReportTemplates
-     * @param {Object} request the ReportTemplates request {id:..., settings:{...}}
-     * @returns {Object} (run for side effects only, passes along the request)
-     */
-    const updateInterface = (request) => {
-            // for example
-            // this.someVariable = request.settings.someVariable
-        },
-        /**
-        * 2. run the specific analysis of this addon
-        * @returns {Object} the value of the function that runs the analysis. Depending on the addon, the function that triggers the analysis to run may or may not return the results; if not, we ignore this functions output, and pick the results from the state instead.
-        */
-        runTool = () => {
-            // for example:
-            // return this.runAnalysis();
-        },
-        /**
-        * 3. hand the results back to ReportTemplates, in the form of: {request: ..., type: ..., result: ...}
-        * @param {Object} request a ReportTemplates request in the form {settings:{...}, outputCallback:()=>()}
-        * @returns {Object} null (runs for side effects only)
-        */
-        returnResults = () => {
-            return this.$store.commit("Tools/ReportTemplates/setReceivedResults", // this is where ReportTemplates expects requested results to arrive
-                {
-                    result: this.analysisResults, // change to where results are stored
-                    type: "geoJSON", // see ReportTemplates docs for supported output types
-                    request: newRequest // we need to give back the original request as well, leave this as is.
-                }
-            );
-        };
-
-    // Now this runs the three steps, making sure they happen synchronously (so we don't try to return results before analysis is finished)
-    updateInterface(newRequest);
-    runTool().then(returnResults);
-    return null; // we care about the side effects only.
-
-}
-```
 

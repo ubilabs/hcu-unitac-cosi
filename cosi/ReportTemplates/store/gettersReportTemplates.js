@@ -3,7 +3,6 @@ import ReportTemplatesState from "./stateReportTemplates";
 
 const getters = {
     ...generateSimpleGetters(ReportTemplatesState)
-
 };
 
 export default getters;
