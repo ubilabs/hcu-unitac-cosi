@@ -9,7 +9,7 @@ function convertHTMLToPDF (context, docDefinition) {
 
     const doc1 = docDefinition;
 
-    pdfMake.createPdf(doc1).download("Report.pdf"); 
+    pdfMake.createPdf(doc1).download("Report.pdf");
 }
 
 /**

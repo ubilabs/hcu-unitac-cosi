@@ -75,12 +75,12 @@ export default {
         :deactivate-gfi="deactivateGFI"
     >
         <template
+
             v-if="active"
             #toolBody
         >
             <div>
                 <v-btn
-                    id="ReportTable"
                     color="orange"
                     rounded
                     dark
@@ -89,6 +89,22 @@ export default {
                     Convert File
                 </v-btn>
             </div>
+
+            <!-- <div>
+                <img
+                    id="pic"
+                    alt=""
+                    src="../assets/cat.png"
+                    width="250"
+                    height="250"
+                >
+            </div>
+
+            <div
+                width="500"
+                height="500"
+                v-html="htmlToConvert1"
+            /> -->
         </template>
     </Tool>
 </template>
