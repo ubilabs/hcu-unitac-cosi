@@ -31,7 +31,11 @@ export default {
          * @return {*} side effect only: templateItems replaced
          */
         uploadedTemplate (file) {
-
+            // this is a bit convoluted:
+            // 1. create a file reader object
+            // 2. define the function that updates our array based on the file
+            // 3. tell the fileReader to use that function when the file is loaded
+            // 4. use the reader on the file
             const reader = new FileReader(),
 
                 updateTemplateItems = (() => { // callback when file is read: replace templateItem array
@@ -57,31 +61,33 @@ export default {
     methods: {
         ...mapMutations("Tools/ReportTemplates", Object.keys(mutations)),
         // ...mapActions("Tools/ReportTemplates", Object.keys(actions)),
+        ...mapActions("Tools/ToolBridge", ["runTool"]),
         ...mapActions("Maps", ["zoomToExtent"]),
         ...mapMutations("Tools/SelectionManager", ["addSelection", "setActiveSelection"]),
-        // store settings from a different addon in the template
+        // store settings from selected addon in the template
         updateToolSettings (templateItemsIndex) {
             // get settings via ToolBridge currentSettings() method
             const toolSettings = this.currentSettings(this.templateItems[templateItemsIndex].tool);
 
-            // store in array
+            // update array
             this.templateItems[templateItemsIndex].settings = toolSettings;
 
         },
-        // call toolBridge to run the selected tool with the given settings, save results to this.templateItems
+        // run a different addon based on templateItem, store results
         updateToolOutput (templateItemsIndex) {
-            this.$store.dispatch("Tools/ToolBridge/runTool", {
+            // calls toolBridge to run the selected tool with the given settings
+            // outputCallback then saves the results to this.templateItems
+            this.runTool({
                 toolName: this.templateItems[templateItemsIndex].tool, // the selected tool
                 settings: this.templateItems[templateItemsIndex].settings, // the settings stored previously via the `updateToolSeetings()` method
                 outputCallback: (output) => { // in the end, store result in `this.templateItems` and  display them.
                     const itemID = templateItemsIndex; // copy the item id into the function namespace
 
-                    // if (output.type === "table") {
-                    //     output.result = tableify(output.result); // convert to html table
-                    // }
                     this.$store.commit("Tools/ReportTemplates/templateItemOutput", {output, itemID});
                 }
             });
+
+
         },
         exportHTML () { // to be depreciated: placeholder until exportPDF addons comes through
 
@@ -123,7 +129,7 @@ export default {
             win.focus();
 
         },
-        downloadObjectAsJson (exportObj, exportName) {
+        downloadObjectAsJson (exportObj, exportName) { // used to save the template as json
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj)),
                 downloadAnchorNode = document.createElement("a");
 
@@ -133,32 +139,35 @@ export default {
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
         },
-        addEmptyTemplateItem () {
+        addEmptyTemplateItem () { // "+" button to add new chapters to the template
             const newID = 1 + Math.max(...this.templateItems.map(o => o.id)); // create an ID one larger than the highest id in array
 
             this.templateItems.push({title: "", description: "", tool: "Dashboard", settings: {}, output: {}, id: newID});
 
         },
-        deleteTemplateItem (id) {
+        deleteTemplateItem (id) { // id is the value for key "id" in the templateItem (stable & unique), not the array index (unstable)
             this.$store.state.Tools.ReportTemplates.templateItems = this.templateItems.filter(x => x.id !== id);
         },
-        // connect to SelectionManager
-        copyCurrentDataSelection (toItemId) {
-            // this is not working as expected
-            const dataSelection = this.selections()[this.activeSelection()];
 
-            this.templateItems[toItemId].dataSelection = dataSelection;
-            return dataSelection;
-        },
-        setCurrentDataSelection (selection) {
-            // this is not working as expected
+        // connect to SelectionManager once it's hooked up
+        // not (yet) working as expected
+        // copyCurrentDataSelection (toItemId) {
+        //     // this is not working as expected
+        //     const dataSelection = this.selections()[this.activeSelection()];
 
-            const latestSelectionId = this.selections.length;
+        //     this.templateItems[toItemId].dataSelection = dataSelection;
+        //     return dataSelection;
+        // },
+        // // connect to SelectionManager
+        // setCurrentDataSelection (selection) {
+        //     // this is not working as expected
 
-            this.$store.commit("Tools/SelectionManager/addSelection", selection);
-            this.$store.commit("Tools/SelectionManager/setActiveSelection", latestSelectionId);
+        //     const latestSelectionId = this.selections.length;
 
-        },
+        //     this.$store.commit("Tools/SelectionManager/addSelection", selection);
+        //     this.$store.commit("Tools/SelectionManager/setActiveSelection", latestSelectionId);
+
+        // },
         close () {
             this.setActive(false);
             const model = getComponent(this.id);
@@ -182,6 +191,7 @@ export default {
         :deactivate-gfi="deactivateGFI"
     >
         <template #toolBody>
+            <!-- upload saved templates -->
             <v-file-input
                 v-model="uploadedTemplate"
                 accept="application/JSON"
@@ -192,6 +202,7 @@ export default {
             <v-container>
                 <v-row>
                     <v-col cols="12">
+                        <!-- one v-card per chapter in the template -->
                         <v-card
                             v-for="(templateItem,index) in templateItems"
                             :key="index"
@@ -200,6 +211,7 @@ export default {
                             tile
                         >
                             <v-container>
+                                <!-- this to be used once the selectionManager is hooked up -->
                                 <!-- <v-row>
                                     <v-btn @click="copyCurrentDataSelection(templateItem.id)">
                                         current data selection
@@ -209,6 +221,7 @@ export default {
                                     </v-btn>
                                 </v-row> -->
                                 <v-row>
+                                    <!-- delete item button -->
                                     <v-col
                                         cols="12"
                                         align="right"
@@ -222,6 +235,7 @@ export default {
                                         </v-icon>
                                     </v-col>
                                 </v-row>
+                                <!-- title -->
                                 <v-row>
                                     <v-col cols="12">
                                         <v-text-field
@@ -232,6 +246,7 @@ export default {
                                         />
                                     </v-col>
                                 </v-row>
+                                <!-- description -->
                                 <v-row>
                                     <v-col cols="12">
                                         <v-textarea
@@ -241,6 +256,7 @@ export default {
                                         />
                                     </v-col>
                                 </v-row>
+                                <!-- tool selection -->
                                 <v-row>
                                     <v-col cols="10">
                                         <v-select
@@ -249,16 +265,19 @@ export default {
                                             :items="supportedTools"
                                         />
                                     </v-col>
+                                    <!-- run tool button -->
                                     <v-col cols="2">
                                         <v-icon @click="updateToolOutput(index)">
                                             mdi-play
                                         </v-icon>
+                                        <!-- get tool settings button -->
                                         <v-icon @click="updateToolSettings(index)">
                                             mdi-refresh
                                         </v-icon>
                                     </v-col>
                                 </v-row>
                                 <v-row>
+                                    <!-- display raw settings -->
                                     <v-col cols="12">
                                         Einstellungen:
                                         <div
@@ -267,11 +286,13 @@ export default {
                                         /><br>
                                     </v-col>
                                 </v-row>
+                                <!-- display results -->
                                 <v-row>
                                     Ergebnis:
                                     <div
                                         class="limitSize"
                                     >
+                                        <!-- result might be a table, might be an image -->
                                         <div v-if="templateItem.output.type==='table'">
                                             <div v-html="templateItem.output.result" />
                                         </div>
