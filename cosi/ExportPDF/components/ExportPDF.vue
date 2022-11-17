@@ -52,13 +52,12 @@ export default {
     },
 
     methods: {
-        ...mapActions("Tools/ExportPDF", ["reportTemplateToPdf"]),
+        ...mapActions("Tools/ExportPDF", ["reportTemplateToPDF"]),
         ...mapMutations("Tools/ExportPDF", Object.keys(mutations)),
 
 
         ExportPDF () {
-            // this.$store.dispatch("Tools/ExportPDF/convertHTMLToPDF", this.docDefinition);
-            this.reportTemplateToPdf(this.jsonData);
+            this.reportTemplateToPDF(this.jsonData);
         }
     }
 
@@ -89,22 +88,6 @@ export default {
                     Convert File
                 </v-btn>
             </div>
-
-            <!-- <div>
-                <img
-                    id="pic"
-                    alt=""
-                    src="../assets/cat.png"
-                    width="250"
-                    height="250"
-                >
-            </div>
-
-            <div
-                width="500"
-                height="500"
-                v-html="htmlToConvert1"
-            /> -->
         </template>
     </Tool>
 </template>

@@ -7,21 +7,20 @@ import pdfMake from "pdfmake";
  */
 function convertHTMLToPDF (context, docDefinition) {
 
-    const doc1 = docDefinition;
+    pdfMake.createPdf(docDefinition).download("Report.pdf");
 
-    pdfMake.createPdf(doc1).download("Report.pdf");
 }
 
 /**
  *
- *  This function converts data from reportTemplate to pdf
+ *  This function converts data from reportTemplates to pdf
  *
  * @param {*} context is just a vuex action context
  * @param {*} chapters holds the overall data of reporting tool after each iteration of chapter
- * @returns {body} returns value
+ * @returns {*} returns value
  *
  */
-function reportTemplateToPdf (context, chapters) {
+function reportTemplateToPDF (context, chapters) {
 
     const docDefinition = {
         content: []
@@ -32,8 +31,6 @@ function reportTemplateToPdf (context, chapters) {
      * @return {array} the function returns value of chapter
      */
     function addChapter (chapter) {
-        let headers = [],
-            body = [];
 
         // title, desc, tool, settings are attributes of json file of ReportTemplate with optional styles
         const title = {text: chapter.title, style: "header", bold: true, fontSize: 14},
@@ -49,13 +46,16 @@ function reportTemplateToPdf (context, chapters) {
         // if the property type is table, then we return the array of headers and body. Headers are for the table headers and body is set of values
 
         if (chapter.output.type === "table") {
-            headers = Object.keys(chapter.output.result[0]).map(header => ({
-                border: [false, false, false, true],
-                fillColor: "#dddddd",
-                text: header
-            }));
+            // let headers = [],
+            // body = [];
+            const headers = Object.keys(chapter.output.result[0]).map(header => ({
+                    border: [false, false, false, true],
+                    fillColor: "#dddddd",
+                    text: header
+                })),
 
-            body = chapter.output.result.map(row => Object.values(row));
+                body = chapter.output.result.map(row => Object.values(row));
+
             docDefinition.content.push({
                 table: {
                     headerRows: 1,
@@ -84,6 +84,6 @@ function reportTemplateToPdf (context, chapters) {
 
 export default {
     convertHTMLToPDF,
-    reportTemplateToPdf
+    reportTemplateToPDF
 
 };
