@@ -13,8 +13,9 @@ ReportTemplates lets you store analysis settings in a structured Document format
 3. Open that tool and enter all the settings as you want them.
 4. Go back to the reportTemplates addon. Click the "refresh" button. The tool settings are now stored in the template.
 5. Click the "play" button. The tool is now run, and the results are copied into the template
-5. Click the "+" at the bottom to add another chapter and repeat
-6. Then you can either download the template as a JSON to use later, or export a PDF document.
+6. Click the "+" at the bottom to add another chapter and repeat setps 2-5
+7. Delete chapters with the trash bin icon
+7. Then you can either download the template as a JSON to use later, or export a PDF document.
 
 ### Use an existing template
 
@@ -25,7 +26,7 @@ ReportTemplates lets you store analysis settings in a structured Document format
 
 ### Developers
 
-So far, each report Template is an array, each item makes a chapter. Each chapter is an object with these fields:
+So far, each report Template is an array stored in `templateItems`, each item makes a chapter. Each chapter is an object with these fields:
 
 1. `title`
 2. `description`
@@ -36,4 +37,14 @@ So far, each report Template is an array, each item makes a chapter. Each chapte
 5.2. `output.result` either the table data as a js object, or the image as a dataURL
 5.3. `output.request` the complete request originally made to the toolBridge addon, composed from `toolName` and `settings`
 
+The code is basically just..
+- upload and download `templateItems` as json
+- display each item with v-for (supporting tables and images as output)
+- fetch settings from tools via toolbridge (refresh icon)
+- run tool via toolBridge and copy results to `templateItems`
+- delete/add chapters (`templateItem` array items) 
 
+
+### Todos
+- hook up with selectionManager, so a data selection can be stored with each chapter
+- hook up with ExportPDF
