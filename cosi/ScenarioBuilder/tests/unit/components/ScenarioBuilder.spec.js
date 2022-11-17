@@ -154,10 +154,17 @@ describe("addons/cosi/ScenarioBuilder/components/ScenarioBuilder.vue", () => {
                         }
                     }
                 },
-                Maps: {
+                mockFeatureTypeDesc: {
                     namespaced: true,
                     getters: {
                         getLayerById: () => sinon.stub().returns(layer),
+                        // ol2DMap: () => ({
+                        //     getLayers: () => ({getArray: sinon.stub()}),
+                        //     addEventListener: sinon.stub(),
+                        //     removeEventListener: sinon.stub(),
+                        //     addInteraction: sinon.stub(),
+                        //     removeInteraction: sinon.stub()
+                        // }),
                         projectionCode: sinon.stub().returns("EPSG:25832")
                     },
                     mutations: {
