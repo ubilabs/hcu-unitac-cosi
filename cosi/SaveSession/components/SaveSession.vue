@@ -27,9 +27,9 @@ export default {
                 // The order matters for loading
                 Maps: [
                     "layerIds",
-                    "view"
-                    // "center",
-                    // "zoomLevel"
+                    // "view"
+                    "center",
+                    "zoomLevel"
                 ],
                 Tools: {
                     ChartGenerator: [

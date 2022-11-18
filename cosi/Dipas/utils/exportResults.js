@@ -1,4 +1,4 @@
-import {featuresToGeoJsonCollection} from "../../utils/geomUtils";
+import {featuresToGeoJsonCollection} from "../../utils/features/convertToGeoJson";
 import {downloadJsonToFile} from "../../utils/download";
 import store from "../../../../src/app-store";
 

@@ -12,7 +12,7 @@ import service, {setWorker, setWorkerFactory} from "../../../service/index";
 import featuresRegion from "./featuresRegion.json";
 import GeoJSON from "ol/format/GeoJSON";
 import {initializeLayerList} from "../../../../utils/initializeLayerList";
-import {getAllFeatures} from "../../../../utils/getAllFeatures";
+import {getAllFeaturesByLayerId} from "../../../../utils/features/getAllFeaturesByLayerId";
 import * as Proj from "ol/proj.js";
 
 /**
@@ -206,7 +206,7 @@ describe("createIsochrones", () => {
         await initializeLayerList();
 
         const commitStub = sinon.stub(),
-            allFeatures = await getAllFeatures("1732"),
+            allFeatures = await getAllFeaturesByLayerId("1732"),
             coords = allFeatures.map(f => Proj.transform(f.getGeometry().flatCoordinates.slice(0, 2), "EPSG:25832", "EPSG:4326")),
 
             ret = await service.store.actions.getIsochrones({getters: {batchSize: 10, baseUrl}, commit: commitStub, rootGetters},

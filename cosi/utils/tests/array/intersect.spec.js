@@ -74,7 +74,7 @@ describe("utils/array/intersect", () => {
         expect(console.error.calledOnce).to.be.true;
     });
 
-    it("should return the expected array", async function () {
+    it("should return the expected array", () => {
         expect(intersect(firstArray, secondArray)).to.deep.equal(expectedArray);
     });
 });

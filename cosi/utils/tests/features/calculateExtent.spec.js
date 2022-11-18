@@ -39,23 +39,23 @@ describe("utils/features/calculateExtent", () => {
         expect(calculateExtent({})).to.be.false;
     });
 
-    it("should return an false if the given parameter is undefined", () => {
+    it("should return false if the given parameter is undefined", () => {
         expect(calculateExtent(undefined)).to.be.false;
     });
 
-    it("should return an false if the given parameter is a boolean", () => {
+    it("should return false if the given parameter is a boolean", () => {
         expect(calculateExtent(true)).to.be.false;
     });
 
-    it("should return an false if the given parameter is a string", () => {
+    it("should return false if the given parameter is a string", () => {
         expect(calculateExtent("string")).to.be.false;
     });
 
-    it("should return an false if the given parameter is null", () => {
+    it("should return false if the given parameter is null", () => {
         expect(calculateExtent(null)).to.be.false;
     });
 
-    it("should return an false if the given parameter is a number", () => {
+    it("should return false if the given parameter is a number", () => {
         expect(calculateExtent(666)).to.be.false;
     });
 
@@ -64,27 +64,27 @@ describe("utils/features/calculateExtent", () => {
         expect(console.error.calledOnce).to.be.true;
     });
 
-    it("should return an false if the second passed parameter is an object", () => {
+    it("should return false if the second passed parameter is an object", () => {
         expect(calculateExtent([], {})).to.be.false;
     });
 
-    it("should return an false if the second passed parameter is undefined", () => {
+    it("should return false if the second passed parameter is undefined", () => {
         expect(calculateExtent([], undefined)).to.be.false;
     });
 
-    it("should return an false if the second passed parameter is a boolean", () => {
+    it("should return false if the second passed parameter is a boolean", () => {
         expect(calculateExtent([], true)).to.be.false;
     });
 
-    it("should return an false if the second passed parameter is a string", () => {
+    it("should return false if the second passed parameter is a string", () => {
         expect(calculateExtent([], "string")).to.be.false;
     });
 
-    it("should return an false if the second passed parameter is null", () => {
+    it("should return false if the second passed parameter is null", () => {
         expect(calculateExtent([], null)).to.be.false;
     });
 
-    it("should return an false if the second passed parameter is an array", () => {
+    it("should return false if the second passed parameter is an array", () => {
         expect(calculateExtent([], [])).to.be.false;
     });
 

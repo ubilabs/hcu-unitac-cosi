@@ -1,4 +1,5 @@
 import importLayers from "./addWMSRemotely.js";
+import store from "../../src/app-store";
 
 Radio.channel("addLayerRemotely").on({
     /**
@@ -13,9 +14,10 @@ Radio.channel("addLayerRemotely").on({
      * @param {Boolean} zoomTo Flag if the map should zoom to the extent of the layer
      * @param {Number} clusterDistance distance in which features will be clustured if set
      * @param {String} gfiTheme name of the gfiTheme
+     * @param {String} mouseHoverField name of the field to be shown on mouse hover
      * @returns {void}
      */
-    "addGeoJson": async function ({name, id, geoJSON, styleId, folderName, gfiAttributes, zoomTo = true, clusterDistance = undefined, gfiTheme = "default"}) {
+    "addGeoJson": async function ({name, id, geoJSON, styleId, folderName, gfiAttributes, zoomTo = true, clusterDistance = undefined, gfiTheme = "default", mouseHoverField = undefined}) {
 
         const treeType = Radio.request("Parser", "getTreeType"),
             map = mapCollection.getMap("2D"),
@@ -52,11 +54,16 @@ Radio.channel("addLayerRemotely").on({
             parentID = "tree";
         }
 
-        geojsonLayer = returnGeoJSONLayerObject(name, id, geoJSON, styleId, parentID, gfiAttributes, clusterDistance, gfiTheme);
+        geojsonLayer = returnGeoJSONLayerObject(name, id, geoJSON, styleId, parentID, gfiAttributes, clusterDistance, gfiTheme, mouseHoverField);
 
         Radio.trigger("Parser", "addItem", geojsonLayer);
         Radio.trigger("ModelList", "addModelsByAttributes", {id: id});
         Radio.trigger("ModelList", "renderTree");
+
+        if (mouseHoverField) {
+            store.state.MouseHover.mouseHoverLayers.push(geojsonLayer);
+            store.state.MouseHover.mouseHoverInfos.push({id: geojsonLayer.id, mouseHoverField: geojsonLayer.mouseHoverField});
+        }
 
         if (treeType === "light") {
             Radio.trigger("ModelList", "refreshLightTree");
@@ -65,6 +72,18 @@ Radio.channel("addLayerRemotely").on({
         if (zoomTo) {
             Radio.trigger("Map", "zoomToFilteredFeatures", getFeatureIds(id), id);
         }
+
+        window.addEventListener("touchmove", () => {
+            if (map.getView().getZoom() < map.getView().getMinZoom()) {
+                map.getView().setZoom(map.getView().getMinZoom());
+                return false;
+            }
+            else if (map.getView().getZoom() > map.getView().getMaxZoom()) {
+                map.getView().setZoom(map.getView().getMaxZoom());
+                return false;
+            }
+            return true;
+        });
     },
     /**
      * Adds a WMS through the remote interface
@@ -120,9 +139,10 @@ function getFeatureIds (layerId) {
  * @param {String} [gfiAttributes] Attributes to be shown when clicking on the feature using the GFI tool.
  * @param {Number} clusterDistance Distance in which point features are clustered. Undefined if no clusters are to be used.
  * @param {String} gfiTheme name of the gfiTheme
+ * @param {String} mouseHoverField name of the field to be shown on mouse hover
  * @returns {Object} Object of geojson layer
 */
-function returnGeoJSONLayerObject (name, id, geojson, styleId, parentId, gfiAttributes = "showAll", clusterDistance = undefined, gfiTheme = "default") {
+function returnGeoJSONLayerObject (name, id, geojson, styleId, parentId, gfiAttributes = "showAll", clusterDistance = undefined, gfiTheme = "default", mouseHoverField = undefined) {
     const layer = {
         type: "layer",
         name: name,
@@ -130,8 +150,8 @@ function returnGeoJSONLayerObject (name, id, geojson, styleId, parentId, gfiAttr
         typ: "GeoJSON",
         geojson: geojson,
         transparent: true,
-        minScale: "0",
-        maxScale: "500000",
+        minScale: null,
+        maxScale: null,
         gfiAttributes: gfiAttributes,
         layerAttribution: "nicht vorhanden",
         legendURL: "",
@@ -152,6 +172,9 @@ function returnGeoJSONLayerObject (name, id, geojson, styleId, parentId, gfiAttr
     }
     if (clusterDistance !== undefined) {
         layer.clusterDistance = clusterDistance;
+    }
+    if (mouseHoverField !== undefined) {
+        layer.mouseHoverField = mouseHoverField;
     }
 
     return layer;

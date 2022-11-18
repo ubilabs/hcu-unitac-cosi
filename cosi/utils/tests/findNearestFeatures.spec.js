@@ -1,5 +1,5 @@
 import {initializeLayerList} from "../initializeLayerList";
-import {getAllFeatures} from "../getAllFeatures";
+import {getAllFeaturesByLayerId} from "../features/getAllFeaturesByLayerId";
 import {findNearestFeatures} from "../findNearestFeatures";
 import {expect} from "chai";
 import * as Proj from "ol/proj.js";
@@ -12,7 +12,7 @@ describe.skip("findNearestFeature", () => {
         registerProjections();
     });
     it("should find feature from same feature", async function () {
-        const features = await getAllFeatures("20569"),
+        const features = await getAllFeaturesByLayerId("20569"),
 
 
             foundFeatures = await findNearestFeatures("20569", features[0], 0.001, 0.001);

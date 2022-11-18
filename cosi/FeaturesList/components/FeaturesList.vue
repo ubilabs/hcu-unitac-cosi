@@ -14,7 +14,7 @@ import FeatureIcon from "./FeatureIcon.vue";
 import LayerWeights from "./LayerWeights.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
-import arrayIsEqual from "../../utils/arrayIsEqual";
+import {isEqual} from "../../utils/array/isEqual";
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
@@ -228,7 +228,7 @@ export default {
          * @returns {void}
          */
         activeVectorLayerList (newList, oldList) {
-            if (!arrayIsEqual(newList, oldList)) {
+            if (!isEqual(newList, oldList)) {
                 this.$nextTick(() => {
                     this.updateFeaturesList();
                 });
