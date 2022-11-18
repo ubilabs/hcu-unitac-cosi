@@ -41,7 +41,7 @@ const actions = {
             }
         }
         // rewrite elements to openlayers features
-        if (format.readFeature(collection).getGeometry().getType() === "MultiPolygon") {
+        if (format.readFeature(collection).getGeometry()?.getType() === "MultiPolygon") {
             format.readFeature(collection).getGeometry().getPolygons().forEach(polygon => {
                 mergedPolygons.push(new Feature(polygon));
             });

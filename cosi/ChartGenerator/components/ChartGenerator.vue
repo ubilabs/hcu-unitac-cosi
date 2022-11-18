@@ -42,12 +42,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "metadataUrls"])
     },
     watch: {
-        selectedFeatures () {
-            console.log("selectedDistrictlevel", this.selectedDistrictLevel);
-            console.log("selected features", this.selectedFeatures);
-        },
         datasets (newDatasets, oldValue) {
-            console.log("all my sets", this.datasets);
             if (oldValue && newDatasets.length !== oldValue.length) {
                 this.activeGraph = this.datasets.length - 1;
             }
