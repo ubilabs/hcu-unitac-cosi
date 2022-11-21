@@ -33,6 +33,8 @@ export default {
             // when a new request to a tool is made, a callback function is passed along, defining what to do with the results at the very end.
             // whenever a result is received, we run that callback.
             // that way, the requests/results are self contained - i.e. we don't need to keep track of what requests we made when and what we were supposed to do with them.
+            console.log("new result");
+            console.log(newResult);
             newResult.request.outputCallback(newResult);
         }
     },
@@ -52,6 +54,9 @@ export default {
             this.retrievedSettings.push(settings);
         },
         runToolButton (toolName, settings, outputCallback) { // only needed for debugging UI
+            console.log(toolName);
+            console.log(settings);
+            console.log(outputCallback);
             this.$store.dispatch("Tools/ToolBridge/runTool", {
                 toolName: toolName,
                 settings: settings,
@@ -65,6 +70,9 @@ export default {
 
                 this.resultDisplay = table_html;
 
+            }
+            else if (result.type === "image") {
+                this.resultDisplay = "<img src='" + result.result + "' width='200px'>";
             }
         }
     },
