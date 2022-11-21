@@ -178,5 +178,9 @@
   "addLayerRemotely": "addLayerRemotely.js",
   "obliqueViewer": {
     "type": "tool"
+  },
+  "ToolBridge": {
+    "path": "cosi/ToolBridge",
+    "type": "tool"
   }
 }

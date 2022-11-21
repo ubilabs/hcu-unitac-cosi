@@ -22,7 +22,7 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 config.mocks.$t = key => key;
 
-describe("ColorCodeMap.vue", () => {
+describe.only("ColorCodeMap.vue", () => {
     const mockConfigJson = {
         Portalconfig: {
             menu: {
