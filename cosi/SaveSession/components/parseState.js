@@ -47,6 +47,12 @@ export default {
                         case "Maps/view":
                             mapCollection.getMap("2D").setView(state[key][attr]);
                             break;
+                        case "Maps/center":
+                            mapCollection.getMapView("2D").setCenter(state[key][attr]);
+                            break;
+                        case "Maps/zoomLevel":
+                            mapCollection.getMapView("2D").setZoom(state[key][attr]);
+                            break;
                         case "AreaSelector/geometry":
                             // hacky, wait for the districts to be selected
                             this.$nextTick(async () => {

@@ -17,7 +17,7 @@ import ToolInfo from "../../components/ToolInfo.vue";
 import axios from "axios";
 import {exportAsGeoJson} from "../utils/exportResults";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
-import {getCenterOfMass} from "../../utils/geomUtils";
+import {getCenterOfMass} from "../../utils/features/getCenterOfMass";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 export default {
