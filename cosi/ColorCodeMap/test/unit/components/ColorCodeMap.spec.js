@@ -321,7 +321,7 @@ describe.only("ColorCodeMap.vue", () => {
                 button = wrapper.find("button");
 
             await button.trigger("click");
-            await wrapper.$nextTick();
+            await wrapper.vm.$nextTick();
             expect(button.text()).to.be.equal("mdi-minus");
             expect(ccm.classes("minimized")).to.be.false;
         });
