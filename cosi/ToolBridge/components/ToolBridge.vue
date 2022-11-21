@@ -16,7 +16,7 @@ export default {
         return {
             retrievedSettings: [], // only needed for debugging UI
             selectedItem: "Dashboard", // only needed for debugging UI
-            selectedSettings: "", // only needed for debugging UI
+            selectedSettings: undefined, // only needed for debugging UI
             resultDisplay: "" //  only needed for debugging UI
         };
     },
@@ -25,7 +25,7 @@ export default {
         ...mapGetters("Tools/ToolBridge", Object.keys(getters)),
 
         activeSetting () { // only needed for debugging UI
-            return this.retrievedSettings[parseInt(this.selectedSettings, 10)];
+            return this.retrievedSettings[parseInt(this.selectedSettings, 10) || this.retrievedSettings.length - 1];
         }
     },
     watch: {
@@ -70,8 +70,7 @@ export default {
                 this.resultDisplay = "<img src='" + result.result + "' width='200px'>";
             }
         }
-    },
-    render: () => null
+    }
 };
 </script>
 
@@ -99,7 +98,7 @@ export default {
             <v-text-field
                 v-model="selectedSettings"
                 label="use retrieved settings #"
-                default="0"
+                type="number"
                 clearable
             />
             <v-btn @click="runToolButton(selectedItem, activeSetting, defaultOutputCallback)">
