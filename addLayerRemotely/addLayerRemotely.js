@@ -72,6 +72,18 @@ Radio.channel("addLayerRemotely").on({
         if (zoomTo) {
             Radio.trigger("Map", "zoomToFilteredFeatures", getFeatureIds(id), id);
         }
+
+        window.addEventListener("touchmove", () => {
+            if (map.getView().getZoom() < map.getView().getMinZoom()) {
+                map.getView().setZoom(map.getView().getMinZoom());
+                return false;
+            }
+            else if (map.getView().getZoom() > map.getView().getMaxZoom()) {
+                map.getView().setZoom(map.getView().getMaxZoom());
+                return false;
+            }
+            return true;
+        });
     },
     /**
      * Adds a WMS through the remote interface

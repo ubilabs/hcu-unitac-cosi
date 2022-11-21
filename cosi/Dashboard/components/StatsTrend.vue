@@ -20,7 +20,7 @@ export default {
             type: String,
             default: "jahr_"
         },
-        locale: {
+        currentLocale: {
             type: String,
             default: "de-DE"
         },
@@ -61,7 +61,7 @@ export default {
             </v-icon>
         </template>
         <span>
-            <small>{{ ((dy - 1) * 100).toLocaleString(locale) }}%</small>
+            <small>{{ ((dy - 1) * 100).toLocaleString(currentLocale) }}%</small>
         </span>
     </v-tooltip>
 </template>

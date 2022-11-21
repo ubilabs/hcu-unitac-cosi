@@ -59,7 +59,8 @@ export default {
                 <span class="dipas-cockpit-status-label">{{ attributes.status }}</span>
             </div>
             <span class="dipas-cockpit-dateRange">
-                Verfahrenslaufzeit: {{ dateStart }} - {{ dateEnd }}
+                <span>Verfahrenslaufzeit:</span>
+                <span class="dipas-cockpit-dateRange-dates">{{ dateStart }} - {{ dateEnd }}</span>
             </span>
         </div>
         <div class="dipas-cockpit-title">
@@ -135,9 +136,11 @@ export default {
     .dipas-cockpit-proceeding-status {
         background-color: $dark_blue;
         width: fit-content;
+        height: fit-content;
         padding: 6px 6px;
         margin: 10px 0px;
         color: $white;
+        display: flex;
 
         .dipas-cockpit-location-icon {
             img {
@@ -148,6 +151,7 @@ export default {
         .dipas-cockpit-status-label {
             position: relative;
             top: 1px;
+            padding: 0px 2px;
         }
     }
 
@@ -155,6 +159,11 @@ export default {
         margin: 18px 10px;
         position: relative;
         top: 1px;
+        display: flex;
+
+        span.dipas-cockpit-dateRange-dates {
+            padding-left: 3px;
+        }
     }
 
     .dipas-cockpit-title {

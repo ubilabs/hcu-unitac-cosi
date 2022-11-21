@@ -765,7 +765,7 @@ export default {
                                         :header="header"
                                         :current-timestamp="currentTimeStamp"
                                         :timestamp-prefix="timestampPrefix"
-                                        :locale="currentLocale"
+                                        :current-locale="currentLocale"
                                         :tooltip-offset="toolOffset"
                                     />
                                 </template>
@@ -778,7 +778,7 @@ export default {
                                         :header="header"
                                         :current-timestamp="currentTimeStamp"
                                         :timestamp-prefix="timestampPrefix"
-                                        :locale="currentLocale"
+                                        :current-locale="currentLocale"
                                         :tooltip-offset="toolOffset"
                                     />
                                     <!-- eslint-disable-next-line -->
@@ -819,7 +819,7 @@ export default {
                                         :header="header"
                                         :current-timestamp="currentTimeStamp"
                                         :timestamp-prefix="timestampPrefix"
-                                        :locale="currentLocale"
+                                        :current-locale="currentLocale"
                                         :tooltip-offset="toolOffset"
                                     />
                                     <!-- eslint-disable-next-line -->
