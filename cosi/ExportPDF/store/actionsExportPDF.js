@@ -70,8 +70,7 @@ function reportTemplateToPDF (context, chapters) {
 
             docDefinition.content.push({
                 image: chapter.output.result,
-                width: 300,
-                height: 300
+                width: 500
             });
         }
     }
