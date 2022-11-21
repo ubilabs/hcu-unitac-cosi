@@ -95,12 +95,12 @@ export default {
             }
 
             this.$nextTick(()=> {
-                this.setUpperEdge(window.innerHeight - this.$refs.ccm.getBoundingClientRect().top);
+                this.setUpperEdge(window.innerHeight - this.$refs.ccm?.getBoundingClientRect().top);
             });
         },
         minimize () {
             this.$nextTick(()=> {
-                this.setUpperEdge(window.innerHeight - this.$refs.ccm.getBoundingClientRect().top);
+                this.setUpperEdge(window.innerHeight - this.$refs.ccm?.getBoundingClientRect().top);
             });
         },
         loadend (newValue) {
