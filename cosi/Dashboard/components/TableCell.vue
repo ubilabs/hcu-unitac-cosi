@@ -61,7 +61,7 @@ export default {
                     :header="header"
                     :current-timestamp="currentTimestamp"
                     :timestamp-prefix="timestampPrefix"
-                    :locale="currentLocale"
+                    :current-locale="currentLocale"
                     :tooltip-offset="tooltipOffset"
                 />
                 <template v-if="item.expanded">
