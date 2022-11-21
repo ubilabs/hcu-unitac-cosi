@@ -32,8 +32,11 @@ const mutations = {
      * @returns {void}
      */
     addSelection: (state, payload) => {
+        // we want to use internal methods (i.e. highlight) on this incoming selection, without putting those methods into the state.
+        // this is achieved by passing it to a watched store variable
         state.selections.push(payload);
-        state.activeSelection = state.selections.length - 1;
+        // acceptSelection = null; // ensure acceptSelection watcher is triggered in next line
+        // state.acceptSelection = payload;
     },
     /**
     * @param {object} state of this component

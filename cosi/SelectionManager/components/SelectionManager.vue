@@ -50,6 +50,14 @@ export default {
         }
     },
     watch: {
+        // other tools can commit to this store variable to add new selections
+        // that pattern allows us to use data from external tools and apply internal methods to it.
+        acceptSelection (selection) {
+            if (selection) {
+                this.selections.push(selection);
+                this.highlightSelection(this.selections.length - 1);
+            }
+        },
         /**
              * @description Changes the style of the selection manager VectorLayer based on if the addon is active or not.
              * @returns {void}
@@ -103,9 +111,13 @@ export default {
         /**
              * @description Creates VectorLayer for the chosen selection
              * @param {Integer} index - Index of the chosen selection in this.selections
+             * @param {boolean} forceUpdate - update even if selection hasn't changed
              * @returns {void}
              */
         highlightSelection (index) {
+            console.log(index);
+            console.log(this.activeSelection);
+            console.log(this.selections);
             if (this.activeSelection !== index) {
                 this.setActiveSelection(index);
                 if (this.selections[index].storedLayers.length > 0) {
