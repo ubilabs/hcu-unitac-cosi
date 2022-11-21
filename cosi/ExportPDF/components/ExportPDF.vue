@@ -38,7 +38,7 @@ export default {
             }
         },
         rawDocDefinition (content) {
-            this.$store.dispatch("convertHTMLToPDF", content);
+            this.$store.dispatch("downloadPDF", content);
         }
     },
 

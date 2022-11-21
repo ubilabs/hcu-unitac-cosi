@@ -2,10 +2,10 @@ import pdfMake from "pdfmake";
 /**
  *
  * @param {*} context is just a vuex action context
- * @param {*} docDefinition is a variable which stores the actual HTML data in the state
+ * @param {*} docDefinition an document definition as as expected by pdfmake package
  * @returns {body} returns value
  */
-function convertHTMLToPDF (context, docDefinition) {
+function downloadPDF (context, docDefinition) {
 
     pdfMake.createPdf(docDefinition).download("Report.pdf");
 
@@ -83,7 +83,7 @@ function reportTemplateToPDF (context, chapters) {
 
 
 export default {
-    convertHTMLToPDF,
+    downloadPDF,
     reportTemplateToPDF
 
 };
