@@ -97,10 +97,10 @@ export default {
         },
         exportTemplate () {
             if (this.selectedExportFormat === "HTML") {
-                this.exportHTML();
+                this.exportTemplateToHTML();
             }
             else if (this.selectedExportFormat === "PDF") {
-                exportPDF;
+                this.exportTemplateToPdF();
             }
         },
         exportTemplateToPdF () {
