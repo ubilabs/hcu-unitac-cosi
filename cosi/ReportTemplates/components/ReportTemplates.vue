@@ -14,7 +14,9 @@ export default {
     },
     data () {
         return {
-            uploadedTemplate: null // file input field for report templates. This variable is watched and used to replace `templateItems` store variable
+            uploadedTemplate: null, // file input field for report templates. This variable is watched and used to replace `templateItems` store variable
+            supportedExportFormats: ["HTML", "PDF"],
+            selectedExportFormat: "HTML"
         };
     },
     computed: {
@@ -22,7 +24,10 @@ export default {
         ...mapGetters("Tools/ReportTemplates", Object.keys(getters)),
         ...mapGetters("Tools/ToolBridge", ["currentSettings"]),
         ...mapGetters("Maps", {getMapView: "getView"}),
-        ...mapGetters("Tools/SelectionManager", ["activeSelection", "selections"])
+        ...mapGetters("Tools/SelectionManager", ["activeSelection", "selections", "lastSelectionWithCurrentDataLayers"]),
+        ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", {facilitiesMapping: "mapping"}])
+
+
     },
     watch: {
         /**
@@ -63,7 +68,7 @@ export default {
         // ...mapActions("Tools/ReportTemplates", Object.keys(actions)),
         ...mapActions("Tools/ToolBridge", ["runTool"]),
         ...mapActions("Maps", ["zoomToExtent"]),
-        ...mapMutations("Tools/SelectionManager", ["addSelection", "setActiveSelection"]),
+        ...mapMutations("Tools/SelectionManager", ["addSelection", "setActiveSelection", "setAcceptSelection"]),
         // store settings from selected addon in the template
         updateToolSettings (templateItemsIndex) {
             // get settings via ToolBridge currentSettings() method
@@ -149,25 +154,18 @@ export default {
             this.$store.state.Tools.ReportTemplates.templateItems = this.templateItems.filter(x => x.id !== id);
         },
 
-        // connect to SelectionManager once it's hooked up
-        // not (yet) working as expected
-        // copyCurrentDataSelection (toItemId) {
-        //     // this is not working as expected
-        //     const dataSelection = this.selections()[this.activeSelection()];
+        // copy data selection from SelectionManager
+        copyCurrentDataSelection (toItemId) {
+            this.templateItems[toItemId].dataSelection = this.lastSelectionWithCurrentDataLayers;
 
-        //     this.templateItems[toItemId].dataSelection = dataSelection;
-        //     return dataSelection;
-        // },
-        // // connect to SelectionManager
-        // setCurrentDataSelection (selection) {
-        //     // this is not working as expected
 
-        //     const latestSelectionId = this.selections.length;
+        },
+        // add stored selection to  SelectionManager
+        setCurrentDataSelection (dataSelection) {
+            this.setAcceptSelection(null); // make sure watcher is triggered in next line
+            this.setAcceptSelection(dataSelection); // commit to selectionManager
 
-        //     this.$store.commit("Tools/SelectionManager/addSelection", selection);
-        //     this.$store.commit("Tools/SelectionManager/setActiveSelection", latestSelectionId);
-
-        // },
+        },
         close () {
             this.setActive(false);
             const model = getComponent(this.id);
@@ -211,17 +209,8 @@ export default {
                             tile
                         >
                             <v-container>
-                                <!-- this to be used once the selectionManager is hooked up -->
-                                <!-- <v-row>
-                                    <v-btn @click="copyCurrentDataSelection(templateItem.id)">
-                                        current data selection
-                                    </v-btn>
-                                    <v-btn @click="setCurrentDataSelection(templateItem.dataSelection)">
-                                        apply data selection
-                                    </v-btn>
-                                </v-row> -->
+                                <!-- delete item button -->
                                 <v-row>
-                                    <!-- delete item button -->
                                     <v-col
                                         cols="12"
                                         align="right"
@@ -258,26 +247,52 @@ export default {
                                 </v-row>
                                 <!-- tool selection -->
                                 <v-row>
-                                    <v-col cols="10">
+                                    <v-col cols="12">
                                         <v-select
                                             v-model="templateItem.tool"
                                             label="Tool wählen"
                                             :items="supportedTools"
                                         />
                                     </v-col>
-                                    <!-- run tool button -->
-                                    <v-col cols="2">
-                                        <v-icon @click="updateToolOutput(index)">
-                                            mdi-play
-                                        </v-icon>
-                                        <!-- get tool settings button -->
-                                        <v-icon @click="updateToolSettings(index)">
-                                            mdi-refresh
-                                        </v-icon>
-                                    </v-col>
+                                </v-row>
+                                <!-- get data selection -->
+                                <v-row>
+                                    <v-icon @click="copyCurrentDataSelection(templateItem.id)">
+                                        mdi-map-marker-down
+                                    </v-icon> Aktuelle Datenauswahl übernehmen
                                 </v-row>
                                 <v-row>
-                                    <!-- display raw settings -->
+                                    {{ templateItem.dataSelection.id }}<br>
+                                </v-row>
+                                <!-- set data selection -->
+                                <v-row>
+                                    <v-icon
+                                        color="green"
+                                        @click="setCurrentDataSelection(templateItem.dataSelection)"
+                                    >
+                                        mdi-map-marker-right
+                                    </v-icon> Gespeicherte Datenauswahl anwenden
+                                </v-row>
+                                <!-- get tool settings -->
+                                <v-row>
+                                    <!-- get tool settings button -->
+                                    <v-icon @click="updateToolSettings(index)">
+                                        mdi-refresh
+                                    </v-icon> Aktuelle Tool Einstellungen übernehmen
+                                </v-row>
+                                <!-- run tool -->
+                                <v-row>
+                                    <v-btn
+                                        dense
+                                        @click="updateToolOutput(index)"
+                                    >
+                                        <v-icon>
+                                            mdi-play
+                                        </v-icon> Tool anwenden
+                                    </v-btn>
+                                </v-row>
+                                <!-- display raw settings -->
+                                <v-row>
                                     <v-col cols="12">
                                         Einstellungen:
                                         <div
@@ -308,32 +323,42 @@ export default {
                         </v-card>
                     </v-col>
                 </v-row>
-                <v-row>
-                    <v-col
-                        cols="12"
-                        align="right"
+            </v-container>
+            <v-row>
+                <v-col
+                    cols="12"
+                    align="right"
+                >
+                    <v-icon
+                        @click="addEmptyTemplateItem"
                     >
-                        <v-icon
-                            @click="addEmptyTemplateItem"
-                        >
-                            mdi-note-plus
-                        </v-icon>
-                        <v-row />
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-btn
-                        @click="exportHTML()"
-                    >
-                        Als HTML exportieren
-                    </v-btn>
-                </v-row>
-                <br>
-                <v-row>
-                    <v-btn @click="downloadObjectAsJson(templateItems,'template')">
-                        Template speichern
-                    </v-btn>
-                </v-row>
+                        mdi-note-plus
+                    </v-icon>
+                    <v-row />
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-select
+                    v-model="selectedExportFormat"
+                    label="Export Format"
+                    :items="supportedExportFormats"
+                />
+                <v-btn
+                    color="grey lighten-1"
+                    @click="exportHTML()"
+                >
+                    Exportieren
+                </v-btn>
+            </v-row>
+            <br>
+            <v-row>
+                <v-btn
+                    color="grey lighten-1"
+                    @click="downloadObjectAsJson(templateItems,'template')"
+                >
+                    Template speichern
+                </v-btn>
+            </v-row>
             </v-container>
         </template>
     </Tool>
