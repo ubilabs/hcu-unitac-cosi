@@ -68,6 +68,7 @@ export default {
         // ...mapActions("Tools/ReportTemplates", Object.keys(actions)),
         ...mapActions("Tools/ToolBridge", ["runTool"]),
         ...mapActions("Maps", ["zoomToExtent"]),
+        ...mapActions("Tools/ExportPDF", ["reportTemplateToPDF"]),
         ...mapMutations("Tools/SelectionManager", ["addSelection", "setActiveSelection", "setAcceptSelection"]),
         // store settings from selected addon in the template
         updateToolSettings (templateItemsIndex) {
@@ -94,7 +95,18 @@ export default {
 
 
         },
-        exportHTML () { // to be depreciated: placeholder until exportPDF addons comes through
+        exportTemplate () {
+            if (this.selectedExportFormat === "HTML") {
+                this.exportHTML();
+            }
+            else if (this.selectedExportFormat === "PDF") {
+                exportPDF;
+            }
+        },
+        exportTemplateToPdF () {
+            this.reportTemplateToPDF(this.templateItems); // using ExportPDF addon
+        },
+        exportTemplateToHTML () {
 
             /** Don't allow html input by user, show it as plain text instead by escaping special html characters
              * @param {*} unsafe - todo
@@ -345,7 +357,7 @@ export default {
                 />
                 <v-btn
                     color="grey lighten-1"
-                    @click="exportHTML()"
+                    @click="exportTemplate()"
                 >
                     Exportieren
                 </v-btn>
