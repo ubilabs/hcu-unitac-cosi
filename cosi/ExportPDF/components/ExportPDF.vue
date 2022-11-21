@@ -21,10 +21,7 @@ export default {
     },
     data: function () {
         return {
-            isSelecting: false,
-            message: "",
-            template: undefined,
-            user: null
+            // ...
         };
     },
 
