@@ -36,11 +36,7 @@ export default {
             if (isActive) {
                 // --
             }
-        },
-        rawDocDefinition (content) {
-            this.$store.dispatch("downloadPDF", content);
-        }
-    },
+        }},
 
     created () {
         this.$on("close", () => {
