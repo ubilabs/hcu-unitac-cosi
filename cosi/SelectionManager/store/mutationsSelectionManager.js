@@ -33,6 +33,7 @@ const mutations = {
      */
     addSelection: (state, payload) => {
         state.selections.push(payload);
+        state.activeSelection = state.selections.length - 1;
     },
     /**
     * @param {object} state of this component
