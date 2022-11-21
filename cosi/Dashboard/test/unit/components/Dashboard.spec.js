@@ -33,7 +33,7 @@ function addElemWithDataAppToBody () {
 }
 
 
-describe.only("addons/cosi/Dashboard/components/Dashboard.vue", () => {
+describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
     before(() => {
         global.ShadowRoot = () => "";
         mapCollection.clear();

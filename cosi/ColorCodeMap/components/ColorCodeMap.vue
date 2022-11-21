@@ -509,7 +509,7 @@ export default {
                         class="switch"
                         :class="{ highlight: !visualizationState }"
                         :title="$t('additional:modules.tools.colorCodeMap.toggleVisualization')"
-                        @click="toggleVisualizationState()"
+                        @click="toggleVisualizationState"
                     >
                         <v-icon
                             v-if="visualizationState"

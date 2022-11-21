@@ -22,7 +22,7 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 config.mocks.$t = key => key;
 
-describe.only("ColorCodeMap.vue", () => {
+describe("ColorCodeMap.vue", () => {
     const mockConfigJson = {
         Portalconfig: {
             menu: {
@@ -370,10 +370,10 @@ describe.only("ColorCodeMap.vue", () => {
 
             await button.trigger("click");
             await wrapper.vm.$nextTick();
-            expect(button.text()).to.be.equal("mdi-eye");
+            expect(button.text()).to.be.equal("mdi-eye-off");
             await button.trigger("click");
             await wrapper.vm.$nextTick();
-            expect(button.text()).to.be.equal("mdi-eye-off");
+            expect(button.text()).to.be.equal("mdi-eye");
         });
     });
 });
