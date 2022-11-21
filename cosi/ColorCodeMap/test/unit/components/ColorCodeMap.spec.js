@@ -321,7 +321,7 @@ describe("ColorCodeMap.vue", () => {
                 button = wrapper.find("button");
 
             await button.trigger("click");
-
+            await wrapper.vm.$nextTick();
             expect(button.text()).to.be.equal("mdi-minus");
             expect(ccm.classes("minimized")).to.be.false;
         });
@@ -347,7 +347,7 @@ describe("ColorCodeMap.vue", () => {
                 minimize: false
             });
             await button.trigger("click");
-
+            await wrapper.vm.$nextTick();
             expect(button.text()).to.be.equal("mdi-plus");
             expect(ccm.classes("minimized")).to.be.true;
         });
@@ -369,8 +369,10 @@ describe("ColorCodeMap.vue", () => {
                 button = wrapper.find("#switch");
 
             await button.trigger("click");
+            await wrapper.vm.$nextTick();
             expect(button.text()).to.be.equal("mdi-eye");
             await button.trigger("click");
+            await wrapper.vm.$nextTick();
             expect(button.text()).to.be.equal("mdi-eye-off");
         });
     });
