@@ -2,7 +2,7 @@ import pdfMake from "pdfmake";
 /**
  *
  * @param {*} context is just a vuex action context
- * @param {*} docDefinition an document definition as as expected by pdfmake package
+ * @param {*} docDefinition a document definition as as expected by pdfmake package
  * @returns {void}
  */
 function downloadPDF (context, docDefinition) {
@@ -15,8 +15,8 @@ function downloadPDF (context, docDefinition) {
  *
  *  This function converts data from reportTemplates to pdf
  *
- * @param {*} context is just a vuex action context
- * @param {*} chapters reportTempate's templateItems document definition
+ * @param {*} context vuex context
+ * @param {*} chapters reportTempate addon's templateItems definition
  * @returns {void}
  *
  */
