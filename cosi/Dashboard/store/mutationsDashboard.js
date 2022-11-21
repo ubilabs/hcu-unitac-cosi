@@ -14,6 +14,10 @@ const mutations = {
     },
     removeCalculation (state, id) {
         state.calculations = state.calculations.filter(calc => calc.id !== id);
+    },
+    overwriteAllCalculations (state, payload) {
+        state.calcualtions = payload;
+
     }
 };
 

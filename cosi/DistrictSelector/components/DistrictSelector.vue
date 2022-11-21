@@ -88,6 +88,7 @@ export default {
                 this.updateExtent();
                 this.dragBox.setActive(false);
                 this.select.setActive(false);
+                this.addNewSelection({selection: this.selectedFeatures, source: this.$t("additional:modules.tools.cosi.districtSelector.title"), id: this.label + ": " + this.selectedFeatures[0].getProperties()[this.keyOfAttrName] + ", +" + (this.selectedFeatures.length - 1)});
                 document.removeEventListener("keyup", this.checkKey);
 
                 if (model) {
@@ -170,6 +171,7 @@ export default {
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapActions("Tools/DistrictSelector", ["loadStatFeatures", "loadMapping"]),
         ...mapActions("Maps", ["addInteraction", "removeInteraction", "zoomToExtent", "resetView"]),
+        ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
 
         /**
          * quickly checks the key evt code

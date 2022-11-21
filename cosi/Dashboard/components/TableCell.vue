@@ -24,7 +24,7 @@ export default {
             type: String,
             default: "jahr_"
         },
-        locale: {
+        currentLocale: {
             type: String,
             default: "de-DE"
         },
@@ -61,7 +61,7 @@ export default {
                     :header="header"
                     :current-timestamp="currentTimestamp"
                     :timestamp-prefix="timestampPrefix"
-                    :locale="locale"
+                    :current-locale="currentLocale"
                     :tooltip-offset="tooltipOffset"
                 />
                 <template v-if="item.expanded">

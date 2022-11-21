@@ -33,8 +33,6 @@ export default {
             hiVal: null,
             // Lowest Value of selected feature among all selected districts
             loVal: null,
-            // Triggers classes for minimized view
-            minimize: true,
             // Playback speed of the animation
             playSpeed: 1,
             // Helper Variable to force Legend Markers to rerender
@@ -68,6 +66,14 @@ export default {
                 this.setSelectedYear(v);
             }
         },
+        minimize: {
+            get () {
+                return this.minimized;
+            },
+            set (v) {
+                this.setMinimized(v);
+            }
+        },
         dashboardOpen () {
             return this.$store.getters["Tools/Dashboard/active"] || this.$store.getters["Tools/FeaturesList/active"];
         },
@@ -87,6 +93,15 @@ export default {
             if (!this.dataToColorCodeMap) {
                 this.renderVisualization();
             }
+
+            this.$nextTick(()=> {
+                this.setUpperEdge(window.innerHeight - this.$refs.ccm?.getBoundingClientRect().top);
+            });
+        },
+        minimize () {
+            this.$nextTick(()=> {
+                this.setUpperEdge(window.innerHeight - this.$refs.ccm?.getBoundingClientRect().top);
+            });
         },
         loadend (newValue) {
             const selectedDistricts = this.selectedDistrictLevel.districts.filter(district => district.isSelected === true);
@@ -463,6 +478,7 @@ export default {
     <div
         v-if="loadend && selectedFeatures.length > 0 && !dashboardOpen"
         id="ccm"
+        ref="ccm"
         class="addon_container"
         :class="{minimized: minimize}"
     >
@@ -493,7 +509,7 @@ export default {
                         class="switch"
                         :class="{ highlight: !visualizationState }"
                         :title="$t('additional:modules.tools.colorCodeMap.toggleVisualization')"
-                        @click="toggleVisualizationState()"
+                        @click="toggleVisualizationState"
                     >
                         <v-icon
                             v-if="visualizationState"

@@ -38,7 +38,8 @@ export default {
     },
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
-        ...mapGetters("Tools/ChartGenerator", Object.keys(getters))
+        ...mapGetters("Tools/ChartGenerator", Object.keys(getters)),
+        ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "selectedFeatures", "label", "keyOfAttrName", "keyOfAttrNameStats", "loadend", "metadataUrls"])
     },
     watch: {
         datasets (newDatasets, oldValue) {

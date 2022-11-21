@@ -76,7 +76,7 @@ describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
                 Language: {
                     namespaced: true,
                     getters: {
-                        currentLocale: () => "de-DE"
+                        currentLocale: () => "en-US"
                     }
                 },
                 Tools: {
@@ -222,7 +222,7 @@ describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             // test 1
             expect(wrapper.vm.currentTimeStamp).to.equal(2020);
             expect(row.text()).to.equal(
-                parseFloat(selectedDistrictLevel.districts[0].statFeatures[0].get("jahr_2020")).toLocaleString("de-DE")
+                parseFloat(selectedDistrictLevel.districts[0].statFeatures[0].get("jahr_2020")).toLocaleString("en-US")
             );
 
             // act
@@ -232,7 +232,7 @@ describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             // test 2
             expect(store.getters["Tools/ColorCodeMap/selectedYear"]).to.equal(2018);
             expect(row.text()).to.equal(
-                parseFloat(selectedDistrictLevel.districts[0].statFeatures[0].get("jahr_2018")).toLocaleString("de-DE")
+                parseFloat(selectedDistrictLevel.districts[0].statFeatures[0].get("jahr_2018")).toLocaleString("en-US")
             );
         });
         it("should highlight data changed by simulation", async () => {

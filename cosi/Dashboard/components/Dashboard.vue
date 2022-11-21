@@ -1,7 +1,7 @@
 <script>
 /* eslint-disable vue/multi-word-component-names */
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import {getComponent} from "../../../../src/utils/getComponent";
+import getComponent from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersDashboard";
 import mutations from "../store/mutationsDashboard";
@@ -51,13 +51,7 @@ export default {
                     text: this.$t("additional:modules.tools.cosi.dashboard.categoryCol"),
                     sortable: false,
                     groupable: false,
-                    filter: value => {
-                        if (this.statsFeatureFilter.length < 1) {
-                            return true;
-                        }
-
-                        return this.statsFeatureFilter.map(t => typeof t === "string" ? t : t.value).includes(value);
-                    }
+                    filter: this.filterTable
                 },
                 {
                     value: "menu",
@@ -176,7 +170,66 @@ export default {
                 this.generateTable();
             }
         },
-        calculations: "calculateAll"
+        calculations: "calculateAll",
+
+        toolBridgeIn (newRequest) {
+            /**
+             * 1. update the interface based on the settings received from toolBridge
+             * @param {Object} request the toolBridge request {id:..., settings:{...}}
+             * @returns {Object} (run for side effects only, passes along the request)
+             */
+            const updateInterface = (request) => {
+                    this.$store.commit("Tools/Dashboard/setStatsFeatureFilter", request.settings.statsFeatureFilter); // not sure why simple this.
+                    this.overwriteAllCalculations(request.settings.calculations);
+                },
+
+                /**
+                * 2. run the specific analysis of this addon
+                * @returns {Object} the value of the function that runs the analysis.
+                */
+                runTool = () => {
+                // copied & modified this from exportTable() method
+                    if (this.currentItems.length < 1) { // if dashboard was never opened, currentItems is not yet copied from items, so we do it here just in case.
+                        this.currentItems = this.items;
+                    }
+                    this.calculateAll(); // make sure the table is updated
+                    this.generateTable(); // make sure the table is updated
+                    const items = this.selectedItems.length > 0 ?
+                        this.selectedItems :
+                        this.items.filter(item => this.filterTable(item.category)); // if no rows in the table are selected, act as if all rows are selected
+
+                    // this.currentItems = items;
+                    let data = this.exportTimeline
+                        ? this.prepareTableExportWithTimeline(items, this.selectedDistrictNames, this.timestamps, this.timestampPrefix)
+                        : this.prepareTableExport(items, this.selectedDistrictNames, this.selectedYear, this.timestampPrefix);
+
+                    data = JSON.parse(JSON.stringify(data)); // cleans the object to pure JSON (rather than array of getters and setters)
+                    // eslint-disable-next-line no-unused-vars
+                    data = data.map(({visualized, expanded, Datentyp, groupIndex, ...keepAttrs}) => keepAttrs); // remove unwanted keys // this line gives a linter error. the attributes are not used, but that is the point - we want to remove them
+                    return data;
+                },
+                /**
+                * 3. hand the results back to toolBridge, in the form of: {request: ..., type: ..., result: ...}
+                * @param {Object} data the data table
+                * @returns {Object} null (runs for side effects only)
+                */
+                returnResults = (data) => {
+                    return this.$store.commit("Tools/ToolBridge/setReceivedResults", // this is where toolBridge expects requested results to arrive
+                        {
+                            result: data, // change to where results are stored
+                            type: "table", // see toolBridge docs for supported output types
+                            request: newRequest // we need to give back the original request as well, leave this as is.
+                        }
+                    );
+                };
+
+            // Now this runs the three steps, making sure they happen synchronously (so we don't try to return results before analysis is finished)
+            updateInterface(newRequest);
+            returnResults(runTool());
+
+            return null; // we care about the side effects only.
+
+        }
     },
     created () {
         /**
@@ -486,6 +539,10 @@ export default {
          * @returns {void}
          */
         setToolOffset (evt) {
+            if (!this.active) {
+                return;
+            }
+
             if (evt) {
                 this.toolOffset = window.innerWidth - evt.targetElement.clientWidth;
             }
@@ -519,6 +576,18 @@ export default {
 
             this.calculationData.id = getCalculationId(this.calculationData);
             this.calculationDialog = true;
+        },
+
+        /**
+         * Filters the table by category
+         * @param {String} value - the category mapping
+         * @return {Boolean} should the item be displayed?
+         */
+        filterTable (value) {
+            if (this.statsFeatureFilter.length < 1) {
+                return true;
+            }
+            return this.statsFeatureFilter.map(t => typeof t === "string" ? t : t.value).includes(value);
         }
 
     }
@@ -559,6 +628,7 @@ export default {
                         />
                         <v-row class="dashboard-table-wrapper">
                             <v-data-table
+                                ref="dashbard-table"
                                 v-model="selectedItems"
                                 :headers="columns"
                                 :items="items"
@@ -695,7 +765,7 @@ export default {
                                         :header="header"
                                         :current-timestamp="currentTimeStamp"
                                         :timestamp-prefix="timestampPrefix"
-                                        :locale="currentLocale"
+                                        :current-locale="currentLocale"
                                         :tooltip-offset="toolOffset"
                                     />
                                 </template>
@@ -708,7 +778,7 @@ export default {
                                         :header="header"
                                         :current-timestamp="currentTimeStamp"
                                         :timestamp-prefix="timestampPrefix"
-                                        :locale="currentLocale"
+                                        :current-locale="currentLocale"
                                         :tooltip-offset="toolOffset"
                                     />
                                     <!-- eslint-disable-next-line -->
@@ -749,7 +819,7 @@ export default {
                                         :header="header"
                                         :current-timestamp="currentTimeStamp"
                                         :timestamp-prefix="timestampPrefix"
-                                        :locale="currentLocale"
+                                        :current-locale="currentLocale"
                                         :tooltip-offset="toolOffset"
                                     />
                                     <!-- eslint-disable-next-line -->

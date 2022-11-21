@@ -93,9 +93,9 @@ function contributionsGfiAttributes () {
 export default {
     /**
      * Adds a new DIPAS layer to the map, creates a menu model and sets up the filter
-     * @param {*} ctx.rootGetters - the rootGetters of the store
-     * @param {*} ctx.commit - the commit method of the store
-     * @param {*} newLayer - the new layer raw properties to add to the map
+     * @param {Object} ctx.rootGetters - the rootGetters of the store
+     * @param {Function} ctx.commit - the commit method of the store
+     * @param {Object} newLayer - the new layer raw properties to add to the map
      * @returns {VectorBase} a new VectorBase Layer
      */
     addLayer ({rootGetters, commit}, newLayer) {
