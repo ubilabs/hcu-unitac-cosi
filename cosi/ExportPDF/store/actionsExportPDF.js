@@ -23,7 +23,9 @@ function downloadPDF (context, docDefinition) {
 function reportTemplateToPDF (context, chapters) {
 
     const docDefinition = {
-        content: []
+        content: [],
+        pageOrientation: "landscape",
+        pageSize: "A4"
     };
 
     /**
@@ -31,17 +33,19 @@ function reportTemplateToPDF (context, chapters) {
      * @return {array} the function returns value of chapter
      */
     function addChapter (chapter) {
-
         // title, desc, tool, settings are attributes of json file of ReportTemplate with optional styles
         const title = {text: chapter.title, style: "header", bold: true, fontSize: 14},
             desc = {text: chapter.description, style: "header"},
-            tool = {text: chapter.tool, style: "header"},
-            settings = {text: chapter.settings, style: "header"};
+            tool = {text: chapter.tool, style: "header"};
+            // settings = {text: chapter.settings, style: "header"};
 
         docDefinition.content.push(title);
+        docDefinition.content.push("\n"); // add line break
         docDefinition.content.push(desc);
+        docDefinition.content.push("\n"); // add line break
         docDefinition.content.push(tool);
-        docDefinition.content.push(settings);
+        docDefinition.content.push("\n"); // add line break
+        // docDefinition.content.push(settings);
 
         // if the property type is table, then we return the array of headers and body. Headers are for the table headers and body is set of values
 
@@ -60,8 +64,11 @@ function reportTemplateToPDF (context, chapters) {
                 table: {
                     headerRows: 1,
                     body: [headers, ...body]
-                }
+                },
+                fontSize: 6
             });
+
+
         }
 
         // if the property type is image, we put the image into content of docDefinition
@@ -73,6 +80,9 @@ function reportTemplateToPDF (context, chapters) {
                 width: 500
             });
         }
+
+        docDefinition.content.push("\n"); // add line break
+        docDefinition.content.push("\n"); // add line break
     }
 
     chapters.forEach(addChapter);

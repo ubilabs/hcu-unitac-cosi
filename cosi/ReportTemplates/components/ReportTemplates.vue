@@ -335,42 +335,41 @@ export default {
                         </v-card>
                     </v-col>
                 </v-row>
-            </v-container>
-            <v-row>
-                <v-col
-                    cols="12"
-                    align="right"
-                >
-                    <v-icon
-                        @click="addEmptyTemplateItem"
+                <v-row>
+                    <v-col
+                        cols="12"
+                        align="right"
                     >
-                        mdi-note-plus
-                    </v-icon>
-                    <v-row />
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-select
-                    v-model="selectedExportFormat"
-                    label="Export Format"
-                    :items="supportedExportFormats"
-                />
-                <v-btn
-                    color="grey lighten-1"
-                    @click="exportTemplate()"
-                >
-                    Exportieren
-                </v-btn>
-            </v-row>
-            <br>
-            <v-row>
-                <v-btn
-                    color="grey lighten-1"
-                    @click="downloadObjectAsJson(templateItems,'template')"
-                >
-                    Template speichern
-                </v-btn>
-            </v-row>
+                        <v-icon
+                            @click="addEmptyTemplateItem"
+                        >
+                            mdi-note-plus
+                        </v-icon>
+                        <v-row />
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-select
+                        v-model="selectedExportFormat"
+                        label="Export Format"
+                        :items="supportedExportFormats"
+                    />
+                    <v-btn
+                        color="grey lighten-1"
+                        @click="exportTemplate()"
+                    >
+                        Exportieren
+                    </v-btn>
+                </v-row>
+                <br>
+                <v-row>
+                    <v-btn
+                        color="grey lighten-1"
+                        @click="downloadObjectAsJson(templateItems,'template')"
+                    >
+                        Template speichern
+                    </v-btn>
+                </v-row>
             </v-container>
         </template>
     </Tool>
