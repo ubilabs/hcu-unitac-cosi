@@ -65,7 +65,8 @@ function reportTemplateToPDF (context, chapters) {
                     headerRows: 1,
                     body: [headers, ...body]
                 },
-                fontSize: 6
+                fontSize: 8,
+                pageBreak: "after"
             });
 
 
@@ -77,7 +78,8 @@ function reportTemplateToPDF (context, chapters) {
 
             docDefinition.content.push({
                 image: chapter.output.result,
-                width: 500
+                width: 500,
+                pageBreak: "after"
             });
         }
 
