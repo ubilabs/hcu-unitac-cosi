@@ -159,7 +159,7 @@ export default {
         addEmptyTemplateItem () { // "+" button to add new chapters to the template
             const newID = 1 + Math.max(...this.templateItems.map(o => o.id)); // create an ID one larger than the highest id in array
 
-            this.templateItems.push({title: "", description: "", tool: "Dashboard", settings: {}, output: {}, id: newID});
+            this.templateItems.push({title: "", description: "", tool: "Dashboard", settings: {}, dataSelection: {}, output: {}, id: newID});
 
         },
         deleteTemplateItem (id) { // id is the value for key "id" in the templateItem (stable & unique), not the array index (unstable)
@@ -354,6 +354,8 @@ export default {
                         label="Export Format"
                         :items="supportedExportFormats"
                     />
+                </v-row>
+                <v-row>
                     <v-btn
                         color="grey lighten-1"
                         @click="exportTemplate()"
@@ -362,6 +364,7 @@ export default {
                     </v-btn>
                 </v-row>
                 <br>
+                <v-row><v-divider /></v-row>
                 <v-row>
                     <v-btn
                         color="grey lighten-1"
