@@ -8,6 +8,8 @@
  * @property {String} [name="Dashboard"] - The name of the tool (config-param).
  * @property {Boolean} [renderToWindow=true] - Renders tool in a window if true, otherwise in the sidebar (config-param).
  * @property {Boolean} [resizableWindow=false] - If True, window is resizable (config-param).
+ * @property {object} toolBridgeIn: {settings: {}, type: "", outputCallback: ()=>{}} accepts settings from toolBridge (must have a *watcher*)
+ * @property {object} toolBridgeOut: {}  pass current settings to toolBridge (must have a *getter*)
  */
 const state = {
     active: false,
@@ -24,7 +26,10 @@ const state = {
         "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/dashboard.md"
     },
     statsFeatureFilter: [],
-    calculations: []
+    calculations: [],
+    // these two variables are required to make this addon compatible with the toolBridge addon (for details see toolBridge documentation)
+    toolBridgeIn: {settings: {}, type: "", outputCallback: null}, // accepts settings from toolBridge - must have a *watcher*
+    toolBridgeOut: {} // pass current settings to toolBridge - must have a *getter*
 };
 
 export default state;

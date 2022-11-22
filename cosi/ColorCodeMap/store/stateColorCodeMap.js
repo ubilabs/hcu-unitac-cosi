@@ -21,6 +21,7 @@ const state = {
     resizableWindow: false,
     isVisibleInMenu: false,
     deactivateGFI: false,
+    minimized: true,
     yearSelector: "jahr_",
     colorScheme: "interpolateBlues",
     visualizationState: false,
@@ -29,6 +30,7 @@ const state = {
     selectedFeature: "",
     selectedYear: null,
     chart: false,
+    upperEdge: 80,
     readmeUrl: {
         "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/colorcodemap.md",
         "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/kartenvisualisierung.md",

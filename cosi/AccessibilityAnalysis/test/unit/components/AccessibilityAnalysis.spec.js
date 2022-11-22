@@ -346,11 +346,12 @@ describe("AccessibilityAnalysis.vue", () => {
 
         // check no update on equal coordinates
         expect(wrapper.vm.askUpdate).to.be.false;
-        wrapper.vm.$root.$emit("updateFeature");
+        wrapper.vm.$root.$emit("updateFeaturesList");
         expect(wrapper.vm.askUpdate).to.be.false;
 
         coordiantes = [1, 1];
-        wrapper.vm.$root.$emit("updateFeature");
+        wrapper.vm.tryUpdateIsochrones();
+        // wrapper.vm.$root.$emit("updateFeaturesList");
         expect(wrapper.vm.askUpdate).to.be.true;
 
         await wrapper.find("#create-isochrones").trigger("click");

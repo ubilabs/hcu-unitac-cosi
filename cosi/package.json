@@ -27,6 +27,7 @@
     "jszip": "^3.7.1",
     "object-hash": "^2.1.1",
     "pdfmake": "^0.2.6",
+    "tableify": "^1.1.1",
     "vue-chartjs": "^3.5.1",
     "vue-inline-svg": "^2.1.0",
     "vue-json-excel": "^0.3.0",

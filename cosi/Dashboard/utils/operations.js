@@ -1,6 +1,6 @@
 import Feature from "ol/Feature";
-import mathutils from "../../utils/math";
 import intersect from "../../utils/array/intersect";
+import mathutils from "../../utils/math";
 
 const operationSymbols = {
         add: "+",
@@ -138,7 +138,6 @@ export function calculateStats (calculation) {
     }
 
     this.addCategoryToMapping(mappingObject);
-
     timestamps = intersect(field_A.years, field_B.years);
 
     for (const col of this.districtColumns) {
@@ -187,7 +186,6 @@ export function sumUpSelected (calculation) {
     }
 
     this.addCategoryToMapping(mappingObject);
-
     timestamps = selectedItems.reduce((years, item) => intersect(years, item.years), [...selectedItems[0].years]);
 
     for (const col of this.districtColumns) {
