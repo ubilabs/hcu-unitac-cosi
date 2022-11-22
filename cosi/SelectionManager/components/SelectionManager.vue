@@ -115,9 +115,6 @@ export default {
              * @returns {void}
              */
         highlightSelection (index) {
-            console.log(index);
-            console.log(this.activeSelection);
-            console.log(this.selections);
             if (this.activeSelection !== index) {
                 this.setActiveSelection(index);
                 if (this.selections[index].storedLayers.length > 0) {
