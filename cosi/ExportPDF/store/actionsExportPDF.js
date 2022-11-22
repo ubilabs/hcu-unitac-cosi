@@ -2,10 +2,10 @@ import pdfMake from "pdfmake";
 /**
  *
  * @param {*} context is just a vuex action context
- * @param {*} docDefinition is a variable which stores the actual HTML data in the state
+ * @param {*} docDefinition docDefinition a document definition as as expected by pdfmake package
  * @returns {body} returns value
  */
-function convertHTMLToPDF (context, docDefinition) {
+function downloadPDF (context, docDefinition) {
 
     pdfMake.createPdf(docDefinition).download("Report.pdf");
 
@@ -15,8 +15,8 @@ function convertHTMLToPDF (context, docDefinition) {
  *
  *  This function converts data from reportTemplates to pdf
  *
- * @param {*} context is just a vuex action context
- * @param {*} chapters holds the overall data of reporting tool after each iteration of chapter
+ * @param {*} context vuex context
+ * @param {*} chapters reportTempate addon's templateItems definition
  * @returns {*} returns value
  *
  */
@@ -70,8 +70,7 @@ function reportTemplateToPDF (context, chapters) {
 
             docDefinition.content.push({
                 image: chapter.output.result,
-                width: 300,
-                height: 300
+                width: 500
             });
         }
     }
@@ -83,7 +82,7 @@ function reportTemplateToPDF (context, chapters) {
 
 
 export default {
-    convertHTMLToPDF,
+    downloadPDF,
     reportTemplateToPDF
 
 };

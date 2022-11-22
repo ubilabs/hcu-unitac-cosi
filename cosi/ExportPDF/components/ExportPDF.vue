@@ -21,10 +21,7 @@ export default {
     },
     data: function () {
         return {
-            isSelecting: false,
-            message: "",
-            template: undefined,
-            user: null
+
         };
     },
 
@@ -39,9 +36,6 @@ export default {
             if (isActive) {
                 // --
             }
-        },
-        rawDocDefinition (content) {
-            this.$store.dispatch("convertHTMLToPDF", content);
         }
     },
 
