@@ -14,6 +14,7 @@ const getters = {
      * @param {*} rootGetters vuex rootGetters
      * @returns {*} an object descirbing the current data selection. It can be passed to selectionManager.acceptSelection to load them again later.
      */
+    // eslint-disable-next-line no-shadow
     lastSelectionWithCurrentDataLayers (state, getters, rootState, rootGetters) {
 
         // 1. picks active selection
