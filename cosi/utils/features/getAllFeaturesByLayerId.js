@@ -9,7 +9,7 @@ import {getFeatureGET} from "../../../../src/api/wfs/getFeature";
  * @param {String|undefined} [srsName] - The SRS to be used for returned features.
  * @returns {ol/Feature[]} All features of the layer or an empty array.
  */
-export async function getAllFeaturesByLayerId (layerId, bbox, srsName) {
+async function getAllFeaturesByLayerId (layerId, bbox, srsName) {
     if (typeof layerId !== "string") {
         console.error(`utils/features/getAllFeaturesByLayerId: layerId must be a string. Got ${typeof layerId} instead.`);
         return [];
@@ -36,3 +36,7 @@ export async function getAllFeaturesByLayerId (layerId, bbox, srsName) {
 
     return wfsReader.readFeatures(features);
 }
+
+module.exports = {
+    getAllFeaturesByLayerId
+};
