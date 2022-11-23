@@ -21,7 +21,7 @@ export default {
     },
     data: function () {
         return {
-
+            // ...
         };
     },
 
@@ -36,8 +36,7 @@ export default {
             if (isActive) {
                 // --
             }
-        }
-    },
+        }},
 
     created () {
         this.$on("close", () => {
