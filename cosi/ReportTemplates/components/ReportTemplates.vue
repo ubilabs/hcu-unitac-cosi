@@ -27,7 +27,6 @@ export default {
         ...mapGetters("Tools/SelectionManager", ["activeSelection", "selections", "lastSelectionWithCurrentDataLayers"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", {facilitiesMapping: "mapping"}])
 
-
     },
     watch: {
         /**
@@ -64,6 +63,8 @@ export default {
         // ...
     },
     methods: {
+        ...mapActions("Alerting", ["addSingleAlert"]),
+
         ...mapMutations("Tools/ReportTemplates", Object.keys(mutations)),
         // ...mapActions("Tools/ReportTemplates", Object.keys(actions)),
         ...mapActions("Tools/ToolBridge", ["runTool"]),
@@ -77,10 +78,21 @@ export default {
 
             // update array
             this.templateItems[templateItemsIndex].settings = toolSettings;
+            this.templateItems[templateItemsIndex].hasSettings = true;
+
 
         },
         // run a different addon based on templateItem, store results
         updateToolOutput (templateItemsIndex) {
+            // check if tool settings are stored
+            if (!this.templateItems[templateItemsIndex].hasSettings) {
+                this.addSingleAlert({
+                    content: "Keine Tool Einstellungen verfügbar",
+                    category: "Fehler",
+                    displayClass: "error"
+                });
+                return null; // if no tool settings, stop here
+            }
             // calls toolBridge to run the selected tool with the given settings
             // outputCallback then saves the results to this.templateItems
             this.runTool({
@@ -90,9 +102,10 @@ export default {
                     const itemID = templateItemsIndex; // copy the item id into the function namespace
 
                     this.$store.commit("Tools/ReportTemplates/templateItemOutput", {output, itemID});
+
                 }
             });
-
+            return null;
 
         },
         exportTemplate () {
@@ -159,23 +172,49 @@ export default {
         addEmptyTemplateItem () { // "+" button to add new chapters to the template
             const newID = 1 + Math.max(...this.templateItems.map(o => o.id)); // create an ID one larger than the highest id in array
 
-            this.templateItems.push({title: "", description: "", tool: "Dashboard", settings: {}, dataSelection: {}, output: {}, id: newID});
+            this.templateItems.push({title: "", description: "", tool: "Dashboard", settings: {}, hasSettings: false, output: {}, hasOutput: false, dataSelection: {}, hasDataSelection: false, id: newID});
 
         },
         deleteTemplateItem (id) { // id is the value for key "id" in the templateItem (stable & unique), not the array index (unstable)
             this.$store.state.Tools.ReportTemplates.templateItems = this.templateItems.filter(x => x.id !== id);
         },
+        clearTemplateItemDataSelection (index) {
+            this.templateItems[index].dataSelection = {};
+            this.templateItems[index].hasDataSelection = false;
+
+        },
+        clearTemplateItemSettings (index) {
+            this.templateItems[index].settings = {};
+            this.templateItems[index].hasSettings = false;
+
+        },
+        clearTemplateItemOutput (index) {
+            this.templateItems[index].output = {};
+            this.templateItems[index].hasOutput = false;
+
+        },
 
         // copy data selection from SelectionManager
-        copyCurrentDataSelection (toItemId) {
-            this.templateItems[toItemId].dataSelection = this.lastSelectionWithCurrentDataLayers;
+        copyCurrentDataSelection (index) {
+
+            this.templateItems[index].dataSelection = this.lastSelectionWithCurrentDataLayers;
+            this.templateItems[index].hasDataSelection = true;
 
 
         },
         // add stored selection to  SelectionManager
         setCurrentDataSelection (dataSelection) {
+            if (Object.keys(dataSelection).length === 0) {
+                this.addSingleAlert({
+                    content: "Gespeicherte Datenauswahl ist leer",
+                    category: "Fehler",
+                    displayClass: "error"
+                });
+                return null;
+            }
             this.setAcceptSelection(null); // make sure watcher is triggered in next line
             this.setAcceptSelection(dataSelection); // commit to selectionManager
+            return null;
 
         },
         close () {
@@ -269,42 +308,80 @@ export default {
                                 </v-row>
                                 <!-- get data selection -->
                                 <v-row>
-                                    <v-icon @click="copyCurrentDataSelection(templateItem.id)">
-                                        mdi-map-marker-down
-                                    </v-icon> Aktuelle Datenauswahl übernehmen
+                                    <v-btn @click="copyCurrentDataSelection(index)">
+                                        <v-icon>
+                                            mdi-map-marker-down
+                                        </v-icon> Datenauswahl übernehmen
+                                        <v-icon v-if="templateItem.hasDataSelection">
+                                            mdi-check-bold
+                                        </v-icon>
+                                    </v-btn>
+                                    <v-btn
+                                        v-if="templateItem.hasDataSelection"
+                                        @click="clearTemplateItemDataSelection(index)"
+                                    >
+                                        <v-icon>mdi-close-circle</v-icon>
+                                    </v-btn>
                                 </v-row>
                                 <v-row>
                                     {{ templateItem.dataSelection.id }}<br>
                                 </v-row>
                                 <!-- set data selection -->
                                 <v-row>
-                                    <v-icon
-                                        color="green"
+                                    <v-btn
+                                        dense
+                                        :disabled="!templateItem.hasDataSelection"
                                         @click="setCurrentDataSelection(templateItem.dataSelection)"
                                     >
-                                        mdi-map-marker-right
-                                    </v-icon> Gespeicherte Datenauswahl anwenden
+                                        <v-icon>
+                                            mdi-map-marker-right
+                                        </v-icon> Gespeicherte Datenauswahl anwenden
+                                    </v-btn>
                                 </v-row>
                                 <!-- get tool settings -->
                                 <v-row>
-                                    <!-- get tool settings button -->
-                                    <v-icon @click="updateToolSettings(index)">
-                                        mdi-refresh
-                                    </v-icon> Aktuelle Tool Einstellungen übernehmen
+                                    <v-btn
+                                        dense
+                                        @click="updateToolSettings(index)"
+                                    >
+                                        <!-- get tool settings button -->
+                                        <v-icon>
+                                            mdi-refresh
+                                        </v-icon> Aktuelle Tool Einstellungen übernehmen
+                                        <v-icon v-if="templateItem.hasSettings">
+                                            mdi-check-bold
+                                        </v-icon>
+                                    </v-btn>
+                                    <v-btn
+                                        v-if="templateItem.hasSettings"
+                                        @click="clearTemplateItemSettings(index)"
+                                    >
+                                        <v-icon>mdi-close-circle</v-icon>
+                                    </v-btn>
                                 </v-row>
                                 <!-- run tool -->
                                 <v-row>
                                     <v-btn
                                         dense
+                                        :disabled="!templateItem.hasSettings"
                                         @click="updateToolOutput(index)"
                                     >
                                         <v-icon>
                                             mdi-play
                                         </v-icon> Tool anwenden
+                                        <v-icon v-if="templateItem.hasOutput">
+                                            mdi-check-bold
+                                        </v-icon>
+                                    </v-btn>
+                                    <v-btn
+                                        v-if="templateItem.hasOutput"
+                                        @click="clearTemplateItemOutput(index)"
+                                    >
+                                        <v-icon>mdi-close-circle</v-icon>
                                     </v-btn>
                                 </v-row>
                                 <!-- display raw settings -->
-                                <v-row>
+                                <!-- <v-row>
                                     <v-col cols="12">
                                         Einstellungen:
                                         <div
@@ -312,10 +389,9 @@ export default {
                                             v-html="JSON.stringify(templateItem.settings,undefined,2)"
                                         /><br>
                                     </v-col>
-                                </v-row>
+                                </v-row> -->
                                 <!-- display results -->
                                 <v-row>
-                                    Ergebnis:
                                     <div
                                         class="limitSize"
                                     >
@@ -394,8 +470,9 @@ export default {
     }
     .limitSize{
         max-width:500px;
-        max-height:300px;
-        overflow-x: scroll;
+        max-height:1em;
+        overflow-y: scroll;
+        overflow-x:hidden;
     }
     .templateItem{
         width:90%;
@@ -403,6 +480,10 @@ export default {
         background:rgb(200, 200, 200);
     }
 
+    // custom buttons
+    .btn-done{
+        background-color: green;
+    }
    // toolbridge output table
    td{
         padding-right: 5px;
