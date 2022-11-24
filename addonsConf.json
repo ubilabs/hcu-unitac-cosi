@@ -182,5 +182,9 @@
   "ToolBridge": {
     "path": "cosi/ToolBridge",
     "type": "tool"
+  }, 
+  "ReportTemplates": {
+    "path": "cosi/ReportTemplates",
+    "type": "tool"
   }
 }

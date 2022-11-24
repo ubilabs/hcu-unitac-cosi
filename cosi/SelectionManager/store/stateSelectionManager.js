@@ -23,6 +23,7 @@ const state = {
     deactivateGFI: false,
     selections: [],
     activeSelection: null,
+    acceptSelection: null, // other tools can commit to this variable. Then, a new selection is added and set as active.
     readmeUrl: {
         "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/colorcodemap.md",
         "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/kartenvisualisierung.md",
