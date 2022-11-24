@@ -173,12 +173,14 @@ export default {
         calculations: "calculateAll",
 
         toolBridgeIn (newRequest) {
-            /**
+            /** 0. Check if request is valid */
+            const requestSettingsValid = ("statsFeatureFilter" in newRequest.settings) & ("calculations" in newRequest.settings),
+                /**
              * 1. update the interface based on the settings received from toolBridge
              * @param {Object} request the toolBridge request {id:..., settings:{...}}
              * @returns {Object} (run for side effects only, passes along the request)
              */
-            const updateInterface = (request) => {
+                updateInterface = (request) => {
                     this.$store.commit("Tools/Dashboard/setStatsFeatureFilter", request.settings.statsFeatureFilter); // not sure why simple this.
                     this.overwriteAllCalculations(request.settings.calculations);
                 },
@@ -224,7 +226,9 @@ export default {
                 };
 
             // Now this runs the three steps, making sure they happen synchronously (so we don't try to return results before analysis is finished)
-            updateInterface(newRequest);
+            if (requestSettingsValid) {
+                updateInterface(newRequest);
+            }
             returnResults(runTool());
 
             return null; // we care about the side effects only.
