@@ -208,6 +208,10 @@ export default {
                     data = JSON.parse(JSON.stringify(data)); // cleans the object to pure JSON (rather than array of getters and setters)
                     // eslint-disable-next-line no-unused-vars
                     data = data.map(({visualized, expanded, Datentyp, groupIndex, ...keepAttrs}) => keepAttrs); // remove unwanted keys // this line gives a linter error. the attributes are not used, but that is the point - we want to remove them
+                    // make sure each row has all column keys
+                    data = this.fillMissingKeys(data, "NA");
+
+
                     return data;
                 },
                 /**
@@ -592,6 +596,31 @@ export default {
                 return true;
             }
             return this.statsFeatureFilter.map(t => typeof t === "string" ? t : t.value).includes(value);
+        },
+        /** make sure all objects in array include all the same keys
+       *
+        * @param {*} arr array of objects
+        * @param {*} missingValues what to set the missing values to
+        * @returns {array} same array but each item has the same keys
+        */
+        fillMissingKeys (arr, missingValues = "NA") {
+            // Create an object with all the keys in it
+            // This will return one object containing all keys the items
+            const obj = arr.reduce((res, item) => ({...res, ...item})),
+
+                // Get those keys as an array
+                keys = Object.keys(obj),
+
+                // Create an object with all keys set to the default value (0)
+                def = keys.reduce((result, key) => {
+                    result[key] = missingValues;
+                    return result;
+                }, {}),
+
+                // Use object destrucuring to replace all default values with the ones we have
+                result = arr.map((item) => ({...def, ...item}));
+
+            return result;
         }
 
     }
