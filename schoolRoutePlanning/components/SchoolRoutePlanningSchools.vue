@@ -3,9 +3,13 @@ import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersSchoolRoutePlanning";
 import mutations from "../store/mutationsSchoolRoutePlanning";
 import actions from "../store/actionsSchoolRoutePlanning";
+import Multiselect from "vue-multiselect";
 
 export default {
     name: "SchoolRoutePlanningSchools",
+    components: {
+        Multiselect
+    },
     props: {
         layer: {
             type: Object,
@@ -113,6 +117,24 @@ export default {
                 {{ `${school.get('schulname')}, ${school.get('adresse_strasse_hausnr')}` }}
             </option>
         </select>
+
+        <div>
+            <label
+                for="tool-schoolRoutePlanning-schools-multiselect"
+                class="form-label"
+            >
+                {{ $t("additional:modules.tools.schoolRoutePlanning.selectSchool") }}
+            </label>
+            <Multiselect
+                id="tool-schoolRoutePlanning-schools-multiselect"
+                v-model="selectedSchoolNumber"
+                :options="sortedSchools"
+                placeholder="Select one"
+                label="schulname"
+                track-by="schulname"
+                @select="selectSchool"
+            />
+        </div>
     </div>
 </template>
 
