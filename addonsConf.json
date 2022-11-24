@@ -176,6 +176,10 @@
     "type": "tool"
   },
   "addLayerRemotely": "addLayerRemotely.js",
+  "ExportPDF": {
+    "path":"cosi/ExportPDF",
+    "type": "tool"
+    },
   "obliqueViewer": {
     "type": "tool"
   },
