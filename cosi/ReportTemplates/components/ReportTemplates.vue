@@ -79,6 +79,7 @@ export default {
             // update array
             this.templateItems[templateItemsIndex].settings = toolSettings;
             this.templateItems[templateItemsIndex].hasSettings = true;
+            this.clearTemplateItemOutput(templateItemsIndex);
 
 
         },
@@ -307,8 +308,10 @@ export default {
                                     </v-col>
                                 </v-row>
                                 <!-- get data selection -->
-                                <v-row>
-                                    <v-btn @click="copyCurrentDataSelection(index)">
+                                <v-row class="mb-2">
+                                    <v-btn
+                                        @click="copyCurrentDataSelection(index)"
+                                    >
                                         <v-icon>
                                             mdi-map-marker-down
                                         </v-icon> Datenauswahl übernehmen
@@ -318,6 +321,8 @@ export default {
                                     </v-btn>
                                     <v-btn
                                         v-if="templateItem.hasDataSelection"
+
+
                                         @click="clearTemplateItemDataSelection(index)"
                                     >
                                         <v-icon>mdi-close-circle</v-icon>
@@ -327,8 +332,10 @@ export default {
                                     {{ templateItem.dataSelection.id }}<br>
                                 </v-row>
                                 <!-- set data selection -->
-                                <v-row>
+                                <v-row class="mb-2">
                                     <v-btn
+
+
                                         dense
                                         :disabled="!templateItem.hasDataSelection"
                                         @click="setCurrentDataSelection(templateItem.dataSelection)"
@@ -336,11 +343,13 @@ export default {
                                         <v-icon>
                                             mdi-map-marker-right
                                         </v-icon> Gespeicherte Datenauswahl anwenden
-                                    </v-btn>
+                                    </v-btn><br><br>
                                 </v-row>
                                 <!-- get tool settings -->
-                                <v-row>
+                                <v-row class="mb-2">
                                     <v-btn
+
+
                                         dense
                                         @click="updateToolSettings(index)"
                                     >
@@ -354,14 +363,17 @@ export default {
                                     </v-btn>
                                     <v-btn
                                         v-if="templateItem.hasSettings"
+
+
                                         @click="clearTemplateItemSettings(index)"
                                     >
                                         <v-icon>mdi-close-circle</v-icon>
-                                    </v-btn>
+                                    </v-btn><br><br>
                                 </v-row>
                                 <!-- run tool -->
-                                <v-row>
+                                <v-row class="mb-2">
                                     <v-btn
+
                                         dense
                                         :disabled="!templateItem.hasSettings"
                                         @click="updateToolOutput(index)"
@@ -375,10 +387,11 @@ export default {
                                     </v-btn>
                                     <v-btn
                                         v-if="templateItem.hasOutput"
+
                                         @click="clearTemplateItemOutput(index)"
                                     >
                                         <v-icon>mdi-close-circle</v-icon>
-                                    </v-btn>
+                                    </v-btn><br><br>
                                 </v-row>
                                 <!-- display raw settings -->
                                 <!-- <v-row>
@@ -391,7 +404,7 @@ export default {
                                     </v-col>
                                 </v-row> -->
                                 <!-- display results -->
-                                <v-row>
+                                <v-row class="mb-2">
                                     <div
                                         class="limitSize"
                                     >
@@ -411,7 +424,7 @@ export default {
                         </v-card>
                     </v-col>
                 </v-row>
-                <v-row>
+                <v-row class="mb-2">
                     <v-col
                         cols="12"
                         align="right"
@@ -431,7 +444,7 @@ export default {
                         :items="supportedExportFormats"
                     />
                 </v-row>
-                <v-row>
+                <v-row class="mb-2">
                     <v-btn
                         color="grey lighten-1"
                         @click="exportTemplate()"
@@ -441,7 +454,7 @@ export default {
                 </v-row>
                 <br>
                 <v-row><v-divider /></v-row>
-                <v-row>
+                <v-row class="mt-2">
                     <v-btn
                         color="grey lighten-1"
                         @click="downloadObjectAsJson(templateItems,'template')"
