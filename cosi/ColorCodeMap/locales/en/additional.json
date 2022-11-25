@@ -12,7 +12,7 @@
                 "generateChart": "Generate chart from dataset",
                 "showDistrictNames": "Show district names",
                 "needViz": "Visualization has to be active to display district names on the map",
-                "metadata": "Open meta data",
+                "metadata": "Open notes",
                 "noData": "no data available",
                 "yearsLabal": "Years"
             }
