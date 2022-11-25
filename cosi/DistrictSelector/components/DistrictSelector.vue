@@ -88,7 +88,9 @@ export default {
                 this.updateExtent();
                 this.dragBox.setActive(false);
                 this.select.setActive(false);
-                this.addNewSelection({selection: this.selectedFeatures, source: this.$t("additional:modules.tools.cosi.districtSelector.title"), id: this.label + ": " + this.selectedFeatures[0].getProperties()[this.keyOfAttrName] + ", +" + (this.selectedFeatures.length - 1)});
+                if (this.selectedFeatures.length > 0) {
+                    this.addNewSelection({selection: this.selectedFeatures, source: this.$t("additional:modules.tools.cosi.districtSelector.title"), id: this.label + ": " + this.selectedFeatures[0].getProperties()[this.keyOfAttrName] + ", +" + (this.selectedFeatures.length - 1)});
+                }
                 document.removeEventListener("keyup", this.checkKey);
 
                 if (model) {
