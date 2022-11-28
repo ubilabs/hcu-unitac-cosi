@@ -31,6 +31,7 @@ import exportXlsx from "../../utils/exportXlsx";
 import DashboardToolbar from "./DashboardToolbar.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
 import TableCell from "./TableCell.vue";
+import getMetadata from "../../utils/getMetadata";
 
 export default {
     name: "Dashboard",
@@ -255,6 +256,11 @@ export default {
         ...mapMutations("Tools/ColorCodeMap", ["setSelectedYear"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...mapActions("Tools/DistrictSelector", ["updateDistricts"]),
+        /**
+         * Generates the table data for the v-data-table (headers/columns, items/rows)
+         * @listens #Change:DistrictSelector/loadend on DistrictSelector/loadend
+         * @returns {void}
+         */
         generateTable () {
             this.timestamps = [];
             this.districtColumns = this.getColumns(this.selectedDistrictLevel, this.selectedDistrictNames, []);
@@ -262,6 +268,11 @@ export default {
             this.items = this.getData();
             this.currentTimeStamp = this.selectedYear;
         },
+        /**
+         * Generates empty rows for all data categories
+         * taken from the mapping.json in /portal/cosi/config/ and set in config.json
+         * @returns {void}
+         */
         getRows () {
             let counter = 0;
 
@@ -273,14 +284,15 @@ export default {
                 return [
                     ...rows,
                     {
-                        visualized: false,
-                        expanded: false,
+                        visualized: false, // is the data visualized in the map
+                        expanded: false, // is the timeline expanded
                         category: category.value,
                         group: category.group,
                         valueType: category.valueType,
                         isTemp: category.isTemp,
                         calculation: category.calculation,
-                        groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter
+                        groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter,
+                        metadata: getMetadata(category, this.keyOfAttrNameStats)
                     }
                 ];
             }, []);
