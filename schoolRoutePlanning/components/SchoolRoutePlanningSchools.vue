@@ -15,6 +15,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/SchoolRoutePlanning", [
+            "initialSelectedSchoolNumber",
             "regionalPrimarySchoolName",
             "regionalPrimarySchoolNumber",
             "selectedSchoolNumber",
@@ -39,11 +40,11 @@ export default {
     watch: {
         /**
          * Select a school, if this tool is already open.
-         * @param {String} value The number of the school.
+         * @param {Object} value The number of the school.
          * @returns {void}
          */
         initialSelectedSchoolNumber (value) {
-            this.selectSchoolNumber(value);
+            this.selectSchoolNumber(value?.id, value?.name);
         },
 
         /**
@@ -52,16 +53,18 @@ export default {
          * @returns {void}
          */
         selectedSchoolNumber (schoolNumber) {
-            this.selectSchool({
-                selectedSchoolId: schoolNumber.id,
-                layer: this.layer
-            });
+            if (schoolNumber?.id && schoolNumber?.name) {
+                this.selectSchool({
+                    selectedSchoolId: schoolNumber.id,
+                    layer: this.layer
+                });
+            }
         }
     },
     mounted () {
         if (this.initialSelectedSchoolNumber !== "") {
             this.$nextTick(() => {
-                this.selectSchoolNumber(this.initialSelectedSchoolNumber);
+                this.selectSchoolNumber(this.initialSelectedSchoolNumber.id, this.initialSelectedSchoolNumber.name);
             });
         }
     },
@@ -91,6 +94,7 @@ export default {
         <div class="tool-schoolRoutePlanning-schools-regionalPrimarySchool">
             <span
                 v-if="regionalPrimarySchoolName"
+                class="d-block"
                 :title="$t('additional:modules.tools.schoolRoutePlanning.selectSchool')"
             >
                 {{ $t("additional:modules.tools.schoolRoutePlanning.regionalPrimarySchool") }}
@@ -98,6 +102,7 @@ export default {
                     role="button"
                     tabindex="0"
                     href="#"
+                    :class="regionalPrimarySchoolNumber ? 'd-block' : ''"
                     @click="selectSchoolNumber(regionalPrimarySchoolNumber, regionalPrimarySchoolName)"
                     @keydown.enter="selectSchoolNumber(regionalPrimarySchoolNumber, regionalPrimarySchoolName)"
                 >
@@ -107,7 +112,7 @@ export default {
         </div>
         <div class="tool-schoolRoutePlanning-schools-multiselect-container">
             <label
-                for="tool-schoolRoutePlanning-schools-select"
+                for="tool-schoolRoutePlanning-schools-multiselect"
                 class="form-label"
             >
                 {{ $t("additional:modules.tools.schoolRoutePlanning.selectSchool") }}
@@ -120,7 +125,7 @@ export default {
                 :show-labels="false"
                 :options="sortedSchoolAttributes"
                 :option-height="32"
-                :placeholder="$t('additional:modules.tools.schoolRoutePlanning.selectSchool')"
+                placeholder=""
                 @input="setSelectedSchoolNumber"
             />
         </div>
@@ -140,6 +145,7 @@ export default {
         font-family: inherit;
         font-size: $font-size-base;
         color: $black;
+        line-height: 1rem;
     }
 
     .tool-schoolRoutePlanning-schools-multiselect-container .multiselect {
@@ -163,8 +169,8 @@ export default {
 
     .tool-schoolRoutePlanning-schools-multiselect-container .multiselect .multiselect__option {
         display: block;
-        min-height: 16px;
-        line-height: 8px;
+        min-height: 1rem;
+        line-height: 0.5rem;
         text-decoration: none;
         text-transform: none;
         position: relative;
@@ -186,7 +192,6 @@ export default {
     }
 
     .tool-schoolRoutePlanning-schools-multiselect-container .multiselect .multiselect__input {
-        color: $light_grey;
         font-family: inherit;
         font-size: $font-size-big;
     }

@@ -251,7 +251,7 @@ $background_color_2: rgba(0,0,0,.5);
     }
     .btn-group-sm {
         display: block;
-        font-size: 12px;
+
         .btn-outline-dark {
             margin: 4px;
             &:focus {
@@ -262,6 +262,10 @@ $background_color_2: rgba(0,0,0,.5);
             }
         }
         padding-right: 64px;
+
+        > button {
+            font-size: 0.75rem;
+        }
     }
     .favorite-container {
         position: absolute;

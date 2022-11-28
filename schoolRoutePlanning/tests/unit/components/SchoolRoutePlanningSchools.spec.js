@@ -4,7 +4,6 @@ import {expect} from "chai";
 import sinon from "sinon";
 
 import SchoolRoutePlanningSchoolsComponent from "../../../components/SchoolRoutePlanningSchools.vue";
-import SchoolRoutePlanning from "../../../store/indexSchoolRoutePlanning";
 
 import VectorLayer from "ol/layer/Vector.js";
 import VectorSource from "ol/source/Vector.js";
@@ -17,32 +16,43 @@ localVue.use(Vuex);
 config.mocks.$t = key => key;
 
 describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue", () => {
-    const mockConfigJson = {
-        Portalconfig: {
-            menu: {
-                SchoolRoutePlanning: {
-                    "name": "translate#additional:modules.tools.schoolRoutePlanning.title",
-                    "icon": "bi-list-columns-reverse"
-                }
-            }
-        }
-    };
     let store,
         wrapperElements;
 
     beforeEach(() => {
+        const feature = new Feature({
+            id: "Thor",
+            schul_id: "1000-0",
+            schulname: "The name",
+            adresse_strasse_hausnr: "Address"
+        });
+
+        feature.setGeometry(new Point(100, 200));
+
         store = new Vuex.Store({
             namespaces: true,
             modules: {
                 Tools: {
                     namespaced: true,
                     modules: {
-                        SchoolRoutePlanning
+                        namespaced: true,
+                        SchoolRoutePlanning: {
+                            namespaced: true,
+                            getters: {
+                                regionalPrimarySchoolName: () => "Thor",
+                                regionalPrimarySchoolNumber: () => "1000-0",
+                                selectedSchoolNumber: () => "",
+                                sortedSchools: () => [feature]
+                            },
+                            mutations: {
+                                setSelectedSchoolNumber: sinon.stub()
+                            },
+                            actions: {
+                                selectSchool: sinon.stub()
+                            }
+                        }
                     }
                 }
-            },
-            state: {
-                configJson: mockConfigJson
             }
         });
         wrapperElements = {
@@ -58,20 +68,13 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue",
                 })
             }
         };
-
-        const feature = new Feature({
-            id: "Thor",
-            schul_id: "1000-0"
-        });
-
-        feature.setGeometry(new Point(100, 200));
-
-        store.commit("Tools/SchoolRoutePlanning/setSchools", [feature]);
-        store.commit("Tools/SchoolRoutePlanning/setRegionalPrimarySchoolName", "Thor");
-        store.commit("Tools/SchoolRoutePlanning/setRegionalPrimarySchoolNumber", "1000-0");
     });
 
-    it("Renders the SchoolRoutePlanningSchoolsComponent", () => {
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it("renders the SchoolRoutePlanningSchoolsComponent", () => {
         const wrapper = shallowMount(SchoolRoutePlanningSchoolsComponent, wrapperElements);
 
         expect(wrapper.find("div.mb-3").exists()).to.be.true;
@@ -85,14 +88,15 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue",
         expect(wrapper.find("span a.d-block").text()).to.equals("Thor");
     });
 
-    it("renders the SchoolRoutePlanningSchoolsComponent", async () => {
+    it("set selected schoolNumber", async () => {
         const spySelectSchoolNumber = sinon.spy(SchoolRoutePlanningSchoolsComponent.methods, "selectSchoolNumber"),
             wrapper = shallowMount(SchoolRoutePlanningSchoolsComponent, wrapperElements);
 
         await wrapper.find("a.d-block").trigger("click");
 
-        expect(spySelectSchoolNumber.calledOnce).to.be.true;
-        expect(wrapper.vm.selectedSchoolNumber).to.equals("1000-0");
+        expect(spySelectSchoolNumber.called).to.be.true;
+        expect(spySelectSchoolNumber.firstCall.args[0]).to.equals("1000-0");
+        expect(spySelectSchoolNumber.firstCall.args[1]).to.equals("Thor");
     });
 
     it("renders the schools", () => {
@@ -139,13 +143,37 @@ describe("addons/SchoolRoutePlanning/components/SchoolRoutePlanningSchools.vue",
         ];
         let wrapper = null;
 
-        store.commit("Tools/SchoolRoutePlanning/setSchools", schools);
+        store = new Vuex.Store({
+            namespaces: true,
+            modules: {
+                Tools: {
+                    namespaced: true,
+                    modules: {
+                        namespaced: true,
+                        SchoolRoutePlanning: {
+                            namespaced: true,
+                            getters: {
+                                regionalPrimarySchoolName: () => "Thor",
+                                regionalPrimarySchoolNumber: () => "1000-0",
+                                selectedSchoolNumber: () => "",
+                                sortedSchools: () => schools
+                            },
+                            mutations: {
+                                setSelectedSchoolNumber: sinon.stub()
+                            },
+                            actions: {
+                                selectSchool: sinon.stub()
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
         wrapper = shallowMount(SchoolRoutePlanningSchoolsComponent, wrapperElements);
 
-        expect(wrapper.find("#tool-schoolRoutePlanning-schools-select").exists()).to.be.true;
-        expect(wrapper.find("#tool-schoolRoutePlanning-schools-select").classes()).to.include("form-select");
-        expect(wrapper.findAll("option").at(0).text()).to.equals("school1, example address 1");
-        expect(wrapper.findAll("option").at(1).text()).to.equals("school2, example address 2");
-        expect(wrapper.findAll("option").at(2).text()).to.equals("school3, example address 3");
+        expect(wrapper.find(".tool-schoolRoutePlanning-schools-multiselect-container").exists()).to.be.true;
+        expect(wrapper.find(".tool-schoolRoutePlanning-schools-multiselect-container .form-label").exists()).to.be.true;
+        expect(wrapper.find(".tool-schoolRoutePlanning-schools-multiselect-container > multiselect-stub").exists()).to.be.true;
     });
 });

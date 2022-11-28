@@ -27,9 +27,12 @@ export default {
          * @returns {void}
          */
         takeRoute: function (event) {
+            const id = this.feature.getProperties().schul_id,
+                name = `${this.feature.getProperties().schulname}, ${this.feature.getProperties().adresse_strasse_hausnr}`;
+
             Radio.trigger("ModelList", "setModelAttributesById", this.id, {isActive: true});
             this.setToolActive({id: this.id, active: true});
-            this.selectInitializeSchoolNumber(this.feature.getProperties().schul_id);
+            this.selectInitializeSchoolNumber({id, name});
             this.$parent.$parent.close(event);
         }
     }
