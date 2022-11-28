@@ -119,8 +119,8 @@ export default {
                 label="name"
                 :show-labels="false"
                 :options="sortedSchoolAttributes"
+                :option-height="32"
                 :placeholder="$t('additional:modules.tools.schoolRoutePlanning.selectSchool')"
-                :allow-empty="false"
                 @input="setSelectedSchoolNumber"
             />
         </div>
@@ -134,13 +134,31 @@ export default {
 </style>
 
 <style lang="scss">
-    @import "~/css/mixins.scss";
     @import "~variables";
 
-    .tool-schoolRoutePlanning-schools-multiselect-container .multiselect, .filter-select-box-container .multiselect__input, .tool-schoolRoutePlanning-schools-multiselect-container .multiselect__single {
+    .tool-schoolRoutePlanning-schools-multiselect-container .multiselect, .tool-schoolRoutePlanning-schools-multiselect-container .multiselect__input, .tool-schoolRoutePlanning-schools-multiselect-container .multiselect__single {
         font-family: inherit;
         font-size: $font-size-base;
         color: $black;
+    }
+
+    .tool-schoolRoutePlanning-schools-multiselect-container .multiselect {
+        min-height: 2rem;
+        height: 2rem;
+    }
+    .tool-schoolRoutePlanning-schools-multiselect-container .multiselect .multiselect__tags {
+        min-height: 2rem;
+        height: 2rem;
+        border-radius: 0;
+        border: 1px solid #ced4da
+    }
+
+    .tool-schoolRoutePlanning-schools-multiselect-container .multiselect .multiselect__select {
+        height: 2rem;
+    }
+
+    .tool-schoolRoutePlanning-schools-multiselect-container .multiselect .multiselect__select:before {
+        top: 50%;
     }
 
     .tool-schoolRoutePlanning-schools-multiselect-container .multiselect .multiselect__option {
