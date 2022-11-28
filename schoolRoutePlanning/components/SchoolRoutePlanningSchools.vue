@@ -1,8 +1,5 @@
 <script>
 import {mapGetters, mapMutations, mapActions} from "vuex";
-import getters from "../store/gettersSchoolRoutePlanning";
-import mutations from "../store/mutationsSchoolRoutePlanning";
-import actions from "../store/actionsSchoolRoutePlanning";
 import Multiselect from "vue-multiselect";
 
 export default {
@@ -17,27 +14,26 @@ export default {
         }
     },
     computed: {
-        ...mapGetters("Tools/SchoolRoutePlanning", Object.keys(getters)),
+        ...mapGetters("Tools/SchoolRoutePlanning", [
+            "regionalPrimarySchoolName",
+            "regionalPrimarySchoolNumber",
+            "selectedSchoolNumber",
+            "sortedSchools"
+        ]),
 
         /**
-         * Getter and setter for the selected school number.
+         * Getter for sorted school attributes.
+         * @returns {Object[]} The schools contains id and name with address.
          */
-        selectedSchoolNumber: {
-            /**
-             * Gets the selected school number from the vuex state.
-             * @returns {String} The selected school number.
-             */
-            get () {
-                return this.$store.state.Tools.SchoolRoutePlanning.selectedSchoolNumber;
-            },
-            /**
-             * Sets the selected school number to the vuex state.
-             * @param {String} value The selected school number.
-             * @returns {void}
-             */
-            set (value) {
-                this.setSelectedSchoolNumber(value);
-            }
+        sortedSchoolAttributes () {
+            const sortedSchoolAttributes = this.sortedSchools.map(school => {
+                return {
+                    id: school.get("schul_id"),
+                    name: `${school.get("schulname")}, ${school.get("adresse_strasse_hausnr")}`
+                };
+            });
+
+            return sortedSchoolAttributes;
         }
     },
     watch: {
@@ -48,6 +44,18 @@ export default {
          */
         initialSelectedSchoolNumber (value) {
             this.selectSchoolNumber(value);
+        },
+
+        /**
+         * Watcher for selectedSchoolNumber
+         * @param {Object} schoolNumber The number of the school.
+         * @returns {void}
+         */
+        selectedSchoolNumber (schoolNumber) {
+            this.selectSchool({
+                selectedSchoolId: schoolNumber.id,
+                layer: this.layer
+            });
         }
     },
     mounted () {
@@ -58,19 +66,19 @@ export default {
         }
     },
     methods: {
-        ...mapMutations("Tools/SchoolRoutePlanning", Object.keys(mutations)),
-        ...mapActions("Tools/SchoolRoutePlanning", Object.keys(actions)),
+        ...mapMutations("Tools/SchoolRoutePlanning", ["setSelectedSchoolNumber"]),
+        ...mapActions("Tools/SchoolRoutePlanning", ["selectSchool"]),
 
         /**
          * Sets the school number to dropdown.
          * @param {String} schoolNumber The number of the selected school.
+         * @param {String} schoolName The name of the selected school.
          * @returns {void}
          */
-        selectSchoolNumber (schoolNumber) {
-            this.setSelectedSchoolNumber(schoolNumber);
-            this.selectSchool({
-                selectedSchoolId: schoolNumber,
-                layer: this.layer
+        selectSchoolNumber (schoolNumber, schoolName) {
+            this.setSelectedSchoolNumber({
+                id: schoolNumber,
+                name: schoolName
             });
         }
     }
@@ -80,63 +88,88 @@ export default {
 
 <template>
     <div class="mb-3">
-        <label
-            for="tool-schoolRoutePlanning-schools-select"
-            class="form-label"
-        >
-            {{ $t("additional:modules.tools.schoolRoutePlanning.selectSchool") }}
-        </label>
-        <span
-            v-if="regionalPrimarySchoolName"
-            class="d-block"
-        >
-            {{ $t("additional:modules.tools.schoolRoutePlanning.regionalPrimarySchool") }}
-            <a
-                role="button"
-                tabindex="0"
-                href="#"
-                :class="regionalPrimarySchoolNumber ? 'd-block' : ''"
-                @click="selectSchoolNumber(regionalPrimarySchoolNumber)"
-                @keydown.enter="selectSchoolNumber(regionalPrimarySchoolNumber)"
+        <div class="tool-schoolRoutePlanning-schools-regionalPrimarySchool">
+            <span
+                v-if="regionalPrimarySchoolName"
+                :title="$t('additional:modules.tools.schoolRoutePlanning.selectSchool')"
             >
-                {{ $t(regionalPrimarySchoolName) }}
-            </a>
-        </span>
-        <select
-            id="tool-schoolRoutePlanning-schools-select"
-            v-model="selectedSchoolNumber"
-            class="form-select"
-            data-live-search="true"
-            @change="event => selectSchool({selectedSchoolId: event.target.value, layer})"
-        >
-            <option
-                v-for="school in sortedSchools"
-                :key="school.get('schul_id')"
-                :value="school.get('schul_id')"
-            >
-                {{ `${school.get('schulname')}, ${school.get('adresse_strasse_hausnr')}` }}
-            </option>
-        </select>
-
-        <div>
+                {{ $t("additional:modules.tools.schoolRoutePlanning.regionalPrimarySchool") }}
+                <a
+                    role="button"
+                    tabindex="0"
+                    href="#"
+                    @click="selectSchoolNumber(regionalPrimarySchoolNumber, regionalPrimarySchoolName)"
+                    @keydown.enter="selectSchoolNumber(regionalPrimarySchoolNumber, regionalPrimarySchoolName)"
+                >
+                    {{ $t(regionalPrimarySchoolName) }}
+                </a>
+            </span>
+        </div>
+        <div class="tool-schoolRoutePlanning-schools-multiselect-container">
             <label
-                for="tool-schoolRoutePlanning-schools-multiselect"
+                for="tool-schoolRoutePlanning-schools-select"
                 class="form-label"
             >
                 {{ $t("additional:modules.tools.schoolRoutePlanning.selectSchool") }}
             </label>
             <Multiselect
                 id="tool-schoolRoutePlanning-schools-multiselect"
-                v-model="selectedSchoolNumber"
-                :options="sortedSchools"
-                placeholder="Select one"
-                label="schulname"
-                track-by="schulname"
-                @select="selectSchool"
+                :value="selectedSchoolNumber"
+                track-by="name"
+                label="name"
+                :show-labels="false"
+                :options="sortedSchoolAttributes"
+                :placeholder="$t('additional:modules.tools.schoolRoutePlanning.selectSchool')"
+                :allow-empty="false"
+                @input="setSelectedSchoolNumber"
             />
         </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
+    .tool-schoolRoutePlanning-schools-regionalPrimarySchool {
+        margin-bottom: 1rem;
+    }
+</style>
+
+<style lang="scss">
+    @import "~/css/mixins.scss";
+    @import "~variables";
+
+    .tool-schoolRoutePlanning-schools-multiselect-container .multiselect, .filter-select-box-container .multiselect__input, .tool-schoolRoutePlanning-schools-multiselect-container .multiselect__single {
+        font-family: inherit;
+        font-size: $font-size-base;
+        color: $black;
+    }
+
+    .tool-schoolRoutePlanning-schools-multiselect-container .multiselect .multiselect__option {
+        display: block;
+        min-height: 16px;
+        line-height: 8px;
+        text-decoration: none;
+        text-transform: none;
+        position: relative;
+        white-space: nowrap;
+        padding: 10px 12px;
+    }
+
+    .tool-schoolRoutePlanning-schools-multiselect-container .multiselect .multiselect__option--selected {
+        background: inherit;
+        color: inherit;
+        font-weight: inherit;
+    }
+
+    .tool-schoolRoutePlanning-schools-multiselect-container .multiselect .multiselect__option--highlight {
+        background: $light_blue;
+        outline: none;
+        color: $white;
+        font-weight: inherit;
+    }
+
+    .tool-schoolRoutePlanning-schools-multiselect-container .multiselect .multiselect__input {
+        color: $light_grey;
+        font-family: inherit;
+        font-size: $font-size-big;
+    }
 </style>
