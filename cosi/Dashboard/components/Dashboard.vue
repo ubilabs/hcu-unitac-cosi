@@ -122,7 +122,8 @@ export default {
             "selectedDistrictLabels",
             "keyOfAttrNameStats",
             "mapping",
-            "loadend"
+            "loadend",
+            "metadataUrls"
         ]),
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ColorCodeMap", ["selectedYear"]),
@@ -300,7 +301,7 @@ export default {
                         isTemp: category.isTemp,
                         calculation: category.calculation,
                         groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter,
-                        metadata: getMetadata(category, this.keyOfAttrNameStats)
+                        metadata: getMetadata(category, this.keyOfAttrNameStats, {url: this.metadataUrls?.[0]})
                     }
                 ];
             }, []);
