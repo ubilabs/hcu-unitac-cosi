@@ -12,7 +12,7 @@
                 "generateChart": "Graph aus Datensatz erzeugen",
                 "showDistrictNames": "Gebietsnamen ein-/ ausblenden",
                 "needViz": "Kartenvisualisierung muss aktiv sein, um Gebietsnamen einblenden zu können",
-                "metadata": "Metadaten öffnen",
+                "metadata": "Anmerkungen öffnen",
                 "noData": "Keine Daten vorhanden",
                 "yearsLabel": "Jahre"
             }

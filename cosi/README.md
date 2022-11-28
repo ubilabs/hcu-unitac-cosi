@@ -18,21 +18,20 @@ Run this in terminal:
 ```
 git clone https://bitbucket.org/geowerkstatt-hamburg/masterportal
 cd masterportal
-git checkout cosi/dev
+git checkout dev
 
 rm -r addons
-rm -r portal
 
 git clone https://bitbucket.org/geowerkstatt-hamburg/addons addons
-git clone https://bitbucket.org/geowerkstatt-hamburg/portalconfigs portal
+git clone https://bitbucket.org/geowerkstatt-hamburg/portalconfigs
 
 cd addons
-git checkout cosi/dev
+git checkout dev
 cd ../portal
-git checkout cosi/dev
+git checkout dev
 cd ..
 
-nvm install 16.16.
+nvm install 16.16.0
 nvm use 16.16.
 node -v
 

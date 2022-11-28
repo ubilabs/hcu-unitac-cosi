@@ -176,11 +176,19 @@
     "type": "tool"
   },
   "addLayerRemotely": "addLayerRemotely.js",
+  "ExportPDF": {
+    "path":"cosi/ExportPDF",
+    "type": "tool"
+    },
   "obliqueViewer": {
     "type": "tool"
   },
   "ToolBridge": {
     "path": "cosi/ToolBridge",
+    "type": "tool"
+  }, 
+  "ReportTemplates": {
+    "path": "cosi/ReportTemplates",
     "type": "tool"
   }
 }
