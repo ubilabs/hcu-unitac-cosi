@@ -65,26 +65,27 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import "~variables";
+    @import "~variables";
 
-$background_color_1: rgb(229, 229, 229);
+    $background_color_1: rgb(229, 229, 229);
 
-.highlight {
-    font-family: $font_family_accent;
-    font-size: 15px;
-}
-
-.result {
-    background-color: $background_color_1;
-}
-
-#tool-schoolRoutePlanning-show-route-description {
-    width: 100%;
-}
-
-@media (max-width: 767px) {
-    #tool-schoolRoutePlanning-route-description {
-        font-size: 14px;
+    .highlight {
+        font-family: $font_family_accent;
+        font-size: 15px;
     }
-}
+
+    .result {
+        background-color: $background_color_1;
+    }
+
+    #tool-schoolRoutePlanning-show-route-description {
+        font-size: $font-size-base;
+        width: 100%;
+    }
+
+    @media (max-width: 767px) {
+        #tool-schoolRoutePlanning-route-description {
+            font-size: 14px;
+        }
+    }
 </style>

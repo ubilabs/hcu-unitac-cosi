@@ -162,7 +162,7 @@ export default {
             });
             dispatch("searchRegionalPrimarySchool", foundHouseNumber.name);
             dispatch("selectSchool", {
-                selectedSchoolId: state.selectedSchoolNumber,
+                selectedSchoolId: state.selectedSchoolNumber?.id,
                 layer: inputs.layer
             });
         }

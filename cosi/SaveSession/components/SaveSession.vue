@@ -117,7 +117,7 @@ export default {
         ...mapGetters("Tools/ScenarioBuilder", {simGuideLayer: "guideLayer"}),
         ...mapGetters("Tools/ResidentialSimulation", {simNeighborhoodLayer: "drawingLayer"}),
         ...mapGetters("Tools/DistrictSelector", ["selectedDistrictLevel", "districtLevels"]),
-        ...mapGetters("Maps", ["getLayerById", "addNewLayerIfNotExists"])
+        ...mapGetters("Maps", ["getLayerById"])
     },
     watch: {
         /**
@@ -181,6 +181,7 @@ export default {
         this.checkLastSession();
     },
     methods: {
+        ...mapActions("Maps", ["addNewLayerIfNotExists"]),
         ...mapMutations("Tools/SaveSession", Object.keys(mutations)),
         ...mapActions("Tools/SaveSession", Object.keys(actions)),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),

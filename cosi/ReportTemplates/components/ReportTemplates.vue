@@ -1,7 +1,7 @@
 <script>
 // Documentation in ./doc/ReportTemplates.md
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
-import getComponent from "../../../../src/utils/getComponent";
+import {getComponent} from "../../../../src/utils/getComponent";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersReportTemplates";
 import mutations from "../store/mutationsReportTemplates";

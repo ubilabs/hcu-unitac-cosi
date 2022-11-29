@@ -89,7 +89,7 @@ export default {
                 </template>
                 <template #append-outer>
                     <v-icon
-                        title="Metadaten öffnen"
+                        title="Anmerkungen öffnen"
                         @click="openMetadata"
                     >
                         mdi-information
