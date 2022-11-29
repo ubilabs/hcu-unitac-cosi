@@ -17,10 +17,10 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "husky": "^8.0.1"
+    "husky": "^8.0.2"
   },
   "engines": {
-    "node": ">= 16.13.2 <= 16.18.0",
+    "node": ">= 16.13.2 <= 16.18.1",
     "npm": ">= 8.1.2 <= 8.19.2"
   },
   "dependencies": {
