@@ -1,4 +1,4 @@
-# Changelog Masterportal
+# Changelog Addons for Masterportal
  All important changes in this project are stored in this file.
 
 [Semantic versioning](https://semver.org/spec/v2.0.0.html) is used.
