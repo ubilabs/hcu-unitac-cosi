@@ -106,13 +106,6 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
             expect(getDistricts({keyOfAttrName: undefined})).to.be.an("array").to.be.empty;
         });
 
-        it("should return district hamburg if label is 'Hamburg'", () => {
-            const districts = getDistricts({label: "Hamburg", layer: layer, keyOfAttrName: "verwaltungseinheit"});
-
-            expect(districts).to.be.an("array");
-            expect(districts[0].getLabel()).to.equal("amt");
-        });
-
         it("should returns two districts", () => {
             const districts = getDistricts({label: "Stadtteil", layer: layer, keyOfAttrName: "name"});
 
@@ -156,7 +149,7 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
 
             expect(featureTypes).to.be.an("array").to.have.lengthOf(2);
             expect(featureTypes[0]).to.be.an("array").to.deep.equal(["abc"]);
-            expect(featureTypes[1]).to.be.an("array").to.deep.equal(["dev"]);
+            expect(featureTypes[1]).to.be.an("array").to.deep.equal(["def"]);
         });
 
         it("should return an array of arrays", () => {

@@ -141,7 +141,7 @@ export function getFeatureTypes (urls, typeNames) {
         return [];
     }
     const
-        _typeNames = typeNames.map(typeName => typeof typeName === "string" ? [typeName] : typeName), // map strings to list for WFS request
+        _typeNames = typeNames?.map(typeName => typeof typeName === "string" ? [typeName] : typeName), // map strings to list for WFS request
         featureTypes = [];
 
     for (let i = 0; i < urls.length; i++) {
