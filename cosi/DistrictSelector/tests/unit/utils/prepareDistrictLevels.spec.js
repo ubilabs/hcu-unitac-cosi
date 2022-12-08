@@ -155,8 +155,8 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
             const featureTypes = getFeatureTypes(["123", "456"], ["abc", ["def"]]);
 
             expect(featureTypes).to.be.an("array").to.have.lengthOf(2);
-            expect(featureTypes[0]).to.be.an("array").to.not.be.empty;
-            expect(featureTypes[1]).to.be.an("array").to.not.be.empty;
+            expect(featureTypes[0]).to.be.an("array").to.deep.equal(["abc"]);
+            expect(featureTypes[1]).to.be.an("array").to.deep.equal(["dev"]);
         });
 
         it("should return an array of arrays", () => {

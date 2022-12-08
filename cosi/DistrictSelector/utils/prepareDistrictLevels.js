@@ -75,16 +75,6 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
         return [];
     }
 
-    // /**
-    //  * Sets missing attribute "verwaltungseinheit" = "Hamburg" to the hamburg administration feature
-    //  * @todo find generalizable rule for synonyms
-    //  */
-    // if (label === "Hamburg") {
-    //     layer.getSource().getFeatures().forEach(feature => {
-    //         feature.set("verwaltungseinheit", "Hamburg");
-    //     });
-    // }
-
     const districts = [];
 
     layer.getSource().getFeatures().forEach(function (feature) {
