@@ -100,7 +100,7 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
             const districts = getDistricts({label: "Hamburg", layer: layer, keyOfAttrName: "verwaltungseinheit"});
 
             expect(districts).to.be.an("array");
-            expect(districts[0].getLabel()).to.equal("hamburg_gesamt");
+            expect(districts[0].getLabel()).to.equal("amt");
         });
 
         it("should returns two districts", () => {

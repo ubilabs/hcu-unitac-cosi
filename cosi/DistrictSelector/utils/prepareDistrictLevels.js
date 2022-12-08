@@ -75,12 +75,15 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
         return [];
     }
 
-    // Sets missing attribute "verwaltungseinheit" = "hamburg_gesamt" to the hamburg administration feature
-    if (label === "Hamburg") {
-        layer.getSource().getFeatures().forEach(feature => {
-            feature.set("verwaltungseinheit", "hamburg_gesamt");
-        });
-    }
+    // /**
+    //  * Sets missing attribute "verwaltungseinheit" = "Hamburg" to the hamburg administration feature
+    //  * @todo find generalizable rule for synonyms
+    //  */
+    // if (label === "Hamburg") {
+    //     layer.getSource().getFeatures().forEach(feature => {
+    //         feature.set("verwaltungseinheit", "Hamburg");
+    //     });
+    // }
 
     const districts = [];
 
@@ -264,4 +267,14 @@ export function setProperties (evt) {
         // unbind the listener
         unByKey(eventKeys[this.layerId]);
     }
+}
+
+/**
+ * Retrieves synonymous district names from a map provided in config.json
+ * @param {String} districtName - the district name to map
+ * @param {Object} districtLevel - the districtLevel to check
+ * @returns {String} the district name synonym or the original district name
+ */
+export function mapDistrictNames (districtName, districtLevel) {
+    return districtLevel.districtNamesMap?.[districtName] || districtName;
 }

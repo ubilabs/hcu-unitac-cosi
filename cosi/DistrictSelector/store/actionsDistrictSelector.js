@@ -1,6 +1,7 @@
 import {WFS} from "ol/format.js";
 import {getFeaturePOST as wfsGetFeature} from "../../../../src/api/wfs/getFeature.js";
 import {parseFeatures} from "../utils/prepareStatsFeatures";
+import {mapDistrictNames} from "../utils/prepareDistrictLevels";
 import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
@@ -22,7 +23,6 @@ const actions = {
      * @returns {void}
      */
     async loadStatFeatures ({dispatch, rootGetters}, {districtLevel, districts, getStatFeatures, recursive = true}) {
-        // commit("setLoadend", false);
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         LoaderOverlay.show();
 
@@ -38,7 +38,7 @@ const actions = {
                             featureTypes: districtLevel.featureTypes[j],
                             srsName: rootGetters["Maps/projectionCode"],
                             propertyNames: districtLevel.propertyNameList[j],
-                            filter: equalTo(districtLevel.stats.keyOfAttrName, districtName)
+                            filter: equalTo(districtLevel.stats.keyOfAttrName, mapDistrictNames(districtName))
                         }),
                         olFeatures = wfsFormat.readFeatures(statFeatures);
 
@@ -122,6 +122,7 @@ const actions = {
     },
 
     /**
+     * triggers an lifecycle update event by altering the state for one tick
      * @param {Object} store - The vuex store.
      * @param {Function} store.commit - Function to dispatch an action.
      * @returns {void}
