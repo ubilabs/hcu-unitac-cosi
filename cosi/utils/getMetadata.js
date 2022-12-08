@@ -12,7 +12,7 @@ import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 export default function getMetadata (mapping, keyOfAttrName, {url = "https://www.hamburg.de/bsw/landesbetrieb-geoinformation-und-vermessung/", name = "Urban Data Platform", organization = "LGV Hamburg"}) {
     const
         rawLayer = rawLayerList.getLayerWhere({id: mapping[keyOfAttrName]}),
-        metadataset = rawLayer.datasets?.[0];
+        metadataset = rawLayer?.datasets?.[0];
 
     if (!metadataset) {
         return {

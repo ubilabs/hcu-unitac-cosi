@@ -137,7 +137,7 @@ export default {
             // manually assemble an html document.
             // Hopefully to be deprecated - placeholder until exportPDF addons comes through
             const exportedHtml = this.templateItems.map((item) => {
-                    // for each chapter...
+                // for each chapter...
                     let resulthtml = "";
 
                     // make table or image html..
@@ -151,8 +151,15 @@ export default {
                     "<span>" + escapeHtml(item
                         .description) + "</span><br><br>" + // description as span element
                         resulthtml;
-                }).join("<br>"), // concatenate resulting array of strings into a single string with line breaks
+                }).join("<br>") // concatenate resulting array of strings into a single string with line breaks
+                // rotate table column headers
+                + "<style>" +
+                "th {\n    height: 240px;\n    vertical-align: bottom;\n    text-align: left;\n    line-height: 1;\n  }" +
+                "th {\n    width: 300px;\n    transform-origin: bottom left;\n    transform: translateX(75px) rotate(-45deg);\n  }" +
+                "</style>",
+                // + "<style>\nthead {transform: \n/* Magic Numbers */\ntranslate(25px, 51px)\n/* 45 is really 360 - 45 */\nrotate(315deg);\n}\n</style>",
                 // open a new window and fill it with the constructed html
+
                 win = window.open("", "Export", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=" + (screen.height - 400) + ",left=" + (screen.width - 840));
 
             win.document.body.innerHTML = exportedHtml;

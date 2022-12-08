@@ -1,6 +1,6 @@
 import * as Proj from "ol/proj.js";
 import {fetchDistances} from "./fetchDistances";
-import {findNearestFeatures} from "../../utils/findNearestFeatures";
+import {findNearestFeatures} from "../../utils/features/findNearestFeatures";
 import {getFeatureInfos} from "./getFeatureInfo";
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import {getConverter} from "../utils/converters";
@@ -29,7 +29,7 @@ function transformedCoordinates (features, sourceCrs) {
  */
 async function layerScore (feature, layerId, initialBuffer, bufferIncrement, portalCrs, serviceId, fallbackId) {
     const featureCoords = transformedCoordinates([feature], portalCrs),
-        features = await findNearestFeatures(layerId, feature, initialBuffer, bufferIncrement, 10, "EPSG:25832"),
+        features = await findNearestFeatures(layerId, feature, initialBuffer, bufferIncrement, 10, portalCrs),
         coords = transformedCoordinates(features, portalCrs),
         dists = (await fetchDistances(featureCoords, coords, undefined, serviceId, fallbackId))[0];
 

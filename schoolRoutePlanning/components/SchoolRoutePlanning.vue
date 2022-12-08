@@ -252,8 +252,14 @@ export default {
                 v-if="active"
                 class="content-school-route-planning"
             >
-                <SchoolRoutePlanningAddress :layer="layer" />
-                <Schools :layer="layer" />
+                <SchoolRoutePlanningAddress
+                    v-if="layer !== null"
+                    :layer="layer"
+                />
+                <Schools
+                    v-if="layer !== null"
+                    :layer="layer"
+                />
                 <div class="d-flex justify-content-between mb-3">
                     <label
                         class="form-label"
@@ -273,7 +279,7 @@ export default {
                 <div class="mb-3">
                     <button
                         type="button"
-                        class="btn btn-primary btn-sm mr-3"
+                        class="btn btn-primary mr-3 tool-schoolRoutePlanning-button"
                         :disabled="routeIsCalculated"
                         @click="startPrintRoute"
                     >
@@ -281,7 +287,7 @@ export default {
                     </button>
                     <button
                         type="button"
-                        class="btn btn-secondary btn-sm"
+                        class="btn btn-secondary tool-schoolRoutePlanning-button"
                         :disabled="inputExists"
                         @click="resetLayerUserInterface"
                     >
@@ -317,4 +323,9 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+    @import "~variables";
+
+    .tool-schoolRoutePlanning-button {
+        font-size: $font-size-base;
+    }
 </style>
