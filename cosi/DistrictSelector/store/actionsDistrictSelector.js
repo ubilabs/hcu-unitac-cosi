@@ -5,7 +5,6 @@ import {mapDistrictNames} from "../utils/prepareDistrictLevels";
 import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
-import {compensateInconsistency} from "../../utils/unifyString";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
 
 const actions = {
@@ -33,12 +32,12 @@ const actions = {
             // check if statFeatures are already loaded
             if (districts[i].statFeatures.length === 0) {
                 for (let j = 0; j < urls.length; j++) {
-                    const districtName = compensateInconsistency(districts[i].getName()),
+                    const districtName = mapDistrictNames(districts[i].getName(), districtLevel),
                         statFeatures = await getStatFeatures(urls[j], {
                             featureTypes: districtLevel.featureTypes[j],
                             srsName: rootGetters["Maps/projectionCode"],
                             propertyNames: districtLevel.propertyNameList[j],
-                            filter: equalTo(districtLevel.stats.keyOfAttrName, mapDistrictNames(districtName))
+                            filter: equalTo(districtLevel.stats.keyOfAttrName, districtName)
                         }),
                         olFeatures = wfsFormat.readFeatures(statFeatures);
 

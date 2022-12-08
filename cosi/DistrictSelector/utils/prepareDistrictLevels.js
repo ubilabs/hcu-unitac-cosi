@@ -150,13 +150,19 @@ export function getFeatureTypes (urls, typeNames) {
         console.error(`prepareDistrictLevels.getFeatureTypes: ${urls} has to be defined and an array.`);
         return [];
     }
-    const featureTypes = [];
+    const
+        _typeNames = typeNames.map(typeName => typeof typeName === "string" ? [typeName] : typeName), // map strings to list for WFS request
+        featureTypes = [];
 
     for (let i = 0; i < urls.length; i++) {
-        featureTypes[i] = Array.isArray(typeNames?.[i]) ?
-            typeNames[i] :
-            rawLayerList.getLayerList().reduce((_typeNames, layer) => {
-                return layer?.url === urls[i] ? [..._typeNames, layer.featureType] : _typeNames;
+        /**
+         * if a featureType list is provided, use the list from config.json
+         * alternatively extract from services.json
+         */
+        featureTypes[i] = Array.isArray(_typeNames?.[i]) ?
+            _typeNames[i] :
+            rawLayerList.getLayerList().reduce((_featureTypes, layer) => {
+                return layer?.url === urls[i] ? [..._featureTypes, layer.featureType] : _featureTypes;
             }, []);
     }
 

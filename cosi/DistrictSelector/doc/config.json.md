@@ -15,9 +15,10 @@ Mit dem DistrictSelector kann ein Gebiet auf Basis einer Verwaltungsebene (z.B.:
 |districtLevels[i].stats.keyOfAttrName|ja|String||Key des Attributes "Name" für die statistischen Daten.|
 |districtLevels[i].stats.baseUrl|ja|String[]||Die URLs der WFS Dienste für die statistischen Daten.|
 |districtLevels[i].stats.metadataUrls|nein|String[]||Die URLs der Metadaten der statistischen Daten.|
-|districtLevels[i].stats.featureTypes|ja|String[]||Die featureTypes der WFS Dienste für die statistischen Daten, die zu laden sind.|
+|districtLevels[i].stats.featureTypes|nein|String[]||Die featureTypes der WFS Dienste für die statistischen Daten, die zu laden sind, ansonsten werden alle des Dienstes geladen|
 |districtLevels[i].activeStyle|nein|Object||Benutzerdefinierte Styles für die jeweils ausgewählte Verwaltungsebene. Entspricht der Hierarchie des OpenLayers Style Definition|
 |districtLevels[i].districtNamesMap|nein|Object||Benutzerdefiniertes dictionary zum bereitstellen von synonymen Gebietsnamen|
+|districtLevels[i].displayAll|nein|Boolean||Definiert ob alle Gebiete des Levels im Dashboard stets angezeigt werden sollen, egal ob ausgewählt oder nicht|
 |additionalInfoLayers|nein|{[key: String]: String[]}|Zusätzliche Info Layer die beim Nutzen des Tools angezeigt werden können. Der Key ist der angezeigte Bezeichner, der Value die Liste an Layer IDs|
 
 **Beispiel**
@@ -33,7 +34,7 @@ Mit dem DistrictSelector kann ein Gebiet auf Basis einer Verwaltungsebene (z.B.:
         "keyOfAttrName": "stat_gebiet",
         "baseUrl": ["https://qs-geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Statistische_Gebiete"],
         "metadataUrls": ["http://hmdk.metaver.de/trefferanzeige?docuuid=99687398-CFFE-413E-B966-6B8629D335F5"],
-        "featureTypes": ["regionalstatistische_daten_stat_geb"]
+        "featureTypes": [["regionalstatistische_daten_stat_geb"]]
       },
       "activeStyle": {
         "fillColor": [
@@ -56,7 +57,7 @@ Mit dem DistrictSelector kann ein Gebiet auf Basis einer Verwaltungsebene (z.B.:
         "keyOfAttrName": "stadtteil",
         "baseUrl": ["https://qs-geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Stadtteile", "https://geodienste.hamburg.de/HH_WFS_Bevoelkerungsprognosen_Stadtteile"],
         "metadataUrls": ["http://hmdk.metaver.de/trefferanzeige?docuuid=F4062BD8-43C4-4C4F-AA45-253D84A3685E"],
-        "featureTypes": ["regionalstatistische_daten_stadtteile", "bevoelkerungsprognosen_stadtteile_hh"]
+        "featureTypes": [["regionalstatistische_daten_stadtteile"], ["bevoelkerungsprognosen_stadtteile_hh"]]
       }
     },
     {
@@ -68,7 +69,7 @@ Mit dem DistrictSelector kann ein Gebiet auf Basis einer Verwaltungsebene (z.B.:
         "keyOfAttrName": "bezirk",
         "baseUrl": ["https://qs-geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke"],
         "metadataUrls": ["http://hmdk.metaver.de/trefferanzeige?docuuid=0076F219-A3CA-4898-8501-361565361342"],
-        "featureTypes": ["regionalstatistische_daten_bezirke"]
+        "featureTypes": [["regionalstatistische_daten_bezirke"]]
       }
     },
     {
