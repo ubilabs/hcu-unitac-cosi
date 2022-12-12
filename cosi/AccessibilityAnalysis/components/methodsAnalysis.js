@@ -18,7 +18,7 @@ import {
 import {default as turfSimplify} from "@turf/simplify";
 import {default as turfBuffer} from "@turf/buffer";
 import {readFeatures, transformFeatures} from "../components/util.js";
-import getClusterSource from "../../utils/getClusterSource";
+import {getLayerSource} from "../../utils/layer/getLayerSource";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
 
 export const methodConfig = {
@@ -402,7 +402,7 @@ export default {
         });
 
         if (selectedLayerModel) {
-            const features = getClusterSource(selectedLayerModel.get("layer"))
+            const features = getLayerSource(selectedLayerModel.get("layer"))
                 .getFeatures()
                 .filter(this.isFeatureActive);
 
