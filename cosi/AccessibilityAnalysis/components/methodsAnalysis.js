@@ -2,6 +2,7 @@ import * as Proj from "ol/proj.js";
 import * as Extent from "ol/extent";
 import GeometryCollection from "ol/geom/GeometryCollection";
 import setBBoxToGeom from "../../utils/setBBoxToGeom";
+
 import
 {
     Fill,
@@ -20,6 +21,7 @@ import {default as turfBuffer} from "@turf/buffer";
 import {readFeatures, transformFeatures} from "../components/util.js";
 import getClusterSource from "../../utils/getClusterSource";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 
 export const methodConfig = {
     store: null
@@ -394,6 +396,23 @@ export default {
         }
 
         return {distance, maxDistance, minDistance, steps};
+    },
+    // pull meta data for the dataset used for the analysis
+    // ???? CAN USE UTILS getMetaData FUKTION INSTEAD?
+    getMetaData: function () {
+        const selectedLayerModel = getModelByAttributes({
+                name: this.selectedFacilityName,
+                type: "layer"
+            }),
+            layerID = selectedLayerModel.id,
+            rawlayer = rawLayerList.getLayerWhere({id: layerID});
+
+        console.log({
+            // ueber url + id metadaten xml ziehen 
+            rawlayer.datasets[0]
+        });
+
+
     },
     getCoordinates: function (setByFeature) {
         const selectedLayerModel = getModelByAttributes({

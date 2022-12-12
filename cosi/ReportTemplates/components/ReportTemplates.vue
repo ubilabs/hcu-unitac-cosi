@@ -6,6 +6,7 @@ import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersReportTemplates";
 import mutations from "../store/mutationsReportTemplates";
 import tableify from "tableify"; // generate html tables from js objects
+import {leastIndex} from "d3-array";
 
 export default {
     name: "ReportTemplates",
@@ -137,8 +138,11 @@ export default {
             // manually assemble an html document.
             // Hopefully to be deprecated - placeholder until exportPDF addons comes through
             const exportedHtml = this.templateItems.map((item) => {
-                // for each chapter...
-                    let resulthtml = "";
+
+                    // for each chapter...
+                    // set defaults
+                    let resulthtml = "",
+                        sourceInfo = "Quelleninformation fehlt."; // default
 
                     // make table or image html..
                     if (item.output.type === "table") {
@@ -147,17 +151,24 @@ export default {
                     if (item.output.type === "image") {
                         resulthtml = "<img src='" + item.output.result + "'>";
                     }
+
+                    // add source info if it exists
+                    if (item.output.sourceInfo) {
+                        console.log(sourceInfo);
+                        sourceInfo = escapeHtml(item.output.sourceInfo);
+                    }
+                    // put together in structured & styled HTML
                     return "<h1>" + escapeHtml(item.title) + "</h1><br>" + // title as h1 element
                     "<span>" + escapeHtml(item
                         .description) + "</span><br><br>" + // description as span element
-                        resulthtml;
+                        resulthtml + "<br><br><span> <b>Quellen:</b><br><br>" + sourceInfo + "</span>";
+
                 }).join("<br>") // concatenate resulting array of strings into a single string with line breaks
                 // rotate table column headers
                 + "<style>" +
                 "th {\n    height: 240px;\n    vertical-align: bottom;\n    text-align: left;\n    line-height: 1;\n  }" +
                 "th {\n    width: 300px;\n    transform-origin: bottom left;\n    transform: translateX(75px) rotate(-45deg);\n  }" +
                 "</style>",
-                // + "<style>\nthead {transform: \n/* Magic Numbers */\ntranslate(25px, 51px)\n/* 45 is really 360 - 45 */\nrotate(315deg);\n}\n</style>",
                 // open a new window and fill it with the constructed html
 
                 win = window.open("", "Export", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=" + (screen.height - 400) + ",left=" + (screen.width - 840));

@@ -19,7 +19,6 @@ export default function getMetadata (mapping, keyOfAttrName, {url = "https://www
             url, name, organization
         };
     }
-
     return {
         url: metadataset.show_doc_url + metadataset.md_id,
         name: metadataset.md_name,

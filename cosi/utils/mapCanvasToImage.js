@@ -65,7 +65,8 @@ export default async function mapCanvasToImage (toBlob = false) {
             );
             mapContext.globalAlpha = 1;
             mapContext.setTransform(1, 0, 0, 1, 0, 0);
-            res(toBlob ? mapCanvas.toBlob() : mapCanvas.toDataURL());
+            // res(toBlob ? mapCanvas.toBlob() : mapCanvas.toDataURL());
+            res(toBlob ? mapCanvas.toBlob() : mapCanvas.toDataURL(), {useCORS: true, allowTaint: true});
         });
         map.renderSync();
     });

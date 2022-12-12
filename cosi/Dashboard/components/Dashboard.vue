@@ -226,7 +226,13 @@ export default {
                         {
                             result: data, // change to where results are stored
                             type: "table", // see toolBridge docs for supported output types
-                            request: newRequest // we need to give back the original request as well, leave this as is.
+                            request: newRequest, // we need to give back the original request as well, leave this as is.
+                            sourceInfo: this.rows.map(row=>{
+                                return row.metadata.name + " (" + row.metadata.organization + ") " + row.metadata.url; // concatenate info into single string
+                            }).filter((value, index, self)=> { // unique values only
+                                return self.indexOf(value) === index;
+                            }
+                            ).join("\n").replace("(undefined)", "").replace("undefined", "") // make single string with line breaks
                         }
                     );
                 };
@@ -276,6 +282,7 @@ export default {
             this.rows = this.getRows();
             this.items = this.getData();
             this.currentTimeStamp = this.selectedYear;
+            console.log(this.rows);
         },
         /**
          * Generates empty rows for all data categories

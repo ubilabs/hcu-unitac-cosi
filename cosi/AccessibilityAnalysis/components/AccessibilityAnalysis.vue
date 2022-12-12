@@ -14,6 +14,7 @@ import travelTimeIndex from "../assets/inrix_traveltimeindex_2021.json";
 import {onSearchbar, offSearchbar, getServiceUrl, onShowFeaturesById, onShowAllFeatures, onFeaturesLoaded, getModelByAttributes} from "../../utils/radioBridge.js";
 import mapCollection from "../../../../src/core/maps/mapCollection";
 import mapCanvasToImage, {exportMapView} from "../../utils/mapCanvasToImage";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -337,13 +338,14 @@ export default {
                 * @returns {Object} null (runs for side effects only)
                 */
                 returnResults = (imgDataUrl) => {
-                // (todo mb: should this maybe be a toolbridge action? could simplify creating the bridge)
+                    console.log(rawLayerList);
                     return this.$store.commit("Tools/ToolBridge/setReceivedResults", // this is where toolBridge expects requested results to arrive
                         {
-                            // result: this.dataSets[this.activeSet].geojson,
+                            // result: this.dataSets[this.activeSet].geojson, // if we ever wanted raw data (atm we dont, and toolBridge supports only single type of output)
                             result: imgDataUrl,
                             type: "image", // see toolBridge docs for supported output types
-                            request: newRequest // we need to give back the original request as well
+                            request: newRequest, // we need to give back the original request as well
+                            sourceInfo: rawLayerList
                         }
                     );
                 };
@@ -469,6 +471,7 @@ export default {
                 geojson: {}
             };
 
+            this.getMetaData(); // for debugging
             await this.createIsochrones();
 
             analysisSet.results = this._isochroneFeatures;
