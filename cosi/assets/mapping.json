@@ -200,8 +200,8 @@
     "valueType": "relative",
     "calculation": {
       "operation": "divide",
-      "category_A": "Bevölkerung mit Migrationshintergrund",
-      "category_B": "Bevölkerung insgesamt",
+      "category_A": "Bevölkerung mit Migrationshintergrund unter 18 Jahren",
+      "category_B": "Bevölkerung mit Migrationshintergrund",
       "modifier": 100
     }
   },
