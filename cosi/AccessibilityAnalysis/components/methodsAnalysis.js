@@ -17,7 +17,8 @@ import {
 } from "@turf/helpers";
 import {default as turfSimplify} from "@turf/simplify";
 import {default as turfBuffer} from "@turf/buffer";
-import {readFeatures, transformFeatures} from "../components/util.js";
+import {readFeatures} from "../components/util.js";
+import {transformFeatures} from "../../utils/features/transform";
 import {getLayerSource} from "../../utils/layer/getLayerSource";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
 
