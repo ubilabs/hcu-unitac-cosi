@@ -634,6 +634,17 @@ export default {
                 result = arr.map((item) => ({...def, ...item}));
 
             return result;
+        },
+
+        collapseAllGroups () {
+        // ... Just a solution we found online and it seems like it does what it's supposed to do :D
+            const groupStates = this.$refs["dashboard-table"]?.$vnode.componentInstance.openCache;
+
+            if (groupStates) {
+                for (const e in groupStates) {
+                    groupStates[e] = false;
+                }
+            }
         }
 
     }
