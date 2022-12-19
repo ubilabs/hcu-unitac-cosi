@@ -1,6 +1,6 @@
 /**
  * User type definition
- * @typedef {Object} ObliqueViewerState
+ * @typedef {Object} vcObliqueState
  * @property {Boolean} active if true, viewer will rendered
  * @property {String} id id of the viewer component
  * @property {String} name displayed as title (config-param)
@@ -19,7 +19,7 @@
 
 const state = {
     active: false,
-    id: "obliqueViewer",
+    id: "vcOblique",
     name: "additional:menu.tools.obliqueViewer",
     icon: "bi-camera-fill",
     styleId: "",

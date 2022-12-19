@@ -3,7 +3,7 @@ import Vue from "vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import {getComponent} from "../../../src/utils/getComponent";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
-import mutationsObliqueViewer from "../store/mutationsObliqueViewer";
+import mutationsObliqueViewer from "../store/mutationsVCOblique";
 import iframeResize from "../node_modules/iframe-resizer/js/iframeResizer";
 
 Vue.directive("resize", {
@@ -16,12 +16,12 @@ Vue.directive("resize", {
 });
 
 export default {
-    name: "ObliqueViewer",
+    name: "VcOblique",
     components: {
         ToolTemplate
     },
     computed: {
-        ...mapGetters("Tools/ObliqueViewer", [
+        ...mapGetters("Tools/VcOblique", [
             "active",
             "deactivateGFI",
             "defaultMapMarkerStyleId",
@@ -62,15 +62,15 @@ export default {
         this.$on("close", this.close);
     },
     methods: {
-        ...mapMutations("Tools/ObliqueViewer", Object.keys(mutationsObliqueViewer)),
-        ...mapActions("Tools/ObliqueViewer", ["initObliqueView", "resetObliqueViewer", "setObliqueView", "setObliqueViewerURL"]),
+        ...mapMutations("Tools/VcOblique", Object.keys(mutationsObliqueViewer)),
+        ...mapActions("Tools/VcOblique", ["initObliqueView", "resetObliqueViewer", "setObliqueView", "setObliqueViewerURL"]),
 
         /**
         * Close the sidebar and deactivate the obliqueViewer
         * @returns {void}
         */
         close () {
-            const model = getComponent("obliqueViewer");
+            const model = getComponent("vcOblique");
 
             this.setActive(false);
             if (model) {

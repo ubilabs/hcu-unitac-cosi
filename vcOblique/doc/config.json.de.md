@@ -69,7 +69,7 @@ Mobil wird das iFrame im window angezeigt.
 **Beispiel**
 ```
 #!json
-    "obliqueViewer": {
+    "vcOblique": {
     "name": "translate#additional:modules.tools.obliqueViewer.title",
     "icon": "bi-image"
     }

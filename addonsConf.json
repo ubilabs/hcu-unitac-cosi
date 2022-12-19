@@ -181,12 +181,16 @@
     "type": "tool"
     },
   "obliqueViewer": {
+    "path": "vcOblique",
+    "type": "tool"
+  },
+  "vcOblique": {
     "type": "tool"
   },
   "ToolBridge": {
     "path": "cosi/ToolBridge",
     "type": "tool"
-  }, 
+  },
   "ReportTemplates": {
     "path": "cosi/ReportTemplates",
     "type": "tool"

@@ -4,7 +4,7 @@ List of all configurable tools. Each tool inherits from **[tool](#markdown-heade
 
 |Name|Mandatory|Type|Default|Description|Expert|
 |----|-------------|---|-------|------------|------|
-|obliqueViewer|no|**[obliqueViewer](#markdown-header-portalconfigmenutoolschildrenobliqueViewer)**||Tool to include oblique aerial view application from vcs.|false|
+|vcOblique|no|**[obliqueViewer](#markdown-header-portalconfigmenutoolschildrenobliqueViewer)**||Tool to include oblique aerial view application from vcs.|false|
 
 
 
@@ -65,7 +65,7 @@ Mobile the iFrame is displayed in the window.
 **Example**
 ```
 #!json
-    "obliqueViewer": {
+    "vcOblique": {
     "name": "translate#additional:modules.tools.obliqueViewer.title",
     "icon": "bi-image"
     }
