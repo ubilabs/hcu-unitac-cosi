@@ -407,10 +407,10 @@ export default {
             layerID = selectedLayerModel.id,
             rawlayer = rawLayerList.getLayerWhere({id: layerID});
 
-        console.log({
-            // ueber url + id metadaten xml ziehen 
+        console.log(
+            // ueber url + id metadaten xml ziehen
             rawlayer.datasets[0]
-        });
+        );
 
 
     },

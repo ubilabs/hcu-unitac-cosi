@@ -31,7 +31,7 @@ import exportXlsx from "../../utils/exportXlsx";
 import DashboardToolbar from "./DashboardToolbar.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
 import TableCell from "./TableCell.vue";
-import getMetadata from "../../utils/getMetadata";
+import {getMetadata, getMetaDataRemotely} from "../../utils/getMetadata";
 
 export default {
     name: "Dashboard",
