@@ -180,10 +180,6 @@
     "path":"cosi/ExportPDF",
     "type": "tool"
     },
-  "obliqueViewer": {
-    "path": "vcOblique",
-    "type": "tool"
-  },
   "vcOblique": {
     "type": "tool"
   },
