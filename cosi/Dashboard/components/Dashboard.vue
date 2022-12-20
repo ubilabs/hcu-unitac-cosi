@@ -533,14 +533,6 @@ export default {
         getCulmulativeTotal,
 
         /**
-         * @param {String} value -
-         * @returns {void}
-         */
-        setSearch (value) {
-            this.search = value;
-        },
-
-        /**
          * Sets the current (visible) items of the table.
          * @param {Object[]} items - The of the table.
          * @returns {void}
@@ -562,11 +554,14 @@ export default {
             if (evt) {
                 this.toolOffset = window.innerWidth - evt.targetElement.clientWidth;
             }
-            if (this.$el.querySelector("#dashboard-toolbar").clientHeight > 50) {
-                this.$el.querySelector(".dashboard-table-wrapper").style.height = "calc(100% - 116px)";
-            }
-            else {
-                this.$el.querySelector(".dashboard-table-wrapper").style.height = "calc(100% - 80px)";
+
+            if (typeof this.$el.querySelector === "function") {
+                if (this.$el.querySelector("#dashboard-toolbar").clientHeight > 50) {
+                    this.$el.querySelector(".dashboard-table-wrapper").style.height = "calc(100% - 116px)";
+                }
+                else {
+                    this.$el.querySelector(".dashboard-table-wrapper").style.height = "calc(100% - 80px)";
+                }
             }
         },
 
@@ -677,9 +672,7 @@ export default {
                     <v-container fluid>
                         <DashboardToolbar
                             :stats-feature-filter="statsFeatureFilter"
-                            :search="search"
                             @setStatsFeatureFilter="setStatsFeatureFilter"
-                            @setSearch="setSearch"
                             @exportTable="exportTable"
                         />
                         <v-row class="dashboard-table-wrapper">
