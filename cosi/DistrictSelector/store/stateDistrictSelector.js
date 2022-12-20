@@ -47,7 +47,8 @@ const state = {
     readmeUrl: {
         "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/districtselector.md",
         "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/gebietsauswahl.md"
-    }
+    },
+    remoteMetadata: null // after data is loaded, we also pull metadata remotely and store it here.
 };
 
 export default state;

@@ -103,7 +103,6 @@ export default {
                 }
             }
         },
-
         /**
          * Every time the list of layers of the map changes the function prepareDistricts is called.
          * @param {module:ol/layer[]} newLayerList - An array of layers.

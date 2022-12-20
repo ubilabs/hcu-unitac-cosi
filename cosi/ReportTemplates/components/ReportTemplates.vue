@@ -6,7 +6,7 @@ import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersReportTemplates";
 import mutations from "../store/mutationsReportTemplates";
 import tableify from "tableify"; // generate html tables from js objects
-import {leastIndex} from "d3-array";
+// import {leastIndex} from "d3-array";
 
 export default {
     name: "ReportTemplates",
@@ -78,9 +78,9 @@ export default {
             const toolSettings = this.currentSettings(this.templateItems[templateItemsIndex].tool);
 
             // update array
-            this.templateItems[templateItemsIndex].settings = toolSettings;
+            this.templateItems[templateItemsIndex].settings = toolSettings; // update settings
             this.templateItems[templateItemsIndex].hasSettings = true;
-            this.clearTemplateItemOutput(templateItemsIndex);
+            this.clearTemplateItemOutput(templateItemsIndex); // delete any previous results that no longer match the new settings
 
 
         },
@@ -104,10 +104,37 @@ export default {
                     const itemID = templateItemsIndex; // copy the item id into the function namespace
 
                     this.$store.commit("Tools/ReportTemplates/templateItemOutput", {output, itemID});
+                    this.getRemoteMetaData();
 
                 }
             });
             return null;
+
+        },
+        getRemoteMetaData () {
+            this.templateItems.map((item)=>{
+                // eslint-disable-next-line require-jsdoc
+                function metaDataCallback (value) {
+                    console.log("metadatacallback");
+                    console.log(value);
+                    item.remoteMetaData = value;
+                    console.log(this);
+                    return item;
+                }
+                console.log(item);
+                // if (item.output.result.metadataInfo) {
+                // if (Array.isArray(item.output.result.metadataInfo)) {
+                item.output.sourceInfo.map((x)=>{
+                    x.getRemote(metaDataCallback);
+                    return x;
+                });
+                // }
+                // }
+                // if (item.output.result.metadataInfo) {
+                //     item.output.result.metadataInfo.getRemote(metaDataCallback);
+                // }
+                return item;
+            });
 
         },
         exportTemplate () {

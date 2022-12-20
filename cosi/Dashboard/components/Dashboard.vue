@@ -31,7 +31,7 @@ import exportXlsx from "../../utils/exportXlsx";
 import DashboardToolbar from "./DashboardToolbar.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
 import TableCell from "./TableCell.vue";
-import {getMetadata, getMetaDataRemotely} from "../../utils/getMetadata";
+import {getMetadata} from "../../utils/getMetadata";
 
 export default {
     name: "Dashboard",
@@ -228,11 +228,13 @@ export default {
                             type: "table", // see toolBridge docs for supported output types
                             request: newRequest, // we need to give back the original request as well, leave this as is.
                             sourceInfo: this.rows.map(row=>{
-                                return row.metadata.name + " (" + row.metadata.organization + ") " + row.metadata.url; // concatenate info into single string
+                                // return row.metadata.name + " (" + row.metadata.organization + ") " + row.metadata.url; // concatenate info into single string
+                                return row.metadata;
                             }).filter((value, index, self)=> { // unique values only
                                 return self.indexOf(value) === index;
                             }
-                            ).join("\n").replace("(undefined)", "").replace("undefined", "") // make single string with line breaks
+                            )
+                            // .join("\n").replace("(undefined)", "").replace("undefined", "") // make single string with line breaks
                         }
                     );
                 };
@@ -292,6 +294,7 @@ export default {
         getRows () {
             let counter = 0;
 
+
             return this.mapping.reduce((rows, category, index, array) => {
                 if (!category[this.keyOfAttrNameStats]) {
                     return rows;
@@ -307,9 +310,8 @@ export default {
                         valueType: category.valueType,
                         isTemp: category.isTemp,
                         calculation: category.calculation,
-                        groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter,
-                        metadata: getMetadata(category, this.keyOfAttrNameStats, {url: this.metadataUrls?.[0]})
-                    }
+                        groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter.toExponential,
+                        metadata: getMetadata(category, this.keyOfAttrNameStats, {url: this.metadataUrls?.[0]})}
                 ];
             }, []);
         },

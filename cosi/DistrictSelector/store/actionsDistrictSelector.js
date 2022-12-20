@@ -6,6 +6,7 @@ import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
+import {getMetadata} from "../../utils/getMetadata.js";
 
 const actions = {
     /**
@@ -53,6 +54,7 @@ const actions = {
                     }
                 }
             }
+            dispatch("fetchMetaData");
         }
 
         // loading reference Districts recursively
@@ -80,6 +82,7 @@ const actions = {
             dispatch("Alerting/cleanup", null, {root: true});
             LoaderOverlay.hide();
         }
+
     },
 
     setDistrictsByName ({getters, commit}, {districtNames, fromExternal = true, zoomToExtent = true}) {
@@ -151,6 +154,25 @@ const actions = {
         }
 
         commit("resetMapping");
+    },
+    fetchMetaData ({state, commit}) {
+        // get meta data based on current state
+        commit("setRemoteMetadata", null); // delete existing metadata
+
+        for (const index in state.mapping) {
+            // we get the stored metadata, which also gives us a function to fetch remote meta data.
+            const metadata = getMetadata(
+                state.mapping[index],
+                state.selectedDistrictLevel.stats.keyOfAttrName,
+                {url: state.selectedDistrictLevel.stats.metadataUrls?.[0]}
+            );
+
+            // fetch remote metadata, then commit result to districtSelector store
+            metadata.getRemote(value => {
+                commit("addRemoteMetadata", value);
+            });
+        }
+
     }
 };
 

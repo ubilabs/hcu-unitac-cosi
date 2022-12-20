@@ -1,5 +1,4 @@
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
-// import {overflow} from "html2canvas/dist/types/css/property-descriptors/overflow.js";
 import getRemoteXML from "./getRemoteXML.js";
 /**
  * Maps the rawLayer data of the stats to a simple metadata object
@@ -11,6 +10,10 @@ import getRemoteXML from "./getRemoteXML.js";
  * @returns {object} the simplified metadata object
  */
 export function getMetadata (mapping, keyOfAttrName, {url = "https://www.hamburg.de/bsw/landesbetrieb-geoinformation-und-vermessung/", name = "Urban Data Platform", organization = "LGV Hamburg"}) {
+    console.log(getMetadata);
+    console.log(mapping);
+    console.log(keyOfAttrName);
+    console.log(mapping[keyOfAttrName]);
     const
         rawLayer = rawLayerList.getLayerWhere({id: mapping[keyOfAttrName]}),
         metadataset = rawLayer.datasets?.[0];
@@ -28,6 +31,7 @@ export function getMetadata (mapping, keyOfAttrName, {url = "https://www.hamburg
         name: metadataset.md_name,
         getRemote (callback) {
             getMetaDataRemotely(metadataset.md_id, callback);
+
         },
         organization: metadataset.kategorie_organisation
     };

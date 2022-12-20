@@ -53,6 +53,9 @@ const mutations = {
      */
     resetMapping (state) {
         state.mapping = state.mappingInit;
+    },
+    addRemoteMetadata (state, payload) {
+        state.remoteMetadata.push(payload);
     }
 };
 
