@@ -9,6 +9,7 @@ import getRemoteXML from "./getRemoteXML.js";
  * @param {string} [organization="LGV Hamburg"] - the fallback organization
  * @returns {object} the simplified metadata object
  */
+
 export function getMetadata (mapping, keyOfAttrName, {url = "https://www.hamburg.de/bsw/landesbetrieb-geoinformation-und-vermessung/", name = "Urban Data Platform", organization = "LGV Hamburg"}) {
     console.log(getMetadata);
     console.log(mapping);
@@ -38,6 +39,7 @@ export function getMetadata (mapping, keyOfAttrName, {url = "https://www.hamburg
 
 
     return metadata;
+
 
 }
 
@@ -140,7 +142,6 @@ function objectMapFlat (obj, fn) {
     }
     return mapped;
 }
-
 
 export default {
     getMetadata,

@@ -31,7 +31,8 @@ import exportXlsx from "../../utils/exportXlsx";
 import DashboardToolbar from "./DashboardToolbar.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
 import TableCell from "./TableCell.vue";
-import {getMetadata} from "../../utils/getMetadata";
+
+// import getMetadata from "../../utils/getMetadata";
 
 export default {
     name: "Dashboard",
@@ -310,8 +311,9 @@ export default {
                         valueType: category.valueType,
                         isTemp: category.isTemp,
                         calculation: category.calculation,
-                        groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter.toExponential,
-                        metadata: getMetadata(category, this.keyOfAttrNameStats, {url: this.metadataUrls?.[0]})}
+                        groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter
+                        // metadata: getMetadata(category, this.keyOfAttrNameStats, {url: this.metadataUrls?.[0]})
+                    }
                 ];
             }, []);
         },
