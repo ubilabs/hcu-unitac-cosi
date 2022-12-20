@@ -249,12 +249,7 @@ export default {
          * @returns {void}
          */
         this.$on("close", () => {
-            const model = getComponent(this.id);
-
             this.setActive(false);
-            if (model) {
-                model.set("isActive", false);
-            }
         });
     },
 
@@ -636,8 +631,12 @@ export default {
             return result;
         },
 
+        /**
+         *  This function collapses the results of dashboard to make it look more clean
+         */
+
         collapseAllGroups () {
-        // ... Just a solution we found online and it seems like it does what it's supposed to do :D
+            // The second half of the solution is not clear to me but found that it is one way to achieve
             const groupStates = this.$refs["dashboard-table"]?.$vnode.componentInstance.openCache;
 
             if (groupStates) {
@@ -685,7 +684,7 @@ export default {
                         />
                         <v-row class="dashboard-table-wrapper">
                             <v-data-table
-                                ref="dashbard-table"
+                                ref="dashboard-table"
                                 v-model="selectedItems"
                                 :headers="columns"
                                 :items="items"
@@ -700,6 +699,7 @@ export default {
                                 item-key="category"
                                 class="dashboard-table"
                                 @current-items="setCurrentItems"
+                                @hook:mounted="collapseAllGroups"
                             >
                                 <!-- Header for years selector -->
                                 <template #[`header.years`]>
