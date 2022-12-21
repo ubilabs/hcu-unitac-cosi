@@ -1,7 +1,7 @@
 {
     "menu": {
         "tools":{
-          "obliqueViewer": "Oblique aerial view"
+          "vcOblique": "Oblique aerial view"
         }
     },
     "modules": {

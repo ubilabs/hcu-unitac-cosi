@@ -70,7 +70,7 @@ Mobil wird das iFrame im window angezeigt.
 ```
 #!json
     "vcOblique": {
-    "name": "translate#additional:modules.tools.obliqueViewer.title",
+    "name": "translate#additional:modules.tools.vcOblique.title",
     "icon": "bi-image"
     }
 ```

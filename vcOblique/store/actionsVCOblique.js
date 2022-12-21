@@ -127,9 +127,9 @@ const actions = {
         }
         else {
             dispatch("Alerting/addSingleAlert",
-                "<strong>" + i18next.t("additional:modules.tools.obliqueViewer.frameworkUndefined") + "</strong>"
+                "<strong>" + i18next.t("additional:modules.tools.vcOblique.frameworkUndefined") + "</strong>"
                 + "<br>"
-                + "<small>" + i18next.t("additional:modules.tools.obliqueViewer.frameworkUndefinedMessage") + "</small>",
+                + "<small>" + i18next.t("additional:modules.tools.vcOblique.frameworkUndefinedMessage") + "</small>",
                 {root: true}
             );
         }
@@ -179,7 +179,7 @@ const actions = {
             dispatch("setObliqueViewerURLWithReplacedHostname", {urlParts, startCoordinates});
         }
         else {
-            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.obliqueViewer.sameOrigin"), {root: true});
+            dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.vcOblique.sameOrigin"), {root: true});
         }
     },
 
