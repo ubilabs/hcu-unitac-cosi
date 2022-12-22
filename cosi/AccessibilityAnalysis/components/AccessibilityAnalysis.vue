@@ -14,13 +14,15 @@ import travelTimeIndex from "../assets/inrix_traveltimeindex_2021.json";
 import {onSearchbar, offSearchbar, getServiceUrl, onShowFeaturesById, onShowAllFeatures, onFeaturesLoaded, getModelByAttributes} from "../../utils/radioBridge.js";
 import mapCollection from "../../../../src/core/maps/mapCollection";
 import mapCanvasToImage, {exportMapView} from "../../utils/mapCanvasToImage";
+import AccessibilityAnalysisLegend from "./AccessibilityAnalysisLegend.vue";
 
 export default {
     name: "AccessibilityAnalysis",
     components: {
         Tool,
         ToolInfo,
-        AnalysisPagination
+        AnalysisPagination,
+        AccessibilityAnalysisLegend
     },
     data () {
         return {
@@ -750,36 +752,10 @@ export default {
                             </v-row>
                         </v-form>
                         <hr>
-                        <v-row dense>
-                            <v-col cols="6">
-                                <h5 id="legend-header">
-                                    <strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong>
-                                </h5>
-                                <div id="legend">
-                                    <span
-                                        v-for="(j, i) in _steps"
-                                        :key="i"
-                                    >
-                                        <svg
-                                            width="15"
-                                            height="15"
-                                        >
-                                            <circle
-                                                cx="7.5"
-                                                cy="7.5"
-                                                r="7.5"
-                                                :style="`fill: ${
-                                                    legendColors[i]
-                                                }; stroke-width: 0.5; stroke: #e3e3e3;`"
-                                            />
-                                        </svg>
-                                        <span :key="i * 2 + _steps.length">
-                                            {{ j }}
-                                        </span>
-                                    </span>
-                                </div>
-                            </v-col>
-                        </v-row>
+                        <AccessibilityAnalysisLegend
+                            :steps="_steps"
+                            :colors="legendColors"
+                        />
                         <v-row>
                             <v-col>
                                 <AnalysisPagination
