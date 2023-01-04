@@ -32,7 +32,6 @@ import DashboardToolbar from "./DashboardToolbar.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
 import TableCell from "./TableCell.vue";
 
-// import getMetadata from "../../utils/getMetadata";
 
 export default {
     name: "Dashboard",
@@ -124,7 +123,7 @@ export default {
             "keyOfAttrNameStats",
             "mapping",
             "loadend",
-            "metadataUrls"
+            "remoteMetadata"
         ]),
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ColorCodeMap", ["selectedYear"]),
@@ -228,13 +227,7 @@ export default {
                             result: data, // change to where results are stored
                             type: "table", // see toolBridge docs for supported output types
                             request: newRequest, // we need to give back the original request as well, leave this as is.
-                            sourceInfo: this.rows.map(row=>{
-                                // return row.metadata.name + " (" + row.metadata.organization + ") " + row.metadata.url; // concatenate info into single string
-                                return row.metadata;
-                            }).filter((value, index, self)=> { // unique values only
-                                return self.indexOf(value) === index;
-                            }
-                            )
+                            sourceInfo: this.remoteMetadata
                             // .join("\n").replace("(undefined)", "").replace("undefined", "") // make single string with line breaks
                         }
                     );
@@ -285,7 +278,6 @@ export default {
             this.rows = this.getRows();
             this.items = this.getData();
             this.currentTimeStamp = this.selectedYear;
-            console.log(this.rows);
         },
         /**
          * Generates empty rows for all data categories
@@ -312,7 +304,6 @@ export default {
                         isTemp: category.isTemp,
                         calculation: category.calculation,
                         groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter
-                        // metadata: getMetadata(category, this.keyOfAttrNameStats, {url: this.metadataUrls?.[0]})
                     }
                 ];
             }, []);

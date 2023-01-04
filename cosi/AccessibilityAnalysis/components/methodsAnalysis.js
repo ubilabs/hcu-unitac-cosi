@@ -399,7 +399,6 @@ export default {
         return {distance, maxDistance, minDistance, steps};
     },
     // pull meta data for the dataset used for the analysis
-    // ???? CAN USE UTILS getMetaData FUKTION INSTEAD?
     getMetaData: function () {
         const selectedLayerModel = getModelByAttributes({
                 name: this.selectedFacilityName,
@@ -408,11 +407,7 @@ export default {
             layerID = selectedLayerModel.id,
             rawlayer = rawLayerList.getLayerWhere({id: layerID});
 
-        console.log(
-            // ueber url + id metadaten xml ziehen
-            rawlayer.datasets[0]
-        );
-
+        return rawlayer;
 
     },
     getCoordinates: function (setByFeature) {

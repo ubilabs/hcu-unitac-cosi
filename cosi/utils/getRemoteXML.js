@@ -21,17 +21,16 @@ export default function getRemoteXML (url, callback) {
         res.on("end", function () {
             parser.parseString(response_data, function (err, result) {
                 if (err) {
-                    console.log("Got error: " + err.message);
+                    throw new Error(err.message);
                 }
                 else {
-                    console.log(result);
                     callback(result);
                     return result;
                 }
             });
         });
         res.on("error", function (err) {
-            console.log("Got error: " + err.message);
+            throw new Error(err.message);
         });
     });
 

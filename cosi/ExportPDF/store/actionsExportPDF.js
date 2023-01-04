@@ -37,7 +37,34 @@ function reportTemplateToPDF (context, chapters) {
         const title = {text: chapter.title, style: "header", bold: true, fontSize: 14},
             desc = {text: chapter.description, style: "header"},
             tool = {text: chapter.tool, style: "header"};
-            // settings = {text: chapter.settings, style: "header"};
+        let sourceInfo = "Quelleninformation fehlt.";
+
+        console.log(chapter.output.sourceInfo);
+        if (chapter.output.sourceInfo) {
+            // simplify nested object into array of arrays
+            // sourceInfo = Object.values(chapter.output.sourceInfo).map(Object.values).map(x=>{
+            //     return x.flat();
+            // });
+
+            sourceInfo = Object.values(chapter.output.sourceInfo).map((metadata)=>{
+                return Object.values(metadata).map((info, index)=>{
+                    return Object.keys(metadata)[index] + ": " + info;
+                });
+            });
+            console.log(sourceInfo);
+            sourceInfo = sourceInfo.map(x=>{ // add line breaks between sources
+                return [x, "\n"];
+            });
+            // sourceInfo = Object.values(item.output.sourceInfo).map((metadata) => { // for each meta data entry..
+            //     return Object.values(metadata).map((x, i) => { // for each piece of information in  the entry..
+            //         return Object.keys(metadata)[i] + ": " + x; // concatenate keys to values..
+            //     }).join("<br>"); // combine this metadata entry to single string..
+            // }).join("<br><br><br>"); // combine all metadata entries together to single string
+
+        }
+        console.log(chapter);
+        // sourceInfo = {text: chapter.sourceInfo, style:""};
+        // settings = {text: chapter.settings, style: "header"};
 
         docDefinition.content.push(title);
         docDefinition.content.push("\n"); // add line break
@@ -85,6 +112,7 @@ function reportTemplateToPDF (context, chapters) {
 
         docDefinition.content.push("\n"); // add line break
         docDefinition.content.push("\n"); // add line break
+        docDefinition.content.push("Datenquellen:\n\n", sourceInfo);
     }
 
     chapters.forEach(addChapter);

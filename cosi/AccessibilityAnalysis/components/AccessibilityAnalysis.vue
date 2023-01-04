@@ -338,7 +338,6 @@ export default {
                 * @returns {Object} null (runs for side effects only)
                 */
                 returnResults = (imgDataUrl) => {
-                    console.log(rawLayerList);
                     return this.$store.commit("Tools/ToolBridge/setReceivedResults", // this is where toolBridge expects requested results to arrive
                         {
                             // result: this.dataSets[this.activeSet].geojson, // if we ever wanted raw data (atm we dont, and toolBridge supports only single type of output)
@@ -471,7 +470,7 @@ export default {
                 geojson: {}
             };
 
-            this.getMetaData(); // for debugging
+            // this.getMetaData(); // for debugging
             await this.createIsochrones();
 
             analysisSet.results = this._isochroneFeatures;

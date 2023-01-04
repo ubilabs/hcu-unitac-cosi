@@ -173,7 +173,6 @@ export default {
         ...mapActions("Tools/DistrictSelector", ["loadStatFeatures", "loadMapping"]),
         ...mapActions("Maps", ["addInteraction", "removeInteraction", "zoomToExtent", "resetView"]),
         ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
-
         /**
          * quickly checks the key evt code
          * and executes createNewScenario

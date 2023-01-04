@@ -1,36 +1,33 @@
+// Getting Metadata has three relevant aspects:
+// 1. getMetadata() returns any metadata that is directly available
+// 2. that returned object contains a function "getRemote()" that lets you fetch additional information remotely
+// 3. the remotely fetched metadata is simplified by default. if you want allavailable info, use getRemote(simplify=false)
+
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import getRemoteXML from "./getRemoteXML.js";
 /**
  * Maps the rawLayer data of the stats to a simple metadata object
- * @param {object} mapping - the stats mapping object from the DistrictSelector
- * @param {string} keyOfAttrName - the current key of the attr name of the selected district level
- * @param {string} [url="https://www.hamburg.de/bsw/landesbetrieb-geoinformation-und-vermessung/"] - the fallback url
+ * @param {string} layerId - alternative to providing mapping and keyOfAttrName; provide the layer ID directly
+ * @param {*} fallback default value to return if getting metaData fails.
  * @param {string} [name="Urban Data Platform"] - the fallback name
  * @param {string} [organization="LGV Hamburg"] - the fallback organization
  * @returns {object} the simplified metadata object
  */
+export function getMetadata (layerId, fallback = {url: "https://www.hamburg.de/bsw/landesbetrieb-geoinformation-und-vermessung/", name: "Urban Data Platform", organization: "LGV Hamburg"}) {
 
-export function getMetadata (mapping, keyOfAttrName, {url = "https://www.hamburg.de/bsw/landesbetrieb-geoinformation-und-vermessung/", name = "Urban Data Platform", organization = "LGV Hamburg"}) {
-    console.log(getMetadata);
-    console.log(mapping);
-    console.log(keyOfAttrName);
-    console.log(mapping[keyOfAttrName]);
     const
-        rawLayer = rawLayerList.getLayerWhere({id: mapping[keyOfAttrName]}),
+        rawLayer = rawLayerList.getLayerWhere({id: layerId}),
         metadataset = rawLayer.datasets?.[0];
 
     if (!metadataset) {
-        return {
-            url, name, organization
-        };
+        return fallback;
     }
-    // cant combine with prev. const statement: if statement needed in between.
     // eslint-disable-next-line one-var
     const metadata = {
         url: metadataset.show_doc_url + metadataset.md_id,
         md_id: metadataset.md_id,
         name: metadataset.md_name,
-        getRemote (callback) {
+        getRemote (callback) { // also returns a (partial) function to get additional remote metadata for this layerId
             getMetaDataRemotely(metadataset.md_id, callback);
 
         },
@@ -50,10 +47,14 @@ export function getMetadata (mapping, keyOfAttrName, {url = "https://www.hamburg
  * @returns {*} Meta data as key value pairs
  */
 function simplifyRemoteMetaData (remoteMetaData) {
+
     return {
+        "Name": objectLeafs(remoteMetaData["csw:GetRecordByIdResponse"]["gmd:MD_Metadata"][0]["gmd:identificationInfo"][0]["gmd:MD_DataIdentification"][0]["gmd:citation"][0]["gmd:CI_Citation"][0]["gmd:title"])[0],
         "Datum": remoteMetaData["csw:GetRecordByIdResponse"]["gmd:MD_Metadata"][0]["gmd:dateStamp"][0]["gco:Date"][0],
-        "Kontakt": objectLeafs(remoteMetaData["csw:GetRecordByIdResponse"]["gmd:MD_Metadata"][0]["gmd:contact"]),
-        "Identifikation": objectLeafs(remoteMetaData["csw:GetRecordByIdResponse"]["gmd:MD_Metadata"][0]["gmd:identificationInfo"])
+        "Organisation": objectLeafs(remoteMetaData["csw:GetRecordByIdResponse"]["gmd:MD_Metadata"][0]["gmd:contact"][0]["gmd:CI_ResponsibleParty"][0]["gmd:organisationName"])[0],
+        "Kontakt": objectLeafs(remoteMetaData["csw:GetRecordByIdResponse"]["gmd:MD_Metadata"][0]["gmd:contact"]).slice(0, -2).join(", ") // slice removes last two entries (not needed)
+        // "Identifikation": objectLeafs(remoteMetaData["csw:GetRecordByIdResponse"]["gmd:MD_Metadata"][0]["gmd:identificationInfo"])
+        // "Citation": objectLeafs(remoteMetaData["csw:GetRecordByIdResponse"]["gmd:MD_Metadata"][0]["gmd:identificationInfo"][0]["gmd:MD_DataIdentification"][0]["gmd:citation"][0]["gmd:CI_Citation"][0])
     };
 
 }
@@ -79,11 +80,11 @@ export function getMetaDataRemotely (md_id, callback, simplify = true) {
         url = base_url + md_id;
 
     if (simplify) {
-
         getRemoteXML(url, simplifiedCallback);
-
     }
-    getRemoteXML(url, callback);
+    else {
+        getRemoteXML(url, callback);
+    }
 
 
 }

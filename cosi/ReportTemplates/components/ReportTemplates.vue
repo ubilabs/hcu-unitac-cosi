@@ -104,39 +104,13 @@ export default {
                     const itemID = templateItemsIndex; // copy the item id into the function namespace
 
                     this.$store.commit("Tools/ReportTemplates/templateItemOutput", {output, itemID});
-                    this.getRemoteMetaData();
 
                 }
             });
             return null;
 
         },
-        getRemoteMetaData () {
-            this.templateItems.map((item)=>{
-                // eslint-disable-next-line require-jsdoc
-                function metaDataCallback (value) {
-                    console.log("metadatacallback");
-                    console.log(value);
-                    item.remoteMetaData = value;
-                    console.log(this);
-                    return item;
-                }
-                console.log(item);
-                // if (item.output.result.metadataInfo) {
-                // if (Array.isArray(item.output.result.metadataInfo)) {
-                item.output.sourceInfo.map((x)=>{
-                    x.getRemote(metaDataCallback);
-                    return x;
-                });
-                // }
-                // }
-                // if (item.output.result.metadataInfo) {
-                //     item.output.result.metadataInfo.getRemote(metaDataCallback);
-                // }
-                return item;
-            });
 
-        },
         exportTemplate () {
             if (this.selectedExportFormat === "HTML") {
                 this.exportTemplateToHTML();
@@ -155,6 +129,11 @@ export default {
              * @return {String} save html
              */
             function escapeHtml (unsafe) {
+                // make sure input is a string
+                if (!(typeof unsafe === "string" | unsafe instanceof String)) {
+                    throw new Error("escapeHTML must be a string");
+                }
+
                 return unsafe
                     .replace(/&/g, "&amp;")
                     .replace(/</g, "&lt;")
@@ -178,17 +157,24 @@ export default {
                     if (item.output.type === "image") {
                         resulthtml = "<img src='" + item.output.result + "'>";
                     }
-
                     // add source info if it exists
                     if (item.output.sourceInfo) {
-                        console.log(sourceInfo);
-                        sourceInfo = escapeHtml(item.output.sourceInfo);
+                        // // simplify nested object into array of arrays
+                        // sourceInfo = Object.values(item.output.sourceInfo).map(Object.values).map(x=>{
+                        //     return x.flat();
+                        // });
+                        // Experimental
+                        sourceInfo = Object.values(item.output.sourceInfo).map((metadata) => { // for each meta data entry..
+                            return Object.values(metadata).map((x, i) => { // for each piece of information in  the entry..
+                                return Object.keys(metadata)[i] + ": " + x; // concatenate keys to values..
+                            }).join("<br>"); // combine this metadata entry to single string..
+                        }).join("<br><br><br>"); // combine all metadata entries together to single string
                     }
                     // put together in structured & styled HTML
                     return "<h1>" + escapeHtml(item.title) + "</h1><br>" + // title as h1 element
                     "<span>" + escapeHtml(item
                         .description) + "</span><br><br>" + // description as span element
-                        resulthtml + "<br><br><span> <b>Quellen:</b><br><br>" + sourceInfo + "</span>";
+                        resulthtml + "<br><br><span> <b>Quellen:</b><br><br><small>" + sourceInfo + "</small></span>";
 
                 }).join("<br>") // concatenate resulting array of strings into a single string with line breaks
                 // rotate table column headers

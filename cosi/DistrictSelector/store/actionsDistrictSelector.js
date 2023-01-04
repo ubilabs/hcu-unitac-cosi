@@ -155,21 +155,52 @@ const actions = {
 
         commit("resetMapping");
     },
+
+    /**
+    * Call api to get metadata from remote API, store in districtSelector state (remoteMetadata).
+    * `loadend` trigger does not currently wait for the metadata to be loaded
+    * @param {Object} state - the DistrictSelector store state
+    * @return {void}
+    */
     fetchMetaData ({state, commit}) {
-        // get meta data based on current state
-        commit("setRemoteMetadata", null); // delete existing metadata
 
-        for (const index in state.mapping) {
-            // we get the stored metadata, which also gives us a function to fetch remote meta data.
-            const metadata = getMetadata(
-                state.mapping[index],
-                state.selectedDistrictLevel.stats.keyOfAttrName,
-                {url: state.selectedDistrictLevel.stats.metadataUrls?.[0]}
-            );
 
-            // fetch remote metadata, then commit result to districtSelector store
+        /**
+         * extract specific key value from array of identical nested objects. Add JSDoc documentation for all parameters and the return value above the function.
+         * @param {Array} array an array of identical objects
+         * @param {String} key a key contained in these objects
+         * @param {boolean} uniqueOnly  if true, returns only one instance of each unique value in order of appearance
+         * @return {Array} an array of the values of the given key
+         */
+        function extractKey (array, key, uniqueOnly = false) {
+
+            const extraced = array.map(function (obj) { // extract key
+                return obj[key];
+            });
+
+            if (!uniqueOnly) {
+                return extraced;
+            }
+            return extraced.filter((value, index, self) =>{ // filter unique values
+                return self.indexOf(value) === index;
+            });
+        }
+
+
+        commit("setRemoteMetadata", {}); // delete existing metadata
+        const uniqueLayerIds = extractKey(state.mapping, state.selectedDistrictLevel.stats.keyOfAttrName, true);
+
+        for (const index in uniqueLayerIds) {
+            if (Object.keys(state.remoteMetadata).includes(uniqueLayerIds[index])) { // if metadata for this layer already exists, then..
+                continue; // skip this iteration
+            }
+
+            // get the metadata that is already included in the data, which contains what we need to fetch more metadata remotely.
+            const metadata = getMetadata(uniqueLayerIds[index]);
+
+            // fetch remote metadata, then commit result to districtSelector store in the callback
             metadata.getRemote(value => {
-                commit("addRemoteMetadata", value);
+                commit("addRemoteMetadata", {layerId: uniqueLayerIds[index], metadata: value});
             });
         }
 
