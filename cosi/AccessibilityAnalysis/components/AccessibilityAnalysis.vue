@@ -15,6 +15,7 @@ import {onSearchbar, offSearchbar, getServiceUrl, onShowFeaturesById, onShowAllF
 import mapCollection from "../../../../src/core/maps/mapCollection";
 import mapCanvasToImage, {exportMapView} from "../../utils/mapCanvasToImage";
 import AccessibilityAnalysisLegend from "./AccessibilityAnalysisLegend.vue";
+import AccessibilityAnalysisTrafficFlow from "./AccessibilityAnalysisTrafficFlow.vue";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -22,7 +23,8 @@ export default {
         Tool,
         ToolInfo,
         AnalysisPagination,
-        AccessibilityAnalysisLegend
+        AccessibilityAnalysisLegend,
+        AccessibilityAnalysisTrafficFlow
     },
     data () {
         return {
@@ -487,8 +489,8 @@ export default {
                 _setByFeature: JSON.parse(JSON.stringify(this._setByFeature)),
                 _steps: JSON.parse(JSON.stringify(this._steps))
             };
-
             this.dataSets.push(analysisSet);
+
             this.setActiveSet(this.dataSets.length - 1);
 
             if (this.dataSets.length === 1) {
@@ -546,6 +548,12 @@ export default {
             this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
 
             this.renderIsochrones(this._isochroneFeatures);
+        },
+        updateUseTravelTimeIndex (value) {
+            this._useTravelTimeIndex = value;
+        },
+        updateTime (value) {
+            this._time = value;
         }
     }
 };
@@ -575,37 +583,44 @@ export default {
                             <v-select
                                 ref="mode"
                                 v-model="_mode"
+                                class="mb-4"
                                 :items="availableModes"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.dropdownInfo')"
                                 item-text="text"
                                 item-value="type"
                                 outlined
                                 dense
+                                hide-details
                                 @click:append="$refs.mode.blur()"
                             />
                             <v-text-field
                                 v-if="mode === 'point'"
                                 id="coordinate"
                                 v-model="_coordinate"
+                                class="mb-4"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.pointOfReference')"
                                 type="text"
                                 min="0"
                                 readonly
                                 outlined
                                 dense
+                                hide-details
                             />
                             <v-select
                                 v-if="mode === 'region'"
                                 v-model="_selectedFacilityName"
+                                class="mb-4"
                                 placeholder="Keine Auswahl"
                                 :items="facilityNames"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.topic')"
                                 outlined
                                 dense
+                                hide-details
                             />
                             <v-select
                                 v-if="mode === 'path'"
                                 v-model="_selectedDirections"
+                                class="mb-4"
                                 placeholder="Keine Auswahl"
                                 :item-text="getDirectionsText"
                                 return-object
@@ -613,10 +628,12 @@ export default {
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.directions')"
                                 outlined
                                 dense
+                                hide-details
                                 readonly
                             />
                             <v-select
                                 v-model="_transportType"
+                                class="mb-4"
                                 title="Verkehrsmittel"
                                 :items="transportTypes"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.transportType')"
@@ -624,10 +641,12 @@ export default {
                                 item-value="type"
                                 outlined
                                 dense
+                                hide-details
                                 :disabled="mode === 'path'"
                             />
                             <v-select
                                 v-model="_scaleUnit"
+                                class="mb-4"
                                 title="Maßeinheit der Entfernung"
                                 :items="scaleUnits"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.scaleUnit')"
@@ -635,8 +654,19 @@ export default {
                                 item-value="type"
                                 outlined
                                 dense
+                                hide-details
                                 :disabled="mode === 'path'"
                             />
+                            <template
+                                v-if="_transportType === 'driving-car' && scaleUnit === 'time'"
+                            >
+                                <AccessibilityAnalysisTrafficFlow
+                                    :use-travel-time-index="useTravelTimeIndex"
+                                    :time="_time"
+                                    @update:useTravelTimeIndex="updateUseTravelTimeIndex"
+                                    @update:time="updateTime"
+                                />
+                            </template>
                             <v-text-field
                                 id="range"
                                 v-model="_distance"
@@ -645,54 +675,10 @@ export default {
                                 min="0"
                                 outlined
                                 dense
+                                hide-details
                             />
-                            <div class="travel-time-index">
-                                <v-icon
-                                    small
-                                    @click="addSingleAlert({
-                                        category: 'Info',
-                                        displayClass: 'info',
-                                        content: $t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.help')
-                                    })"
-                                >
-                                    mdi-help-circle-outline
-                                </v-icon>
-                                <v-slider
-                                    v-model="_time"
-                                    class="time-slider"
-                                    :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.time')"
-                                    :hint="`${(travelTimeIndex[_time] / Math.min(...Object.values(travelTimeIndex))).toFixed(2)} ${$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.title')}`"
-                                    :disabled="!useTravelTimeIndex || transportType !== 'driving-car' || scaleUnit !== 'time'"
-                                    :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.tooltip')"
-                                    step="1"
-                                    ticks="always"
-                                    tick-size="4"
-                                    min="0"
-                                    max="23"
-                                    dense
-                                    hide-details="auto"
-                                >
-                                    <template #append>
-                                        <!-- eslint-disable-next-line vue/no-multiple-template-root -->
-                                        <div class="append-text-field">
-                                            {{ _time }}:00
-                                            <v-icon small>
-                                                mdi-clock
-                                            </v-icon>
-                                        </div>
-                                    </template>
-                                </v-slider>
-                            </div>
                             <v-row dense>
                                 <v-col cols="12">
-                                    <v-checkbox
-                                        v-model="_useTravelTimeIndex"
-                                        dense
-                                        hide-details
-                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.toggle')"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.tooltip')"
-                                        :disabled="transportType !== 'driving-car' || scaleUnit !== 'time'"
-                                    />
                                     <v-checkbox
                                         v-model="_setByFeature"
                                         dense
@@ -822,41 +808,27 @@ export default {
 </template>
 
 <style lang="scss">
-#accessibilityanalysis {
-  width: 400px;
-  min-height: 100px;
+    @import "~variables";
 
-  .inline-switch {
-    margin-top: 0px;
-    height: 40px;
-  }
+    #accessibilityanalysis {
+        width: 400px;
+        min-height: 100px;
 
-  #legend-header {
-      margin-top: 0;
-  }
+        .inline-switch {
+            margin-top: 0px;
+            height: 40px;
+        }
 
-  #download {
-      margin-top: 8px;
-  }
-}
-
-.snackbar-text{
-    color: black
-}
-
-.append-text-field {
-    width: 70px;
-    text-align: right;
-}
-
-.travel-time-index {
-    display: flex;
-    position: relative;
-    align-items: baseline;
-    justify-content: space-between;
-    .time-slider {
-        margin-left: 10px;
+        #download {
+            margin-top: 8px;
+        }
+        .v-input {
+            border-radius: $border-radius-base;
+        }
     }
-}
+
+    .snackbar-text{
+        color: black
+    }
 
 </style>
