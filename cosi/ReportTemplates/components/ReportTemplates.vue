@@ -6,7 +6,6 @@ import {mapGetters, mapActions, mapMutations} from "vuex";
 import getters from "../store/gettersReportTemplates";
 import mutations from "../store/mutationsReportTemplates";
 import tableify from "tableify"; // generate html tables from js objects
-// import {leastIndex} from "d3-array";
 
 export default {
     name: "ReportTemplates",

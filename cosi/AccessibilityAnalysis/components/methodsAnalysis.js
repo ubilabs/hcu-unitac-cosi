@@ -21,7 +21,6 @@ import {readFeatures} from "../components/util.js";
 import {transformFeatures} from "../../utils/features/transform";
 import {getLayerSource} from "../../utils/layer/getLayerSource";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
-import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import {getMetadata} from "../../utils/getMetadata.js";
 
 export const methodConfig = {
