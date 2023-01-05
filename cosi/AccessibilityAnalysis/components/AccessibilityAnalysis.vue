@@ -301,7 +301,7 @@ export default {
 
         selectedFacilityName () {
             //* * when the selected facility changes, we keep track of the metadata for the datasets used for analysis*/
-            const metaDataLocal = this.getMetadataAA(), // fetch locally stored metadata for relevant layers
+            const metaDataLocal = this.getMetadataSelectedData(), // fetch locally stored metadata for relevant layers
                 thisStoreCommit = this.$store.commit; // copy to this scope so it works in callback (since in the callback, 'this' is different)
 
             // eslint-disable-next-line require-jsdoc

@@ -400,7 +400,7 @@ export default {
         return {distance, maxDistance, minDistance, steps};
     },
     // pull meta data for the dataset used for the analysis
-    getMetadataAA: function () {
+    getMetadataSelectedData: function () {
         // first find out what layer we are working with
         const selectedLayerModel = getModelByAttributes({
                 name: this.selectedFacilityName,
