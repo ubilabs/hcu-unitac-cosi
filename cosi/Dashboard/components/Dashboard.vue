@@ -227,7 +227,6 @@ export default {
                             type: "table", // see toolBridge docs for supported output types
                             request: newRequest, // we need to give back the original request as well, leave this as is.
                             sourceInfo: this.remoteMetadata
-                            // .join("\n").replace("(undefined)", "").replace("undefined", "") // make single string with line breaks
                         }
                     );
                 };
