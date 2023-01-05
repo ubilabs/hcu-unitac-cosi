@@ -158,7 +158,7 @@ const actions = {
 
     /**
     * Call api to get metadata from remote API, store in districtSelector state (remoteMetadata).
-    * `loadend` trigger does not currently wait for the metadata to be loaded
+    * NOTE: `loadend` trigger does not currently wait for the metadata to be loaded
     * @param {Object} state - the DistrictSelector store state
     * @return {void}
     */

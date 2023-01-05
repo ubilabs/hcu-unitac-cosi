@@ -40,10 +40,6 @@ function reportTemplateToPDF (context, chapters) {
         let sourceInfo = "Quelleninformation fehlt.";
 
         if (chapter.output.sourceInfo) {
-            // simplify nested object into array of arrays
-            // sourceInfo = Object.values(chapter.output.sourceInfo).map(Object.values).map(x=>{
-            //     return x.flat();
-            // });
 
             sourceInfo = Object.values(chapter.output.sourceInfo).map((metadata)=>{
                 return Object.values(metadata).map((info, index)=>{
@@ -53,15 +49,9 @@ function reportTemplateToPDF (context, chapters) {
             sourceInfo = sourceInfo.map(x=>{ // add line breaks between sources
                 return [x, "\n"];
             });
-            // sourceInfo = Object.values(item.output.sourceInfo).map((metadata) => { // for each meta data entry..
-            //     return Object.values(metadata).map((x, i) => { // for each piece of information in  the entry..
-            //         return Object.keys(metadata)[i] + ": " + x; // concatenate keys to values..
-            //     }).join("<br>"); // combine this metadata entry to single string..
-            // }).join("<br><br><br>"); // combine all metadata entries together to single string
+
 
         }
-        // sourceInfo = {text: chapter.sourceInfo, style:""};
-        // settings = {text: chapter.settings, style: "header"};
 
         docDefinition.content.push(title);
         docDefinition.content.push("\n"); // add line break
