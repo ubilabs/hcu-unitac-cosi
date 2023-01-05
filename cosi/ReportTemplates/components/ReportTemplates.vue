@@ -148,11 +148,12 @@ export default {
                     // for each chapter...
                     // set defaults
                     let resulthtml = "",
-                        sourceInfo = "Quelleninformation fehlt."; // default
+                        sourceInfo = "Quelleninformation fehlt.";// defaults
+                    const tips = "<span style='color:orange;'>Weiterverarbeitung in Word: <ul><li>Neues Word Dokument öffnen</li><li>In Word Querformat einstellen</li><li>Inhalt dieser seite markieren (Strg+A) und in Word kopieren</li><li>Alles markieren und Schriftgröße verkleinern</li><li>Zeilenumbrüche in Kopfzeilen von Tabellen einfügen</li><li>Sollten Tabellen nach wie vor zu breit sein, Anzahl der Spalten bzw. ausgewählten Gebiete begrenzen</li><li>Spaltenbreite anpassen</li></ul></span>";
 
                     // make table or image html..
                     if (item.output.type === "table") {
-                        resulthtml = tableify(item.output.result); // tableify converts an js object to a (string) html table
+                        resulthtml = tips + "<br>" + tableify(item.output.result); // tableify converts an js object to a (string) html table
                     }
                     if (item.output.type === "image") {
                         resulthtml = "<img src='" + item.output.result + "'>";
@@ -179,6 +180,8 @@ export default {
                 }).join("<br>") // concatenate resulting array of strings into a single string with line breaks
                 // rotate table column headers
                 + "<style>" +
+                "tr{font-size:8pt;}" +
+                "th{font-size:8pt;}" +
                 "th {\n    height: 240px;\n    vertical-align: bottom;\n    text-align: left;\n    line-height: 1;\n  }" +
                 "th {\n    width: 300px;\n    transform-origin: bottom left;\n    transform: translateX(75px) rotate(-45deg);\n  }" +
                 "</style>",

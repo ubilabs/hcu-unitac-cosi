@@ -23,6 +23,7 @@ import {transformFeatures} from "../../utils/features/transform";
 import {getLayerSource} from "../../utils/layer/getLayerSource";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
+import {getMetadata} from "../../utils/getMetadata.js";
 
 export const methodConfig = {
     store: null
@@ -399,15 +400,17 @@ export default {
         return {distance, maxDistance, minDistance, steps};
     },
     // pull meta data for the dataset used for the analysis
-    getMetaData: function () {
+    getMetadataAA: function () {
+        // first find out what layer we are working with
         const selectedLayerModel = getModelByAttributes({
                 name: this.selectedFacilityName,
                 type: "layer"
             }),
             layerID = selectedLayerModel.id,
-            rawlayer = rawLayerList.getLayerWhere({id: layerID});
+            // then get the local metadata
+            metadata = getMetadata(layerID);
 
-        return rawlayer;
+        return metadata;
 
     },
     getCoordinates: function (setByFeature) {

@@ -298,6 +298,19 @@ export default {
                 this.askUpdate = true;
             }
         },
+
+        selectedFacilityName () {
+            //* * when the selected facility changes, we keep track of the metadata for the datasets used for analysis*/
+            const metaDataLocal = this.getMetadataAA(), // fetch locally stored metadata for relevant layers
+                thisStoreCommit = this.$store.commit; // copy to this scope so it works in callback (since in the callback, 'this' is different)
+
+            // eslint-disable-next-line require-jsdoc
+            function saveMetaDataToState (remoteMetaData) { // when we later fetch the remote metadata, commit it to store
+                thisStoreCommit("Tools/AccessibilityAnalysis/setMetaData", remoteMetaData);
+            }
+            metaDataLocal.getRemote(saveMetaDataToState); // fetch remote metadata, save results to Tools/AccessibilityAnalysis/metaData
+
+        },
         // This watcher makes the addon compatible with toolBridge (see toolbridge docs).
         // The watcher receives a request
         // It has three steps: 1. update interface based on the received settings, 2. run this addon's analysis, 3. send the results back to toolBridge
@@ -344,7 +357,7 @@ export default {
                             result: imgDataUrl,
                             type: "image", // see toolBridge docs for supported output types
                             request: newRequest, // we need to give back the original request as well
-                            sourceInfo: rawLayerList
+                            sourceInfo: this.metaData ? [this.metaData] : null // return metadata as array if it exists
                         }
                     );
                 };
@@ -470,7 +483,6 @@ export default {
                 geojson: {}
             };
 
-            // this.getMetaData(); // for debugging
             await this.createIsochrones();
 
             analysisSet.results = this._isochroneFeatures;

@@ -39,7 +39,6 @@ function reportTemplateToPDF (context, chapters) {
             tool = {text: chapter.tool, style: "header"};
         let sourceInfo = "Quelleninformation fehlt.";
 
-        console.log(chapter.output.sourceInfo);
         if (chapter.output.sourceInfo) {
             // simplify nested object into array of arrays
             // sourceInfo = Object.values(chapter.output.sourceInfo).map(Object.values).map(x=>{
@@ -51,7 +50,6 @@ function reportTemplateToPDF (context, chapters) {
                     return Object.keys(metadata)[index] + ": " + info;
                 });
             });
-            console.log(sourceInfo);
             sourceInfo = sourceInfo.map(x=>{ // add line breaks between sources
                 return [x, "\n"];
             });
@@ -62,7 +60,6 @@ function reportTemplateToPDF (context, chapters) {
             // }).join("<br><br><br>"); // combine all metadata entries together to single string
 
         }
-        console.log(chapter);
         // sourceInfo = {text: chapter.sourceInfo, style:""};
         // settings = {text: chapter.settings, style: "header"};
 
