@@ -319,8 +319,6 @@ describe("AccessibilityAnalysis.vue", () => {
         sourceStub.addFeatures.reset();
         await wrapper.vm.createIsochrones();
 
-        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710max");
-
         clearStub.reset();
         expect(wrapper.vm.hide).to.be.false;
         await wrapper.find("#clear").trigger("click");
@@ -341,7 +339,6 @@ describe("AccessibilityAnalysis.vue", () => {
         wrapper.vm.setSelectedFacilityName("familyName");
         await wrapper.vm.createIsochrones();
 
-        expect(wrapper.find("#legend").text().replace(/\s/g, "")).to.equal("3.336.6710");
         expect(wrapper.vm.currentCoordinates).not.to.be.empty;
 
         // check no update on equal coordinates

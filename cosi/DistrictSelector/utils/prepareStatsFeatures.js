@@ -14,12 +14,18 @@ export function parseFeatures (olFeatures, district, districtLevel) {
      * @todo refactor
      */
     if (olFeatures.every(feature => feature.get("jahr") && feature.get("jahr_timestamp"))) {
-        const features = createStatFeaturesFromLTF(olFeatures, districtLevel);
+        if (district.statFeatures.length > 0) {
+            updateStatFeaturesFromLTF(olFeatures, district.statFeatures);
+        }
+        else {
+            const features = createStatFeaturesFromLTF(olFeatures, districtLevel, district);
 
-        // add statFeatures to district
-        district.statFeatures.push(...features);
-        // store original data on the district as a copy
-        district.originalStatFeatures.push(...features.map(f => f.clone()));
+            // add statFeatures to district
+            district.statFeatures.push(...features);
+            // store original data on the district as a copy
+            district.originalStatFeatures.push(...features.map(f => f.clone()));
+
+        }
     }
     /**
      * try old timeline format alternatively
@@ -75,6 +81,24 @@ export function createStatFeaturesFromLTF (ltfFeatures, districtLevel) {
     });
 
     return statFeatureList;
+}
+
+/**
+ * Updates the statistical features from the loaded long table format features.
+ * @param {ol/Feature[]} ltfFeatures - long table format features.
+ * @param {ol/Feature[]} statFeatures - The statistical features of a district.
+ * @returns {void}
+ */
+export function updateStatFeaturesFromLTF (ltfFeatures, statFeatures) {
+    const lftFeatureKeys = Object.keys(ltfFeatures[0].getProperties());
+
+    mapping.forEach((obj, i) => {
+        if (lftFeatureKeys.includes(obj.category)) {
+            ltfFeatures.forEach(feature => {
+                statFeatures[i].set("jahr_" + feature.get("jahr"), feature.get(obj.category));
+            });
+        }
+    });
 }
 
 /**

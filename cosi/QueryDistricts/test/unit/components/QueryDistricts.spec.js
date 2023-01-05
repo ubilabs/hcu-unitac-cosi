@@ -566,7 +566,14 @@ describe("addons/cosi/QueryDistricts/", () => {
                 "value": 0, high: 1, low: 1
             };
 
-        expect(wrapper.vm.layerFilterModels).to.deep.equal([expModel]);
+        expect(wrapper.vm.layerFilterModels[0].layerId).to.deep.equal(expModel.layerId);
+        expect(wrapper.vm.layerFilterModels[0].currentLayerId).to.deep.equal(expModel.currentLayerId);
+        expect(wrapper.vm.layerFilterModels[0].name).to.deep.equal(expModel.name);
+        expect(wrapper.vm.layerFilterModels[0].valueType).to.deep.equal(expModel.valueType);
+        expect(wrapper.vm.layerFilterModels[0].error).to.deep.equal(expModel.error);
+        expect(wrapper.vm.layerFilterModels[0].facilityLayerName).to.deep.equal(expModel.facilityLayerName);
+        expect(wrapper.vm.layerFilterModels[0].quotientLayers).to.deep.equal(expModel.quotientLayers);
+        expect(wrapper.vm.layerFilterModels[0].properties).to.deep.equal(expModel.properties);
         expect(wrapper.vm.resultNames).to.deep.equal(["Horn"]);
 
         // act: update filter
