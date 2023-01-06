@@ -37,7 +37,8 @@ const actions = {
                             featureTypes: districtLevel.featureTypes[j],
                             srsName: rootGetters["Maps/projectionCode"],
                             propertyNames: districtLevel.propertyNameList[j],
-                            filter: equalTo(districtLevel.stats.keyOfAttrName, districtName)
+                            // a little temporary hack. will be removed once the attribute "text" has been renamed to "verwaltungseinheit"
+                            filter: districtLevel.featureTypes[j][0] === "bevoelkerungsprognosen_gesamt_hh" ? equalTo("text", districtName) : equalTo(districtLevel.stats.keyOfAttrName, districtName)
                         }),
                         olFeatures = wfsFormat.readFeatures(statFeatures);
 
