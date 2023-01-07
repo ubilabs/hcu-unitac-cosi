@@ -1,6 +1,8 @@
 import {getLayerSource} from "./layer/getLayerSource";
 import Vue from "vue";
 import {getItemsByAttributes, getCollection} from "../utils/radioBridge.js";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
+import {getCenter} from "ol/extent";
 
 /**
  * filters all features by a given geometry
@@ -10,7 +12,7 @@ import {getItemsByAttributes, getCollection} from "../utils/radioBridge.js";
  */
 function filterLayerSourceByBbox (source, bboxGeometry) {
     source.forEachFeature(feature => {
-        if (feature.getGeometry() !== undefined && !bboxGeometry.intersectsExtent(feature.getGeometry().getExtent())) {
+        if (feature.getGeometry() !== undefined && !bboxGeometry.intersectsCoordinate(getCenter(feature.getGeometry().getExtent()))) {
             source.removeFeature(feature);
         }
     });
@@ -18,14 +20,25 @@ function filterLayerSourceByBbox (source, bboxGeometry) {
 
 /**
  * reloads the source and filters it by BBOX
- * @param {module:ol/source/Vector} source - the source
+ * @param {module:ol/source/Vector} model - the layer model
  * @param {module:ol/geom/GeometryCollection} bboxGeometry - the bounding geometry
  * @param {String} url - the url of the WFS
  * @param {Object} item - the raw layer item
  * @param {Vue} [app] - the calling component
  * @returns {void}
  */
-function updateSource (source, bboxGeometry, url, item, app) {
+function updateSource (model, bboxGeometry, url, item, app) {
+    const source = getLayerSource(model.layer);
+    let typ = item.typ;
+
+    if (!source) {
+        return;
+    }
+
+    if (typ === "WebGL") {
+        typ = rawLayerList.getLayerWhere({id: item.sourceId})?.typ || item.sourceId;
+    }
+
     source.clear();
 
     // remove old listener -> necessary since the listener is an anonymous function
@@ -33,16 +46,20 @@ function updateSource (source, bboxGeometry, url, item, app) {
         delete source.listeners_.featuresloadend;
     }
 
-    // set new BBOX-filtered URL to WFS layers
-    if (item.typ === "WFS") {
+    // set new BBOX-filtered URL to WFS layers or WebGL Layers with WFS source
+    if (typ === "WFS") {
         source.setUrl(url);
     }
 
     // refresh source if remote data
-    if (item.typ !== "VectorBase") {
+    if (typ !== "VectorBase") {
         source.refresh();
         if (bboxGeometry) {
             source.on("featuresloadend", function (evt) {
+                if (item.typ === "WebGL") {
+                    // run afterloading functions for webGL layer
+                    model.afterLoading(evt.target.getFeatures());
+                }
                 filterLayerSourceByBbox(evt.target, bboxGeometry);
                 if (app) {
                     app.$root.$emit("updateFeaturesList");
@@ -74,7 +91,8 @@ export function setBBoxToGeom (bboxGeometry) {
         layerlist = [
             ...getItemsByAttributes({typ: "WFS", isBaseLayer: false}),
             ...getItemsByAttributes({typ: "GeoJSON", isBaseLayer: false}),
-            ...getItemsByAttributes({typ: "VectorBase", isBaseLayer: false})
+            ...getItemsByAttributes({typ: "VectorBase", isBaseLayer: false}),
+            ...getItemsByAttributes({typ: "WebGL", isBaseLayer: false})
         ];
 
     setBboxGeometryToLayer(layerlist, bboxGeometry, app);
@@ -97,14 +115,16 @@ export function setBboxGeometryToLayer (itemList, bboxGeometry, app) {
 
         // layer already exists in the model list
         if (model) {
-            const source = getLayerSource(model.layer);
-            let url = `${model.attributes.url}?service=WFS&version=${model.attributes.version}&request=GetFeature&typeName=${model.attributes.featureType}&srsName=${crs}`;
+            const
+                // source = getLayerSource(model.layer),
+                attrs = model.attributes.rawLayer || model.attributes;
+            let url = `${attrs.url}?service=WFS&version=${attrs.version}&request=GetFeature&typeName=${attrs.featureType}&srsName=${crs}`;
 
             url += bboxGeometry ? `&bbox=${bboxGeometry.getExtent().toString()},${crs}` : "";
 
-            if (source) {
-                updateSource(source, bboxGeometry, url, item, app);
-            }
+            // if (model) {
+            updateSource(model, bboxGeometry, url, item, app);
+            // }
         }
         // for layers that are not yet in the model list
         else {

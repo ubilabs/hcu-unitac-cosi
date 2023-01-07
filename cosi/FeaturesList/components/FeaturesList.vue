@@ -19,6 +19,7 @@ import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
+import setAreaAttributes from "../../ScenarioBuilder/utils/setAreaAttributes";
 
 import
 {
@@ -128,7 +129,7 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated", "areaAttributes"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue", extent: "extent"}),
         ...mapGetters("Tools/DistanceScoreService", ["wmsLayersInfo"]),
         ...mapState(["configJson"]),
@@ -358,18 +359,20 @@ export default {
             if (this.groupActiveLayer.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
 
-                    const features = getLayerSource(vectorLayer).getFeatures(),
+                    const features = getLayerSource(vectorLayer)?.getFeatures() || [],
                         // only features that can be seen on the map
                         visibleFeatures = features.filter(this.isFeatureActive),
                         layerMap = this.layerMapById(vectorLayer.get("id")),
-                        layerStyleFunction = vectorLayer.getStyleFunction();
+                        layerStyleFunction = vectorLayer.getStyleFunction?.();
 
                     list.push(...this.checkDisabledFeatures(vectorLayer));
                     return [...list, ...visibleFeatures.map((feature) => {
+                        // should go somewhere else...
+                        setAreaAttributes(feature, this.areaAttributes);
                         return {
                             key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
-                            style: feature.getStyle() || layerStyleFunction(feature),
+                            style: feature.getStyle() || layerStyleFunction?.(feature),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
                             group: layerMap.group,
                             layerName: layerMap.id,
