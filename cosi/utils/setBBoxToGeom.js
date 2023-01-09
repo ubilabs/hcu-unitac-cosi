@@ -58,7 +58,7 @@ function updateSource (model, bboxGeometry, url, item, app) {
             source.on("featuresloadend", function (evt) {
                 if (item.typ === "WebGL") {
                     // run afterloading functions for webGL layer
-                    model.afterLoading(evt.target.getFeatures());
+                    model.afterLoading(evt.target.getFeatures(), model.attributes);
                 }
                 filterLayerSourceByBbox(evt.target, bboxGeometry);
                 if (app) {
