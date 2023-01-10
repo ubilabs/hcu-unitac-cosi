@@ -119,6 +119,7 @@ function setBboxGeometryToLayer (itemList, bboxGeometry, app) {
 
             url += bboxGeometry ? `&bbox=${bboxGeometry.getExtent().toString()},${crs}` : "";
 
+            model.set("bboxGeometry", bboxGeometry);
             updateSource(model, bboxGeometry, url, item, app);
         }
         // for layers that are not yet in the model list
@@ -132,4 +133,3 @@ module.exports = {
     setBBoxToGeom,
     setBboxGeometryToLayer
 };
-// export default setBBoxToGeom;

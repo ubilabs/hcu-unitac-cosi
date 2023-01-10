@@ -7,7 +7,7 @@ import Cluster from "ol/source/Cluster";
  */
 function getLayerSource (layer) {
     if (typeof layer !== "object" || layer.getSource() === null || typeof layer.getSource()?.getFeatures !== "function") {
-        console.error("utils/layer/getLayerSource: layer must be a vector layer with a source", layer);
+        console.warn("utils/layer/getLayerSource: layer must be a vector layer with a source", layer);
         return null;
     }
     const source = layer.getSource();
