@@ -115,16 +115,11 @@ function setBboxGeometryToLayer (itemList, bboxGeometry, app) {
 
         // layer already exists in the model list
         if (model) {
-            const
-                // source = getLayerSource(model.layer),
-                attrs = model.attributes.rawLayer || model.attributes;
-            let url = `${attrs.url}?service=WFS&version=${attrs.version}&request=GetFeature&typeName=${attrs.featureType}&srsName=${crs}`;
+            let url = `${model.attributes.url}?service=WFS&version=${model.attributes.version}&request=GetFeature&typeName=${model.attributes.featureType}&srsName=${crs}`;
 
             url += bboxGeometry ? `&bbox=${bboxGeometry.getExtent().toString()},${crs}` : "";
 
-            // if (model) {
             updateSource(model, bboxGeometry, url, item, app);
-            // }
         }
         // for layers that are not yet in the model list
         else {
