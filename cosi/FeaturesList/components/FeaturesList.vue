@@ -20,6 +20,7 @@ import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
 import setAreaAttributes from "../../ScenarioBuilder/utils/setAreaAttributes";
+import getFeatureStyle from "../../utils/features/getFeatureStyle";
 
 import
 {
@@ -367,12 +368,15 @@ export default {
 
                     list.push(...this.checkDisabledFeatures(vectorLayer));
                     return [...list, ...visibleFeatures.map((feature) => {
-                        // should go somewhere else...
+                        /**
+                         * Set area attributes for polygons, where they are not set in the dataset
+                         * @todo should go somewhere else...
+                         */
                         setAreaAttributes(feature, this.areaAttributes);
                         return {
                             key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
-                            style: feature.getStyle() || layerStyleFunction?.(feature),
+                            style: getFeatureStyle(feature, layerStyleFunction),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
                             group: layerMap.group,
                             layerName: layerMap.id,
