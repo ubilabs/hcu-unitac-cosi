@@ -12,7 +12,6 @@ import {Select} from "ol/interaction";
 import ToolInfo from "../../components/ToolInfo.vue";
 import travelTimeIndex from "../assets/inrix_traveltimeindex_2021.json";
 import {onSearchbar, offSearchbar, getServiceUrl, onShowFeaturesById, onShowAllFeatures, onFeaturesLoaded, getModelByAttributes} from "../../utils/radioBridge.js";
-import mapCollection from "../../../../src/core/maps/mapCollection";
 import mapCanvasToImage, {exportMapView} from "../../utils/mapCanvasToImage";
 import AccessibilityAnalysisLegend from "./AccessibilityAnalysisLegend.vue";
 import AccessibilityAnalysisTrafficFlow from "./AccessibilityAnalysisTrafficFlow.vue";
@@ -27,6 +26,20 @@ export default {
         AccessibilityAnalysisTrafficFlow
     },
     data () {
+        this.availableModes = [
+            {
+                type: "point",
+                text: "Erreichbarkeit ab einem Referenzpunkt"
+            },
+            {
+                type: "region",
+                text: "Erreichbarkeit der ausgewählten Einrichtungen"
+            },
+            {
+                type: "path",
+                text: "Erreichbarkeit entlang einer Route"
+            }
+        ];
         return {
             travelTimeIndex,
             facilityNames: [],
@@ -100,14 +113,13 @@ export default {
             currentCoordinates: null,
             select: null,
             hide: false
-            // map: undefined
         };
     },
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
-        ...mapGetters("Maps", ["projectionCode"]),
+        ...mapGetters("Maps", ["projectionCode", "clickCoordinate", "clickPixel"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
@@ -215,7 +227,6 @@ export default {
     watch: {
         active () {
             if (this.active) {
-                mapCollection.getMap("2D").on("click", this.setCoordinateFromClick);
                 onSearchbar(this.setSearchResultToOrigin);
 
                 if (this.mode === "path") {
@@ -223,7 +234,6 @@ export default {
                 }
             }
             else {
-                mapCollection.getMap("2D").un("click", this.setCoordinateFromClick);
                 offSearchbar(this.setSearchResultToOrigin);
                 this.removePointMarker();
                 this.select.getFeatures().clear();
@@ -278,7 +288,10 @@ export default {
             }
         },
         clickCoordinate (coord) {
-            this.placingPointMarker(coord);
+            if (this.active) {
+                this.setCoordinateFromClick(this.clickCoordinate, this.clickPixel);
+                this.placingPointMarker(coord);
+            }
         },
         setByFeature (val) {
             if (val && this.mode === "point") {
@@ -395,6 +408,10 @@ export default {
         onFeaturesLoaded(this.tryUpdateIsochrones);
     },
     methods: {
+        ...mapMutations("Tools/PopulationRequest", {
+            setPopulationRequestGeometry: "setGeometry",
+            setPopulationRequestActive: "setActive"
+        }),
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapActions("Tools/AccessibilityAnalysisService", ["getIsochrones"]),
         ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
@@ -459,10 +476,11 @@ export default {
         * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
         * @returns {void}
         */
-        requestInhabitants: async function () {
+        async requestInhabitants () {
             this.close();
             await this.$nextTick();
-            this.$root.$emit("populationRequest", this.rawGeoJson);
+            this.setPopulationRequestActive(true);
+            this.setPopulationRequestGeometry(this.rawGeoJson);
         },
         createAnalysisSet: async function () {
             this.hide = false;
@@ -670,6 +688,7 @@ export default {
                             <v-text-field
                                 id="range"
                                 v-model="_distance"
+                                class="mb-4"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.distance')"
                                 type="number"
                                 min="0"
@@ -677,18 +696,15 @@ export default {
                                 dense
                                 hide-details
                             />
-                            <v-row dense>
-                                <v-col cols="12">
-                                    <v-checkbox
-                                        v-model="_setByFeature"
-                                        dense
-                                        hide-details
-                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
-                                        :disabled="mode === 'path'"
-                                    />
-                                </v-col>
-                            </v-row>
+                            <v-checkbox
+                                v-if="mode !== 'path'"
+                                v-model="_setByFeature"
+                                class="mb-4"
+                                dense
+                                hide-details
+                                :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
+                                :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
+                            />
                             <v-row dense>
                                 <v-col cols="12">
                                     <v-btn
@@ -703,6 +719,11 @@ export default {
                                     </v-btn>
                                 </v-col>
                             </v-row>
+                            <v-progress-linear
+                                v-if="progress > 0"
+                                v-model="progress"
+                                background-color="white"
+                            />
                             <v-row
                                 v-if="isochroneFeatures.length > 0"
                                 dense
@@ -766,11 +787,6 @@ export default {
                                 />
                             </v-col>
                         </v-row>
-                        <v-progress-linear
-                            v-if="progress > 0"
-                            v-model="progress"
-                            background-color="white"
-                        />
                     </div>
                 </v-app>
             </template>
@@ -824,6 +840,12 @@ export default {
         }
         .v-input {
             border-radius: $border-radius-base;
+        }
+
+        .v-input--checkbox {
+            .v-label {
+                font-size: 14px;
+            }
         }
     }
 

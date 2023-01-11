@@ -164,11 +164,12 @@ export default {
     },
     /**
      * add coordinate after user click
-     * @param {event} evt Event from User click
+     * @param {event} clickCoordinate - The coordinate of the click event on the map.
+     * @param {event} clickPixel - The pixel of the click event on the map.
      * @returns {void}
      */
-    setCoordinateFromClick: function (evt) {
-        const rawCoords = this.setByFeature ? this.setCoordinatesByFeatures(evt) : [evt.coordinate],
+    setCoordinateFromClick: function (clickCoordinate, clickPixel) {
+        const rawCoords = this.setByFeature ? this.setCoordinatesByFeatures(clickCoordinate, clickPixel) : [clickCoordinate],
             coordinates = rawCoords.map(coord => Proj.transform(
                 coord,
                 this.projectionCode,
@@ -176,22 +177,21 @@ export default {
             ));
 
         this.setCoordinate(coordinates);
-        this.setClickCoordinate(evt.coordinate);
         this.setSetBySearch(false);
     },
 
-    setCoordinatesByFeatures: function (evt) {
-        const feature = this.map.getFeaturesAtPixel(evt.pixel, {
+    setCoordinatesByFeatures: function (clickCoordinate, clickPixel) {
+        const feature = mapCollection.getMap("2D").getFeaturesAtPixel(clickPixel, {
             layerFilter: layer => this.activeVectorLayerList.includes(layer)
         })[0];
 
         if (feature) {
             const geom = feature.getGeometry();
 
-            return this.simplifyGeometry(geom) || [evt.coordinate];
+            return this.simplifyGeometry(geom) || [clickCoordinate];
         }
 
-        return [evt.coordinate];
+        return [clickCoordinate];
     },
 
     simplifyGeometry (geom, tolerance = 1) {
@@ -257,7 +257,7 @@ export default {
         const coord = getSearchResultsCoordinates();
 
         if (coord) {
-            this.setCoordinate([coord]);
+            this.setCoordinate([Proj.transform(coord, this.projectionCode, "EPSG:4326")]);
             this.setClickCoordinate(coord);
             this.setSetBySearch(true);
         }

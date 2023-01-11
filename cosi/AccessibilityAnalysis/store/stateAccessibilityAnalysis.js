@@ -32,20 +32,6 @@ const state = {
     resizableWindow: false,
     isVisibleInMenu: true,
     deactivateGFI: true,
-    availableModes: [
-        {
-            type: "point",
-            text: "Erreichbarkeit ab einem Referenzpunkt"
-        },
-        {
-            type: "region",
-            text: "Erreichbarkeit der ausgewählten Einrichtungen"
-        },
-        {
-            type: "path",
-            text: "Erreichbarkeit entlang einer Route"
-        }
-    ],
     rawGeoJson: null,
     isochroneFeatures: [],
     mode: "point",
