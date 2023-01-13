@@ -59,10 +59,6 @@ export default {
                     type: "cycling-regular",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-regular")
                 },
-                // {
-                //     type: "cycling-electric",
-                //     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-electric")
-                // },
                 {
                     type: "foot-walking",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.foot-walking")
@@ -86,28 +82,12 @@ export default {
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.distance")
                 }
             ],
-            layers: null,
             legendColors: [
                 "rgba(0, 240, 3, 0.6)",
                 "rgba(200, 200, 3, 0.6)",
                 "rgba(240, 0, 3, 0.6)",
                 "rgba(180, 165, 165, 0.8)"
             ],
-            featureColors: [
-                "rgba(240, 0, 3, 0.2)",
-                "rgba(200, 200, 3, 0.2)",
-                "rgba(0, 240, 3, 0.2)"
-            ],
-            refFeatureStyle: {
-                fill: {
-                    color: "rgba(255, 255, 255, 0)"
-                },
-                stroke: {
-                    color: "rgba(100, 80, 80, 1)",
-                    width: 2,
-                    lineDash: [10, 8]
-                }
-            },
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
@@ -199,28 +179,12 @@ export default {
                 this.setTime(v);
             }
         },
-        _useTravelTimeIndex: {
-            get () {
-                return this.useTravelTimeIndex;
-            },
-            set (v) {
-                this.setUseTravelTimeIndex(v);
-            }
-        },
         _isochroneFeatures: {
             get () {
                 return this.isochroneFeatures;
             },
             set (v) {
                 this.setIsochroneFeatures(v);
-            }
-        },
-        _steps: {
-            get () {
-                return this.steps;
-            },
-            set (v) {
-                this.setSteps(v);
             }
         }
     },
@@ -332,9 +296,9 @@ export default {
                     this._scaleUnit = request.settings.scaleUnit;
                     this._distance = request.settings.distance;
                     this._timefi = request.settings.time;
-                    this._useTravelTimeIndex = request.settings.useTravelTimeIndex;
+                    this.setUseTravelTimeIndex(request.settings.useTravelTimeIndex);
                     this._setByFeature = request.settings.setByFeature;
-                    this._steps = request.settings.steps;
+                    this.setSteps(request.settings.steps);
                     return request; // (we care about the side effects only)
                 },
                 /**
@@ -503,9 +467,9 @@ export default {
                 _scaleUnit: JSON.parse(JSON.stringify(this._scaleUnit)),
                 _distance: JSON.parse(JSON.stringify(this._distance)),
                 _time: JSON.parse(JSON.stringify(this._time)),
-                _useTravelTimeIndex: JSON.parse(JSON.stringify(this._useTravelTimeIndex)),
+                _useTravelTimeIndex: JSON.parse(JSON.stringify(this.useTravelTimeIndex)),
                 _setByFeature: JSON.parse(JSON.stringify(this._setByFeature)),
-                _steps: JSON.parse(JSON.stringify(this._steps))
+                _steps: JSON.parse(JSON.stringify(this.steps))
             };
             this.dataSets.push(analysisSet);
 
@@ -568,7 +532,7 @@ export default {
             this.renderIsochrones(this._isochroneFeatures);
         },
         updateUseTravelTimeIndex (value) {
-            this._useTravelTimeIndex = value;
+            this.setUseTravelTimeIndex(value);
         },
         updateTime (value) {
             this._time = value;
@@ -760,7 +724,7 @@ export default {
                         </v-form>
                         <hr>
                         <AccessibilityAnalysisLegend
-                            :steps="_steps"
+                            :steps="steps"
                             :colors="legendColors"
                         />
                         <v-row>

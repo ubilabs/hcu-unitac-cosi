@@ -2,12 +2,6 @@ import * as Proj from "ol/proj.js";
 import * as Extent from "ol/extent";
 import GeometryCollection from "ol/geom/GeometryCollection";
 import {setBBoxToGeom} from "../../utils/setBBoxToGeom";
-import
-{
-    Fill,
-    Stroke,
-    Style
-} from "ol/style.js";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import {
     polygon as turfPolygon,
@@ -21,6 +15,7 @@ import {readFeatures} from "../components/util.js";
 import {transformFeatures} from "../../utils/features/transform";
 import {getLayerSource} from "../../utils/layer/getLayerSource";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
+import {styleIsochroneFeatures} from "../utils/styleIsochroneFeatures.js";
 
 export const methodConfig = {
     store: null
@@ -156,7 +151,8 @@ export default {
             }
             return;
         }
-        this.styleFeatures(newFeatures);
+
+        styleIsochroneFeatures(newFeatures, this.isochroneColors);
         this.mapLayer.getSource().addFeatures(newFeatures);
         if (this.mode !== "region") {
             this.setIsochroneAsBbox();
@@ -288,37 +284,7 @@ export default {
             displayClass: "error"
         });
     },
-    /**
-     * style isochrone features
-     * @param {ol.Feature} features isochone features (polygons)
-     * @returns {void}
-     */
-    styleFeatures: function (features) {
-        const startIndex = features.length === 3 ? 0 : 1;
 
-        for (let i = startIndex; i < features.length; i++) {
-            features[i].setStyle(
-                new Style({
-                    fill: new Fill({
-                        color: this.featureColors[i - startIndex]
-                    }),
-                    stroke: new Stroke({
-                        color: "white",
-                        width: 1
-                    })
-                })
-            );
-        }
-
-        if (startIndex === 1) {
-            features[0].setStyle(
-                new Style({
-                    fill: new Fill(this.refFeatureStyle.fill),
-                    stroke: new Stroke(this.refFeatureStyle.stroke)
-                })
-            );
-        }
-    },
     /**
      * sets facility layers' bbox as the isochrones
      * @fires Core.ConfigLoader#RadioRequestParserGetItemsByAttributes
@@ -343,7 +309,6 @@ export default {
      * @returns {void}
      */
     clear: function () {
-        this.layers = null;
         this.showRequestButton = false;
         this.setSteps([0, 0, 0]);
         this.setRawGeoJson(null);
