@@ -161,7 +161,7 @@
                         "betr_quote_unter3_proz": "Betreuungsquote der unter 3-Jährigen",
                         "betr_quote_2_proz": "Betreuungsquote der 2-Jährige",
                         "anteil_unter3_fam_proz": "Anteil der betreuten unter 3-Jährigen mit nicht-deutscher Familiensprache",
-                        "anteil_3_schuleintritt_fam_proz": "Anteil der betreuten 3- bis 6,5-Jährigen mit nicht-deutscher Familiensprache",
+                        "anteil_3_schuleintritt_fam_proz": "Anteil der betreuten 3- bis unter 6,5-Jährigen mit nicht-deutscher Familiensprache",
                         "anteil_nutzer_bevölkerung_6_9": "Nutzung der JMS-Angebote der 6- bis 9-Jährigen",
                         "anteil_nutzer_bevölkerung_10_15": "Nutzung der JMS-Angebote der 10- bis 15-Jährigen",
                         "anzahl_nutzer_6_9": "Nutzung der JMS-Angebote der 6- bis 9-Jährigen",
@@ -286,7 +286,7 @@
                         },
                         "kita": {
                             "betr_quote_3_schuleintritt_proz": {
-                                "title": "Betreuungsquote der 3- bis 6,5-Jährigen in den Stadtteilen",
+                                "title": "Betreuungsquote der 3- bis unter 6,5-Jährigen in den Stadtteilen",
                                 "text": "Es wird der Anteil der Kinder von 3 bis unter 6,5 Jahren berechnet. Bis 2018 wurde die Betreuungsquote der Kinder von 3 bis unter 6 Jahren ausgewiesen. Bei der Betrachtung der Zeitreihen muss dieser Unterschied mitbedacht werden."
                             },
                             "anteil_3_schuleintritt_fam_proz": {
