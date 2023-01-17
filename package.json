@@ -23,5 +23,7 @@
     "node": ">= 16.13.2 <= 16.18.1",
     "npm": ">= 8.1.2 <= 8.19.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "url-exist": "^3.0.1"
+  }
 }
