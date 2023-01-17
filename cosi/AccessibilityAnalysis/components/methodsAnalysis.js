@@ -2,12 +2,6 @@ import * as Proj from "ol/proj.js";
 import * as Extent from "ol/extent";
 import GeometryCollection from "ol/geom/GeometryCollection";
 import {setBBoxToGeom} from "../../utils/setBBoxToGeom";
-import
-{
-    Fill,
-    Stroke,
-    Style
-} from "ol/style.js";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import {
     polygon as turfPolygon,
@@ -22,6 +16,7 @@ import {transformFeatures} from "../../utils/features/transform";
 import {getLayerSource} from "../../utils/layer/getLayerSource";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
 import {getMetadata} from "../../utils/getMetadata.js";
+import {styleIsochroneFeatures} from "../utils/styleIsochroneFeatures.js";
 
 export const methodConfig = {
     store: null
@@ -157,7 +152,8 @@ export default {
             }
             return;
         }
-        this.styleFeatures(newFeatures);
+
+        styleIsochroneFeatures(newFeatures, this.isochroneColors);
         this.mapLayer.getSource().addFeatures(newFeatures);
         if (this.mode !== "region") {
             this.setIsochroneAsBbox();
@@ -165,11 +161,12 @@ export default {
     },
     /**
      * add coordinate after user click
-     * @param {event} evt Event from User click
+     * @param {event} clickCoordinate - The coordinate of the click event on the map.
+     * @param {event} clickPixel - The pixel of the click event on the map.
      * @returns {void}
      */
-    setCoordinateFromClick: function (evt) {
-        const rawCoords = this.setByFeature ? this.setCoordinatesByFeatures(evt) : [evt.coordinate],
+    setCoordinateFromClick: function (clickCoordinate, clickPixel) {
+        const rawCoords = this.setByFeature ? this.setCoordinatesByFeatures(clickCoordinate, clickPixel) : [clickCoordinate],
             coordinates = rawCoords.map(coord => Proj.transform(
                 coord,
                 this.projectionCode,
@@ -177,22 +174,21 @@ export default {
             ));
 
         this.setCoordinate(coordinates);
-        this.setClickCoordinate(evt.coordinate);
         this.setSetBySearch(false);
     },
 
-    setCoordinatesByFeatures: function (evt) {
-        const feature = this.map.getFeaturesAtPixel(evt.pixel, {
+    setCoordinatesByFeatures: function (clickCoordinate, clickPixel) {
+        const feature = mapCollection.getMap("2D").getFeaturesAtPixel(clickPixel, {
             layerFilter: layer => this.activeVectorLayerList.includes(layer)
         })[0];
 
         if (feature) {
             const geom = feature.getGeometry();
 
-            return this.simplifyGeometry(geom) || [evt.coordinate];
+            return this.simplifyGeometry(geom) || [clickCoordinate];
         }
 
-        return [evt.coordinate];
+        return [clickCoordinate];
     },
 
     simplifyGeometry (geom, tolerance = 1) {
@@ -258,7 +254,7 @@ export default {
         const coord = getSearchResultsCoordinates();
 
         if (coord) {
-            this.setCoordinate([coord]);
+            this.setCoordinate([Proj.transform(coord, this.projectionCode, "EPSG:4326")]);
             this.setClickCoordinate(coord);
             this.setSetBySearch(true);
         }
@@ -289,37 +285,7 @@ export default {
             displayClass: "error"
         });
     },
-    /**
-     * style isochrone features
-     * @param {ol.Feature} features isochone features (polygons)
-     * @returns {void}
-     */
-    styleFeatures: function (features) {
-        const startIndex = features.length === 3 ? 0 : 1;
 
-        for (let i = startIndex; i < features.length; i++) {
-            features[i].setStyle(
-                new Style({
-                    fill: new Fill({
-                        color: this.featureColors[i - startIndex]
-                    }),
-                    stroke: new Stroke({
-                        color: "white",
-                        width: 1
-                    })
-                })
-            );
-        }
-
-        if (startIndex === 1) {
-            features[0].setStyle(
-                new Style({
-                    fill: new Fill(this.refFeatureStyle.fill),
-                    stroke: new Stroke(this.refFeatureStyle.stroke)
-                })
-            );
-        }
-    },
     /**
      * sets facility layers' bbox as the isochrones
      * @fires Core.ConfigLoader#RadioRequestParserGetItemsByAttributes
@@ -344,7 +310,6 @@ export default {
      * @returns {void}
      */
     clear: function () {
-        this.layers = null;
         this.showRequestButton = false;
         this.setSteps([0, 0, 0]);
         this.setRawGeoJson(null);

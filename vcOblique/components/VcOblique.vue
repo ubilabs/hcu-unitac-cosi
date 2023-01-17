@@ -3,7 +3,7 @@ import Vue from "vue";
 import {mapGetters, mapActions, mapMutations} from "vuex";
 import {getComponent} from "../../../src/utils/getComponent";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
-import mutationsObliqueViewer from "../store/mutationsVCOblique";
+import mutationsObliqueViewer from "../store/mutationsVcOblique";
 import iframeResize from "../node_modules/iframe-resizer/js/iframeResizer";
 
 Vue.directive("resize", {

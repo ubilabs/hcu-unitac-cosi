@@ -1,5 +1,5 @@
 import {generateSimpleMutations} from "../../../src/app-store/utils/generators";
-import state from "./stateVCOblique";
+import state from "./stateVcOblique";
 
 const mutations = {
     /**

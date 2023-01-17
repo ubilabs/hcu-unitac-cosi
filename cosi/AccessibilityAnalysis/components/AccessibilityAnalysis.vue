@@ -12,7 +12,6 @@ import {Select} from "ol/interaction";
 import ToolInfo from "../../components/ToolInfo.vue";
 import travelTimeIndex from "../assets/inrix_traveltimeindex_2021.json";
 import {onSearchbar, offSearchbar, getServiceUrl, onShowFeaturesById, onShowAllFeatures, onFeaturesLoaded, getModelByAttributes} from "../../utils/radioBridge.js";
-import mapCollection from "../../../../src/core/maps/mapCollection";
 import mapCanvasToImage, {exportMapView} from "../../utils/mapCanvasToImage";
 import AccessibilityAnalysisLegend from "./AccessibilityAnalysisLegend.vue";
 import AccessibilityAnalysisTrafficFlow from "./AccessibilityAnalysisTrafficFlow.vue";
@@ -27,6 +26,20 @@ export default {
         AccessibilityAnalysisTrafficFlow
     },
     data () {
+        this.availableModes = [
+            {
+                type: "point",
+                text: "Erreichbarkeit ab einem Referenzpunkt"
+            },
+            {
+                type: "region",
+                text: "Erreichbarkeit der ausgewählten Einrichtungen"
+            },
+            {
+                type: "path",
+                text: "Erreichbarkeit entlang einer Route"
+            }
+        ];
         return {
             travelTimeIndex,
             facilityNames: [],
@@ -46,10 +59,6 @@ export default {
                     type: "cycling-regular",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-regular")
                 },
-                // {
-                //     type: "cycling-electric",
-                //     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-electric")
-                // },
                 {
                     type: "foot-walking",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.foot-walking")
@@ -73,41 +82,24 @@ export default {
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.distance")
                 }
             ],
-            layers: null,
             legendColors: [
                 "rgba(0, 240, 3, 0.6)",
                 "rgba(200, 200, 3, 0.6)",
                 "rgba(240, 0, 3, 0.6)",
                 "rgba(180, 165, 165, 0.8)"
             ],
-            featureColors: [
-                "rgba(240, 0, 3, 0.2)",
-                "rgba(200, 200, 3, 0.2)",
-                "rgba(0, 240, 3, 0.2)"
-            ],
-            refFeatureStyle: {
-                fill: {
-                    color: "rgba(255, 255, 255, 0)"
-                },
-                stroke: {
-                    color: "rgba(100, 80, 80, 1)",
-                    width: 2,
-                    lineDash: [10, 8]
-                }
-            },
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
             select: null,
             hide: false
-            // map: undefined
         };
     },
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
-        ...mapGetters("Maps", ["projectionCode"]),
+        ...mapGetters("Maps", ["projectionCode", "clickCoordinate", "clickPixel"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
@@ -187,14 +179,6 @@ export default {
                 this.setTime(v);
             }
         },
-        _useTravelTimeIndex: {
-            get () {
-                return this.useTravelTimeIndex;
-            },
-            set (v) {
-                this.setUseTravelTimeIndex(v);
-            }
-        },
         _isochroneFeatures: {
             get () {
                 return this.isochroneFeatures;
@@ -202,20 +186,11 @@ export default {
             set (v) {
                 this.setIsochroneFeatures(v);
             }
-        },
-        _steps: {
-            get () {
-                return this.steps;
-            },
-            set (v) {
-                this.setSteps(v);
-            }
         }
     },
     watch: {
         active () {
             if (this.active) {
-                mapCollection.getMap("2D").on("click", this.setCoordinateFromClick);
                 onSearchbar(this.setSearchResultToOrigin);
 
                 if (this.mode === "path") {
@@ -223,7 +198,6 @@ export default {
                 }
             }
             else {
-                mapCollection.getMap("2D").un("click", this.setCoordinateFromClick);
                 offSearchbar(this.setSearchResultToOrigin);
                 this.removePointMarker();
                 this.select.getFeatures().clear();
@@ -278,7 +252,10 @@ export default {
             }
         },
         clickCoordinate (coord) {
-            this.placingPointMarker(coord);
+            if (this.active) {
+                this.setCoordinateFromClick(this.clickCoordinate, this.clickPixel);
+                this.placingPointMarker(coord);
+            }
         },
         setByFeature (val) {
             if (val && this.mode === "point") {
@@ -322,9 +299,9 @@ export default {
                     this._scaleUnit = request.settings.scaleUnit;
                     this._distance = request.settings.distance;
                     this._timefi = request.settings.time;
-                    this._useTravelTimeIndex = request.settings.useTravelTimeIndex;
+                    this.setUseTravelTimeIndex(request.settings.useTravelTimeIndex);
                     this._setByFeature = request.settings.setByFeature;
-                    this._steps = request.settings.steps;
+                    this.setSteps(request.settings.steps);
                     return request; // (we care about the side effects only)
                 },
                 /**
@@ -398,6 +375,10 @@ export default {
         onFeaturesLoaded(this.tryUpdateIsochrones);
     },
     methods: {
+        ...mapMutations("Tools/PopulationRequest", {
+            setPopulationRequestGeometry: "setGeometry",
+            setPopulationRequestActive: "setActive"
+        }),
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapActions("Tools/AccessibilityAnalysisService", ["getIsochrones"]),
         ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
@@ -462,10 +443,11 @@ export default {
         * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
         * @returns {void}
         */
-        requestInhabitants: async function () {
+        async requestInhabitants () {
             this.close();
             await this.$nextTick();
-            this.$root.$emit("populationRequest", this.rawGeoJson);
+            this.setPopulationRequestActive(true);
+            this.setPopulationRequestGeometry(this.rawGeoJson);
         },
         createAnalysisSet: async function () {
             this.hide = false;
@@ -488,9 +470,9 @@ export default {
                 _scaleUnit: JSON.parse(JSON.stringify(this._scaleUnit)),
                 _distance: JSON.parse(JSON.stringify(this._distance)),
                 _time: JSON.parse(JSON.stringify(this._time)),
-                _useTravelTimeIndex: JSON.parse(JSON.stringify(this._useTravelTimeIndex)),
+                _useTravelTimeIndex: JSON.parse(JSON.stringify(this.useTravelTimeIndex)),
                 _setByFeature: JSON.parse(JSON.stringify(this._setByFeature)),
-                _steps: JSON.parse(JSON.stringify(this._steps))
+                _steps: JSON.parse(JSON.stringify(this.steps))
             };
             this.dataSets.push(analysisSet);
 
@@ -553,7 +535,7 @@ export default {
             this.renderIsochrones(this._isochroneFeatures);
         },
         updateUseTravelTimeIndex (value) {
-            this._useTravelTimeIndex = value;
+            this.setUseTravelTimeIndex(value);
         },
         updateTime (value) {
             this._time = value;
@@ -697,6 +679,7 @@ export default {
                             <v-text-field
                                 id="range"
                                 v-model="_distance"
+                                class="mb-4"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.distance')"
                                 type="number"
                                 min="0"
@@ -704,18 +687,15 @@ export default {
                                 dense
                                 hide-details
                             />
-                            <v-row dense>
-                                <v-col cols="12">
-                                    <v-checkbox
-                                        v-model="_setByFeature"
-                                        dense
-                                        hide-details
-                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
-                                        :disabled="mode === 'path'"
-                                    />
-                                </v-col>
-                            </v-row>
+                            <v-checkbox
+                                v-if="mode !== 'path'"
+                                v-model="_setByFeature"
+                                class="mb-4"
+                                dense
+                                hide-details
+                                :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
+                                :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
+                            />
                             <v-row dense>
                                 <v-col cols="12">
                                     <v-btn
@@ -730,6 +710,11 @@ export default {
                                     </v-btn>
                                 </v-col>
                             </v-row>
+                            <v-progress-linear
+                                v-if="progress > 0"
+                                v-model="progress"
+                                background-color="white"
+                            />
                             <v-row
                                 v-if="isochroneFeatures.length > 0"
                                 dense
@@ -766,7 +751,7 @@ export default {
                         </v-form>
                         <hr>
                         <AccessibilityAnalysisLegend
-                            :steps="_steps"
+                            :steps="steps"
                             :colors="legendColors"
                         />
                         <v-row>
@@ -793,11 +778,6 @@ export default {
                                 />
                             </v-col>
                         </v-row>
-                        <v-progress-linear
-                            v-if="progress > 0"
-                            v-model="progress"
-                            background-color="white"
-                        />
                     </div>
                 </v-app>
             </template>
@@ -851,6 +831,12 @@ export default {
         }
         .v-input {
             border-radius: $border-radius-base;
+        }
+
+        .v-input--checkbox {
+            .v-label {
+                font-size: 14px;
+            }
         }
     }
 

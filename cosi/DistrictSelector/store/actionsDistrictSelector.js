@@ -27,18 +27,19 @@ const actions = {
         LoaderOverlay.show();
 
         const wfsFormat = new WFS(),
-            urls = districtLevel.stats.baseUrl;
+            layers = districtLevel.stats.layers;
 
         for (let i = 0; i < districts.length; i++) {
             // check if statFeatures are already loaded
             if (districts[i].statFeatures.length === 0) {
-                for (let j = 0; j < urls.length; j++) {
+                for (let j = 0; j < layers.length; j++) {
                     const districtName = mapDistrictNames(districts[i].getName(), districtLevel),
-                        statFeatures = await getStatFeatures(urls[j], {
-                            featureTypes: districtLevel.featureTypes[j],
+                        statFeatures = await getStatFeatures(districtLevel.stats.layers[j].url, {
+                            featureTypes: [districtLevel.stats.layers[j].featureType],
                             srsName: rootGetters["Maps/projectionCode"],
                             propertyNames: districtLevel.propertyNameList[j],
-                            filter: equalTo(districtLevel.stats.keyOfAttrName, districtName)
+                            // a little temporary hack. will be removed once the attribute "text" has been renamed to "verwaltungseinheit"
+                            filter: districtLevel.stats.layers[j].featureType === "bevoelkerungsprognosen_gesamt_hh" ? equalTo("text", districtName) : equalTo(districtLevel.stats.keyOfAttrName, districtName)
                         }),
                         olFeatures = wfsFormat.readFeatures(statFeatures);
 
