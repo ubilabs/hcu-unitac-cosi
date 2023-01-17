@@ -167,7 +167,6 @@ const actions = {
 
 
         commit("setRemoteMetadata", {}); // delete existing metadata
-        // const uniqueLayerIds = extractValueByKey(state.mapping, state.selectedDistrictLevel.stats.keyOfAttrName, true);
         const uniqueLayerIds = state.selectedDistrictLevel.stats.layerIds;
 
         for (const index in uniqueLayerIds) {
@@ -175,9 +174,8 @@ const actions = {
                 continue; // skip this iteration
             }
 
-            // get the metadata that is already included in the data, which contains what we need to fetch more metadata remotely.
+            // get metadata remotely (as promise).
             getMetadata(uniqueLayerIds[index]).then(res => {
-                console.log(res);
 
                 // pick date
                 let date = "Datum Unbekannt";
@@ -197,11 +195,6 @@ const actions = {
                 commit("addRemoteMetadata", {layerId: uniqueLayerIds[index], metadata: metadata});
             });
 
-            // fetch remote metadata, then commit result to districtSelector store in the callback
-            // console.log(metadata);
-            // metadata.getRemote(value => {
-            //     commit("addRemoteMetadata", {layerId: uniqueLayerIds[index], metadata: value});
-            // });
         }
 
     }

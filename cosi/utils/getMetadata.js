@@ -1,5 +1,4 @@
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
-// import getRemoteXML from "./getRemoteXML.js";
 import urlExist from "url-exist";
 import {getRecordById} from "../../../src/api/csw/getRecordById";
 

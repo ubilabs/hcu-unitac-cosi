@@ -45,9 +45,8 @@ function reportTemplateToPDF (context, chapters) {
 
                 const metadata_no_html_p_tags = metadata;
 
-                console.log(metadata);
+                // remove html tags
                 metadata_no_html_p_tags.Abstrakt = metadata.Abstrakt.replace(/<p>/g, "\n").replace(/<\/p>/g, "\n");
-                console.log(metadata_no_html_p_tags);
                 return Object.values(metadata_no_html_p_tags).map((info, index)=>{
                     return Object.keys(metadata_no_html_p_tags)[index] + ": " + info;
                 });
