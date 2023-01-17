@@ -1,8 +1,8 @@
 import {
     getAllDistrictsWithoutLayer,
     getDistricts,
-    getFeatureTypes,
     getLayerById,
+    getRawLayersById,
     getNameList,
     getPropertyNameList,
     prepareDistrictLevels,
@@ -19,20 +19,25 @@ import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
 
     before(() => {
-        sinon.stub(rawLayerList, "getLayerList").returns([
+        sinon.stub(rawLayerList, "getLayerWhere").returns(
             {
                 url: "url",
-                featureType: "featurType"
-            },
-            {
-                url: "https://given.url",
-                featureType: "v_hh_bezirk_bev_insgesamt"
+                featureType: "featurType",
+                id: "123"
             }
-        ]);
+        );
     });
 
     after(() => {
         sinon.restore();
+    });
+
+    beforeEach(() => {
+        sinon.spy(console, "error");
+    });
+
+    afterEach(() => {
+        console.error.restore();
     });
 
     describe("getAllDistrictsWithoutLayer", () => {
@@ -126,46 +131,6 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
         });
     });
 
-    describe("getFeatureTypes", () => {
-        it("should return an empty array", () => {
-            expect(getFeatureTypes(undefined)).to.be.an("array").to.be.empty;
-            expect(getFeatureTypes(null)).to.be.an("array").to.be.empty;
-            expect(getFeatureTypes({})).to.be.an("array").to.be.empty;
-            expect(getFeatureTypes(true)).to.be.an("array").to.be.empty;
-            expect(getFeatureTypes(42)).to.be.an("array").to.be.empty;
-            expect(getFeatureTypes([])).to.be.an("array").to.be.empty;
-        });
-
-        it("should return an empty array include empty arrays", () => {
-            const featureTypes = getFeatureTypes(["123", "456"]);
-
-            expect(featureTypes).to.be.an("array").to.have.lengthOf(2);
-            expect(featureTypes[0]).to.be.an("array").to.be.empty;
-            expect(featureTypes[1]).to.be.an("array").to.be.empty;
-        });
-
-        it("should return an array of arrays, if typeNames provided", () => {
-            const featureTypes = getFeatureTypes(["123", "456"], ["abc", ["def"]]);
-
-            expect(featureTypes).to.be.an("array").to.have.lengthOf(2);
-            expect(featureTypes[0]).to.be.an("array").to.deep.equal(["abc"]);
-            expect(featureTypes[1]).to.be.an("array").to.deep.equal(["def"]);
-        });
-
-        it("should return an array of arrays", () => {
-            const featureTypes = getFeatureTypes(["https://given.url"]);
-
-            expect(featureTypes).to.be.an("array").to.not.be.empty;
-            expect(featureTypes[0]).to.be.an("array").to.not.be.empty;
-        });
-
-        it("should return featureType 'v_hh_bezirk_bev_insgesamt' for the given url", () => {
-            const featureTypes = getFeatureTypes(["https://given.url"]);
-
-            expect(featureTypes[0]).to.include("v_hh_bezirk_bev_insgesamt");
-        });
-    });
-
     describe("getLayerById", () => {
         it("should return undefined if only one param is given", () => {
             expect(getLayerById(["Test"])).to.be.undefined;
@@ -209,6 +174,30 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
                 layerList = [layerOne, layerTwo];
 
             expect(getLayerById(layerList, "789")).to.be.undefined;
+        });
+    });
+
+    describe("getRawLayersById", () => {
+        it("should return an empty array if the first param is not an array", () => {
+            expect(getRawLayersById({})).to.be.empty;
+            expect(getRawLayersById(true)).to.be.empty;
+            expect(getRawLayersById("districtLevels")).to.be.empty;
+            expect(getRawLayersById(undefined)).to.be.empty;
+            expect(getRawLayersById(null)).to.be.empty;
+            expect(getRawLayersById(42)).to.be.empty;
+        });
+
+        it("should call an error if the given parameter is an object", () => {
+            getRawLayersById({});
+
+            expect(console.error.calledOnce).to.be.true;
+        });
+
+        it("should return a layer with the passed id", () => {
+            const rawLayers = getRawLayersById(["123"]);
+
+            expect(rawLayers[0]).to.be.an("object");
+            expect(rawLayers[0].id).to.be.equal("123");
         });
     });
 
@@ -401,7 +390,7 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
             expect(spyOnSource.calledOnce).to.be.true;
         });
 
-        it("should return an object with the properties 'nameList', 'layer' , 'featureTypes', 'propertyNameList', 'referenceLevel' and 'districts'", async () => {
+        it("should return an object with the properties 'nameList', 'layer' , 'propertyNameList', 'referenceLevel' and 'districts'", async () => {
             const testArray = [{layerId: "123", stats: {}}],
                 layerOne = new Layer({id: "123", source: new Source()}),
                 layerList = [layerOne];
@@ -411,7 +400,6 @@ describe("addons/DistrictSelector/utils/prepareDistrictLevels.js", () => {
             expect(testArray[0]).to.have.property("nameList");
             expect(testArray[0]).to.have.property("layer");
             expect(testArray[0]).to.have.property("districts");
-            expect(testArray[0]).to.have.property("featureTypes");
             expect(testArray[0]).to.have.property("propertyNameList");
             expect(testArray[0]).to.have.property("referenceLevel");
         });
