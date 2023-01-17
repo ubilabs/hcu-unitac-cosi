@@ -301,18 +301,8 @@ export default {
                 this.askUpdate = true;
             }
         },
-
         selectedFacilityName () {
-            //* * when the selected facility changes, we keep track of the metadata for the datasets used for analysis*/
-            const metaDataLocal = this.getMetadataSelectedData(), // fetch locally stored metadata for relevant layers
-                thisStoreCommit = this.$store.commit; // copy to this scope so it works in callback (since in the callback, 'this' is different)
-
-            // eslint-disable-next-line require-jsdoc
-            function saveMetaDataToState (remoteMetaData) { // when we later fetch the remote metadata, commit it to store
-                thisStoreCommit("Tools/AccessibilityAnalysis/setMetaData", remoteMetaData);
-            }
-            metaDataLocal.getRemote(saveMetaDataToState); // fetch remote metadata, save results to Tools/AccessibilityAnalysis/metaData
-
+            this.updateCurrentMetaData();
         },
         // This watcher makes the addon compatible with toolBridge (see toolbridge docs).
         // The watcher receives a request
@@ -567,6 +557,30 @@ export default {
         },
         updateTime (value) {
             this._time = value;
+        },
+        updateCurrentMetaData () {
+            //  when the selected facility changes, we keep track of the metadata for the datasets used in the analysis
+            this.$store.commit("Tools/AccessibilityAnalysis/setMetaData", {}); // clear any previously stored metadata
+
+            this.getMetadataSelectedData().then(
+                res => { // some code duplicated from actionsDistrictSeletor/fetchMetaData(), as metadata preprocessing may depend on the specific tool
+                    // pick date
+                    let date = "Datum Unbekannt";
+
+                    if (res.getRevisionDate()) {
+                        date = res.getRevisionDate();
+                    }
+                    else if (res.getPublicationDate()) {
+                        date = res.getPublicationDate();
+                    }
+                    else if (res.getCreationDate()) {
+                        date = res.getCreateionDate();
+                    }
+                    // make simple metadata object
+                    const metadata = {Titel: res.getTitle(), Datum: date, Abstrakt: res.getAbstract()};
+
+                    this.$store.commit("Tools/AccessibilityAnalysis/setMetaData", metadata); // fetch locally stored metadata for relevant layers
+                });
         }
     }
 };

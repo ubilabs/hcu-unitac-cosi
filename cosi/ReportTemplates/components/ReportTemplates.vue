@@ -129,7 +129,7 @@ export default {
              */
             function escapeHtml (unsafe) {
                 // make sure input is a string
-                if (!(typeof unsafe === "string" | unsafe instanceof String)) {
+                if (!(typeof unsafe === "string")) {
                     throw new Error("escapeHTML must be a string");
                 }
 

@@ -7,7 +7,7 @@ import Vue from "vue";
 import Collection from "ol/Collection";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
 import {getMetadata} from "../../utils/getMetadata.js";
-
+// import extractValueByKey from "../../utils/extractValueByKey.js";
 const actions = {
     /**
      * Loads the statistical features for the given districts.
@@ -165,30 +165,9 @@ const actions = {
     fetchMetaData ({state, commit}) {
 
 
-        /**
-         * extract specific key value from array of identical nested objects. Add JSDoc documentation for all parameters and the return value above the function.
-         * @param {Array} array an array of identical objects
-         * @param {String} key a key contained in these objects
-         * @param {boolean} uniqueOnly  if true, returns only one instance of each unique value in order of appearance
-         * @return {Array} an array of the values of the given key
-         */
-        function extractKey (array, key, uniqueOnly = false) {
-
-            const extraced = array.map(function (obj) { // extract key
-                return obj[key];
-            });
-
-            if (!uniqueOnly) {
-                return extraced;
-            }
-            return extraced.filter((value, index, self) =>{ // filter unique values
-                return self.indexOf(value) === index;
-            });
-        }
-
-
         commit("setRemoteMetadata", {}); // delete existing metadata
-        const uniqueLayerIds = extractKey(state.mapping, state.selectedDistrictLevel.stats.keyOfAttrName, true);
+        // const uniqueLayerIds = extractValueByKey(state.mapping, state.selectedDistrictLevel.stats.keyOfAttrName, true);
+        const uniqueLayerIds = state.selectedDistrictLevel.stats.layerIds;
 
         for (const index in uniqueLayerIds) {
             if (Object.keys(state.remoteMetadata).includes(uniqueLayerIds[index])) { // if metadata for this layer already exists, then..
@@ -196,12 +175,32 @@ const actions = {
             }
 
             // get the metadata that is already included in the data, which contains what we need to fetch more metadata remotely.
-            const metadata = getMetadata(uniqueLayerIds[index]);
+            getMetadata(uniqueLayerIds[index]).then(res => {
+                console.log(res);
+
+                // pick date
+                let date = "Datum Unbekannt";
+
+                if (res.getRevisionDate()) {
+                    date = res.getRevisionDate();
+                }
+                else if (res.getPublicationDate()) {
+                    date = res.getPublicationDate();
+                }
+                else if (res.getCreationDate()) {
+                    date = res.getCreateionDate();
+                }
+                // make simple metadata object
+                const metadata = {Titel: res.getTitle(), Datum: date, Abstrakt: res.getAbstract()};
+
+                commit("addRemoteMetadata", {layerId: uniqueLayerIds[index], metadata: metadata});
+            });
 
             // fetch remote metadata, then commit result to districtSelector store in the callback
-            metadata.getRemote(value => {
-                commit("addRemoteMetadata", {layerId: uniqueLayerIds[index], metadata: value});
-            });
+            // console.log(metadata);
+            // metadata.getRemote(value => {
+            //     commit("addRemoteMetadata", {layerId: uniqueLayerIds[index], metadata: value});
+            // });
         }
 
     }
