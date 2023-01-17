@@ -7,7 +7,6 @@ import Vue from "vue";
 import Collection from "ol/Collection";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
 import {getMetadata} from "../../utils/getMetadata.js";
-// import extractValueByKey from "../../utils/extractValueByKey.js";
 const actions = {
     /**
      * Loads the statistical features for the given districts.
