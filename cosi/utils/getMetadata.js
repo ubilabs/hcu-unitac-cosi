@@ -15,8 +15,9 @@ export async function getMetadata (layerId) {
     if (!metadataset) {
         throw new Error("No information on this layerId available");
     }
+
     // eslint-disable-next-line one-var
-    const fhh_net_url_available = await urlExist(metadataset.show_doc_url); // are we in fhh net or not? This check produces an error as side effect if url does not exist, ingore.
+    const fhh_net_url_available = await urlExist("http://hmdk.fhhnet.stadt.hamburg.de/"); // are we in fhh net or not? This check produces an error as side effect if url does not exist, ingore.
 
     let metadata_base_url = "http://hmdk.fhhnet.stadt.hamburg.de/cws"; // default
 
