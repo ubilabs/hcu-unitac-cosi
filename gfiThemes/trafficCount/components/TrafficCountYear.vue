@@ -222,21 +222,22 @@ export default {
             if (!(date instanceof Date)) {
                 return true;
             }
+            let startMoment = dayjs().startOf("year").subtract(10, "year");
+
             const endDate = this.checkGurlittInsel ? dayjs().subtract(1, "day") : dayjs(),
-                startMoment = dayjs().startOf("year").subtract(10, "year"),
                 startYear = parseInt(startMoment.format("YYYY"), 10),
                 question = dayjs(date);
 
             if (this.checkGurlittInsel) {
                 if (startYear < 2014) {
-                    startMoment.add(2014 - startYear, "year");
+                    startMoment = startMoment.add(2014 - startYear, "year");
                 }
             }
             else if (startYear < 2020) {
-                startMoment.add(2020 - startYear, "year");
+                startMoment = startMoment.add(2020 - startYear, "year");
             }
 
-            startMoment.subtract(1, "year");
+            startMoment = startMoment.subtract(1, "year");
 
             if (Array.isArray(currentDates) && currentDates.length >= 5) {
                 for (let i = 0; i < 5; i++) {

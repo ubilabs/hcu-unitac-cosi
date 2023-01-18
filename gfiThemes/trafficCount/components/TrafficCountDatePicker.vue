@@ -128,12 +128,12 @@ export default {
          * @returns {void}
          */
         toggleWeek (momentDate) {
-            const dayPointer = dayjs(momentDate);
+            let dayPointer = dayjs(momentDate);
 
-            dayPointer.startOf("isoWeek");
+            dayPointer = dayPointer.startOf("isoWeek");
             for (let i = 0; i < 7; i++) {
                 this.toggleSelectedDateDay(dayPointer);
-                dayPointer.add(1, "day");
+                dayPointer = dayPointer.add(1, "day");
             }
         },
         /**

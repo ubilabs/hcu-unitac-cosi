@@ -4,11 +4,16 @@ import TrafficCountCompTable from "./TrafficCountCompTable.vue";
 import TrafficCountCheckbox from "./TrafficCountCheckbox.vue";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
 import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
 import {addMissingDataDay} from "../utils/addMissingData.js";
 import {getPublicHoliday} from "../../../../src/utils/calendar.js";
 import {DauerzaehlstellenRadApi} from "../utils/dauerzaehlstellenRadApi";
+
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 export default {
     name: "TrafficCountDay",
@@ -223,7 +228,7 @@ export default {
                 return true;
             }
 
-            startDate.subtract(1, "days");
+            startDate.subtract(1, "day");
 
             return question.isSameOrBefore(startDate) || question.isSameOrAfter(endDate);
         }

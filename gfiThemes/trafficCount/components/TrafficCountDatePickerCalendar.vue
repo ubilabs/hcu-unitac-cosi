@@ -1,8 +1,14 @@
 <script>
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/CustomParseFormat";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isoWeek from "dayjs/plugin/isoWeek";
 
 dayjs.extend(customParseFormat);
+dayjs.extend(advancedFormat);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isoWeek);
 
 export default {
     name: "TrafficCountDatePickerCalendar",
@@ -72,21 +78,28 @@ export default {
         getCurrentDates (currentSwitch, selectedDates) {
             const result = [],
                 currentMoment = dayjs(currentSwitch, "YYYY-MM", true),
-                datePointer = currentMoment.isValid() ? dayjs(currentMoment) : dayjs(),
-                endDate = dayjs(datePointer),
                 minMoment = dayjs(this.minDate, "YYYY-MM-DD"),
                 maxMoment = dayjs(this.maxDate, "YYYY-MM-DD");
 
-            datePointer.startOf("isoWeek");
-            endDate.startOf("isoWeek").add(41, "days");
+            let datePointer = currentMoment.isValid() ? dayjs(currentMoment) : dayjs(),
+                endDate = null;
+
+            endDate = dayjs(datePointer);
+            datePointer = datePointer.startOf("isoWeek");
+            endDate = endDate.startOf("isoWeek").add(41, "day");
+
+            console.log(datePointer);
+            console.log(endDate);
 
             while (datePointer.isSameOrBefore(endDate)) {
-                if (datePointer.isoWeekday() === 1) {
+                console.log(datePointer.isoWeekday());
+               // if (datePointer.isoWeekday() === 1) {
                     result.push({
                         weekNumber: datePointer.format("W"),
                         days: []
                     });
-                }
+               // }
+                console.log('+++++++++++++++++++++++++++++++++++++++++', result);
                 result[result.length - 1].days.push({
                     day: datePointer.format("D"),
                     momentDate: dayjs(datePointer),
@@ -94,8 +107,9 @@ export default {
                     inCurrentMonth: currentMoment.format("M") === datePointer.format("M"),
                     disabled: this.isDisabledDate(datePointer, minMoment, maxMoment)
                 });
-                datePointer.add(1, "day");
+                datePointer = datePointer.add(1, "day");
             }
+            console.log('ll+++++++++++++++++++++++++++++++++++++++++', result);
             return result;
         },
         /**
