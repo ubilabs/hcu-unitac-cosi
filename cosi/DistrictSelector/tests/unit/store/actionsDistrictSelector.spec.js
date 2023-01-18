@@ -25,6 +25,7 @@ describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
                 keyOfAttrName: "bezirk_name",
                 referenceLevel: null,
                 stats: {
+                    "layers": ["123"],
                     "keyOfAttrName": "bezirk",
                     "baseUrl": ["https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke"]
                 }

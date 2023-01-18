@@ -15,7 +15,7 @@ const state = {
     id: "ResetTree",
     // defaults for config.json parameters
     name: "Simple Reset Tree",
-    glyphicon: "glyphicon-screenshot",
+    icon: "bi-arrow-repeat",
     renderToWindow: true,
     resizableWindow: true,
     isVisibleInMenu: true,
