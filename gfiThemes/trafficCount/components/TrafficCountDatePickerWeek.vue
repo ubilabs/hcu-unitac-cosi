@@ -1,5 +1,5 @@
 <script>
-import moment from "moment";
+import dayjs from "dayjs";
 import TrafficCountDatePickerSwitcher from "./TrafficCountDatePickerSwitcher.vue";
 import TrafficCountDatePickerCalendar from "./TrafficCountDatePickerCalendar.vue";
 
@@ -33,13 +33,13 @@ export default {
     },
     data () {
         return {
-            currentSwitch: moment().format("YYYY-MM")
+            currentSwitch: dayjs().format("YYYY-MM")
         };
     },
     methods: {
         /**
          * Triggers the toggleSelectedDate event.
-         * @param {Object} date A moment object of the clicked date.
+         * @param {Object} date A dayjs object of the clicked date.
          * @returns {void}
          */
         toggleSelectedDate (date) {
@@ -50,9 +50,9 @@ export default {
          * @returns {void}
          */
         yearDown () {
-            const momentDate = moment(this.currentSwitch, "YYYY-MM");
+            let momentDate = dayjs(this.currentSwitch, "YYYY-MM");
 
-            momentDate.subtract(1, "year");
+            momentDate = momentDate.subtract(1, "year");
             this.currentSwitch = momentDate.format("YYYY-MM");
         },
         /**
@@ -60,9 +60,9 @@ export default {
          * @returns {void}
          */
         yearUp () {
-            const momentDate = moment(this.currentSwitch, "YYYY-MM");
+            let momentDate = dayjs(this.currentSwitch, "YYYY-MM");
 
-            momentDate.add(1, "year");
+            momentDate = momentDate.add(1, "year");
             this.currentSwitch = momentDate.format("YYYY-MM");
         },
         /**
@@ -70,9 +70,9 @@ export default {
          * @returns {void}
          */
         monthDown () {
-            const momentDate = moment(this.currentSwitch, "YYYY-MM");
+            let momentDate = dayjs(this.currentSwitch, "YYYY-MM");
 
-            momentDate.subtract(1, "month");
+            momentDate = momentDate.subtract(1, "month");
             this.currentSwitch = momentDate.format("YYYY-MM");
         },
         /**
@@ -80,9 +80,9 @@ export default {
          * @returns {void}
          */
         monthUp () {
-            const momentDate = moment(this.currentSwitch, "YYYY-MM");
+            let momentDate = dayjs(this.currentSwitch, "YYYY-MM");
 
-            momentDate.add(1, "month");
+            momentDate = momentDate.add(1, "month");
             this.currentSwitch = momentDate.format("YYYY-MM");
         }
     }

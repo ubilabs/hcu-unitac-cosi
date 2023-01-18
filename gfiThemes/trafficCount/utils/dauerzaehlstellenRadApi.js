@@ -1,13 +1,18 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import convertHttpLinkToSSL from "../../../../src/utils/convertHttpLinkToSSL";
 import {getPublicHoliday} from "../../../../src/utils/calendar.js";
+import isoWeek from "dayjs/plugin/isoWeek";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+
+dayjs.extend(isoWeek);
+dayjs.extend(advancedFormat);
 
 /**
  * the internal format for Gurlitt time is called GurlittMoment
  * @typedef {Object} GurlittMoment
- * @property {Number} result the result/value of this moment as number
- * @property {moment} momentStart the moment representation of the start time (moment object)
- * @property {moment} momentEnd the moment representation of the end time (moment object)
+ * @property {Number} result the result/value of this dayjs as number
+ * @property {dayjs} momentStart the dayjs representation of the start time (dayjs object)
+ * @property {dayjs} momentEnd the dayjs representation of the end time (dayjs object)
  */
 
 /**
@@ -192,7 +197,7 @@ export class DauerzaehlstellenRadApi {
             // e.g. "18.07.2021|6310"
             const parts = this.feature.getProperties().radfahrende_vortag.split("|");
 
-            onupdate(moment(parts[0], "DD.MM.YYYY").format("YYYY-MM-DD"), parseInt(parts[1], 10));
+            onupdate(dayjs(parts[0], "DD.MM.YYYY").format("YYYY-MM-DD"), parseInt(parts[1], 10));
         }
 
         if (typeof oncomplete === "function") {
@@ -213,7 +218,7 @@ export class DauerzaehlstellenRadApi {
      * @returns {void}
      */
     updateYear (thingId, meansOfTransport, year, onupdate, onerror, onstart, oncomplete, yearTodayOpt) {
-        const todaysYear = yearTodayOpt || moment().format("YYYY");
+        const todaysYear = yearTodayOpt || dayjs().format("YYYY");
 
         if (typeof onstart === "function") {
             onstart();
@@ -243,7 +248,7 @@ export class DauerzaehlstellenRadApi {
             // e.g. "01.01.2021|1069093"
             const parts = this.feature.getProperties().radfahrende_seit_jahresbeginn.split("|");
 
-            onupdate(moment(parts[0], "DD.MM.YYYY").format("YYYY"), parseInt(parts[1], 10));
+            onupdate(dayjs(parts[0], "DD.MM.YYYY").format("YYYY"), parseInt(parts[1], 10));
         }
         else {
             // e.g. "2020|2367656"
@@ -291,7 +296,7 @@ export class DauerzaehlstellenRadApi {
             // e.g. "08.10.2014|14636033"
             const parts = this.feature.getProperties().radfahrende_insgesamt.split("|");
 
-            onupdate(moment(parts[0], "DD.MM.YYYY").format("YYYY-MM-DD"), parseInt(parts[1], 10));
+            onupdate(dayjs(parts[0], "DD.MM.YYYY").format("YYYY-MM-DD"), parseInt(parts[1], 10));
         }
 
         if (typeof oncomplete === "function") {
@@ -327,7 +332,7 @@ export class DauerzaehlstellenRadApi {
             onstart();
         }
         gurlittMoments.forEach(gurlittMoment => {
-            if (typeof gurlittMoment !== "object" || gurlittMoment === null || !(gurlittMoment.momentStart instanceof moment)) {
+            if (typeof gurlittMoment !== "object" || gurlittMoment === null || !(gurlittMoment.momentStart instanceof dayjs)) {
                 return;
             }
             const holiday = getPublicHoliday(gurlittMoment.momentStart, holidays),
@@ -387,7 +392,7 @@ export class DauerzaehlstellenRadApi {
             // e.g. "09.06.2021|12225"
             const parts = this.feature.getProperties().max_radfahrende_tag_jahr.split("|");
 
-            onupdate(moment(parts[0], "DD.MM.YYYY").format("YYYY-MM-DD"), parseInt(parts[1], 10));
+            onupdate(dayjs(parts[0], "DD.MM.YYYY").format("YYYY-MM-DD"), parseInt(parts[1], 10));
         }
 
         if (typeof oncomplete === "function") {
@@ -537,7 +542,7 @@ export class DauerzaehlstellenRadApi {
                 else if (timeSet.interval === "1-Tag") {
                     // call for week
                     this.gurlittMomentsWeek.forEach(gurlittMoment => {
-                        if (moment(gurlittMoment.momentStart).startOf("isoWeek").format("YYYY-MM-DD") === timeSet.from) {
+                        if (dayjs(gurlittMoment.momentStart).startOf("isoWeek").format("YYYY-MM-DD") === timeSet.from) {
                             subresult[meansOfTransport][gurlittMoment.momentStart.format("YYYY-MM-DD HH:mm:ss")] = gurlittMoment.result;
                         }
                     });
@@ -546,10 +551,10 @@ export class DauerzaehlstellenRadApi {
                     // call for year
                     this.gurlittMomentsYear.forEach(gurlittMoment => {
                         // subtract 3 days to savely include the first thursday of january into the interval, as the first calendar week always includes the first thursday of january
-                        if (moment(gurlittMoment.momentStart).startOf("year").subtract(3, "days").format("YYYY-MM-DD") === timeSet.from) {
+                        if (dayjs(gurlittMoment.momentStart).startOf("year").subtract(3, "day").format("YYYY-MM-DD") === timeSet.from) {
                             subresult[meansOfTransport][gurlittMoment.momentStart.format("YYYY-MM-DD HH:mm:ss")] = gurlittMoment.result;
                         }
-                        else if (moment(gurlittMoment.momentEnd).format("YYYY-MM-DD") === timeSet.until) {
+                        else if (dayjs(gurlittMoment.momentEnd).format("YYYY-MM-DD") === timeSet.until) {
                             subresult[meansOfTransport][gurlittMoment.momentStart.format("YYYY-MM-DD HH:mm:ss")] = gurlittMoment.result;
                         }
                     });
@@ -603,7 +608,7 @@ export class DauerzaehlstellenRadApi {
         else {
             const lastGurlittMomentDay = this.gurlittMomentsDay[this.gurlittMomentsDay.length - 1];
 
-            onupdate(moment(lastGurlittMomentDay.momentEnd).format("YYYY-MM-DDTHH:mm:ss.000Z"));
+            onupdate(dayjs(lastGurlittMomentDay.momentEnd).format("YYYY-MM-DDTHH:mm:ss.000Z"));
         }
 
         if (typeof oncomplete === "function") {
@@ -724,7 +729,7 @@ export class DauerzaehlstellenRadApi {
 
         if (
             !Array.isArray(this.gurlittMomentsYear) || !this.gurlittMomentsYear.length
-            || !(this.gurlittMomentsYear[0].momentStart instanceof moment)
+            || !(this.gurlittMomentsYear[0].momentStart instanceof dayjs)
         ) {
             if (typeof onerror === "function") {
                 onerror("DauerzaehlstellenRadApi.getFirstDateEver: no first date found in gurlittMomentsYear", this.gurlittMomentsYear);
@@ -781,12 +786,12 @@ export class DauerzaehlstellenRadApi {
             const date = line[0],
                 time = line[1].substr(0, 5),
                 datetime = date + time,
-                momentStart = moment(datetime, "DD.MM.YYYYHH:mm");
+                momentStart = dayjs(datetime, "DD.MM.YYYYHH:mm");
 
             gurlittMoments.push({
                 result: parseInt(line[2], 10),
                 momentStart,
-                momentEnd: moment(momentStart).add(1, "hours")
+                momentEnd: dayjs(momentStart).add(1, "hour")
             });
         });
 
@@ -817,12 +822,12 @@ export class DauerzaehlstellenRadApi {
             result += parseInt(line[2], 10);
 
             if (currentDay !== dayOfNextLine) {
-                const momentStart = moment(currentDay + "00:00", "DD.MM.YYYYHH:mm");
+                const momentStart = dayjs(currentDay + "00:00", "DD.MM.YYYYHH:mm");
 
                 gurlittMoments.push({
                     result,
                     momentStart,
-                    momentEnd: moment(momentStart).add(1, "days")
+                    momentEnd: dayjs(momentStart).add(1, "day")
                 });
                 result = 0;
             }
@@ -867,22 +872,22 @@ export class DauerzaehlstellenRadApi {
                 nextDay = Array.isArray(nextLine) ? nextLine[0] : false;
 
             if (currentCalendarWeek === false) {
-                currentCalendarWeek = moment(currentDay, "DD.MM.YYYY").format("WW");
+                currentCalendarWeek = dayjs(currentDay, "DD.MM.YYYY").format("WW");
             }
             else {
                 currentCalendarWeek = calendarWeekOfNextDay;
             }
-            calendarWeekOfNextDay = nextDay ? moment(nextDay, "DD.MM.YYYY").format("WW") : false;
+            calendarWeekOfNextDay = nextDay ? dayjs(nextDay, "DD.MM.YYYY").format("WW") : false;
 
             result += parseInt(value, 10);
 
             if (currentCalendarWeek !== calendarWeekOfNextDay) {
-                const momentStart = moment(currentDay, "DD.MM.YYYY").startOf("isoWeek");
+                const momentStart = dayjs(currentDay, "DD.MM.YYYY").startOf("isoWeek");
 
                 gurlittMoments.push({
                     result,
                     momentStart,
-                    momentEnd: moment(momentStart).endOf("isoWeek")
+                    momentEnd: dayjs(momentStart).endOf("isoWeek")
                 });
                 result = 0;
             }

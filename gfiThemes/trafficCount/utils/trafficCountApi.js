@@ -1,10 +1,14 @@
 import {SensorThingsHttp} from "../../../../src/utils/sensorThingsHttp.js";
 import {SensorThingsMqtt} from "../../../../src/utils/sensorThingsMqtt.js";
 import {getPublicHoliday} from "../../../../src/utils/calendar.js";
-import moment from "moment";
+import dayjs from "dayjs";
+import isoWeek from "dayjs/plugin/isoWeek";
 
-// change language from moment.js to german
-moment.locale("de");
+dayjs.extend(isoWeek);
+
+// change language from day.js to german
+require("dayjs/locale/de.js");
+dayjs.locale("de");
 
 /**
  * TrafficCountApi is the api for the TrafficCount GFI Theme
@@ -139,7 +143,7 @@ export class TrafficCountApi {
         }
 
         // set firstDate to today
-        let firstDate = firstDateSoFar || moment().toISOString(),
+        let firstDate = firstDateSoFar || dayjs().toISOString(),
             phenomenonTime = "";
 
         dataset[0].Datastreams[0].Observations.forEach(observation => {
@@ -255,8 +259,8 @@ export class TrafficCountApi {
      */
     updateDay (thingId, meansOfTransport, day, onupdate, onerror, onstart, oncomplete, dayTodayOpt) {
         let sum = 0;
-        const startDate = moment(day, "YYYY-MM-DD").toISOString(),
-            endDate = moment(day, "YYYY-MM-DD").add(1, "day").toISOString(),
+        const startDate = dayjs(day, "YYYY-MM-DD").toISOString(),
+            endDate = dayjs(day, "YYYY-MM-DD").add(1, "day").toISOString(),
             url = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_15-Min';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime lt " + endDate + "))";
 
         return this.http.get(url, (dataset) => {
@@ -272,7 +276,7 @@ export class TrafficCountApi {
             }
 
             // if day equals dayToday: make a mqtt subscription to refresh sum
-            if (day !== (dayTodayOpt || moment().format("YYYY-MM-DD"))) {
+            if (day !== (dayTodayOpt || dayjs().format("YYYY-MM-DD"))) {
                 return;
             }
 
@@ -315,10 +319,10 @@ export class TrafficCountApi {
     updateYear (thingId, meansOfTransport, year, onupdate, onerror, onstart, oncomplete, yearTodayOpt) {
         let sumYear = 0,
             sumThisDay = 0;
-        const startDate = moment(year, "YYYY").toISOString(),
-            endDate = moment(year, "YYYY").add(1, "year").toISOString(),
-            lastMidnight = moment().startOf("day").toISOString(),
-            yearToday = yearTodayOpt || moment().format("YYYY"),
+        const startDate = dayjs(year, "YYYY").toISOString(),
+            endDate = dayjs(year, "YYYY").add(1, "year").toISOString(),
+            lastMidnight = dayjs().startOf("day").toISOString(),
+            yearToday = yearTodayOpt || dayjs().format("YYYY"),
             urlYear = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Tag';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime lt " + (year === yearToday ? lastMidnight : endDate) + "))",
             urlThisDays15min = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_15-Min';$expand=Observations($filter=phenomenonTime ge " + lastMidnight + "))";
 
@@ -388,7 +392,7 @@ export class TrafficCountApi {
         let sumWeekly = 0,
             sumThisWeek = 0,
             firstDate = false;
-        const lastMonday = moment().startOf("isoWeek").toISOString(),
+        const lastMonday = dayjs().startOf("isoWeek").toISOString(),
             urlWeekly = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Woche';$expand=Observations($filter=phenomenonTime lt " + lastMonday + "))",
             urlThisWeeks15min = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_15-Min';$expand=Observations($filter=phenomenonTime ge " + lastMonday + "))";
 
@@ -407,7 +411,7 @@ export class TrafficCountApi {
                 firstDate = this.getFirstDate(dataset15min, firstDate);
 
                 if (typeof onupdate === "function") {
-                    onupdate(moment(firstDate).format("YYYY-MM-DD"), sumWeekly + sumThisWeek);
+                    onupdate(dayjs(firstDate).format("YYYY-MM-DD"), sumWeekly + sumThisWeek);
                 }
 
                 // subscribe via mqtt
@@ -426,7 +430,7 @@ export class TrafficCountApi {
                     sumThisWeek += payload.result;
 
                     if (typeof onupdate === "function") {
-                        onupdate(moment(firstDate).format("YYYY-MM-DD"), sumWeekly + sumThisWeek);
+                        onupdate(dayjs(firstDate).format("YYYY-MM-DD"), sumWeekly + sumThisWeek);
                     }
                 });
             }, false, oncomplete, onerror || this.defaultErrorHandler);
@@ -446,8 +450,8 @@ export class TrafficCountApi {
      * @returns {void}
      */
     updateWorkingDayAverage (thingId, meansOfTransport, days, holidays, onupdate, onerror, onstart, oncomplete) {
-        const startDate = moment().subtract(days, "days").toISOString(),
-            endDate = moment().toISOString(),
+        const startDate = dayjs().subtract(days, "day").toISOString(),
+            endDate = dayjs().toISOString(),
             url = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Tag';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime lt " + endDate + ";$orderby=phenomenonTime ASC))";
 
         return this.http.get(url, (dataset) => {
@@ -460,7 +464,7 @@ export class TrafficCountApi {
                 observations.forEach(observation => {
                     const phenomenonTime = this.parsePhenomenonTime(observation?.phenomenonTime),
                         holiday = getPublicHoliday(phenomenonTime, holidays),
-                        dayOfWeek = moment(phenomenonTime).isoWeekday();
+                        dayOfWeek = dayjs(phenomenonTime).isoWeekday();
 
                     if (holiday || dayOfWeek === 6 || dayOfWeek === 7) {
                         return;
@@ -471,7 +475,7 @@ export class TrafficCountApi {
                 });
 
                 if (typeof onupdate === "function") {
-                    onupdate(moment(date).format("YYYY-MM-DD"), workDayCount !== 0 ? Math.round(value / workDayCount) : 0);
+                    onupdate(dayjs(date).format("YYYY-MM-DD"), workDayCount !== 0 ? Math.round(value / workDayCount) : 0);
                 }
             }
             else {
@@ -492,8 +496,8 @@ export class TrafficCountApi {
      * @returns {Void}  -
      */
     updateHighestWorkloadDay (thingId, meansOfTransport, year, onupdate, onerror, onstart, oncomplete) {
-        const startDate = moment(year, "YYYY").toISOString(),
-            endDate = moment(year, "YYYY").add(1, "year").toISOString(),
+        const startDate = dayjs(year, "YYYY").toISOString(),
+            endDate = dayjs(year, "YYYY").add(1, "year").toISOString(),
             url = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Tag';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime lt " + endDate + ";$orderby=result DESC;$top=1))";
 
         return this.http.get(url, (dataset) => {
@@ -502,7 +506,7 @@ export class TrafficCountApi {
                     date = this.getFirstDate(dataset);
 
                 if (typeof onupdate === "function") {
-                    onupdate(moment(date).format("YYYY-MM-DD"), value);
+                    onupdate(dayjs(date).format("YYYY-MM-DD"), value);
                 }
             }
             else {
@@ -523,8 +527,8 @@ export class TrafficCountApi {
      * @returns {Void}  -
      */
     updateHighestWorkloadWeek (thingId, meansOfTransport, year, onupdate, onerror, onstart, oncomplete) {
-        const startDate = moment(year, "YYYY").toISOString(),
-            endDate = moment(year, "YYYY").add(1, "year").toISOString(),
+        const startDate = dayjs(year, "YYYY").toISOString(),
+            endDate = dayjs(year, "YYYY").add(1, "year").toISOString(),
             url = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Woche';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime lt " + endDate + ";$orderby=result DESC;$top=1))";
 
         return this.http.get(url, (dataset) => {
@@ -533,7 +537,7 @@ export class TrafficCountApi {
                     date = this.getFirstDate(dataset);
 
                 if (typeof onupdate === "function") {
-                    onupdate(moment(date).week(), value);
+                    onupdate(dayjs(date).week(), value);
                 }
             }
             else {
@@ -554,8 +558,8 @@ export class TrafficCountApi {
      * @returns {Void}  -
      */
     updateHighestWorkloadMonth (thingId, meansOfTransport, year, onupdate, onerror, onstart, oncomplete) {
-        const startDate = moment(year, "YYYY").toISOString(),
-            endDate = moment(year, "YYYY").add(1, "year").toISOString(),
+        const startDate = dayjs(year, "YYYY").toISOString(),
+            endDate = dayjs(year, "YYYY").add(1, "year").toISOString(),
             url = this.baseUrlHttp + "/Things(" + thingId + ")?$expand=Datastreams($filter=properties/layerName eq '" + meansOfTransport + this.layerNameInfix + "_1-Tag';$expand=Observations($filter=phenomenonTime ge " + startDate + " and phenomenonTime lt " + endDate + "))",
             sumMonths = {"01": 0};
         let bestMonth = 0,
@@ -570,7 +574,7 @@ export class TrafficCountApi {
                         return;
                     }
 
-                    month = moment(this.parsePhenomenonTime(observation.phenomenonTime)).format("MM");
+                    month = dayjs(this.parsePhenomenonTime(observation.phenomenonTime)).format("MM");
                     if (!Object.prototype.hasOwnProperty.call(sumMonths, month)) {
                         sumMonths[month] = 0;
                     }
@@ -611,8 +615,8 @@ export class TrafficCountApi {
         const from = timeSettings.from,
             until = timeSettings.until,
             interval = timeSettings.interval,
-            startDate = moment(from, "YYYY-MM-DD").toISOString(),
-            endDate = moment(until, "YYYY-MM-DD").add(1, "day").toISOString(),
+            startDate = dayjs(from, "YYYY-MM-DD").toISOString(),
+            endDate = dayjs(until, "YYYY-MM-DD").add(1, "day").toISOString(),
             // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
             /*
             // use this code to enable Kfz + SV
@@ -633,7 +637,7 @@ export class TrafficCountApi {
 
 
             result = {},
-            todayUntil = todayUntilOpt || moment().format("YYYY-MM-DD");
+            todayUntil = todayUntilOpt || dayjs().format("YYYY-MM-DD");
 
         result[meansOfTransport] = {};
 
@@ -645,7 +649,7 @@ export class TrafficCountApi {
                         return;
                     }
 
-                    const datetime = moment(this.parsePhenomenonTime(observation.phenomenonTime)).format("YYYY-MM-DD HH:mm:ss");
+                    const datetime = dayjs(this.parsePhenomenonTime(observation.phenomenonTime)).format("YYYY-MM-DD HH:mm:ss");
 
                     result[meansOfTransport][datetime] = observation.result;
                 });
@@ -675,7 +679,7 @@ export class TrafficCountApi {
                             return;
                         }
                         if (payload && payload?.result && payload?.phenomenonTime) {
-                            const datetime = moment(this.parsePhenomenonTime(payload.phenomenonTime)).format("YYYY-MM-DD HH:mm:ss");
+                            const datetime = dayjs(this.parsePhenomenonTime(payload.phenomenonTime)).format("YYYY-MM-DD HH:mm:ss");
 
                             result[meansOfTransport][datetime] = payload.result;
 
@@ -722,7 +726,7 @@ export class TrafficCountApi {
                 this.mqttSubscribe(topic, {rh: 0}, (payload) => {
                     if (payload && payload?.resultTime) {
                         if (typeof onupdate === "function") {
-                            const datetime = moment(payload.resultTime).format("YYYY-MM-DD HH:mm:ss");
+                            const datetime = dayjs(payload.resultTime).format("YYYY-MM-DD HH:mm:ss");
 
                             onupdate(datetime);
                         }
@@ -791,7 +795,7 @@ export class TrafficCountApi {
                 }
 
                 // prohibit subscription by using the last param with a future date for today
-            }, onerror, false, false, moment().add(1, "month").format("YYYY-MM-DD"));
+            }, onerror, false, false, dayjs().add(1, "month").format("YYYY-MM-DD"));
         }, onerror);
     }
 

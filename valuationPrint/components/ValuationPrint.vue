@@ -15,7 +15,7 @@ import {createMapfishDialog} from "../utils/createMapfishDialog.js";
 import {startPrintProcess} from "../utils/startPrintProcess.js";
 import axios from "axios";
 import isObject from "../../../src/utils/isObject";
-import moment from "moment";
+import dayjs from "dayjs";
 import upperFirst from "../../../src/utils/upperFirst";
 
 export default {
@@ -75,7 +75,7 @@ export default {
                     this.config.transformer,
                     this.defaultValue,
                     this.projection.getCode(),
-                    this.getFilenameOfPDF(parcel.featureList, this.fileprefix, moment().format("YYYY-MM-DD__HH-mm-ss"))
+                    this.getFilenameOfPDF(parcel.featureList, this.fileprefix, dayjs().format("YYYY-MM-DD__HH-mm-ss"))
                 );
 
                 setTimeout(() => {
@@ -236,7 +236,7 @@ export default {
                     this.config.images[idx],
                     this.defaultValue,
                     this.projection.getCode(),
-                    this.getFilenameOfPDF(this.parcelData.featureList, imageName, moment().format("YYYY-MM-DD__HH-mm-ss"))
+                    this.getFilenameOfPDF(this.parcelData.featureList, imageName, dayjs().format("YYYY-MM-DD__HH-mm-ss"))
                 );
 
             mapfishDialog.attributes.map = mapfishDialog.attributes[imageName + ".map"];

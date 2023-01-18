@@ -1,5 +1,5 @@
 <script>
-import moment from "moment";
+import dayjs from "dayjs";
 
 export default {
     name: "DipasCockpitTheme",
@@ -14,10 +14,10 @@ export default {
             return this.feature.getMappedProperties();
         },
         dateStart: function () {
-            return moment(this.attributes.dateStart, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
+            return dayjs(this.attributes.dateStart, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
         },
         dateEnd: function () {
-            return moment(this.attributes.dateEnd, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
+            return dayjs(this.attributes.dateEnd, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
         }
     },
     mounted () {

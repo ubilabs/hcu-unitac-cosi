@@ -1,4 +1,7 @@
-import moment from "moment";
+import dayjs from "dayjs";
+import isoWeek from "dayjs/plugin/isoWeek";
+
+dayjs.extend(isoWeek);
 
 /**
  * adds new entries with value null in a single day dataset where time slots are missing
@@ -12,14 +15,14 @@ import moment from "moment";
 export function addMissingDataDay (from, timeData, minutes = 15) {
     const zeroedData = {},
         result = {},
-        datePrefix = moment(from, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD "),
+        datePrefix = dayjs(from, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD "),
         hourParts = Math.floor(60 / Math.max(1, minutes));
     let h,
         m,
         key;
 
     for (key in timeData) {
-        zeroedData[moment(key, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:00")] = timeData[key];
+        zeroedData[dayjs(key, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:00")] = timeData[key];
     }
 
     // add missing datasets
@@ -54,12 +57,12 @@ export function addMissingDataWeek (from, timeData) {
         key;
 
     for (key in timeData) {
-        zeroedData[moment(key, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:00")] = timeData[key];
+        zeroedData[dayjs(key, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:00")] = timeData[key];
     }
 
     // add missing datasets
     for (wd = 1; wd <= 7; wd++) {
-        key = moment(from, "YYYY-MM-DD HH:mm:ss").isoWeekday(wd).format("YYYY-MM-DD HH:mm:00");
+        key = dayjs(from, "YYYY-MM-DD HH:mm:ss").isoWeekday(wd).format("YYYY-MM-DD HH:mm:00");
 
         if (Object.prototype.hasOwnProperty.call(zeroedData, key)) {
             result[key] = zeroedData[key];
@@ -82,13 +85,14 @@ export function addMissingDataWeek (from, timeData) {
  */
 export function addMissingDataYear (year, timeData) {
     const zeroedData = {},
-        result = {},
+        result = {};
         // set objMoment to the first thursday (00:00:00) of the year, as the first thursday of january is always in the first calendar week of the year
-        objMoment = moment(String(year) + "-1", "YYYY-W").add(3, "days");
-    let key;
+
+    let key,
+        objMoment = dayjs(String(year) + "-1", "YYYY-W").add(3, "day");
 
     for (key in timeData) {
-        zeroedData[moment(key, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:00")] = timeData[key];
+        zeroedData[dayjs(key, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:00")] = timeData[key];
     }
 
     // add missing datasets
@@ -103,7 +107,7 @@ export function addMissingDataYear (year, timeData) {
             result[key] = null;
         }
 
-        objMoment.add(1, "week");
+        objMoment = objMoment.add(1, "week");
     }
 
     return result;

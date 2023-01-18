@@ -1,5 +1,5 @@
 <script>
-import moment from "moment";
+import dayjs from "dayjs";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator";
 import {mapGetters} from "vuex";
 
@@ -124,10 +124,11 @@ export default {
          * @returns {void}
          */
         setupTabInfo: function (api, thingId, meansOfTransport) {
-            moment.locale(this.currentLocale);
+            require("dayjs/locale/" + this.currentLocale + ".js");
+            dayjs.locale(this.currentLocale);
 
             api.updateTotal(thingId, meansOfTransport, (date, value) => {
-                this.setTotalDesc(typeof date === "string" ? moment(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
+                this.setTotalDesc(typeof date === "string" ? dayjs(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
                 this.setTotalValue(thousandsSeparator(value));
             }, errormsg => {
                 this.setTotalDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
@@ -136,7 +137,7 @@ export default {
                 this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.totalSince}));
             });
 
-            api.updateYear(thingId, meansOfTransport, moment().format("YYYY"), (year, value) => {
+            api.updateYear(thingId, meansOfTransport, dayjs().format("YYYY"), (year, value) => {
                 this.setThisYearDesc(typeof year === "string" ? "01.01." + year : "");
                 this.setThisYearValue(thousandsSeparator(value));
             }, errormsg => {
@@ -146,7 +147,7 @@ export default {
                 this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.sinceBeginningOfTheYear}));
             });
 
-            api.updateYear(thingId, meansOfTransport, moment().subtract(1, "year").format("YYYY"), (year, value) => {
+            api.updateYear(thingId, meansOfTransport, dayjs().subtract(1, "year").format("YYYY"), (year, value) => {
                 this.setLastYearDesc(typeof year === "string" ? year : "");
                 this.setLastYearValue(thousandsSeparator(value));
             }, errormsg => {
@@ -156,8 +157,8 @@ export default {
                 this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.overThePastYear}));
             });
 
-            api.updateDay(thingId, meansOfTransport, moment().subtract(1, "day").format("YYYY-MM-DD"), (date, value) => {
-                this.setLastDayDesc(typeof date === "string" ? moment(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
+            api.updateDay(thingId, meansOfTransport, dayjs().subtract(1, "day").format("YYYY-MM-DD"), (date, value) => {
+                this.setLastDayDesc(typeof date === "string" ? dayjs(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
                 this.setLastDayValue(thousandsSeparator(value));
             }, errormsg => {
                 this.setLastDayDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
@@ -167,7 +168,7 @@ export default {
             });
 
             api.updateWorkingDayAverage(thingId, meansOfTransport, this.rangeOfWorkingDayAverage, this.holidays, (date, value) => {
-                this.setWorkingDayAverageDesc(typeof date === "string" ? moment(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
+                this.setWorkingDayAverageDesc(typeof date === "string" ? dayjs(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
                 this.setWorkingDayAverageValue(thousandsSeparator(value));
             }, errormsg => {
                 this.setWorkingDayAverageDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
@@ -176,8 +177,8 @@ export default {
                 this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.workingDayAverage}));
             });
 
-            api.updateHighestWorkloadDay(thingId, meansOfTransport, moment().format("YYYY"), (date, value) => {
-                this.setHighestWorkloadDayDesc(typeof date === "string" ? moment(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
+            api.updateHighestWorkloadDay(thingId, meansOfTransport, dayjs().format("YYYY"), (date, value) => {
+                this.setHighestWorkloadDayDesc(typeof date === "string" ? dayjs(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
                 this.setHighestWorkloadDayValue(thousandsSeparator(value));
             }, errormsg => {
                 this.setHighestWorkloadDayDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));
@@ -186,7 +187,7 @@ export default {
                 this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.highestDay}));
             });
 
-            api.updateHighestWorkloadWeek(thingId, meansOfTransport, moment().format("YYYY"), (calendarWeek, value) => {
+            api.updateHighestWorkloadWeek(thingId, meansOfTransport, dayjs().format("YYYY"), (calendarWeek, value) => {
                 this.setHighestWorkloadWeekDesc(!isNaN(calendarWeek) || typeof calendarWeek === "string" ? this.calendarweek + " " + calendarWeek : "");
                 this.setHighestWorkloadWeekValue(thousandsSeparator(value));
             }, errormsg => {
@@ -196,8 +197,8 @@ export default {
                 this.$store.dispatch("Alerting/addSingleAlert", i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.apiFunction", {category: this.highestWeek}));
             });
 
-            api.updateHighestWorkloadMonth(thingId, meansOfTransport, moment().format("YYYY"), (month, value) => {
-                this.setHighestWorkloadMonthDesc(typeof month === "string" ? moment(month, "MM").format("MMMM") : "");
+            api.updateHighestWorkloadMonth(thingId, meansOfTransport, dayjs().format("YYYY"), (month, value) => {
+                this.setHighestWorkloadMonthDesc(typeof month === "string" ? dayjs(month, "MM").format("MMMM") : "");
                 this.setHighestWorkloadMonthValue(thousandsSeparator(value));
             }, errormsg => {
                 this.setHighestWorkloadMonthDesc(i18next.t("additional:modules.tools.gfi.themes.trafficCount.error.dataNotAvailableA"));

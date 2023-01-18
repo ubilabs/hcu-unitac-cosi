@@ -1,9 +1,10 @@
 import {expect} from "chai";
 import {TrafficCountCache} from "../../../utils/trafficCountCache";
-import moment from "moment";
+import dayjs from "dayjs";
 
-// change language from moment.js to german
-moment.locale("de");
+// change language from day.js to german
+require("dayjs/locale/de.js");
+dayjs.locale("de");
 
 describe("addons/trafficCount/utils/trafficCountCache", function () {
     let cache = null;

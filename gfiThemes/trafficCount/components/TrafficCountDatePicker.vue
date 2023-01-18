@@ -1,7 +1,10 @@
 <script>
-import moment from "moment";
+import dayjs from "dayjs";
+import isoWeek from "dayjs/plugin/isoWeek";
 import TrafficCountDatePickerInput from "./TrafficCountDatePickerInput.vue";
 import TrafficCountDatePickerWeek from "./TrafficCountDatePickerWeek.vue";
+
+dayjs.extend(isoWeek);
 
 export default {
     name: "TrafficCountDatePicker",
@@ -65,7 +68,7 @@ export default {
     },
     mounted () {
         this.initialDates.forEach(date => {
-            this.toggleSelectedDate(moment(date, this.format));
+            this.toggleSelectedDate(dayjs(date, this.format));
         });
     },
     created () {
@@ -87,7 +90,7 @@ export default {
         },
         /**
          * Triggered when a date picker calendar date is clicked.
-         * @param {Object} momentDate A moment instance of this date.
+         * @param {Object} momentDate A dayjs instance of this date.
          * @returns {void}
          */
         toggleSelectedDate (momentDate) {
@@ -97,14 +100,14 @@ export default {
         },
         /**
          * Toggles the week of the given date.
-         * @param {Object} momentDate A moment instance of this date.
+         * @param {Object} momentDate A dayjs instance of this date.
          * @returns {Boolean} true if the toggle was successful, false if not.
          */
         toggleSelectedDateWeek (momentDate) {
             if (typeof momentDate?.format !== "function" || !Array.isArray(this.selectedDates)) {
                 return false;
             }
-            const dayPointer = moment(momentDate);
+            const dayPointer = dayjs(momentDate);
 
             this.toggleWeek(dayPointer);
             if (typeof this.maxSelection === "number") {
@@ -114,28 +117,28 @@ export default {
             }
             this.inputDates = [];
             for (let i = 0; i < this.selectedDates.length; i++) {
-                this.inputDates.push(moment(this.selectedDates[i], "YYYY-MM-DD").format(this.format));
+                this.inputDates.push(dayjs(this.selectedDates[i], "YYYY-MM-DD").format(this.format));
                 i += 6;
             }
             return true;
         },
         /**
          * Toggles the dates for a whole week based on given date.
-         * @param {Object} momentDate The moment date.
+         * @param {Object} momentDate The dayjs date.
          * @returns {void}
          */
         toggleWeek (momentDate) {
-            const dayPointer = moment(momentDate);
+            const dayPointer = dayjs(momentDate);
 
             dayPointer.startOf("isoWeek");
             for (let i = 0; i < 7; i++) {
                 this.toggleSelectedDateDay(dayPointer);
-                dayPointer.add(1, "days");
+                dayPointer.add(1, "day");
             }
         },
         /**
          * Toggles the day of the given date.
-         * @param {Object} momentDate A moment instance of this date.
+         * @param {Object} momentDate A dayjs instance of this date.
          * @returns {Boolean} true if the toggle was successful, false if not.
          */
         toggleSelectedDateDay (momentDate) {

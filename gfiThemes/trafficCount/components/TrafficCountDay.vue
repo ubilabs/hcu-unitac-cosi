@@ -3,7 +3,7 @@ import TrafficCountCompDiagram from "./TrafficCountCompDiagram.vue";
 import TrafficCountCompTable from "./TrafficCountCompTable.vue";
 import TrafficCountCheckbox from "./TrafficCountCheckbox.vue";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
-import moment from "moment";
+import dayjs from "dayjs";
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
 import {addMissingDataDay} from "../utils/addMissingData.js";
@@ -52,19 +52,19 @@ export default {
 
             // props for diagram
             setTooltipValue: (tooltipItem) => {
-                return moment(tooltipItem.datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY, HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel") + ": " + thousandsSeparator(tooltipItem.value);
+                return dayjs(tooltipItem.datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY, HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel") + ": " + thousandsSeparator(tooltipItem.value);
             },
             xAxisTicks: 12,
             yAxisTicks: 8,
             renderLabelXAxis: (datetime) => {
-                return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel");
+                return dayjs(datetime, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel");
             },
             renderLabelYAxis: (yValue) => {
                 return thousandsSeparator(yValue);
             },
             descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextDay", {minutes: this.api instanceof DauerzaehlstellenRadApi ? 60 : 15}),
             renderLabelLegend: (datetime) => {
-                return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
+                return dayjs(datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
             },
             renderPointStyle: (datetime) => {
                 const pointStyle = [],
@@ -99,10 +99,10 @@ export default {
             // props for table
             tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.tableTitleDay"),
             setColTitle: datetime => {
-                return moment(datetime, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel");
+                return dayjs(datetime, "YYYY-MM-DD HH:mm:ss").format("HH:mm") + " " + this.$t("additional:modules.tools.gfi.themes.trafficCount.clockLabel");
             },
             setRowTitle: (meansOfTransports, datetime) => {
-                const txt = moment(datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
+                const txt = dayjs(datetime, "YYYY-MM-DD HH:mm:ss").format("DD.MM.YYYY");
 
                 switch (meansOfTransports) {
                     // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
@@ -134,7 +134,8 @@ export default {
         }
     },
     mounted () {
-        moment.locale(i18next.language);
+        require("dayjs/locale/" + i18next.language + ".js");
+        dayjs.locale(i18next.language);
         this.initializeDates();
     },
     methods: {
@@ -143,7 +144,7 @@ export default {
          * @returns {void}
          */
         initializeDates () {
-            this.dates = [this.checkGurlittInsel ? moment().subtract(1, "days").toDate() : moment().toDate()];
+            this.dates = [this.checkGurlittInsel ? dayjs().subtract(1, "day").toDate() : dayjs().toDate()];
         },
         /**
          * Function is initially triggered and on update
@@ -166,7 +167,7 @@ export default {
                     // Showing earlier date first
                     return earlyDate - lateDate;
                 }).forEach(date => {
-                    const fromDate = moment(date).format("YYYY-MM-DD");
+                    const fromDate = dayjs(date).format("YYYY-MM-DD");
 
                     timeSettings.push({
                         interval: this.dayInterval,
@@ -209,13 +210,13 @@ export default {
             if (!(date instanceof Date)) {
                 return true;
             }
-            const endDate = this.checkGurlittInsel ? moment().subtract(1, "days") : moment(),
-                startDate = moment().subtract(14, "days"),
-                question = moment(date);
+            const endDate = this.checkGurlittInsel ? dayjs().subtract(1, "day") : dayjs(),
+                startDate = dayjs().subtract(14, "day"),
+                question = dayjs(date);
 
             if (Array.isArray(currentDates) && currentDates.length >= 5) {
                 for (let i = 0; i < 5; i++) {
-                    if (question.isSame(moment(currentDates[i]))) {
+                    if (question.isSame(dayjs(currentDates[i]))) {
                         return false;
                     }
                 }

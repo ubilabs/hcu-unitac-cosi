@@ -1,5 +1,8 @@
 <script>
-import moment from "moment";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/CustomParseFormat";
+
+dayjs.extend(customParseFormat);
 
 export default {
     name: "TrafficCountDatePickerCalendar",
@@ -68,11 +71,11 @@ export default {
          */
         getCurrentDates (currentSwitch, selectedDates) {
             const result = [],
-                currentMoment = moment(currentSwitch, "YYYY-MM"),
-                datePointer = currentMoment.isValid() ? moment(currentMoment) : moment(),
-                endDate = moment(datePointer),
-                minMoment = moment(this.minDate, "YYYY-MM-DD"),
-                maxMoment = moment(this.maxDate, "YYYY-MM-DD");
+                currentMoment = dayjs(currentSwitch, "YYYY-MM", true),
+                datePointer = currentMoment.isValid() ? dayjs(currentMoment) : dayjs(),
+                endDate = dayjs(datePointer),
+                minMoment = dayjs(this.minDate, "YYYY-MM-DD"),
+                maxMoment = dayjs(this.maxDate, "YYYY-MM-DD");
 
             datePointer.startOf("isoWeek");
             endDate.startOf("isoWeek").add(41, "days");
@@ -86,18 +89,18 @@ export default {
                 }
                 result[result.length - 1].days.push({
                     day: datePointer.format("D"),
-                    momentDate: moment(datePointer),
+                    momentDate: dayjs(datePointer),
                     selected: selectedDates.includes(datePointer.format("YYYY-MM-DD")),
                     inCurrentMonth: currentMoment.format("M") === datePointer.format("M"),
                     disabled: this.isDisabledDate(datePointer, minMoment, maxMoment)
                 });
-                datePointer.add(1, "days");
+                datePointer.add(1, "day");
             }
             return result;
         },
         /**
          * Emits on click.
-         * @param {Object} momentDate A moment object of the clicked date.
+         * @param {Object} momentDate A dayjs object of the clicked date.
          * @param {Boolean} disabled true if disabled, false if enabled.
          * @returns {void}
          */
@@ -109,9 +112,9 @@ export default {
         },
         /**
          * Checks if the date should be disabled.
-         * @param {Object} day The day as moment object.
-         * @param {Object} minDate The min date as moment object.
-         * @param {Object} maxDate The max date as moment object.
+         * @param {Object} day The day as dayjs object.
+         * @param {Object} minDate The min date as dayjs object.
+         * @param {Object} maxDate The max date as dayjs object.
          * @returns {Boolean} true if date is not between minDate and maxDate, false if date is between.
          */
         isDisabledDate (day, minDate, maxDate) {

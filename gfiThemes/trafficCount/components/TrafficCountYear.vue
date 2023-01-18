@@ -3,11 +3,18 @@ import TrafficCountCompDiagram from "./TrafficCountCompDiagram.vue";
 import TrafficCountCompTable from "./TrafficCountCompTable.vue";
 import TrafficCountCheckbox from "./TrafficCountCheckbox.vue";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
-import moment from "moment";
+import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
 import {addMissingDataYear} from "../utils/addMissingData.js";
 import {hasHolidayInWeek} from "../../../../src/utils/calendar.js";
+
+dayjs.extend(advancedFormat);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 export default {
     name: "TrafficCountYear",
@@ -52,14 +59,14 @@ export default {
             // props for diagram
             setTooltipValue: (tooltipItem) => {
                 // add 3 days to match thursdays
-                const objMoment = moment(tooltipItem.datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days");
+                const objMoment = dayjs(tooltipItem.datetime, "YYYY-MM-DD HH:mm:ss").add(3, "day");
 
                 return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek") + " " + objMoment.format("WW") + " / " + objMoment.format("YYYY") + ": " + thousandsSeparator(tooltipItem.value);
             },
             yAxisTicks: 8,
             renderLabelXAxis: (datetime) => {
                 // add 3 days to match thursdays
-                const objMoment = moment(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days");
+                const objMoment = dayjs(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "day");
 
                 return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek") + objMoment.format("WW");
             },
@@ -68,7 +75,7 @@ export default {
             },
             descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextYear"),
             renderLabelLegend: (datetime) => {
-                return moment(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days").format("YYYY");
+                return dayjs(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "day").format("YYYY");
             },
             renderPointStyle: (datetime) => {
                 const pointStyle = [],
@@ -103,11 +110,11 @@ export default {
             // props for table
             tableTitle: this.$t("additional:modules.tools.gfi.themes.trafficCount.tableTitleYear"),
             setColTitle: datetime => {
-                return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek") + moment(datetime, "YYYY-MM-DD HH:mm:ss").format("WW");
+                return this.$t("additional:modules.tools.gfi.themes.trafficCount.calendarweek") + dayjs(datetime, "YYYY-MM-DD HH:mm:ss").format("WW");
             },
             setRowTitle: (meansOfTransports, datetime) => {
                 // datetime is the monday of the week - so we have to add 3 days to get the thursday of the week
-                const txt = moment(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "days").format("YYYY");
+                const txt = dayjs(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "day").format("YYYY");
 
                 switch (meansOfTransports) {
                     // search for "trafficCountSVAktivierung" to find all lines of code to switch Kfz to Kfz + SV
@@ -139,7 +146,8 @@ export default {
         }
     },
     mounted () {
-        moment.locale(i18next.language);
+        require("dayjs/locale/" + i18next.language + ".js");
+        dayjs.locale(i18next.language);
         this.initializeDates();
     },
     methods: {
@@ -148,7 +156,7 @@ export default {
          * @returns {void}
          */
         initializeDates () {
-            this.dates = [this.checkGurlittInsel ? moment().subtract(1, "days").toDate() : moment().toDate()];
+            this.dates = [this.checkGurlittInsel ? dayjs().subtract(1, "day").toDate() : dayjs().toDate()];
         },
         /**
          * Function is initially triggered and on update
@@ -173,10 +181,10 @@ export default {
                     timeSettings.push({
                         interval: this.yearInterval,
                         // subtract 3 days to savely include the first thursday of january into the interval, as the first calendar week always includes the first thursday of january
-                        from: moment(date).startOf("year").subtract(3, "days").format("YYYY-MM-DD"),
+                        from: dayjs(date).startOf("year").subtract(3, "day").format("YYYY-MM-DD"),
                         // add 3 days to savely include the last thursday of december into the interval, as the last calendar week always includes the last thursday of december
-                        until: moment(date).endOf("year").add(3, "days").format("YYYY-MM-DD"),
-                        selectedYear: moment(date).format("YYYY")
+                        until: dayjs(date).endOf("year").add(3, "day").format("YYYY-MM-DD"),
+                        selectedYear: dayjs(date).format("YYYY")
                     });
                 });
 
@@ -214,25 +222,25 @@ export default {
             if (!(date instanceof Date)) {
                 return true;
             }
-            const endDate = this.checkGurlittInsel ? moment().subtract(1, "days") : moment(),
-                startMoment = moment().startOf("year").subtract(10, "years"),
+            const endDate = this.checkGurlittInsel ? dayjs().subtract(1, "day") : dayjs(),
+                startMoment = dayjs().startOf("year").subtract(10, "year"),
                 startYear = parseInt(startMoment.format("YYYY"), 10),
-                question = moment(date);
+                question = dayjs(date);
 
             if (this.checkGurlittInsel) {
                 if (startYear < 2014) {
-                    startMoment.add(2014 - startYear, "years");
+                    startMoment.add(2014 - startYear, "year");
                 }
             }
             else if (startYear < 2020) {
-                startMoment.add(2020 - startYear, "years");
+                startMoment.add(2020 - startYear, "year");
             }
 
             startMoment.subtract(1, "year");
 
             if (Array.isArray(currentDates) && currentDates.length >= 5) {
                 for (let i = 0; i < 5; i++) {
-                    if (question.isSame(moment(currentDates[i]))) {
+                    if (question.isSame(dayjs(currentDates[i]))) {
                         return false;
                     }
                 }
