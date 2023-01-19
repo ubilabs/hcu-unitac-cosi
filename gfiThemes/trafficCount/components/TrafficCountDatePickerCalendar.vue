@@ -88,18 +88,13 @@ export default {
             datePointer = datePointer.startOf("isoWeek");
             endDate = endDate.startOf("isoWeek").add(41, "day");
 
-            console.log(datePointer);
-            console.log(endDate);
-
             while (datePointer.isSameOrBefore(endDate)) {
-                console.log(datePointer.isoWeekday());
-               // if (datePointer.isoWeekday() === 1) {
+                if (datePointer.isoWeekday() === 1) {
                     result.push({
                         weekNumber: datePointer.format("W"),
                         days: []
                     });
-               // }
-                console.log('+++++++++++++++++++++++++++++++++++++++++', result);
+                }
                 result[result.length - 1].days.push({
                     day: datePointer.format("D"),
                     momentDate: dayjs(datePointer),
@@ -109,7 +104,6 @@ export default {
                 });
                 datePointer = datePointer.add(1, "day");
             }
-            console.log('ll+++++++++++++++++++++++++++++++++++++++++', result);
             return result;
         },
         /**

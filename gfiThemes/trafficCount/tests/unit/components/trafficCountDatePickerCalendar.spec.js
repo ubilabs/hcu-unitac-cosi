@@ -32,7 +32,6 @@ describe.only("addons/trafficCount/components/TrafficCountDatePickerCalendar.vue
             const wrapper = shallowMount(TrafficCountDatePickerCalendar);
 
             await wrapper.vm.$nextTick();
-            console.log(wrapper.vm.html());
             expect(wrapper.findAll(".dateField").length).to.equal(42);
 
             wrapper.destroy();
