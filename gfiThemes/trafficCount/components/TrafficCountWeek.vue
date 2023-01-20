@@ -152,7 +152,9 @@ export default {
     },
     created () {
         this.weekFormat = "YYYY [KW] WW";
-        require("dayjs/locale/" + i18next.language + ".js");
+        if (i18next.language !== "cimode") {
+            require("dayjs/locale/" + i18next.language + ".js");
+        }
         dayjs.locale(i18next.language);
         this.initializeDates();
         this.maxDate = this.checkGurlittInsel ? dayjs().subtract(1, "day").format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");

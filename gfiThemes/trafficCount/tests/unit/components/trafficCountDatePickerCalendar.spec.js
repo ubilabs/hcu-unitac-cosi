@@ -4,7 +4,7 @@ import TrafficCountDatePickerCalendar from "../../../components/TrafficCountDate
 
 config.mocks.$t = key => key;
 
-describe.only("addons/trafficCount/components/TrafficCountDatePickerCalendar.vue", () => {
+describe("addons/trafficCount/components/TrafficCountDatePickerCalendar.vue", () => {
     describe("Component DOM", () => {
         it("should initialize with given props", () => {
             const wrapper = shallowMount(TrafficCountDatePickerCalendar, {

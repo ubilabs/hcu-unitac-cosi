@@ -1,7 +1,9 @@
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 
 dayjs.extend(isoWeek);
+dayjs.extend(advancedFormat);
 
 /**
  * adds new entries with value null in a single day dataset where time slots are missing
@@ -89,7 +91,7 @@ export function addMissingDataYear (year, timeData) {
         // set objMoment to the first thursday (00:00:00) of the year, as the first thursday of january is always in the first calendar week of the year
 
     let key,
-        objMoment = dayjs(String(year) + "-1", "YYYY-W").add(3, "day");
+        objMoment = dayjs(String(year), "YYYY-W").add(2, "day");
 
     for (key in timeData) {
         zeroedData[dayjs(key, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:00")] = timeData[key];
@@ -97,11 +99,11 @@ export function addMissingDataYear (year, timeData) {
 
     // add missing datasets
     // objMoment is always thursday of the week, as only the last thursday of the year is always in the current year
-    while (objMoment.format("YYYY") === String(year)) {
+    while (objMoment.format("YYYY") === String(year) || (objMoment.format("YYYY") === String(Number(year) + 1) && objMoment.format("MM") === "01" && Number(objMoment.format("DD").charAt(1)) <= 7)) {
         key = objMoment.isoWeekday(1).format("YYYY-MM-DD HH:mm:00");
-
         if (Object.prototype.hasOwnProperty.call(zeroedData, key)) {
             result[key] = zeroedData[key];
+
         }
         else {
             result[key] = null;

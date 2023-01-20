@@ -139,7 +139,9 @@ export default {
         }
     },
     mounted () {
-        require("dayjs/locale/" + i18next.language + ".js");
+        if (i18next.language !== "cimode") {
+            require("dayjs/locale/" + i18next.language + ".js");
+        }
         dayjs.locale(i18next.language);
         this.initializeDates();
     },
