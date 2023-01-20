@@ -1,10 +1,18 @@
 <script>
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
+import weekYear from "dayjs/plugin/weekYear";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+import customParseFormat from "dayjs/plugin/CustomParseFormat";
 import TrafficCountDatePickerInput from "./TrafficCountDatePickerInput.vue";
 import TrafficCountDatePickerWeek from "./TrafficCountDatePickerWeek.vue";
 
+dayjs.extend(advancedFormat);
+dayjs.extend(customParseFormat);
 dayjs.extend(isoWeek);
+dayjs.extend(weekYear);
+dayjs.extend(weekOfYear);
 
 export default {
     name: "TrafficCountDatePicker",
@@ -68,7 +76,7 @@ export default {
     },
     mounted () {
         this.initialDates.forEach(date => {
-            this.toggleSelectedDate(dayjs(date, this.format));
+            this.toggleSelectedDate(dayjs(date, "gggg [KW] ww"));
         });
     },
     created () {
@@ -107,6 +115,7 @@ export default {
             if (typeof momentDate?.format !== "function" || !Array.isArray(this.selectedDates)) {
                 return false;
             }
+
             const dayPointer = dayjs(momentDate);
 
             this.toggleWeek(dayPointer);

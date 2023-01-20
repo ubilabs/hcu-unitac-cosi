@@ -1,7 +1,10 @@
 <script>
 import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 import thousandsSeparator from "../../../../src/utils/thousandsSeparator";
 import {mapGetters} from "vuex";
+
+dayjs.extend(advancedFormat);
 
 export default {
     name: "TrafficCountInfo",
