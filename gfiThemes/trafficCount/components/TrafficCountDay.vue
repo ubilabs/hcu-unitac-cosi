@@ -218,7 +218,7 @@ export default {
                 return true;
             }
             const endDate = this.checkGurlittInsel ? dayjs().subtract(1, "day") : dayjs(),
-                startDate = dayjs().subtract(14, "day"),
+                startDate = dayjs().subtract(15, "day"),
                 question = dayjs(date);
 
             if (Array.isArray(currentDates) && currentDates.length >= 5) {
