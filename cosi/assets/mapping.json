@@ -3,6 +3,7 @@
     "category": "bev_insgesamt",
     "value": "Bevölkerung insgesamt",
     "group": "Bevölkerung",
+    "sub_group": "Standard",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -12,6 +13,7 @@
     "category": "bev_weiblich",
     "value": "Bevölkerung weiblich",
     "group": "Bevölkerung",
+    "sub_group": "Standard",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -21,75 +23,27 @@
     "category": "bev_maennlich",
     "value": "Bevölkerung männlich",
     "group": "Bevölkerung",
+    "sub_group": "Standard",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
     "valueType": "absolute"
   },
   {
-    "category": "bev_u6",
-    "value": "Bevölkerung unter 6 Jahren",
-    "group": "Bevölkerung",
+    "category": "bev_ab60",
+    "value": "Bevölkerung ab 60 Jahren",
+    "group": "Bevölkerung ab x Jahren",
+    "sub_group": "ab x Jahren",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
-    "summable": true,
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_6_bis_9",
-    "value": "Bevölkerung 6 bis 9 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "summable": true,
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_10_bis_14",
-    "value": "Bevölkerung 10 bis 14 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "summable": true,
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_15_bis_20",
-    "value": "Bevölkerung 15 bis 20 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "summable": true,
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_21_bis_44",
-    "value": "Bevölkerung 21 bis 44 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "summable": true,
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_45_bis_64",
-    "value": "Bevölkerung 45 bis 64 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "summable": true,
     "valueType": "absolute"
   },
   {
     "category": "bev_ab65",
     "value": "Bevölkerung ab 65 Jahren",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung ab x Jahren",
+    "sub_group": "ab x Jahren",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -99,7 +53,8 @@
   {
     "category": "bev_ab65_proz",
     "value": "Anteil der Bevölkerung ab 65 Jahren",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung ab x Jahren",
+    "sub_group": "anteil ab x Jahren",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -107,9 +62,71 @@
     "valueType": "absolute"
   },
   {
+    "category": "bev_ab80",
+    "value": "Bevölkerung ab 80 Jahren",
+    "group": "Bevölkerung ab x Jahren",
+    "sub_group": "ab x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_u1",
+    "value": "Bevölkerung unter 1 Jahr",
+    "group": "Bevölkerung unter x Jahren",
+    "sub_group": "unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_u3",
+    "value": "Bevölkerung unter 3 Jahren",
+    "group": "Bevölkerung unter x Jahren",
+    "sub_group": "unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_u4",
+    "value": "Bevölkerung unter 4 Jahren",
+    "group": "Bevölkerung unter x Jahren",
+    "sub_group": "unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_u6",
+    "value": "Bevölkerung unter 6 Jahren",
+    "group": "Bevölkerung unter x Jahren",
+    "sub_group": "unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "summable": true,
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_u15",
+    "value": "Bevölkerung unter 15 Jahren",
+    "group": "Bevölkerung unter x Jahren",
+    "sub_group": "unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
     "category": "bev_u18",
     "value": "Bevölkerung unter 18 Jahren",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung unter x Jahren",
+    "sub_group": "unter x Jahren",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -118,16 +135,233 @@
   {
     "category": "bev_u18_proz",
     "value": "Anteil der Bevölkerung unter 18 Jahren",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung unter x Jahren",
+    "sub_group": "anteil unter x Jahren",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
     "valueType": "absolute"
   },
   {
+    "category": "bev_u65",
+    "value": "Bevölkerung unter 65 Jahren",
+    "group": "Bevölkerung unter x Jahren",
+    "sub_group": "unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_6_bis_9",
+    "value": "Bevölkerung 6 bis 9 Jahren",
+    "group": "Bevölkerung x bis x Jahren",
+    "sub_group": "x bis x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "summable": true,
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_10_bis_14",
+    "value": "Bevölkerung 10 bis 14 Jahren",
+    "group": "Bevölkerung x bis x Jahren",
+    "sub_group": "x bis x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "summable": true,
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_15_bis_20",
+    "value": "Bevölkerung 15 bis 20 Jahren",
+    "group": "Bevölkerung x bis x Jahren",
+    "sub_group": "x bis x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "summable": true,
+    "valueType": "absolute"
+  },
+  {
     "category": "bev_15_bis_64",
     "value": "Bevölkerung 15 bis 64 Jahren",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung x bis x Jahren",
+    "sub_group": "x bis x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_21_bis_44",
+    "value": "Bevölkerung 21 bis 44 Jahren",
+    "group": "Bevölkerung x bis x Jahren",
+    "sub_group": "x bis x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "summable": true,
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_45_bis_64",
+    "value": "Bevölkerung 45 bis 64 Jahren",
+    "group": "Bevölkerung x bis x Jahren",
+    "sub_group": "x bis x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "summable": true,
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_3_bis_u6",
+    "value": "Bevölkerung 3 bis unter 6 Jahren",
+    "group": "Bevölkerung x bis unter 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_4_bis_u7",
+    "value": "Bevölkerung 4 bis unter 7 Jahren",
+    "group": "Bevölkerung x bis unter 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_6_bis_u18",
+    "value": "Bevölkerung 6 bis unter 18 Jahren",
+    "group": "Bevölkerung x bis unter 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_7_bis_u13",
+    "value": "Bevölkerung 7 bis unter 13 Jahren",
+    "group": "Bevölkerung x bis unter 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_10_bis_u14",
+    "value": "Bevölkerung 10 bis unter 14 Jahren",
+    "group": "Bevölkerung x bis unter 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_13_bis_u16",
+    "value": "Bevölkerung 13 bis unter 16 Jahren",
+    "group": "Bevölkerung x bis unter 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_14_bis_u18",
+    "value": "Bevölkerung 14 bis unter 18 Jahren",
+    "group": "Bevölkerung x bis unter 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_15_bis_u25",
+    "value": "Bevölkerung 15 bis unter 25 Jahren",
+    "group": "Bevölkerung x bis über 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_16_bis_u26",
+    "value": "Bevölkerung 16 bis unter 26 Jahren",
+    "group": "Bevölkerung x bis über 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_18_bis_u25",
+    "value": "Bevölkerung 18 bis unter 25 Jahren",
+    "group": "Bevölkerung x bis über 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_25_bis_u55",
+    "value": "Bevölkerung 25 bis unter 55 Jahren",
+    "group": "Bevölkerung x bis über 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_25_bis_u65",
+    "value": "Bevölkerung 25 bis unter 65 Jahren",
+    "group": "Bevölkerung x bis über 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_26_bis_u66",
+    "value": "Bevölkerung 26 bis unter 66 Jahren",
+    "group": "Bevölkerung x bis über 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_55_bis_u65",
+    "value": "Bevölkerung 55 bis unter 65 Jahren",
+    "group": "Bevölkerung x bis über 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
+    "stat_gebiet": "112233",
+    "stadtteil": "11223344",
+    "bezirk": "1122334455",
+    "valueType": "absolute"
+  },
+  {
+    "category": "bev_65_bis_u80",
+    "value": "Bevölkerung 65 bis unter 80 Jahren",
+    "group": "Bevölkerung x bis über 18 Jahren",
+    "sub_group": "x bis unter x Jahren",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -136,7 +370,8 @@
   {
     "category": "bev_auslaender_anz",
     "value": "Ausländer insgesamt",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung Migrationshintergrund",
+    "sub_group": "ausländer",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -145,7 +380,8 @@
   {
     "category": "bev_auslaender_proz",
     "value": "Anteil der Ausländer",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung Migrationshintergrund",
+    "sub_group": "anteil ausländer",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -160,7 +396,8 @@
   {
     "category": "bev_migrationshintergrund_anz",
     "value": "Bevölkerung mit Migrationshintergrund",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung Migrationshintergrund",
+    "sub_group": "Migrationshintergrund",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -169,7 +406,8 @@
   {
     "category": "bev_migrationshintergrund_proz",
     "value": "Anteil der Bevölkerung mit Migrationshintergrund",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung Migrationshintergrund",
+    "sub_group": "Migrationshintergrund",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -184,7 +422,8 @@
   {
     "category": "bev_u18_migrationshintergrund_anz",
     "value": "Bevölkerung mit Migrationshintergrund unter 18 Jahren",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung Migrationshintergrund",
+    "sub_group": "Migrationshintergrund",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -193,7 +432,8 @@
   {
     "category": "bev_u18_migrationshintergrund_proz",
     "value": "Anteil der Bevölkerung mit Migrationshintergrund unter 18 Jahren",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung Migrationshintergrund",
+    "sub_group": "Migrationshintergrund",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -208,7 +448,8 @@
   {
     "category": "bev_ab65_migrationshintergrund_anz",
     "value": "Bevölkerung mit Migrationshintergrund ab 65 Jahren",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung Migrationshintergrund",
+    "sub_group": "Migrationshintergrund",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -217,7 +458,8 @@
   {
     "category": "bev_ab65_migrationshintergrund_proz",
     "value": "Anteil der Bevölkerung mit Migrationshintergrund ab 65 Jahren",
-    "group": "Bevölkerung",
+    "group": "Bevölkerung Migrationshintergrund",
+    "sub_group": "Migrationshintergrund",
     "stat_gebiet": "112233",
     "stadtteil": "11223344",
     "bezirk": "1122334455",
@@ -230,207 +472,10 @@
     }
   },
   {
-    "category": "bev_u1",
-    "value": "Bevölkerung unter 1 Jahr",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_u3",
-    "value": "Bevölkerung unter 3 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_u4",
-    "value": "Bevölkerung unter 4 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_u15",
-    "value": "Bevölkerung unter 15 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_u65",
-    "value": "Bevölkerung unter 65 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_3_bis_u6",
-    "value": "Bevölkerung 3 bis unter 6 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_4_bis_u7",
-    "value": "Bevölkerung 4 bis unter 7 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_6_bis_u18",
-    "value": "Bevölkerung 6 bis unter 18 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_7_bis_u13",
-    "value": "Bevölkerung 7 bis unter 13 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_10_bis_u14",
-    "value": "Bevölkerung 10 bis unter 14 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_13_bis_u16",
-    "value": "Bevölkerung 13 bis unter 16 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_14_bis_u18",
-    "value": "Bevölkerung 14 bis unter 18 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_15_bis_u25",
-    "value": "Bevölkerung 15 bis unter 25 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_16_bis_u26",
-    "value": "Bevölkerung 16 bis unter 26 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_18_bis_u25",
-    "value": "Bevölkerung 18 bis unter 25 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_25_bis_u55",
-    "value": "Bevölkerung 25 bis unter 55 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_25_bis_u65",
-    "value": "Bevölkerung 25 bis unter 65 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_26_bis_u66",
-    "value": "Bevölkerung 26 bis unter 66 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_55_bis_u65",
-    "value": "Bevölkerung 55 bis unter 65 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_65_bis_u80",
-    "value": "Bevölkerung 65 bis unter 80 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_ab60",
-    "value": "Bevölkerung ab 60 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
-    "category": "bev_ab80",
-    "value": "Bevölkerung ab 80 Jahren",
-    "group": "Bevölkerung",
-    "stat_gebiet": "112233",
-    "stadtteil": "11223344",
-    "bezirk": "1122334455",
-    "valueType": "absolute"
-  },
-  {
     "category": "gesamt_unter_6",
     "value": "Bevölkerung gesamt unter 6 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "unter x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
@@ -439,6 +484,7 @@
     "category": "weiblich_unter_6",
     "value": "Bevölkerung weiblich unter 6 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "unter x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
@@ -447,6 +493,7 @@
     "category": "maennlich_unter_6",
     "value": "Bevölkerung maennlich unter 6 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "unter x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
@@ -455,6 +502,7 @@
     "category": "gesamt_6_17",
     "value": "Bevölkerung gesamt 6 bis 17 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "gesamt x bis x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
@@ -463,6 +511,7 @@
     "category": "weiblich_6_17",
     "value": "Bevölkerung weiblich 6 bis 17 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "x bis x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
@@ -471,6 +520,7 @@
     "category": "maennlich_6_17",
     "value": "Bevölkerung maennlich 6 bis 17 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "x bis x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
@@ -479,6 +529,7 @@
     "category": "gesamt_18_64",
     "value": "Bevölkerung gesamt 18 bis 64 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "x bis x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
@@ -487,6 +538,7 @@
     "category": "weiblich_18_64",
     "value": "Bevölkerung weiblich 18 bis 64 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "x bis x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
@@ -495,6 +547,7 @@
     "category": "maennlich_18_64",
     "value": "Bevölkerung maennlich 18 bis 64 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "x bis x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
@@ -503,6 +556,7 @@
     "category": "gesamt_ab_65",
     "value": "Bevölkerung gesamt ab 65 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "ab x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
@@ -511,6 +565,7 @@
     "category": "weiblich_ab_65",
     "value": "Bevölkerung weiblich ab 65 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "ab x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
@@ -519,6 +574,7 @@
     "category": "maennlich_ab_65",
     "value": "Bevölkerung maennlich ab 65 Jahren",
     "group": "Bevölkerung Prognose",
+    "sub_group": "ab x Jahren",
     "ltf": true,
     "stadtteil": "22121",
     "valueType": "absolute"
