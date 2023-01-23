@@ -5,19 +5,25 @@
 
 ## Unreleased - in development
 ### __Breaking Changes__
-- Addon `obliqueViewer` was renamed to `vcOblique`.
 
 ### Added
 - In refugeeHomes a new layer with ukrainian refugee homes was added.
 
 ### Changed
 - In schoolRoutePlanning, streets without the prefix `*` in the gazetteer are now searched for.
+- Time handling: moment.js was replaced with day.js.
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+---
+
+## v2.29.0 - 2023-01-04
+### __Breaking Changes__
+Addon `obliqueViewer` was renamed to `vcOblique`.
 
 ---
 
