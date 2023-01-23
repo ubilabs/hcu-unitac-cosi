@@ -12,17 +12,34 @@ import {Select} from "ol/interaction";
 import ToolInfo from "../../components/ToolInfo.vue";
 import travelTimeIndex from "../assets/inrix_traveltimeindex_2021.json";
 import {onSearchbar, offSearchbar, getServiceUrl, onShowFeaturesById, onShowAllFeatures, onFeaturesLoaded, getModelByAttributes} from "../../utils/radioBridge.js";
-import mapCollection from "../../../../src/core/maps/mapCollection";
 import mapCanvasToImage, {exportMapView} from "../../utils/mapCanvasToImage";
+import AccessibilityAnalysisLegend from "./AccessibilityAnalysisLegend.vue";
+import AccessibilityAnalysisTrafficFlow from "./AccessibilityAnalysisTrafficFlow.vue";
 
 export default {
     name: "AccessibilityAnalysis",
     components: {
         Tool,
         ToolInfo,
-        AnalysisPagination
+        AnalysisPagination,
+        AccessibilityAnalysisLegend,
+        AccessibilityAnalysisTrafficFlow
     },
     data () {
+        this.availableModes = [
+            {
+                type: "point",
+                text: "Erreichbarkeit ab einem Referenzpunkt"
+            },
+            {
+                type: "region",
+                text: "Erreichbarkeit der ausgewählten Einrichtungen"
+            },
+            {
+                type: "path",
+                text: "Erreichbarkeit entlang einer Route"
+            }
+        ];
         return {
             travelTimeIndex,
             facilityNames: [],
@@ -42,10 +59,6 @@ export default {
                     type: "cycling-regular",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-regular")
                 },
-                // {
-                //     type: "cycling-electric",
-                //     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-electric")
-                // },
                 {
                     type: "foot-walking",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.foot-walking")
@@ -69,41 +82,24 @@ export default {
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.distance")
                 }
             ],
-            layers: null,
             legendColors: [
                 "rgba(0, 240, 3, 0.6)",
                 "rgba(200, 200, 3, 0.6)",
                 "rgba(240, 0, 3, 0.6)",
                 "rgba(180, 165, 165, 0.8)"
             ],
-            featureColors: [
-                "rgba(240, 0, 3, 0.2)",
-                "rgba(200, 200, 3, 0.2)",
-                "rgba(0, 240, 3, 0.2)"
-            ],
-            refFeatureStyle: {
-                fill: {
-                    color: "rgba(255, 255, 255, 0)"
-                },
-                stroke: {
-                    color: "rgba(100, 80, 80, 1)",
-                    width: 2,
-                    lineDash: [10, 8]
-                }
-            },
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
             select: null,
             hide: false
-            // map: undefined
         };
     },
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
-        ...mapGetters("Maps", ["projectionCode"]),
+        ...mapGetters("Maps", ["projectionCode", "clickCoordinate", "clickPixel"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
@@ -183,14 +179,6 @@ export default {
                 this.setTime(v);
             }
         },
-        _useTravelTimeIndex: {
-            get () {
-                return this.useTravelTimeIndex;
-            },
-            set (v) {
-                this.setUseTravelTimeIndex(v);
-            }
-        },
         _isochroneFeatures: {
             get () {
                 return this.isochroneFeatures;
@@ -198,20 +186,11 @@ export default {
             set (v) {
                 this.setIsochroneFeatures(v);
             }
-        },
-        _steps: {
-            get () {
-                return this.steps;
-            },
-            set (v) {
-                this.setSteps(v);
-            }
         }
     },
     watch: {
         active () {
             if (this.active) {
-                mapCollection.getMap("2D").on("click", this.setCoordinateFromClick);
                 onSearchbar(this.setSearchResultToOrigin);
 
                 if (this.mode === "path") {
@@ -219,7 +198,6 @@ export default {
                 }
             }
             else {
-                mapCollection.getMap("2D").un("click", this.setCoordinateFromClick);
                 offSearchbar(this.setSearchResultToOrigin);
                 this.removePointMarker();
                 this.select.getFeatures().clear();
@@ -274,7 +252,10 @@ export default {
             }
         },
         clickCoordinate (coord) {
-            this.placingPointMarker(coord);
+            if (this.active) {
+                this.setCoordinateFromClick(this.clickCoordinate, this.clickPixel);
+                this.placingPointMarker(coord);
+            }
         },
         setByFeature (val) {
             if (val && this.mode === "point") {
@@ -315,9 +296,9 @@ export default {
                     this._scaleUnit = request.settings.scaleUnit;
                     this._distance = request.settings.distance;
                     this._timefi = request.settings.time;
-                    this._useTravelTimeIndex = request.settings.useTravelTimeIndex;
+                    this.setUseTravelTimeIndex(request.settings.useTravelTimeIndex);
                     this._setByFeature = request.settings.setByFeature;
-                    this._steps = request.settings.steps;
+                    this.setSteps(request.settings.steps);
                     return request; // (we care about the side effects only)
                 },
                 /**
@@ -391,6 +372,10 @@ export default {
         onFeaturesLoaded(this.tryUpdateIsochrones);
     },
     methods: {
+        ...mapMutations("Tools/PopulationRequest", {
+            setPopulationRequestGeometry: "setGeometry",
+            setPopulationRequestActive: "setActive"
+        }),
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapActions("Tools/AccessibilityAnalysisService", ["getIsochrones"]),
         ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
@@ -455,10 +440,11 @@ export default {
         * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
         * @returns {void}
         */
-        requestInhabitants: async function () {
+        async requestInhabitants () {
             this.close();
             await this.$nextTick();
-            this.$root.$emit("populationRequest", this.rawGeoJson);
+            this.setPopulationRequestActive(true);
+            this.setPopulationRequestGeometry(this.rawGeoJson);
         },
         createAnalysisSet: async function () {
             this.hide = false;
@@ -481,12 +467,12 @@ export default {
                 _scaleUnit: JSON.parse(JSON.stringify(this._scaleUnit)),
                 _distance: JSON.parse(JSON.stringify(this._distance)),
                 _time: JSON.parse(JSON.stringify(this._time)),
-                _useTravelTimeIndex: JSON.parse(JSON.stringify(this._useTravelTimeIndex)),
+                _useTravelTimeIndex: JSON.parse(JSON.stringify(this.useTravelTimeIndex)),
                 _setByFeature: JSON.parse(JSON.stringify(this._setByFeature)),
-                _steps: JSON.parse(JSON.stringify(this._steps))
+                _steps: JSON.parse(JSON.stringify(this.steps))
             };
-
             this.dataSets.push(analysisSet);
+
             this.setActiveSet(this.dataSets.length - 1);
 
             if (this.dataSets.length === 1) {
@@ -544,6 +530,12 @@ export default {
             this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
 
             this.renderIsochrones(this._isochroneFeatures);
+        },
+        updateUseTravelTimeIndex (value) {
+            this.setUseTravelTimeIndex(value);
+        },
+        updateTime (value) {
+            this._time = value;
         }
     }
 };
@@ -573,37 +565,44 @@ export default {
                             <v-select
                                 ref="mode"
                                 v-model="_mode"
+                                class="mb-4"
                                 :items="availableModes"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.dropdownInfo')"
                                 item-text="text"
                                 item-value="type"
                                 outlined
                                 dense
+                                hide-details
                                 @click:append="$refs.mode.blur()"
                             />
                             <v-text-field
                                 v-if="mode === 'point'"
                                 id="coordinate"
                                 v-model="_coordinate"
+                                class="mb-4"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.pointOfReference')"
                                 type="text"
                                 min="0"
                                 readonly
                                 outlined
                                 dense
+                                hide-details
                             />
                             <v-select
                                 v-if="mode === 'region'"
                                 v-model="_selectedFacilityName"
+                                class="mb-4"
                                 placeholder="Keine Auswahl"
                                 :items="facilityNames"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.topic')"
                                 outlined
                                 dense
+                                hide-details
                             />
                             <v-select
                                 v-if="mode === 'path'"
                                 v-model="_selectedDirections"
+                                class="mb-4"
                                 placeholder="Keine Auswahl"
                                 :item-text="getDirectionsText"
                                 return-object
@@ -611,10 +610,12 @@ export default {
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.directions')"
                                 outlined
                                 dense
+                                hide-details
                                 readonly
                             />
                             <v-select
                                 v-model="_transportType"
+                                class="mb-4"
                                 title="Verkehrsmittel"
                                 :items="transportTypes"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.transportType')"
@@ -622,10 +623,12 @@ export default {
                                 item-value="type"
                                 outlined
                                 dense
+                                hide-details
                                 :disabled="mode === 'path'"
                             />
                             <v-select
                                 v-model="_scaleUnit"
+                                class="mb-4"
                                 title="Maßeinheit der Entfernung"
                                 :items="scaleUnits"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.scaleUnit')"
@@ -633,74 +636,39 @@ export default {
                                 item-value="type"
                                 outlined
                                 dense
+                                hide-details
                                 :disabled="mode === 'path'"
                             />
+                            <template
+                                v-if="_transportType === 'driving-car' && scaleUnit === 'time'"
+                            >
+                                <AccessibilityAnalysisTrafficFlow
+                                    :use-travel-time-index="useTravelTimeIndex"
+                                    :time="_time"
+                                    @update:useTravelTimeIndex="updateUseTravelTimeIndex"
+                                    @update:time="updateTime"
+                                />
+                            </template>
                             <v-text-field
                                 id="range"
                                 v-model="_distance"
+                                class="mb-4"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.distance')"
                                 type="number"
                                 min="0"
                                 outlined
                                 dense
+                                hide-details
                             />
-                            <div class="travel-time-index">
-                                <v-icon
-                                    small
-                                    @click="addSingleAlert({
-                                        category: 'Info',
-                                        displayClass: 'info',
-                                        content: $t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.help')
-                                    })"
-                                >
-                                    mdi-help-circle-outline
-                                </v-icon>
-                                <v-slider
-                                    v-model="_time"
-                                    class="time-slider"
-                                    :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.time')"
-                                    :hint="`${(travelTimeIndex[_time] / Math.min(...Object.values(travelTimeIndex))).toFixed(2)} ${$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.title')}`"
-                                    :disabled="!useTravelTimeIndex || transportType !== 'driving-car' || scaleUnit !== 'time'"
-                                    :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.tooltip')"
-                                    step="1"
-                                    ticks="always"
-                                    tick-size="4"
-                                    min="0"
-                                    max="23"
-                                    dense
-                                    hide-details="auto"
-                                >
-                                    <template #append>
-                                        <!-- eslint-disable-next-line vue/no-multiple-template-root -->
-                                        <div class="append-text-field">
-                                            {{ _time }}:00
-                                            <v-icon small>
-                                                mdi-clock
-                                            </v-icon>
-                                        </div>
-                                    </template>
-                                </v-slider>
-                            </div>
-                            <v-row dense>
-                                <v-col cols="12">
-                                    <v-checkbox
-                                        v-model="_useTravelTimeIndex"
-                                        dense
-                                        hide-details
-                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.toggle')"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.tooltip')"
-                                        :disabled="transportType !== 'driving-car' || scaleUnit !== 'time'"
-                                    />
-                                    <v-checkbox
-                                        v-model="_setByFeature"
-                                        dense
-                                        hide-details
-                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
-                                        :disabled="mode === 'path'"
-                                    />
-                                </v-col>
-                            </v-row>
+                            <v-checkbox
+                                v-if="mode !== 'path'"
+                                v-model="_setByFeature"
+                                class="mb-4"
+                                dense
+                                hide-details
+                                :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
+                                :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
+                            />
                             <v-row dense>
                                 <v-col cols="12">
                                     <v-btn
@@ -715,6 +683,11 @@ export default {
                                     </v-btn>
                                 </v-col>
                             </v-row>
+                            <v-progress-linear
+                                v-if="progress > 0"
+                                v-model="progress"
+                                background-color="white"
+                            />
                             <v-row
                                 v-if="isochroneFeatures.length > 0"
                                 dense
@@ -750,36 +723,10 @@ export default {
                             </v-row>
                         </v-form>
                         <hr>
-                        <v-row dense>
-                            <v-col cols="6">
-                                <h5 id="legend-header">
-                                    <strong>{{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}</strong>
-                                </h5>
-                                <div id="legend">
-                                    <span
-                                        v-for="(j, i) in _steps"
-                                        :key="i"
-                                    >
-                                        <svg
-                                            width="15"
-                                            height="15"
-                                        >
-                                            <circle
-                                                cx="7.5"
-                                                cy="7.5"
-                                                r="7.5"
-                                                :style="`fill: ${
-                                                    legendColors[i]
-                                                }; stroke-width: 0.5; stroke: #e3e3e3;`"
-                                            />
-                                        </svg>
-                                        <span :key="i * 2 + _steps.length">
-                                            {{ j }}
-                                        </span>
-                                    </span>
-                                </div>
-                            </v-col>
-                        </v-row>
+                        <AccessibilityAnalysisLegend
+                            :steps="steps"
+                            :colors="legendColors"
+                        />
                         <v-row>
                             <v-col>
                                 <AnalysisPagination
@@ -804,11 +751,6 @@ export default {
                                 />
                             </v-col>
                         </v-row>
-                        <v-progress-linear
-                            v-if="progress > 0"
-                            v-model="progress"
-                            background-color="white"
-                        />
                     </div>
                 </v-app>
             </template>
@@ -846,41 +788,33 @@ export default {
 </template>
 
 <style lang="scss">
-#accessibilityanalysis {
-  width: 400px;
-  min-height: 100px;
+    @import "~variables";
 
-  .inline-switch {
-    margin-top: 0px;
-    height: 40px;
-  }
+    #accessibilityanalysis {
+        width: 400px;
+        min-height: 100px;
 
-  #legend-header {
-      margin-top: 0;
-  }
+        .inline-switch {
+            margin-top: 0px;
+            height: 40px;
+        }
 
-  #download {
-      margin-top: 8px;
-  }
-}
+        #download {
+            margin-top: 8px;
+        }
+        .v-input {
+            border-radius: $border-radius-base;
+        }
 
-.snackbar-text{
-    color: black
-}
-
-.append-text-field {
-    width: 70px;
-    text-align: right;
-}
-
-.travel-time-index {
-    display: flex;
-    position: relative;
-    align-items: baseline;
-    justify-content: space-between;
-    .time-slider {
-        margin-left: 10px;
+        .v-input--checkbox {
+            .v-label {
+                font-size: 14px;
+            }
+        }
     }
-}
+
+    .snackbar-text{
+        color: black
+    }
 
 </style>

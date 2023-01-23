@@ -4,11 +4,11 @@ Liste aller konfigurierbaren Werkzeuge. Jedes Werkzeug erbt von **[tool](#markdo
 
 |Name|Verpflichtend|Typ|Default|Beschreibung|Expert|
 |----|-------------|---|-------|------------|------|
-|obliqueViewer|nein|**[obliqueViewer](#markdown-header-portalconfigmenutoolschildrenobliqueViewer)**||Werkzeug zum einbinden der Schrägluftbildanwendung von vcs.|false|
+|vcOblique|nein|**[obliqueViewer](#markdown-header-portalconfigmenutoolschildrenvcOblique)**||Werkzeug zum einbinden der Schrägluftbildanwendung von vcs.|false|
 
 
 
-## Portalconfig.menu.tools.children.obliqueViewer
+## Portalconfig.menu.tools.children.vcOblique
 
 Werkzeug zum einbinden der Schrägluftbildanwendung von vcs in der Sidebar.
 Die Schrägluftbildanwendung muss auf dem gleichen Server liegen, damit sie im iFrame eingebunden werden kann.
@@ -54,7 +54,7 @@ Mobil wird das iFrame im window angezeigt.
 ***
 
 
-### ObliqueViewer - Konfiguration
+### VcOblique - Konfiguration
 
 |Name|Verpflichtend|Typ|Default|Beschreibung|Expert|
 |----|-------------|---|-------|------------|------|
@@ -69,8 +69,8 @@ Mobil wird das iFrame im window angezeigt.
 **Beispiel**
 ```
 #!json
-    "obliqueViewer": {
-    "name": "translate#additional:modules.tools.obliqueViewer.title",
+    "vcOblique": {
+    "name": "translate#additional:modules.tools.vcOblique.title",
     "icon": "bi-image"
     }
 ```

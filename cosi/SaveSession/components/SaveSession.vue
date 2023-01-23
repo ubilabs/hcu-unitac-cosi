@@ -194,7 +194,7 @@ export default {
             this.saveDialog = false;
             this.serializeState();
 
-            this.session.state = this.state;
+            this.session.state = JSON.stringify(this.state);
             this.session.meta.created = new Date().toLocaleString();
             this.session.meta.date = new Date();
         },
@@ -344,7 +344,7 @@ export default {
 
             this.session.meta.title = session.meta?.title || this.session.meta.title;
             this.setActive(false);
-            this.parseState(this.storePaths, state);
+            this.parseState(this.storePaths, typeof state === "string" ? JSON.parse(state) : state);
             this.addSingleAlert({
                 content: `Sitzung ${session.meta?.title} vom ${session.meta?.created} erfolgreich geladen.`,
                 category: "Erfolg",

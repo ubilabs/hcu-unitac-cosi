@@ -4,11 +4,11 @@ List of all configurable tools. Each tool inherits from **[tool](#markdown-heade
 
 |Name|Mandatory|Type|Default|Description|Expert|
 |----|-------------|---|-------|------------|------|
-|obliqueViewer|no|**[obliqueViewer](#markdown-header-portalconfigmenutoolschildrenobliqueViewer)**||Tool to include oblique aerial view application from vcs.|false|
+|vcOblique|no|**[vcOblique](#markdown-header-portalconfigmenutoolschildrenvcOblique)**||Tool to include oblique aerial view application from vcs.|false|
 
 
 
-## Portalconfig.menu.tools.children.obliqueViewer
+## Portalconfig.menu.tools.children.vcOblique
 
 Tool to include the oblique aerial view application from vcs in the sidebar.
 The oblique aerial view application must be on the same server to be included in the iFrame.
@@ -54,7 +54,7 @@ Mobile the iFrame is displayed in the window.
 ***
 
 
-### ObliqueViewer - Configuration
+### VcOblique - Configuration
 
 |Name|Mandatory|Type|Default|Description|Expert|
 |----|-------------|---|-------|------------|------|
@@ -65,8 +65,8 @@ Mobile the iFrame is displayed in the window.
 **Example**
 ```
 #!json
-    "obliqueViewer": {
-    "name": "translate#additional:modules.tools.obliqueViewer.title",
+    "vcOblique": {
+    "name": "translate#additional:modules.tools.vcOblique.title",
     "icon": "bi-image"
     }
 ```

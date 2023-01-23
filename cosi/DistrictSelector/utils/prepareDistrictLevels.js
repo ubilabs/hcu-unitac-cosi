@@ -22,13 +22,13 @@ export async function prepareDistrictLevels (districtLevels, layerList) {
             districtLevel.referenceLevel = index < districtLevels.length - 1 ? districtLevels[index + 1] : null;
             // the layer for the district level
             districtLevel.layer = getLayerById(layerList, districtLevel.layerId);
+            // the stats layer for the district level
+            districtLevel.stats.layers = getRawLayersById(districtLevel.stats.layerIds);
             // the names of all avaible districts
             districtLevel.nameList = getNameList(districtLevel.layer, districtLevel.keyOfAttrName);
-            // all featureTypes for the WFS GetFeature request for the stats features
-            districtLevel.featureTypes = getFeatureTypes(districtLevel.stats.baseUrl, districtLevel.stats.featureTypes);
             // property names for the WFS GetFeature request for the stats features, without geometry
             if (!districtLevel.propertyNameList) {
-                const propertyNameList = await getPropertyNameList(districtLevel.stats.baseUrl, districtLevel.featureTypes);
+                const propertyNameList = await getPropertyNameList(districtLevel.stats.layers);
 
                 if (!districtLevel.propertyNameList) {
                     districtLevel.propertyNameList = propertyNameList;
@@ -130,36 +130,6 @@ export function getDistricts ({layer, keyOfAttrName, label, duplicateDistrictNam
 }
 
 /**
- * Returns a list of all feature types for the given WFS sources (urls).
- * @param {String[]} urls - The urls of the WFS`s.
- * @param {Array.<String[]>} typeNames - The feature types for each url if provided.
- * @returns {Array.<String[]>} The feature types for each url.
- */
-export function getFeatureTypes (urls, typeNames) {
-    if (!Array.isArray(urls)) {
-        console.error(`prepareDistrictLevels.getFeatureTypes: ${urls} has to be defined and an array.`);
-        return [];
-    }
-    const
-        _typeNames = typeNames?.map(typeName => typeof typeName === "string" ? [typeName] : typeName), // map strings to list for WFS request
-        featureTypes = [];
-
-    for (let i = 0; i < urls.length; i++) {
-        /**
-         * if a featureType list is provided, use the list from config.json
-         * alternatively extract from services.json
-         */
-        featureTypes[i] = Array.isArray(_typeNames?.[i]) ?
-            _typeNames[i] :
-            rawLayerList.getLayerList().reduce((_featureTypes, layer) => {
-                return layer?.url === urls[i] ? [..._featureTypes, layer.featureType] : _featureTypes;
-            }, []);
-    }
-
-    return featureTypes;
-}
-
-/**
  * Returns the layer of the passed id or undefined if no layer is found.
  * @param {module:ol/layer[]} layerList - An array of layers.
  * @param {String} id - The layer id.
@@ -174,6 +144,29 @@ export function getLayerById (layerList, id) {
     return layerList.find(layer => {
         return layer.get("id") === id;
     });
+}
+
+/**
+ * Returns the raw layer object(s) by the given layerId(s).
+ * @param {String[]} layerIds - The id of the layer(s).
+ * @returns {Object[]} List of found raw layer object(s) or an empty array.
+ */
+export function getRawLayersById (layerIds) {
+    if (!Array.isArray(layerIds)) {
+        console.error(`prepareDistrictLevels.getRawLayersById: ${layerIds} has to be defined and an array.`);
+        return [];
+    }
+    const layerList = [];
+
+    layerIds.forEach(layerId => {
+        const foundRawLayer = rawLayerList.getLayerWhere({id: layerId});
+
+        if (foundRawLayer) {
+            layerList.push(foundRawLayer);
+        }
+    });
+
+    return layerList;
 }
 
 /**
@@ -205,47 +198,34 @@ export function getNameList (layer, keyOfAttrName) {
 }
 
 /**
- * Returns a list of all property names for the given WFS sources (urls), without geometries.
- * @param {String[]} urls - The urls of the WFS`s.
- * @param {Array.<String[]>} [typeNames] - The feature types for each url if provided.
- * @returns {Promise<Array.<String[]>>} The property name for each url.
+ * Returns a list of all property names for the given raw layer objects(s), without geometries.
+ * @param {Object[]} layers - The raw layer object(s).
+ * @returns {[String[]]} The property names for each layer.
  */
-export async function getPropertyNameList (urls, typeNames) {
-    if (!Array.isArray(urls)) {
-        console.error(`prepareDistrictLevels.getPropertyNameList: ${urls} has to be defined and an array.`);
+export async function getPropertyNameList (layers) {
+    if (!Array.isArray(layers)) {
+        console.error(`prepareDistrictLevels.getPropertyNameList: ${layers} has to be defined and an array.`);
         return [];
     }
     const propertyNameList = [];
 
-    for (let i = 0; i < urls.length; i++) {
+    for (let i = 0; i < layers.length; i++) {
         propertyNameList[i] = [];
 
-        const layer = rawLayerList.getLayerList().find(rawlayer => {
-            if (rawlayer.url === urls[i]) {
-                if (Array.isArray(typeNames?.[i])) {
-                    return rawlayer.featureType === typeNames?.[i][0];
+        // get the property names by the 'DescribeFeatureType' request
+        const json = await describeFeatureType(layers[i].url),
+            description = getFeatureDescription(json, layers[i].featureType);
+
+        if (description) {
+            description.forEach(element => {
+                // "gml:" => geometry property
+                if (element.type.search("gml:") === -1) {
+                    propertyNameList[i].push(element.name);
                 }
-                return true;
-            }
-            return false;
-        });
-
-        if (layer) {
-            // get the property names by the 'DescribeFeatureType' request
-            const json = await describeFeatureType(urls[i]),
-                description = getFeatureDescription(json, layer?.featureType);
-
-            if (description) {
-                description.forEach(element => {
-                    // "gml:" => geometry property
-                    if (element.type.search("gml:") === -1) {
-                        propertyNameList[i].push(element.name);
-                    }
-                });
-            }
+            });
         }
-
     }
+
     return propertyNameList;
 }
 

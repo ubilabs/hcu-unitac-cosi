@@ -220,7 +220,7 @@ describe("addons/cosi/DistrictSelector/components/DistrictSelector.vue", () => {
                 spyInitializeAdditionalInfoLayers = sinon.spy(DistrictSelector.methods, "initializeAdditionalInfoLayers"),
                 wrapper = factory.getMount();
 
-            expect(wrapper.vm.districtLevels[0]).to.have.all.keys("districts", "referenceLevel", "featureTypes", "propertyNameList", "nameList", "layer", "label", "stats", "layerId");
+            expect(wrapper.vm.districtLevels[0]).to.have.all.keys("districts", "referenceLevel", "propertyNameList", "nameList", "layer", "label", "stats", "layerId");
             expect(wrapper.vm.selectedLevelId).to.equal("123");
             expect(spySetNonReactiveData.calledOnce).to.be.true;
             expect(spyInitializeAdditionalInfoLayers.calledOnce).to.be.true;

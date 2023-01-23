@@ -1,10 +1,10 @@
 import {expect} from "chai";
 import sinon from "sinon";
-import actions from "../../../store/actionsObliqueViewer";
+import actions from "../../../store/actionsVcOblique";
 import crs from "@masterportal/masterportalapi/src/crs";
 
 
-describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
+describe("ADDONS: addons/vcOblique/store/actionsVcOblique", () => {
     const namedProjections = [
         ["EPSG:31467", "+title=Bessel/Gauß-Krüger 3 +proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs"],
         ["EPSG:25832", "+title=ETRS89/UTM 32N +proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"],
@@ -162,7 +162,7 @@ describe("ADDONS: addons/ObliqueViewer/store/actionsObliqueViewer", () => {
 
             expect(dispatch.calledOnce).to.be.true;
             expect(dispatch.firstCall.args[0]).to.equal("Alerting/addSingleAlert");
-            expect(dispatch.firstCall.args[1]).to.equal("modules.tools.obliqueViewer.sameOrigin");
+            expect(dispatch.firstCall.args[1]).to.equal("modules.tools.vcOblique.sameOrigin");
         });
     });
 
