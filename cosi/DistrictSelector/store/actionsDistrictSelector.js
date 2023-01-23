@@ -6,7 +6,6 @@ import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
-import {getRecordByLayerId} from "../../utils/getRecordByLayerId.js";
 import {getRecordById} from "../../../../src/api/csw/getRecordById.js";
 const actions = {
     /**
@@ -165,12 +164,10 @@ const actions = {
     */
     fetchMetaData ({state, commit}) {
 
-        console.log("fetch meta data district selector!");
         commit("setRemoteMetadata", {}); // delete existing metadata
         const uniqueLayerIds = state.selectedDistrictLevel.stats.layerIds,
             layers = state.selectedDistrictLevel.stats.layers;
 
-        console.log(layers);
         for (const index in layers) {
 
             getRecordById(layers[index].datasets[0].csw_url, layers[index].datasets[0].md_id).then((res)=>{
