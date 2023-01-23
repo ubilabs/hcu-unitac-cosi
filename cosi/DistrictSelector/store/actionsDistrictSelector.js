@@ -6,7 +6,8 @@ import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
-import {getMetadata} from "../../utils/getMetadata.js";
+import {getRecordByLayerId} from "../../utils/getRecordByLayerId.js";
+import {getRecordById} from "../../../../src/api/csw/getRecordById.js";
 const actions = {
     /**
      * Loads the statistical features for the given districts.
@@ -54,7 +55,7 @@ const actions = {
                     }
                 }
             }
-            dispatch("fetchMetaData");
+            // dispatch("fetchMetaData");
         }
 
         // loading reference Districts recursively
@@ -164,18 +165,25 @@ const actions = {
     */
     fetchMetaData ({state, commit}) {
 
-
+        console.log("fetch meta data district selector!");
         commit("setRemoteMetadata", {}); // delete existing metadata
-        const uniqueLayerIds = state.selectedDistrictLevel.stats.layerIds;
+        const uniqueLayerIds = state.selectedDistrictLevel.stats.layerIds,
+            layers = state.selectedDistrictLevel.stats.layers;
+
+        console.log(layers);
+        for (const index in layers) {
+            console.log(index);
+            console.log(layers[index]);
+            console.log(layers[index].datasets[0].csw_url);
+            console.log(layers[index].datasets[0].md_id);
+            getRecordById(layers[index].datasets[0].csw_url, layers[index].datasets[0].md_id).then(console.log).catch(error=>console.log(error));
+        }
 
         for (const index in uniqueLayerIds) {
-            if (Object.keys(state.remoteMetadata).includes(uniqueLayerIds[index])) { // if metadata for this layer already exists, then..
-                continue; // skip this iteration
-            }
-
+            console.log(uniqueLayerIds[index]);
             // get metadata remotely (as promise).
-            getMetadata(uniqueLayerIds[index]).then(res => {
-
+            getRecordByLayerId(uniqueLayerIds[index]).then(res => {
+                console.log(res);
                 // pick date
                 let date = "Datum Unbekannt";
 
@@ -191,7 +199,10 @@ const actions = {
                 // make simple metadata object
                 const metadata = {Titel: res.getTitle(), Datum: date, Abstrakt: res.getAbstract()};
 
+                console.log(metadata);
                 commit("addRemoteMetadata", {layerId: uniqueLayerIds[index], metadata: metadata});
+            }).catch(error => {
+                console.log(error);
             });
 
         }
