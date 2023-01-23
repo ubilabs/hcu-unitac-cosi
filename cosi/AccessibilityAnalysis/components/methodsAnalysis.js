@@ -15,7 +15,7 @@ import {readFeatures} from "../components/util.js";
 import {transformFeatures} from "../../utils/features/transform";
 import {getLayerSource} from "../../utils/layer/getLayerSource";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
-import {getRecordByLayerId} from "../../utils/getRecordByLayerId.js";
+import {getRecordById} from "../../../../src/api/csw/getRecordById";
 import {styleIsochroneFeatures} from "../utils/styleIsochroneFeatures.js";
 
 export const methodConfig = {
@@ -369,9 +369,8 @@ export default {
                 name: this.selectedFacilityName,
                 type: "layer"
             }),
-            layerID = selectedLayerModel.id,
-            // then get the local metadata
-            metadata = getRecordByLayerId(layerID);
+            // then get the matching metadata as promise
+            metadata = getRecordById(selectedLayerModel.get("datasets")[0].csw_url, selectedLayerModel.get("datasets")[0].md_id);
 
         return metadata;
 

@@ -55,7 +55,7 @@ const actions = {
                     }
                 }
             }
-            // dispatch("fetchMetaData");
+            dispatch("fetchMetaData");
         }
 
         // loading reference Districts recursively
@@ -172,18 +172,8 @@ const actions = {
 
         console.log(layers);
         for (const index in layers) {
-            console.log(index);
-            console.log(layers[index]);
-            console.log(layers[index].datasets[0].csw_url);
-            console.log(layers[index].datasets[0].md_id);
-            getRecordById(layers[index].datasets[0].csw_url, layers[index].datasets[0].md_id).then(console.log).catch(error=>console.log(error));
-        }
 
-        for (const index in uniqueLayerIds) {
-            console.log(uniqueLayerIds[index]);
-            // get metadata remotely (as promise).
-            getRecordByLayerId(uniqueLayerIds[index]).then(res => {
-                console.log(res);
+            getRecordById(layers[index].datasets[0].csw_url, layers[index].datasets[0].md_id).then((res)=>{
                 // pick date
                 let date = "Datum Unbekannt";
 
@@ -199,12 +189,10 @@ const actions = {
                 // make simple metadata object
                 const metadata = {Titel: res.getTitle(), Datum: date, Abstrakt: res.getAbstract()};
 
-                console.log(metadata);
                 commit("addRemoteMetadata", {layerId: uniqueLayerIds[index], metadata: metadata});
-            }).catch(error => {
-                console.log(error);
+            }).catch(error=> {
+                console.warn(error);
             });
-
         }
 
     }
