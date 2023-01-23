@@ -194,7 +194,7 @@ export default {
                     return earlyDate - lateDate;
                 }).forEach(date => {
 
-                    const weekFromDate = dayjs().year(date.toString().slice(0, 4)).isoWeek(date.slice(date.length - 2, date.length));
+                    const weekFromDate = dayjs().year(Number(date.toString().slice(0, 4))).isoWeek(Number(date.slice(date.length - 2, date.length)));
 
                     timeSettings.push({
                         interval: this.weekInterval,
@@ -207,7 +207,7 @@ export default {
                 api.updateDataset(thingId, meansOfTransport, timeSettings, datasets => {
                     if (Array.isArray(datasets)) {
                         datasets.forEach((transportData, idx) => {
-                            const from = typeof timeSettings[idx] === "object" ? timeSettings[idx].from + " 00:00:00" : "";
+                            const from = typeof timeSettings[idx] === "object" && dayjs(timeSettings[idx].from).isValid() ? timeSettings[idx].from + " 00:00:00" : "";
 
                             Object.keys(transportData).forEach(transportKey => {
                                 datasets[idx][transportKey] = addMissingDataWeek(from, datasets[idx][transportKey]);

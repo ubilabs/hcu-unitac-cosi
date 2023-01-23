@@ -10,6 +10,7 @@ dayjs.extend(advancedFormat);
 dayjs.extend(customParseFormat);
 dayjs.extend(isoWeek);
 
+
 export default {
     name: "TrafficCountDatePicker",
     components: {
@@ -72,7 +73,12 @@ export default {
     },
     mounted () {
         this.initialDates.forEach(date => {
-            this.toggleSelectedDate(dayjs(date, "gggg [KW] ww").subtract(7, "day"));
+            if (date.includes("KW")) {
+                this.toggleSelectedDate(dayjs(date, "gggg [KW] ww").subtract(7, "day"));
+            }
+            else {
+                this.toggleSelectedDate(dayjs(date, this.format));
+            }
         });
     },
     created () {
