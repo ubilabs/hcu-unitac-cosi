@@ -193,11 +193,15 @@ export default {
                     // Showing earlier date first
                     return earlyDate - lateDate;
                 }).forEach(date => {
+
+                    const weekFromDate = dayjs().year(date.toString().slice(0, 4)).isoWeek(date.slice(date.length - 2, date.length));
+
                     timeSettings.push({
                         interval: this.weekInterval,
-                        from: dayjs(date, this.weekFormat).startOf("isoWeek").format("YYYY-MM-DD"),
-                        until: dayjs(date, this.weekFormat).endOf("isoWeek").format("YYYY-MM-DD")
+                        from: weekFromDate.isoWeekday(1).format("YYYY-MM-DD"),
+                        until: weekFromDate.isoWeekday(7).format("YYYY-MM-DD")
                     });
+
                 });
 
                 api.updateDataset(thingId, meansOfTransport, timeSettings, datasets => {
