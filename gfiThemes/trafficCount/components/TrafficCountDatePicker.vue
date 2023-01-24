@@ -3,12 +3,14 @@ import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import customParseFormat from "dayjs/plugin/CustomParseFormat";
+import weekday from "dayjs/plugin/weekday";
 import TrafficCountDatePickerInput from "./TrafficCountDatePickerInput.vue";
 import TrafficCountDatePickerWeek from "./TrafficCountDatePickerWeek.vue";
 
 dayjs.extend(advancedFormat);
 dayjs.extend(customParseFormat);
 dayjs.extend(isoWeek);
+dayjs.extend(weekday);
 
 
 export default {
@@ -74,7 +76,12 @@ export default {
     mounted () {
         this.initialDates.forEach(date => {
             if (date.includes("KW")) {
-                this.toggleSelectedDate(dayjs(date, "gggg [KW] ww").subtract(7, "day"));
+                if (dayjs().weekday() === 0) {
+                    this.toggleSelectedDate(dayjs(date, "gggg [KW] ww").subtract(7, "day"));
+                }
+                else {
+                    this.toggleSelectedDate(dayjs(date, "gggg [KW] ww"));
+                }
             }
             else {
                 this.toggleSelectedDate(dayjs(date, this.format));
