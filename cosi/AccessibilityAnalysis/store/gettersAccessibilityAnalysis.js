@@ -10,7 +10,7 @@ const getters = {
         return {
             mode: state.mode,
             coordinate: state.coordinate,
-            selectedFacilityName: state.selectedFacilityName,
+            selectedFacilityNames: state.selectedFacilityNames,
             selectedDirections: state.selectedDirections,
             transportType: state.transportType,
             scaleUnit: state.scaleUnit,

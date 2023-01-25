@@ -3,6 +3,7 @@ import {downloadJsonToFile} from "../../utils/download";
 import store from "../../../../src/app-store";
 import {Point} from "ol/geom.js";
 import Feature from "ol/Feature.js";
+import {filterAllFeatures} from "../../utils/layer/filterAllFeatures";
 
 /**
  * Gets the map's CRS from the app-store
@@ -63,7 +64,8 @@ export function exportAsGeoJson (mapLayer) {
         featureCollection.features.push(featureGeoJson);
     }
     else if (this.mode === "region") {
-        const coordinates = this.getCoordinates();
+        const allActviceFeatures = filterAllFeatures(this.activeVectorLayerList, this.isFeatureActive),
+            coordinates = this.getCoordinates(allActviceFeatures);
 
         for (let i = 0; i < coordinates.length; i++) {
             const feature = new Feature(new Point(coordinates[i])),

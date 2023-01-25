@@ -29,7 +29,7 @@ const state = {
     mode: "point",
     coordinate: [],
     clickCoordinate: null,
-    selectedFacilityName: null,
+    selectedFacilityNames: null,
     selectedDirections: null,
     setByFeature: false,
     setBySearch: false,
