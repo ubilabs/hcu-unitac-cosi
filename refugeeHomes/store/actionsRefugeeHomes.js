@@ -106,6 +106,10 @@ const actions = {
             getters.featureAttributes.forEach((attr) => {
                 element = hit.getElementsByTagName("app:" + attr)[0];
 
+                if (typeof element === "undefined") {
+                    element = hit.getElementsByTagName("de.hh.up:" + attr)[0];
+                }
+
                 if (typeof element !== "undefined") {
                     if (attr === "pfad") {
                         const pfadArray = element.innerHTML.split("|");

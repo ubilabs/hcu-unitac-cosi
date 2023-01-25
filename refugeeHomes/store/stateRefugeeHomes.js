@@ -27,7 +27,7 @@ const state = {
     isVisibleInMenu: true,
     deactivateGFI: true,
     initialWidth: 600,
-    layerIds: ["4553", "4554", "10964", "10965", "4556", "4557", "9097"],
+    layerIds: ["4553", "4554", "10964", "10965", "4556", "4557", "9097", "23737"],
     featureAttributes: ["bemerkung", "bezirk", "platzzahl", "stadtteil", "bezeichnung", "geplante_inbetriebnahme", "pfad", "geom"],
     features: [],
     filteredFeatures: [],
@@ -37,7 +37,8 @@ const state = {
         "oeru_bestehend",
         "oeru_geplant",
         "perspektive_wohnen_bestehend",
-        "perspektive_wohnen_geplant"]
+        "perspektive_wohnen_geplant",
+        "standorte_schutzsuchende_ukraine"]
 };
 
 export default state;
