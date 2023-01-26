@@ -336,7 +336,7 @@ describe("AccessibilityAnalysis.vue", () => {
         wrapper.vm.setTransportType("Auto");
         wrapper.vm.setScaleUnit("time");
         wrapper.vm.setDistance("10");
-        wrapper.vm.setSelectedFacilityName("familyName");
+        wrapper.vm.setSelectedFacilityNames("familyName");
         await wrapper.vm.createIsochrones();
 
         expect(wrapper.vm.currentCoordinates).not.to.be.empty;

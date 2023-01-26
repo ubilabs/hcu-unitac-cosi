@@ -123,12 +123,12 @@ export default {
                 this.setCoordinate(v);
             }
         },
-        _selectedFacilityName: {
+        _selectedFacilityNames: {
             get () {
-                return this.selectedFacilityName;
+                return this.selectedFacilityNames;
             },
             set (v) {
-                this.setSelectedFacilityName(v);
+                this.setSelectedFacilityNames(v);
             }
         },
         _setByFeature: {
@@ -293,7 +293,7 @@ export default {
             const updateInterface = (request) => {
                     this._mode = request.settings.mode;
                     this._coordinate = request.settings.coordinate;
-                    this._selectedFacilityName = request.settings.selectedFacilityName;
+                    this._selectedFacilityNames = request.settings.selectedFacilityNames;
                     this._selectedDirections = request.settings.selectedDirections;
                     this._transportType = request.settings.transportType;
                     this._scaleUnit = request.settings.scaleUnit;
@@ -464,7 +464,7 @@ export default {
             analysisSet.inputs = {
                 _mode: JSON.parse(JSON.stringify(this._mode)),
                 _coordinate: JSON.parse(JSON.stringify(this._coordinate)),
-                _selectedFacilityName: JSON.parse(JSON.stringify(this._selectedFacilityName)),
+                _selectedFacilityNames: JSON.parse(JSON.stringify(this._selectedFacilityNames)),
                 _selectedDirections: JSON.parse(JSON.stringify(this._selectedDirections)),
                 _transportType: JSON.parse(JSON.stringify(this._transportType)),
                 _scaleUnit: JSON.parse(JSON.stringify(this._scaleUnit)),
@@ -530,7 +530,7 @@ export default {
             await this.createIsochrones();
 
             this.dataSets[this.activeSet].results = this._isochroneFeatures;
-            this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
+            this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.activeVectorLayerList, this.mapLayer);
 
             this.renderIsochrones(this._isochroneFeatures);
         },
@@ -617,11 +617,12 @@ export default {
                             />
                             <v-select
                                 v-if="mode === 'region'"
-                                v-model="_selectedFacilityName"
+                                v-model="_selectedFacilityNames"
                                 class="mb-4"
                                 placeholder="Keine Auswahl"
                                 :items="facilityNames"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.topic')"
+                                multiple
                                 outlined
                                 dense
                                 hide-details

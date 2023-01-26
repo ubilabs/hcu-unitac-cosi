@@ -13,9 +13,9 @@ import {default as turfSimplify} from "@turf/simplify";
 import {default as turfBuffer} from "@turf/buffer";
 import {readFeatures} from "../components/util.js";
 import {transformFeatures} from "../../utils/features/transform";
-import {getLayerSource} from "../../utils/layer/getLayerSource";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
 import {getRecordById} from "../../../../src/api/csw/getRecordById";
+import {filterAllFeatures} from "../../utils/layer/filterAllFeatures";
 import {styleIsochroneFeatures} from "../utils/styleIsochroneFeatures.js";
 
 export const methodConfig = {
@@ -75,8 +75,8 @@ export default {
      * @returns {void}
      */
     createIsochronesRegion: async function () {
-        const
-            coordinates = this.getCoordinates(this.setByFeature),
+        const allActviceFeatures = filterAllFeatures(this.activeVectorLayerList, this.isFeatureActive),
+            coordinates = this.getCoordinates(allActviceFeatures, this.setByFeature),
             {distance, maxDistance, minDistance, steps} = this.getDistances();
 
         if (
@@ -375,17 +375,9 @@ export default {
         return metadata;
 
     },
-    getCoordinates: function (setByFeature) {
-        const selectedLayerModel = getModelByAttributes({
-            name: this.selectedFacilityName,
-            type: "layer"
-        });
 
-        if (selectedLayerModel) {
-            const features = getLayerSource(selectedLayerModel.get("layer"))
-                .getFeatures()
-                .filter(this.isFeatureActive);
-
+    getCoordinates: function (features, setByFeature) {
+        if (Array.isArray(features) && features.length > 0) {
             return features
                 .reduce((res, feature) => {
                     const geometry = feature.getGeometry();

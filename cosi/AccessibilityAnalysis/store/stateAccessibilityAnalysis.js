@@ -29,7 +29,7 @@ const state = {
     mode: "point",
     coordinate: [],
     clickCoordinate: null,
-    selectedFacilityName: null,
+    selectedFacilityNames: null,
     selectedDirections: null,
     setByFeature: false,
     setBySearch: false,
@@ -43,8 +43,8 @@ const state = {
     activeSet: 0,
     metaData: null,
     readmeUrl: {
-        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/accessibilityanalysis.md",
-        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/erreichbarkeitsanalyse.md"
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/dev/cosi/manuals/accessibilityanalysis.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/dev/cosi/manuals/erreichbarkeitsanalyse.md"
     },
     // these two variables are required to make this addon compatible with the toolBridge addon (for details see toolBridge documentation)
     toolBridgeIn: {settings: {}, type: "", outputCallback: null}, // accepts settings from toolBridge - must have a *watcher*
