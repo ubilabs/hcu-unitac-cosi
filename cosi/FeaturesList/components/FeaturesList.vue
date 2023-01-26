@@ -19,7 +19,7 @@ import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
-import setAreaAttributes from "../../ScenarioBuilder/utils/setAreaAttributes";
+import setGeomAttributes from "../../utils/setGeomAttributes";
 import getFeatureStyle from "../../utils/features/getFeatureStyle";
 
 import
@@ -130,7 +130,7 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated", "areaAttributes"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated", "geomAttributes"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue", extent: "extent"}),
         ...mapGetters("Tools/DistanceScoreService", ["wmsLayersInfo"]),
         ...mapState(["configJson"]),
@@ -372,7 +372,7 @@ export default {
                          * Set area attributes for polygons, where they are not set in the dataset
                          * @todo should go somewhere else...
                          */
-                        setAreaAttributes(feature, this.areaAttributes);
+                        setGeomAttributes(feature, this.geomAttributes);
                         return {
                             key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
