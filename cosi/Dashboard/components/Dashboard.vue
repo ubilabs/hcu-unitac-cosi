@@ -292,7 +292,6 @@ export default {
                         expanded: false, // is the timeline expanded
                         category: category.value,
                         group: category.group,
-                        sub_group: category.sub_group,
                         valueType: category.valueType,
                         isTemp: category.isTemp,
                         calculation: category.calculation,
