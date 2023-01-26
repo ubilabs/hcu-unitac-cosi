@@ -28,7 +28,8 @@ export default {
             selectedFeatures: [],
             parcelData: null,
             messageList: [],
-            urlList: []
+            urlList: [],
+            showDownloadAll: false
         };
     },
     computed: {
@@ -65,6 +66,7 @@ export default {
                 return;
             }
             createKnowledgeBase(parcel, this.config.services, this.projection.getCode(), message => {
+                this.showDownloadAll = false;
                 this.addMessage(message, false);
             }, knowledgeBase => {
                 const mapfishDialog = createMapfishDialog(
@@ -260,7 +262,9 @@ export default {
                     this.addUrl(url, upperFirst(imageName));
                     if (this.config.images[idx + 1]) {
                         this.startImageProcess(idx + 1);
+                        return;
                     }
+                    this.showDownloadAll = true;
                 });
             }, 0);
         },
@@ -333,6 +337,22 @@ export default {
             });
 
             return fileprefix + "__" + timestamp + "__" + flstnrzae;
+        },
+
+        /**
+         * Opens all the Urls in window for downloading
+         * @param {Object[]} urlList The list of url objects in Array
+         * @returns {void}
+         */
+        openUrls (urlList) {
+            if (!Array.isArray(urlList) || !urlList.length) {
+                return;
+            }
+            urlList.forEach(url => {
+                if (url?.link) {
+                    window.open(url.link);
+                }
+            });
         }
     }
 };
@@ -446,6 +466,16 @@ export default {
                                         :href="url.link"
                                         target="_blank"
                                     >{{ url.name }}</a>
+                                </li>
+                                <li v-if="showDownloadAll">
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-sm"
+                                        @click="openUrls(urlList)"
+                                        @keydown="openUrls(urlList)"
+                                    >
+                                        {{ $t('additional:modules.tools.valuationPrint.downloadAll') }}
+                                    </button>
                                 </li>
                             </ul>
                         </p>
