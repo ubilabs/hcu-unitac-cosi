@@ -278,7 +278,7 @@ export default {
                 this.askUpdate = true;
             }
         },
-        selectedFacilityName () {
+        selectedFacilityNames () {
             this.updateCurrentMetaData();
         },
         // This watcher makes the addon compatible with toolBridge (see toolbridge docs).
@@ -542,7 +542,7 @@ export default {
         },
         updateCurrentMetaData () {
             //  when the selected facility changes, we keep track of the metadata for the datasets used in the analysis
-            this.$store.commit("Tools/AccessibilityAnalysis/setMetaData", {}); // clear any previously stored metadata
+            // this.$store.commit("Tools/AccessibilityAnalysis/setMetaData", {}); // clear any previously stored metadata
 
             this.getMetadataSelectedData().then(
                 res => { // some code duplicated from actionsDistrictSeletor/fetchMetaData(), as metadata preprocessing may depend on the specific tool

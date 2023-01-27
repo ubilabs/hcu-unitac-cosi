@@ -363,14 +363,14 @@ export default {
         return {distance, maxDistance, minDistance, steps};
     },
     // pull meta data for the dataset used for the analysis
-    getMetadataSelectedData: function () {
+    getMetadataSelectedData: async function () {
         // first find out what layer we are working with
         const selectedLayerModel = getModelByAttributes({
-                name: this.selectedFacilityName,
+                name: this.selectedFacilityNames[0],
                 type: "layer"
             }),
             // then get the matching metadata as promise
-            metadata = getRecordById(selectedLayerModel.get("datasets")[0].csw_url, selectedLayerModel.get("datasets")[0].md_id);
+            metadata = await getRecordById(selectedLayerModel.get("datasets")[0].csw_url, selectedLayerModel.get("datasets")[0].md_id);
 
         return metadata;
 
