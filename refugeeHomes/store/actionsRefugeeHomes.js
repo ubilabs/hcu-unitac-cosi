@@ -1,4 +1,4 @@
-import {getLayerWhere} from "@masterportal/masterportalapi/src/rawLayerList";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import axios from "axios";
 
 /**
@@ -26,7 +26,7 @@ const actions = {
      */
     requestRawLayerList ({getters, dispatch}) {
         getters.layerIds.forEach(async (layerId) => {
-            const rawLayer = getLayerWhere({id: layerId}),
+            const rawLayer = await rawLayerList.getLayerWhere({id: layerId}),
                 getFeatureUrl = await dispatch("buildAndGetRequestUrl", rawLayer);
 
             await dispatch("sendRequest", getFeatureUrl);
@@ -115,7 +115,7 @@ const actions = {
             coordEle,
             coord;
 
-        hits.forEach(hit => {
+        [...hits].forEach(hit => {
             feature = {
                 id: hit.childNodes[1].getAttribute("gml:id")
             };
