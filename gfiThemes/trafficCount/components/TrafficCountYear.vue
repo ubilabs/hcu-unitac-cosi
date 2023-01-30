@@ -75,7 +75,7 @@ export default {
             },
             descriptionYAxis: this.$t("additional:modules.tools.gfi.themes.trafficCount.yAxisTextYear"),
             renderLabelLegend: (datetime) => {
-                return dayjs(datetime, "YYYY-MM-DD HH:mm:ss").add(3, "day").format("YYYY");
+                return dayjs(datetime, "YYYY-MM-DD HH:mm:ss").add(4, "day").format("YYYY");
             },
             renderPointStyle: (datetime) => {
                 const pointStyle = [],
