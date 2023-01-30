@@ -6,7 +6,7 @@ import {equalTo} from "ol/format/filter";
 import Vue from "vue";
 import Collection from "ol/Collection";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
-
+import {getRecordById} from "../../../../src/api/csw/getRecordById.js";
 const actions = {
     /**
      * Loads the statistical features for the given districts.
@@ -54,6 +54,7 @@ const actions = {
                     }
                 }
             }
+            dispatch("fetchMetaData");
         }
 
         // loading reference Districts recursively
@@ -61,7 +62,7 @@ const actions = {
             const referenceLevel = districtLevel.referenceLevel,
                 // reference names of the districts
                 refNames = districts.map(district => {
-                    return district.statFeatures[0].get(districtLevel.referenceLevel.stats.keyOfAttrName);
+                    return district.statFeatures[0]?.get(districtLevel.referenceLevel.stats.keyOfAttrName);
                 }),
                 // reference districts
                 refDistricts = referenceLevel.districts.filter(district => {
@@ -81,6 +82,7 @@ const actions = {
             dispatch("Alerting/cleanup", null, {root: true});
             LoaderOverlay.hide();
         }
+
     },
 
     setDistrictsByName ({getters, commit}, {districtNames, fromExternal = true, zoomToExtent = true}) {
@@ -152,6 +154,44 @@ const actions = {
         }
 
         commit("resetMapping");
+    },
+
+    /**
+    * Call api to get metadata from remote API, store in districtSelector state (remoteMetadata).
+    * NOTE: `loadend` trigger does not currently wait for the metadata to be loaded
+    * @param {Object} state - the DistrictSelector store state
+    * @return {void}
+    */
+    fetchMetaData ({state, commit}) {
+
+        commit("setRemoteMetadata", {}); // delete existing metadata
+        const uniqueLayerIds = state.selectedDistrictLevel.stats.layerIds,
+            layers = state.selectedDistrictLevel.stats.layers;
+
+        for (const index in layers) {
+
+            getRecordById(layers[index].datasets[0].csw_url, layers[index].datasets[0].md_id).then((res)=>{
+                // pick date
+                let date = "Datum Unbekannt";
+
+                if (res.getRevisionDate()) {
+                    date = res.getRevisionDate();
+                }
+                else if (res.getPublicationDate()) {
+                    date = res.getPublicationDate();
+                }
+                else if (res.getCreationDate()) {
+                    date = res.getCreateionDate();
+                }
+                // make simple metadata object
+                const metadata = {Titel: res.getTitle(), Datum: date, Abstrakt: res.getAbstract()};
+
+                commit("addRemoteMetadata", {layerId: uniqueLayerIds[index], metadata: metadata});
+            }).catch(error=> {
+                console.warn(error);
+            });
+        }
+
     }
 };
 

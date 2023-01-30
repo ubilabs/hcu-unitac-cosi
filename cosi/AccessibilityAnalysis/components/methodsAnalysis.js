@@ -13,6 +13,8 @@ import {default as turfSimplify} from "@turf/simplify";
 import {default as turfBuffer} from "@turf/buffer";
 import {readFeatures} from "../components/util.js";
 import {transformFeatures} from "../../utils/features/transform";
+import {getModelByAttributes} from "../../utils/radioBridge.js";
+import {getRecordById} from "../../../../src/api/csw/getRecordById";
 import {filterAllFeatures} from "../../utils/layer/filterAllFeatures";
 import {styleIsochroneFeatures} from "../utils/styleIsochroneFeatures.js";
 
@@ -360,6 +362,20 @@ export default {
 
         return {distance, maxDistance, minDistance, steps};
     },
+    // pull meta data for the dataset used for the analysis
+    getMetadataSelectedData: async function () {
+        // first find out what layer we are working with
+        const selectedLayerModel = getModelByAttributes({
+                name: this.selectedFacilityNames[0],
+                type: "layer"
+            }),
+            // then get the matching metadata as promise
+            metadata = await getRecordById(selectedLayerModel.get("datasets")[0].csw_url, selectedLayerModel.get("datasets")[0].md_id);
+
+        return metadata;
+
+    },
+
     getCoordinates: function (features, setByFeature) {
         if (Array.isArray(features) && features.length > 0) {
             return features

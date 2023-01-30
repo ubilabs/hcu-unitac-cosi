@@ -17,7 +17,8 @@
               "report": "Bericht",
               "imageInTheMaking": "{{imageName}} wird erstellt.",
               "imageSuccess": "{{imageName}} wurde erstellt.",
-              "imageError": "Fehler beim Erzeugen vom {{imageName}}."
+              "imageError": "Fehler beim Erzeugen vom {{imageName}}.",
+              "downloadAll": "Alle Herunterladen"
           }
       }
   }

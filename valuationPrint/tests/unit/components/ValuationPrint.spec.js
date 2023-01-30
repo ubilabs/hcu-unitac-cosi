@@ -387,5 +387,41 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 expect(wrapper.vm.messageList).to.deep.equal([{message: "message", isError: true}]);
             });
         });
+
+        describe("openUrls", () => {
+            let windowOpen;
+
+            beforeEach(() => {
+                windowOpen = sinon.stub(window, "open");
+            });
+
+            afterEach(() => {
+                windowOpen.restore();
+            });
+
+            it("should not call window.open function", () => {
+                const wrapper = factory.getShallowMount({});
+
+                wrapper.vm.openUrls();
+                expect(windowOpen.calledOnce).to.be.false;
+                wrapper.vm.openUrls("");
+                expect(windowOpen.calledOnce).to.be.false;
+                wrapper.vm.openUrls({});
+                expect(windowOpen.calledOnce).to.be.false;
+                wrapper.vm.openUrls([]);
+                expect(windowOpen.calledOnce).to.be.false;
+                wrapper.vm.openUrls(undefined);
+                expect(windowOpen.calledOnce).to.be.false;
+                wrapper.vm.openUrls(true);
+                expect(windowOpen.calledOnce).to.be.false;
+            });
+
+            it("should call window.open function", () => {
+                const wrapper = factory.getShallowMount({});
+
+                wrapper.vm.openUrls([{link: "href"}]);
+                expect(windowOpen.calledOnce).to.be.true;
+            });
+        });
     });
 });

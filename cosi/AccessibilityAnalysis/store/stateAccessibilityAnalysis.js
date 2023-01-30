@@ -41,6 +41,7 @@ const state = {
     steps: [0, 0, 0],
     dataSets: [],
     activeSet: 0,
+    metaData: null,
     readmeUrl: {
         "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/dev/cosi/manuals/accessibilityanalysis.md",
         "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/dev/cosi/manuals/erreichbarkeitsanalyse.md"

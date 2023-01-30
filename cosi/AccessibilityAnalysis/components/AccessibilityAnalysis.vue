@@ -104,6 +104,7 @@ export default {
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
         ...mapGetters("Tools/AreaSelector", {areaSelectorGeom: "geometry"}),
+        ...mapGetters("Tools/SelectionManager", ["activeSelection"]),
         ...mapGetters("Tools/ScenarioBuilder", ["scenarioUpdated"]),
         ...mapGetters("Tools/Routing/Directions", ["directionsRouteSource", "directionsRouteLayer", "routingDirections"]),
         ...mapGetters("Tools/Routing", {routingActive: "active", activeRoutingToolOption: "activeRoutingToolOption"}),
@@ -233,7 +234,7 @@ export default {
         mode () {
             this.setSetByFeature(false);
 
-            if (this.mode === "region") {
+            if (this.mode === "region" && this.activeSelection === null) {
                 this.resetIsochroneBBox();
             }
 
@@ -278,6 +279,9 @@ export default {
                 this.askUpdate = true;
             }
         },
+        selectedFacilityNames () {
+            this.updateCurrentMetaData();
+        },
         // This watcher makes the addon compatible with toolBridge (see toolbridge docs).
         // The watcher receives a request
         // It has three steps: 1. update interface based on the received settings, 2. run this addon's analysis, 3. send the results back to toolBridge
@@ -318,13 +322,13 @@ export default {
                 * @returns {Object} null (runs for side effects only)
                 */
                 returnResults = (imgDataUrl) => {
-                // (todo mb: should this maybe be a toolbridge action? could simplify creating the bridge)
                     return this.$store.commit("Tools/ToolBridge/setReceivedResults", // this is where toolBridge expects requested results to arrive
                         {
-                            // result: this.dataSets[this.activeSet].geojson,
+                            // result: this.dataSets[this.activeSet].geojson, // if we ever wanted raw data (atm we dont, and toolBridge supports only single type of output)
                             result: imgDataUrl,
                             type: "image", // see toolBridge docs for supported output types
-                            request: newRequest // we need to give back the original request as well
+                            request: newRequest, // we need to give back the original request as well
+                            sourceInfo: this.metaData ? [this.metaData] : null // return metadata as array if it exists
                         }
                     );
                 };
@@ -480,7 +484,7 @@ export default {
             }
 
             this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
-            this.addNewSelection({selection: analysisSet.results, source: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.title"), id: this._mode + ", " + this._transportType + ", [...]"});
+            this.addNewSelection({selection: analysisSet.results, source: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.title"), id: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes." + this._transportType) + ", " + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits." + this._scaleUnit) + ", [...]"});
         },
         exportAsGeoJson,
         // pagination features
@@ -536,6 +540,30 @@ export default {
         },
         updateTime (value) {
             this._time = value;
+        },
+        updateCurrentMetaData () {
+            //  when the selected facility changes, we keep track of the metadata for the datasets used in the analysis
+            // this.$store.commit("Tools/AccessibilityAnalysis/setMetaData", {}); // clear any previously stored metadata
+
+            this.getMetadataSelectedData().then(
+                res => { // some code duplicated from actionsDistrictSeletor/fetchMetaData(), as metadata preprocessing may depend on the specific tool
+                    // pick date
+                    let date = "Datum Unbekannt";
+
+                    if (res.getRevisionDate()) {
+                        date = res.getRevisionDate();
+                    }
+                    else if (res.getPublicationDate()) {
+                        date = res.getPublicationDate();
+                    }
+                    else if (res.getCreationDate()) {
+                        date = res.getCreateionDate();
+                    }
+                    // make simple metadata object
+                    const metadata = {Titel: res.getTitle(), Datum: date, Abstrakt: res.getAbstract()};
+
+                    this.$store.commit("Tools/AccessibilityAnalysis/setMetaData", metadata); // fetch locally stored metadata for relevant layers
+                });
         }
     }
 };

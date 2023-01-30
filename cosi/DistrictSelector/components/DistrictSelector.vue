@@ -103,7 +103,6 @@ export default {
                 }
             }
         },
-
         /**
          * Every time the list of layers of the map changes the function prepareDistricts is called.
          * @param {module:ol/layer[]} newLayerList - An array of layers.
@@ -174,7 +173,6 @@ export default {
         ...mapActions("Tools/DistrictSelector", ["loadStatFeatures", "loadMapping"]),
         ...mapActions("Maps", ["addInteraction", "removeInteraction", "zoomToExtent", "resetView"]),
         ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
-
         /**
          * quickly checks the key evt code
          * and executes createNewScenario

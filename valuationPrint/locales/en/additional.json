@@ -17,7 +17,8 @@
               "report": "Report",
               "imageInTheMaking": "{{imageName}} is in progress.",
               "imageSuccess": "{{imageName}} is ready.",
-              "imageError": "{{imageName}} failed."
+              "imageError": "{{imageName}} failed.",
+              "downloadAll": "Download All"
           }
         }
     }
