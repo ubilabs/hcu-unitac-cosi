@@ -127,9 +127,6 @@ export default {
          * @returns {void}
          */
         setupTabInfo: function (api, thingId, meansOfTransport) {
-            require("dayjs/locale/" + this.currentLocale + ".js");
-            dayjs.locale(this.currentLocale);
-
             api.updateTotal(thingId, meansOfTransport, (date, value) => {
                 this.setTotalDesc(typeof date === "string" ? dayjs(date, "YYYY-MM-DD").format("DD.MM.YYYY") : "");
                 this.setTotalValue(thousandsSeparator(value));
