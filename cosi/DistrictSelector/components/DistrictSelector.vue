@@ -497,10 +497,11 @@ export default {
             v-if="active"
             #toolBody
         >
-            <v-app>
+            <v-app id="district-selector">
                 <ToolInfo
                     :url="readmeUrl"
                     :locale="currentLocale"
+                    :summary="$t('additional:modules.tools.cosi.districtSelector.description')"
                 />
                 <form>
                     <v-select
@@ -532,15 +533,6 @@ export default {
                         step="250"
                         min="0"
                     />
-                    <p class="text-caption">
-                        {{ $t('additional:modules.tools.cosi.districtSelector.description') }}
-                        <!-- <v-icon
-                            small
-                            @click="showAlert($t('additional:modules.tools.cosi.districtSelector.help'))"
-                        >
-                            mdi-help-circle
-                        </v-icon> -->
-                    </p>
                     <v-divider />
                     <div>
                         <span class="text-subtitle-2">
@@ -604,7 +596,7 @@ export default {
 </template>
 
 <style lang="css" scoped>
-    form {
+    #district-selector {
         max-width: 430px;;
     }
 </style>
