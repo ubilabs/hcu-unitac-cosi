@@ -2,12 +2,12 @@ import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import axios from "axios";
 
 /**
-     * Help function to define the namespace
-     * @param {String} str String to search within
-     * @param {String} start Start tag for search
-     * @param {String} end End tag for search
-     * @returns {void}
-     */
+ * Help function to define the namespace
+ * @param {String} str String to search within
+ * @param {String} start Start tag for search
+ * @param {String} end End tag for search
+ * @returns {void}
+ */
 function getStringBetween (str, start, end) {
     const result = str.match(new RegExp(start + "(.*)" + end));
 

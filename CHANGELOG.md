@@ -8,6 +8,7 @@
 - Addon `obliqueViewer` was renamed to `vcOblique`.
 
 ### Added
+- In refugeeHomes a new layer with ukrainian refugee homes was added.
 
 ### Changed
 - In schoolRoutePlanning, streets without the prefix `*` in the gazetteer are now searched for.
