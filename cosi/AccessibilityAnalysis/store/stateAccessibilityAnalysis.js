@@ -10,6 +10,7 @@
  * @property {boolean} isVisibleInMenu if true, tool is selectable in menu (config-param)
  * @property {boolean} deactivateGFI flag if tool should deactivate gfi (config-param)
  * @property {String[]} isochroneColors - colors for the isochrone features.
+ * @property {String} selectedFacility - The name of the selected feature in facility mode.
  * @property {object} toolBridgeIn: {settings: {}, type: "", outputCallback: ()=>{}} accepts settings from toolBridge (must have a *watcher*)
  * @property {object} toolBridgeOut: {}  pass current settings to toolBridge (must have a *getter*)
  */
@@ -30,6 +31,7 @@ const state = {
     coordinate: [],
     clickCoordinate: null,
     selectedFacilityNames: null,
+    selectedFacility: undefined,
     selectedDirections: null,
     setByFeature: false,
     setBySearch: false,

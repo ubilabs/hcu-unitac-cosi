@@ -32,7 +32,7 @@ export default {
         this.askUpdate = false;
 
         try {
-            if (this.mode === "point") {
+            if (this.mode === "point" || this.mode === "facility") {
                 await this.createIsochronesPoint();
             }
             else if (this.mode === "region") {
@@ -236,14 +236,6 @@ export default {
         this.setSteps([distance * 1000 / 3, distance * 2000 / 3, distance * 1000].map((n) => Number.isInteger(n) ? n.toLocaleString("de-DE") : n.toFixed(2)));
         this.setRawGeoJson(buffer);
         this.setIsochroneFeatures(bufferFeatures);
-    },
-
-    pickDirections: function (evt) {
-        const feature = evt.selected[0];
-
-        if (feature) {
-            this._selectedDirections = feature;
-        }
     },
 
     /**

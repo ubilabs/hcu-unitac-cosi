@@ -15,6 +15,7 @@ import {onSearchbar, offSearchbar, getServiceUrl, onShowFeaturesById, onShowAllF
 import mapCanvasToImage, {exportMapView} from "../../utils/mapCanvasToImage";
 import AccessibilityAnalysisLegend from "./AccessibilityAnalysisLegend.vue";
 import AccessibilityAnalysisTrafficFlow from "./AccessibilityAnalysisTrafficFlow.vue";
+import {unpackCluster} from "../../utils/features/unpackCluster.js";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -29,15 +30,19 @@ export default {
         this.availableModes = [
             {
                 type: "point",
-                text: "Erreichbarkeit ab einem Referenzpunkt"
+                text: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.mode.point")
+            },
+            {
+                type: "facility",
+                text: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.mode.facility")
             },
             {
                 type: "region",
-                text: "Erreichbarkeit der ausgewählten Einrichtungen"
+                text: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.mode.region")
             },
             {
                 type: "path",
-                text: "Erreichbarkeit entlang einer Route"
+                text: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.mode.path")
             }
         ];
         return {
@@ -91,7 +96,6 @@ export default {
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
-            select: null,
             hide: false
         };
     },
@@ -102,12 +106,13 @@ export default {
         ...mapGetters("Maps", ["projectionCode", "clickCoordinate", "clickPixel"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
-        ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
+        ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive", "layerMapById"]),
         ...mapGetters("Tools/AreaSelector", {areaSelectorGeom: "geometry"}),
         ...mapGetters("Tools/SelectionManager", ["activeSelection"]),
         ...mapGetters("Tools/ScenarioBuilder", ["scenarioUpdated"]),
         ...mapGetters("Tools/Routing/Directions", ["directionsRouteSource", "directionsRouteLayer", "routingDirections"]),
         ...mapGetters("Tools/Routing", {routingActive: "active", activeRoutingToolOption: "activeRoutingToolOption"}),
+
         _mode: {
             get () {
                 return this.mode;
@@ -214,7 +219,7 @@ export default {
                 this[key] = this.dataSets[newValue].inputs[key];
             }
 
-            if (this.dataSets[newValue].inputs._mode === "point") {
+            if (this.dataSets[newValue].inputs._mode === "point" || this.dataSets[newValue].inputs._mode === "facility") {
                 const icoord = Proj.transform(this.dataSets[newValue].inputs._coordinate[0], "EPSG:4326", this.projectionCode);
 
                 this.placingPointMarker(icoord);
@@ -234,6 +239,14 @@ export default {
         mode () {
             this.setSetByFeature(false);
 
+            if (this.mode === "facility") {
+                this.addInteraction(this.select);
+            }
+            else {
+                this.removePointMarker();
+                this.removeInteraction(this.select);
+            }
+
             if (this.mode === "region" && this.activeSelection === null) {
                 this.resetIsochroneBBox();
             }
@@ -245,28 +258,17 @@ export default {
             }
             else {
                 this.removeLayerFromMap(this.directionsLayer);
-
-                if (!this.setByFeature) {
-                    this.removeInteraction(this.select);
-                    this.select.un("select", this.pickDirections.bind(this));
-                }
             }
         },
         clickCoordinate (coord) {
-            if (this.active) {
+            if (this.active && this.mode === "point") {
                 this.setCoordinateFromClick(this.clickCoordinate, this.clickPixel);
                 this.placingPointMarker(coord);
             }
         },
         setByFeature (val) {
-            if (val && this.mode === "point") {
-                this.addInteraction(this.select);
-            }
-            else {
-                if (this.select?.getFeatures().getLength() > 0) {
-                    this.select.getFeatures().removeAt(0);
-                }
-                this.removeInteraction(this.select);
+            if (val && this.mode === "facility" && this.selectedFacility) {
+                this.setCoordinateFromClick(this.clickCoordinate, this.clickPixel);
             }
         },
         activeVectorLayerList (newValues) {
@@ -279,8 +281,10 @@ export default {
                 this.askUpdate = true;
             }
         },
-        selectedFacilityNames () {
-            this.updateCurrentMetaData();
+        selectedFacilityNames (newValue) {
+            if (Array.isArray(newValue) && newValue.length > 0) {
+                this.updateCurrentMetaData();
+            }
         },
         // This watcher makes the addon compatible with toolBridge (see toolbridge docs).
         // The watcher receives a request
@@ -303,6 +307,7 @@ export default {
                     this.setUseTravelTimeIndex(request.settings.useTravelTimeIndex);
                     this._setByFeature = request.settings.setByFeature;
                     this.setSteps(request.settings.steps);
+                    this.setSelectedFacility(request.settings.selectedFacility);
                     return request; // (we care about the side effects only)
                 },
                 /**
@@ -345,12 +350,9 @@ export default {
     */
     created () {
         this.$on("close", this.close);
-        this.select = new Select({
-            filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
-        });
+        this.setNonReactiveData();
 
         this.baseUrl = getServiceUrl("bkg_ors") + "/v2/";
-        // this.map = mapCollection.getMap("2D");
     },
 
     /**
@@ -391,9 +393,47 @@ export default {
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
 
+
+        /**
+         * Sets all needed non reactive data.
+         * @returns {void}
+         */
+        setNonReactiveData () {
+            this.select = new Select({
+                style: null,
+                filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
+            });
+
+            this.registerSelectListener(this.select);
+        },
+
+        /**
+         * Registers listener for select interaction events.
+         * On "select" the name of the selected feature and the click coordinate is set.
+         * @param {ol/interaction/Select} select - Interaction for selecting features.
+         * @returns {void}
+         */
+        registerSelectListener (select) {
+            select.on("select", evt => {
+                if (evt.selected.length === 0) {
+                    return;
+                }
+
+                const selectedFeature = evt.selected[0],
+                    layer = evt.target.getLayer(selectedFeature),
+                    layerMap = this.layerMapById(layer.get("id")),
+                    unpackedFeature = unpackCluster(selectedFeature)[0];
+
+                this.setSelectedFacility(unpackedFeature.get(layerMap.keyOfAttrName));
+                this.setCoordinateFromClick(this.clickCoordinate, this.clickPixel);
+                this.placingPointMarker(this.clickCoordinate);
+            });
+        },
+
         downloadMap () {
             exportMapView("Erreichbarkeitsanalyse_CoSI");
         },
+
         tryUpdateIsochrones () {
             if (this.mode === "region" && this.currentCoordinates && this.dataSets.length > 0) {
                 const newCoordinates = this.getCoordinates(this.setByFeature);
@@ -473,7 +513,8 @@ export default {
                 _time: JSON.parse(JSON.stringify(this._time)),
                 _useTravelTimeIndex: JSON.parse(JSON.stringify(this.useTravelTimeIndex)),
                 _setByFeature: JSON.parse(JSON.stringify(this._setByFeature)),
-                _steps: JSON.parse(JSON.stringify(this.steps))
+                _steps: JSON.parse(JSON.stringify(this.steps)),
+                _selectedFacility: this.selectedFacility
             };
             this.dataSets.push(analysisSet);
 
@@ -616,6 +657,18 @@ export default {
                                 dense
                                 hide-details
                             />
+                            <v-text-field
+                                v-if="mode === 'facility'"
+                                id="facility"
+                                :value="selectedFacility"
+                                class="mb-4"
+                                label="Klicken Sie auf eine Einrichtung"
+                                type="text"
+                                readonly
+                                outlined
+                                dense
+                                hide-details
+                            />
                             <v-select
                                 v-if="mode === 'region'"
                                 v-model="_selectedFacilityNames"
@@ -627,6 +680,15 @@ export default {
                                 outlined
                                 dense
                                 hide-details
+                            />
+                            <v-checkbox
+                                v-if="mode === 'facility' || mode === 'region'"
+                                v-model="_setByFeature"
+                                class="mb-4"
+                                dense
+                                hide-details
+                                :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
+                                :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
                             />
                             <v-select
                                 v-if="mode === 'path'"
@@ -689,15 +751,6 @@ export default {
                                 dense
                                 hide-details
                             />
-                            <v-checkbox
-                                v-if="mode !== 'path'"
-                                v-model="_setByFeature"
-                                class="mb-4"
-                                dense
-                                hide-details
-                                :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
-                                :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
-                            />
                             <v-row dense>
                                 <v-col cols="12">
                                     <v-btn
@@ -717,8 +770,9 @@ export default {
                                 v-model="progress"
                                 background-color="white"
                             />
+                        </v-form>
+                        <template v-if="dataSets.length > 0">
                             <v-row
-                                v-if="isochroneFeatures.length > 0"
                                 dense
                             >
                                 <v-col cols="12">
@@ -733,7 +787,7 @@ export default {
                                         {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.clear') }}
                                     </v-btn>
                                     <v-btn
-                                        v-if="mode === 'point'"
+                                        v-if="mode === 'point' || mode === 'facility'"
                                         dense
                                         small
                                         tile
@@ -750,36 +804,35 @@ export default {
                                     </v-icon>
                                 </v-col>
                             </v-row>
-                        </v-form>
-                        <hr>
-                        <AccessibilityAnalysisLegend
-                            :steps="steps"
-                            :colors="legendColors"
-                        />
-                        <v-row>
-                            <v-col>
-                                <AnalysisPagination
-                                    v-if="dataSets.length > 0"
-                                    :sets="dataSets"
-                                    :active-set="activeSet"
-                                    :downloads="['GEOJSON']"
-                                    :titles="{
-                                        downloads: [$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')],
-                                        downloadAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationDownloadAll'),
-                                        remove: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemove'),
-                                        removeAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemoveAll'),
-                                        next: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationNext'),
-                                        prev: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationPrev'),
-                                    }"
-                                    @setActiveSet="(n) => setActiveSet(n)"
-                                    @setPrevNext="(n) => setPrevNext(n)"
-                                    @removeSingle="(n) => removeSet(n)"
-                                    @removeAll="removeAll"
-                                    @downloadGEOJSON="(n) => downloadSet(n)"
-                                    @downloadAll="downloadAll"
-                                />
-                            </v-col>
-                        </v-row>
+                            <hr>
+                            <AccessibilityAnalysisLegend
+                                :steps="steps"
+                                :colors="legendColors"
+                            />
+                            <v-row>
+                                <v-col>
+                                    <AnalysisPagination
+                                        :sets="dataSets"
+                                        :active-set="activeSet"
+                                        :downloads="['GEOJSON']"
+                                        :titles="{
+                                            downloads: [$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')],
+                                            downloadAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationDownloadAll'),
+                                            remove: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemove'),
+                                            removeAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemoveAll'),
+                                            next: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationNext'),
+                                            prev: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationPrev'),
+                                        }"
+                                        @setActiveSet="(n) => setActiveSet(n)"
+                                        @setPrevNext="(n) => setPrevNext(n)"
+                                        @removeSingle="(n) => removeSet(n)"
+                                        @removeAll="removeAll"
+                                        @downloadGEOJSON="(n) => downloadSet(n)"
+                                        @downloadAll="downloadAll"
+                                    />
+                                </v-col>
+                            </v-row>
+                        </template>
                     </div>
                 </v-app>
             </template>
@@ -833,12 +886,14 @@ export default {
         }
         .v-input {
             border-radius: $border-radius-base;
-        }
-
-        .v-input--checkbox {
+            font-size: 14px;
             .v-label {
                 font-size: 14px;
             }
+        }
+
+        .v-input--checkbox {
+            padding: 5px 0;
         }
     }
 
