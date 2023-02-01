@@ -103,7 +103,7 @@ export default {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
-        ...mapGetters("Maps", ["projectionCode", "clickCoordinate", "clickPixel"]),
+        ...mapGetters("Maps", ["projectionCode", "clickCoordinate", "clickPixel", "getVisibleLayerList"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive", "layerMapById"]),
@@ -752,7 +752,7 @@ export default {
                                 hide-details
                             />
                             <v-row dense>
-                                <v-col cols="12">
+                                <v-col cols="4">
                                     <v-btn
                                         id="create-isochrones"
                                         dense
@@ -764,6 +764,11 @@ export default {
                                         {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
                                     </v-btn>
                                 </v-col>
+                                <AccessibilityAnalysisLegend
+                                    v-if="dataSets.length > 0"
+                                    :steps="steps"
+                                    :colors="legendColors"
+                                />
                             </v-row>
                             <v-progress-linear
                                 v-if="progress > 0"
@@ -772,6 +777,7 @@ export default {
                             />
                         </v-form>
                         <template v-if="dataSets.length > 0">
+                            <v-divider />
                             <v-row
                                 dense
                             >
@@ -796,19 +802,9 @@ export default {
                                     >
                                         {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.requestInhabitants') }}
                                     </v-btn>
-                                    <v-icon
-                                        v-if="isochroneFeatures.length > 0 && steps.length === 4"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.warning')"
-                                    >
-                                        mdi-alert
-                                    </v-icon>
                                 </v-col>
                             </v-row>
-                            <hr>
-                            <AccessibilityAnalysisLegend
-                                :steps="steps"
-                                :colors="legendColors"
-                            />
+                            <v-divider />
                             <v-row>
                                 <v-col>
                                     <AnalysisPagination
@@ -884,6 +880,7 @@ export default {
         #download {
             margin-top: 8px;
         }
+
         .v-input {
             border-radius: $border-radius-base;
             font-size: 14px;
@@ -894,6 +891,10 @@ export default {
 
         .v-input--checkbox {
             padding: 5px 0;
+        }
+
+        button {
+            text-transform: inherit;
         }
     }
 

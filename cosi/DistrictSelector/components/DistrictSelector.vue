@@ -557,13 +557,12 @@ export default {
                                 dense
                                 hide-details
                                 type="checkbox"
-                                :label="`${key} ${$t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle')}`"
+                                :label="`${key}`"
                             />
                         </v-col>
                     </v-row>
                     <v-divider />
                     <v-btn
-                        dense
                         small
                         tile
                         color="grey lighten-1"
@@ -572,7 +571,6 @@ export default {
                         {{ $t('additional:modules.tools.cosi.districtSelector.buttonConfirm') }}
                     </v-btn>
                     <v-btn
-                        dense
                         small
                         tile
                         color="grey lighten-1"
@@ -581,7 +579,6 @@ export default {
                         {{ $t('additional:modules.tools.cosi.districtSelector.buttonReset') }}
                     </v-btn>
                     <v-btn
-                        dense
                         small
                         tile
                         :color="dragBoxButtonColor"
@@ -595,13 +592,23 @@ export default {
     </Tool>
 </template>
 
-<style lang="css" scoped>
-    #district-selector {
-        max-width: 430px;;
-    }
-</style>
+<style lang="scss">
+    @import "~variables";
 
-<style lang="css">
+    #district-selector {
+        max-width: 430px;
+        .v-input {
+            border-radius: $border-radius-base;
+            font-size: 14px;
+            .v-label {
+                font-size: 14px;
+            }
+        }
+        button {
+            text-transform: inherit;
+        }
+    }
+
     .ol-dragbox {
         background-color: rgba(255, 255, 255, 0.4);
         border-color: rgba(51, 153, 204, 1);

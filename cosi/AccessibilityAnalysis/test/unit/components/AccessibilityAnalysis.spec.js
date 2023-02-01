@@ -155,13 +155,20 @@ describe("AccessibilityAnalysis.vue", () => {
                             getters: {
                                 boundingGeometry: sinon.stub()
                             }
+                        },
+                        SelectionManager: {
+                            namespaced: true,
+                            actions: {
+                                addNewSelection: () => sinon.stub()
+                            }
                         }
                     }
                 },
                 Maps: {
                     namespaced: true,
                     getters: {
-                        projectionCode: () => "EPSG:25832"
+                        projectionCode: () => "EPSG:25832",
+                        clickCoordinate: () => sinon.stub()
                     },
                     actions: {
                         removeInteraction: () => sinon.stub(),
