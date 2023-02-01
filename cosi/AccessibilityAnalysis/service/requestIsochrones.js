@@ -1,5 +1,6 @@
 import axios from "axios";
 import GeoJSON from "ol/format/GeoJSON";
+import {splitIntoChunks} from "../../utils/array/splitIntoChunks";
 
 /**
  * send request to get Isochrone geoJSON
@@ -55,23 +56,6 @@ async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, 
         return features;
     });
 
-}
-
-/**
- * Split an array into chunks.
- * @param {Array} arr - The Array to split.
- * @param {Number} size - Size of one chunk.
- * @returns {Array} The split chunks.
- */
-function splitIntoChunks (arr, size) {
-    const chunks = [];
-
-    while (arr.length > 0) {
-        const tempArray = arr.splice(0, size);
-
-        chunks.push(tempArray);
-    }
-    return chunks;
 }
 
 export default requestIsochrones;
