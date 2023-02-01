@@ -282,7 +282,7 @@ export default {
                 dense
             />
             <v-divider />
-            <v-container>
+            <v-container class="main_container">
                 <v-row>
                     <v-col cols="12">
                         <!-- one v-card per chapter in the template -->
@@ -501,6 +501,15 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+
+#reportTemplates{
+    overflow-y: auto;
+    height:100%;
+}
+// .main_container{
+//     overflow-y: auto;
+//         height: 100%;
+//     }
     .textfieldtitle {
         font-size: 2em !important;
 
