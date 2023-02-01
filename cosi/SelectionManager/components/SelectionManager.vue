@@ -11,6 +11,7 @@ import ToolInfo from "../../components/ToolInfo.vue";
 import {addModelsByAttributes, getModelByAttributes} from "../../utils/radioBridge.js";
 import Feature from "ol/Feature";
 import Polygon from "ol/geom/Polygon";
+import {inflateCoordinatesArray} from "ol/geom/flat/inflate";
 import {default as turfCenterOfMass} from "@turf/center-of-mass";
 import {default as turfConcave} from "@turf/concave";
 import {featureCollection as turfFeatureCollection} from "@turf/helpers";
@@ -70,7 +71,7 @@ export default {
 
                 const format = new GeoJSON();
 
-                selection.selection = selection.selection.map(sel => format.readFeature(sel));
+                selection.selection = selection.selection.map(sel => sel.geometry ? format.readFeature(sel) : new Feature({geometry: new Polygon(inflateCoordinatesArray(sel.values_.geometry.flatCoordinates, 0, sel.values_.geometry.ends_, sel.values_.geometry.stride))}));
                 selection.abv = this.selections.filter(sel => sel.abv === selection.id.match(/\b([A-Z0-9])/g).join("")).length > 0 ? selection.id.match(/\b([A-Z0-9])/g).join("") + "-" + this.selections.filter(sel => sel.abv === selection.id.match(/\b([A-Z0-9])/g).join("")).length : selection.id.match(/\b([A-Z0-9])/g).join("");
                 this.addSelection(selection);
                 this.highlightSelection(this.selections.length - 1);
