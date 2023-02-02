@@ -15,8 +15,11 @@ export default {
     data () {
         return {
             uploadedTemplate: null, // file input field for report templates. This variable is watched and used to replace `templateItems` store variable
-            supportedExportFormats: ["HTML", "PDF"],
-            selectedExportFormat: "HTML"
+            supportedExportFormats: ["HTML", "PDF", "Importierbares Template (json)"],
+            selectedExportFormat: "HTML",
+            ui_currentTab: 0, // vuetify tab content based on v-model
+            ui_tab: null,
+            ui_items: ["Bearbeiten", "Importieren", "Exportieren"]
         };
     },
     computed: {
@@ -78,7 +81,7 @@ export default {
 
             // update array
             this.templateItems[templateItemsIndex].settings = toolSettings; // update settings
-            this.templateItems[templateItemsIndex].hasSettings = true;
+            // this.templateItems[templateItemsIndex].hasSettings = true; // now handled as UI checkbox
             this.clearTemplateItemOutput(templateItemsIndex); // delete any previous results that no longer match the new settings
 
 
@@ -111,6 +114,9 @@ export default {
         },
 
         exportTemplate () {
+            if (this.selectedExportFormat === "Importierbares Template (json)") {
+                this.downloadObjectAsJson(this.templateItems, "template");
+            }
             if (this.selectedExportFormat === "HTML") {
                 this.exportTemplateToHTML();
             }
@@ -219,7 +225,7 @@ export default {
         },
         clearTemplateItemSettings (index) {
             this.templateItems[index].settings = {};
-            this.templateItems[index].hasSettings = false;
+            // this.templateItems[index].hasSettings = false;
 
         },
         clearTemplateItemOutput (index) {
@@ -251,6 +257,28 @@ export default {
             return null;
 
         },
+        includeDataCheckboxToggle (index) {
+            // either delete or copy data selection depending on which way the check box was toggled
+            // copy data selection if turned on:
+            if (this.templateItems[index].includeDataSelection) {
+                this.copyCurrentDataSelection(index);
+            }
+            // otherwise delete data selection
+            if (!this.templateItems[index].includeDataSelection) {
+                this.clearTemplateItemDataSelection(index);
+            }
+        },
+        hasSettingsToggle (index) {
+            // either delete or copy tool settings depending on which way the check box was toggled
+            // copy data selection if turned on:
+            if (this.templateItems[index].hasSettings) {
+                this.updateToolSettings(index);
+            }
+            // otherwise delete data selection
+            if (!this.templateItems[index].hasSettings) {
+                this.clearTemplateItemSettings(index);
+            }
+        },
         close () {
             this.setActive(false);
             const model = getComponent(this.id);
@@ -274,160 +302,194 @@ export default {
         :deactivate-gfi="deactivateGFI"
     >
         <template #toolBody>
-            <!-- upload saved templates -->
-            <v-file-input
-                v-model="uploadedTemplate"
-                accept="application/JSON"
-                label="Reportvorlage importieren.."
-                dense
-            />
-            <v-divider />
-            <v-container class="main_container">
-                <v-row>
-                    <v-col cols="12">
-                        <!-- one v-card per chapter in the template -->
-                        <v-card
-                            v-for="(templateItem,index) in templateItems"
-                            :key="index"
-                            class="mt-5 mb-8"
-                            outlined
-                            tile
-                        >
-                            <v-container>
-                                <!-- delete item button -->
-                                <v-row>
-                                    <v-col
-                                        cols="12"
-                                        align="right"
+            <v-tabs
+                v-model="ui_tab"
+                fixed-tabs
+            >
+                <v-tabs-slider color="amber darken-3" />
+                <v-tab
+                    v-for="(item, index) in ui_items"
+                    :key="item"
+                    :class="{active: ui_currentTab === index}"
+                    @click="ui_currentTab = index"
+                >
+                    {{ item }}
+                </v-tab>
+            </v-tabs>
+            <v-tabs-items v-model="ui_tab">
+                <v-card flat>
+                    <div v-show="ui_currentTab === 0">
+                        <v-divider />
+                        <v-container class="main_container">
+                            <v-row>
+                                <v-col cols="12">
+                                    <!-- one v-card per chapter in the template -->
+                                    <v-card
+                                        v-for="(templateItem,index) in templateItems"
+                                        :key="index"
+                                        class="mt-5 mb-8"
+                                        outlined
+                                        tile
                                     >
-                                        #{{ index+1 }}
-                                        <v-icon
-                                            small
-                                            @click="deleteTemplateItem(templateItem.id)"
-                                        >
-                                            mdi-trash-can
-                                        </v-icon>
-                                    </v-col>
-                                </v-row>
-                                <!-- title -->
-                                <v-row>
-                                    <v-col cols="12">
-                                        <v-text-field
-                                            v-model="templateItem.title"
-                                            class="text-xl-h4 textfieldtitle"
-                                            label="Titel"
-                                            filled
-                                        />
-                                    </v-col>
-                                </v-row>
-                                <!-- description -->
-                                <v-row>
-                                    <v-col cols="12">
-                                        <v-textarea
-                                            v-model="templateItem.description"
-                                            label="Beschreibung"
-                                            class=""
-                                        />
-                                    </v-col>
-                                </v-row>
-                                <!-- tool selection -->
-                                <v-row>
-                                    <v-col cols="12">
-                                        <v-select
-                                            v-model="templateItem.tool"
-                                            label="Tool wählen"
-                                            :items="supportedTools"
-                                        />
-                                    </v-col>
-                                </v-row>
-                                <!-- get data selection -->
-                                <v-row class="mb-2">
-                                    <v-btn
-                                        @click="copyCurrentDataSelection(index)"
-                                    >
-                                        <v-icon>
-                                            mdi-map-marker-down
-                                        </v-icon> Datenauswahl übernehmen
-                                        <v-icon v-if="templateItem.hasDataSelection">
-                                            mdi-check-bold
-                                        </v-icon>
-                                    </v-btn>
-                                    <v-btn
-                                        v-if="templateItem.hasDataSelection"
+                                        <v-container>
+                                            <!-- delete item button -->
+                                            <v-row>
+                                                <v-col
+                                                    cols="12"
+                                                    align="right"
+                                                >
+                                                    #{{ index+1 }}
+                                                    <v-icon
+                                                        small
+                                                        @click="deleteTemplateItem(templateItem.id)"
+                                                    >
+                                                        mdi-trash-can
+                                                    </v-icon>
+                                                </v-col>
+                                            </v-row>
+                                            <!-- title -->
+                                            <v-row>
+                                                <v-col cols="12">
+                                                    <v-text-field
+                                                        v-model="templateItem.title"
+                                                        class="text-xl-h4 textfieldtitle"
+                                                        label="Titel"
+                                                        filled
+                                                    />
+                                                </v-col>
+                                            </v-row>
+                                            <!-- description -->
+                                            <v-row>
+                                                <v-col cols="12">
+                                                    <v-textarea
+                                                        v-model="templateItem.description"
+                                                        label="Beschreibung"
+                                                        class=""
+                                                    />
+                                                </v-col>
+                                            </v-row>
+                                            <!-- tool selection -->
+                                            <v-row>
+                                                <v-col cols="12">
+                                                    <v-select
+                                                        v-model="templateItem.tool"
+                                                        label="Tool wählen"
+                                                        :items="supportedTools"
+                                                    />
+                                                </v-col>
+                                            </v-row>
+                                            <!-- get data selection -->
+                                            <v-row class="mb-2">
+                                                <v-checkbox
+                                                    v-model="templateItem.includeDataSelection"
+                                                    label="Speichert Datenauswahl"
+                                                    v-on="includeDataCheckboxToggle(index)"
+                                                />
+                                                <v-checkbox
+                                                    v-model="templateItem.hasSettings"
+                                                    label="Speichert Tool Einstellungen"
+                                                    v-on="hasSettingsToggle(index)"
+                                                />
+                                                <v-btn
+
+                                                    dense
+                                                    :disabled="!templateItem.hasSettings"
+                                                    @click="updateToolOutput(index)"
+                                                >
+                                                    <v-icon>
+                                                        mdi-play
+                                                    </v-icon> Ausführen
+                                                    <v-icon v-if="templateItem.hasOutput">
+                                                        mdi-check-bold
+                                                    </v-icon>
+                                                </v-btn>
+
+                                                <v-btn
+                                                    @click="copyCurrentDataSelection(index)"
+                                                >
+                                                    <v-icon>
+                                                        mdi-map-marker-down
+                                                    </v-icon> Datenauswahl übernehmen
+                                                    <v-icon v-if="templateItem.hasDataSelection">
+                                                        mdi-check-bold
+                                                    </v-icon>
+                                                </v-btn>
+                                                <v-btn
+                                                    v-if="templateItem.hasDataSelection"
 
 
-                                        @click="clearTemplateItemDataSelection(index)"
-                                    >
-                                        <v-icon>mdi-close-circle</v-icon>
-                                    </v-btn>
-                                </v-row>
-                                <v-row>
-                                    {{ templateItem.dataSelection.id }}<br>
-                                </v-row>
-                                <!-- set data selection -->
-                                <v-row class="mb-2">
-                                    <v-btn
+                                                    @click="clearTemplateItemDataSelection(index)"
+                                                >
+                                                    <v-icon>mdi-close-circle</v-icon>
+                                                </v-btn>
+                                            </v-row>
+                                            <v-row>
+                                                {{ templateItem.dataSelection.id }}<br>
+                                            </v-row>
+                                            <!-- set data selection -->
+                                            <v-row class="mb-2">
+                                                <v-btn
 
 
-                                        dense
-                                        :disabled="!templateItem.hasDataSelection"
-                                        @click="setCurrentDataSelection(templateItem.dataSelection)"
-                                    >
-                                        <v-icon>
-                                            mdi-map-marker-right
-                                        </v-icon> Gespeicherte Datenauswahl anwenden
-                                    </v-btn><br><br>
-                                </v-row>
-                                <!-- get tool settings -->
-                                <v-row class="mb-2">
-                                    <v-btn
+                                                    dense
+                                                    :disabled="!templateItem.hasDataSelection"
+                                                    @click="setCurrentDataSelection(templateItem.dataSelection)"
+                                                >
+                                                    <v-icon>
+                                                        mdi-map-marker-right
+                                                    </v-icon> Gespeicherte Datenauswahl anwenden
+                                                </v-btn><br><br>
+                                            </v-row>
+                                            <!-- get tool settings -->
+                                            <v-row class="mb-2">
+                                                <v-btn
 
 
-                                        dense
-                                        @click="updateToolSettings(index)"
-                                    >
-                                        <!-- get tool settings button -->
-                                        <v-icon>
-                                            mdi-refresh
-                                        </v-icon> Aktuelle Tool Einstellungen übernehmen
-                                        <v-icon v-if="templateItem.hasSettings">
-                                            mdi-check-bold
-                                        </v-icon>
-                                    </v-btn>
-                                    <v-btn
-                                        v-if="templateItem.hasSettings"
+                                                    dense
+                                                    @click="updateToolSettings(index)"
+                                                >
+                                                    <!-- get tool settings button -->
+                                                    <v-icon>
+                                                        mdi-refresh
+                                                    </v-icon>Einstellungen Übernehmen
+                                                    <v-icon v-if="templateItem.hasSettings">
+                                                        mdi-check-bold
+                                                    </v-icon>
+                                                </v-btn>
+                                                <v-btn
+                                                    v-if="templateItem.hasSettings"
 
 
-                                        @click="clearTemplateItemSettings(index)"
-                                    >
-                                        <v-icon>mdi-close-circle</v-icon>
-                                    </v-btn><br><br>
-                                </v-row>
-                                <!-- run tool -->
-                                <v-row class="mb-2">
-                                    <v-btn
+                                                    @click="clearTemplateItemSettings(index)"
+                                                >
+                                                    <v-icon>mdi-close-circle</v-icon>
+                                                </v-btn><br><br>
+                                            </v-row>
+                                            <!-- run tool -->
+                                            <v-row class="mb-2">
+                                                <v-btn
 
-                                        dense
-                                        :disabled="!templateItem.hasSettings"
-                                        @click="updateToolOutput(index)"
-                                    >
-                                        <v-icon>
-                                            mdi-play
-                                        </v-icon> Tool anwenden
-                                        <v-icon v-if="templateItem.hasOutput">
-                                            mdi-check-bold
-                                        </v-icon>
-                                    </v-btn>
-                                    <v-btn
-                                        v-if="templateItem.hasOutput"
+                                                    dense
+                                                    :disabled="!templateItem.hasSettings"
+                                                    @click="updateToolOutput(index)"
+                                                >
+                                                    <v-icon>
+                                                        mdi-play
+                                                    </v-icon> Tool anwenden
+                                                    <v-icon v-if="templateItem.hasOutput">
+                                                        mdi-check-bold
+                                                    </v-icon>
+                                                </v-btn>
+                                                <v-btn
+                                                    v-if="templateItem.hasOutput"
 
-                                        @click="clearTemplateItemOutput(index)"
-                                    >
-                                        <v-icon>mdi-close-circle</v-icon>
-                                    </v-btn><br><br>
-                                </v-row>
-                                <!-- display raw settings -->
-                                <!-- <v-row>
+                                                    @click="clearTemplateItemOutput(index)"
+                                                >
+                                                    <v-icon>mdi-close-circle</v-icon>
+                                                </v-btn><br><br>
+                                            </v-row>
+                                            <!-- display raw settings -->
+                                            <!-- <v-row>
                                     <v-col cols="12">
                                         Einstellungen:
                                         <div
@@ -436,66 +498,78 @@ export default {
                                         /><br>
                                     </v-col>
                                 </v-row> -->
-                                <!-- display results -->
-                                <v-row class="mb-2">
-                                    <div
-                                        class="limitSize"
+                                            <!-- display results -->
+                                            <v-row class="mb-2">
+                                                <div
+                                                    class="limitSize"
+                                                >
+                                                    <!-- result might be a table, might be an image -->
+                                                    <div v-if="templateItem.output.type==='table'">
+                                                        <div v-html="templateItem.output.result" />
+                                                    </div>
+                                                    <div v-if="templateItem.output.type==='image'">
+                                                        <img
+                                                            alt="template analysis result image"
+                                                            :src="templateItem.output.result"
+                                                        >
+                                                    </div>
+                                                </div>
+                                            </v-row>
+                                        </v-container>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
+                            <v-row class="mb-2">
+                                <v-col
+                                    cols="12"
+                                    align="right"
+                                >
+                                    <v-icon
+                                        @click="addEmptyTemplateItem"
                                     >
-                                        <!-- result might be a table, might be an image -->
-                                        <div v-if="templateItem.output.type==='table'">
-                                            <div v-html="templateItem.output.result" />
-                                        </div>
-                                        <div v-if="templateItem.output.type==='image'">
-                                            <img
-                                                alt="template analysis result image"
-                                                :src="templateItem.output.result"
-                                            >
-                                        </div>
-                                    </div>
-                                </v-row>
-                            </v-container>
-                        </v-card>
-                    </v-col>
-                </v-row>
-                <v-row class="mb-2">
-                    <v-col
-                        cols="12"
-                        align="right"
-                    >
-                        <v-icon
-                            @click="addEmptyTemplateItem"
-                        >
-                            mdi-note-plus
-                        </v-icon>
-                        <v-row />
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-select
-                        v-model="selectedExportFormat"
-                        label="Export Format"
-                        :items="supportedExportFormats"
-                    />
-                </v-row>
-                <v-row class="mb-2">
-                    <v-btn
-                        color="grey lighten-1"
-                        @click="exportTemplate()"
-                    >
-                        Exportieren
-                    </v-btn>
-                </v-row>
-                <br>
-                <v-row><v-divider /></v-row>
-                <v-row class="mt-2">
-                    <v-btn
-                        color="grey lighten-1"
-                        @click="downloadObjectAsJson(templateItems,'template')"
-                    >
-                        Template speichern
-                    </v-btn>
-                </v-row>
-            </v-container>
+                                        mdi-note-plus
+                                    </v-icon>
+                                    <v-row />
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </div>
+                    <div v-show="ui_currentTab === 1">
+                        <v-container class="main_container">
+                            <br><br>
+                            <v-file-input
+                                v-model="uploadedTemplate"
+                                accept="application/JSON"
+                                label="Datei wählen.."
+                                dense
+                            />
+                        </v-container>
+                    </div>
+                    <div v-show="ui_currentTab === 2">
+                        <v-container class="main_container">
+                            <v-row>
+                                <v-select
+                                    v-model="selectedExportFormat"
+                                    label="Export Format"
+                                    :items="supportedExportFormats"
+                                />
+                            </v-row>
+                            <v-row class="mb-2">
+                                <v-btn
+                                    color="grey lighten-1"
+                                    @click="exportTemplate()"
+                                >
+                                    Exportieren
+                                </v-btn>
+                            </v-row>
+                            <br>
+                            <v-row><v-divider /></v-row>
+                        </v-container>
+                    </div>
+                </v-card>
+            </v-tabs-items>
+
+            <!-- upload saved templates -->
         </template>
     </Tool>
 </template>
