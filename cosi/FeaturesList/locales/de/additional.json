@@ -53,6 +53,9 @@
                         "voting": "Voting",
                         "allProjects": "Alle Verfahren"
                     }
+                },
+                "timeSeriesAnalyse": {
+                  "title": "Zeitreihenanalyse"
                 }
             }
         }

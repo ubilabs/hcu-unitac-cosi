@@ -47,6 +47,9 @@
                         "voting": "voting",
                         "allProjects": "All projects"
                     }
+                },
+                "timeSeriesAnalyse": {
+                  "title": "Time Series analyse"
                 }
             }
         }

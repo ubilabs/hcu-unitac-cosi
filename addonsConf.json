@@ -202,5 +202,9 @@
   },
   "vpiDashboard": {
     "type": "tool"
+  },
+  "TimeSeriesAnalyse": {
+    "path": "cosi/TimeSeriesAnalyse",
+    "type": "tool"
   }
 }

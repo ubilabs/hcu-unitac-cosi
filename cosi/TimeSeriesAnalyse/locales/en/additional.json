@@ -1,0 +1,11 @@
+{
+    "modules": {
+        "tools": {
+            "cosi": {
+                "timeSeriesAnalyse": {
+                    "title": "Time Series analyse"
+                }
+            }
+        }
+    }
+}

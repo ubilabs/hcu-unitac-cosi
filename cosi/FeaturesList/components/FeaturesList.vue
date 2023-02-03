@@ -642,7 +642,10 @@ export default {
             // set the selected items on the updated list
             this.selected = this.selected.map(sel => this.items.find(item => item.key === sel.key));
         },
-        highlightVectorFeature
+        highlightVectorFeature,
+        openTimeSeriesAnalyse () {
+            this.$store.dispatch("Tools/setToolActive", {id: "TimeSeriesAnalyse", active: true});
+        }
     }
 };
 </script>
@@ -662,6 +665,17 @@ export default {
             v-if="active"
             #toolBody
         >
+            <div>
+                <v-btn
+                    class="ma-2 time-series"
+                    color="success"
+                    :title="$t('additional:modules.tools.cosi.timeSeriesAnalyse.title')"
+                    @click="openTimeSeriesAnalyse"
+                    @keydown="openTimeSeriesAnalyse"
+                >
+                    {{ $t('additional:modules.tools.cosi.timeSeriesAnalyse.title') }}
+                </v-btn>
+            </div>
             <ToolInfo
                 :url="readmeUrl"
                 :locale="currentLocale"
@@ -861,6 +875,13 @@ export default {
 <style lang="scss">
     @import "../../utils/variables.scss";
 
+    .theme--light.v-btn.v-btn--has-bg.time-series {
+        background-color: $green;
+        color: #000000;
+        position: absolute;
+        height: 30px;
+        top: 12px;
+    }
     #features-list-wrapper {
         // height: 100%;
         position: relative;
