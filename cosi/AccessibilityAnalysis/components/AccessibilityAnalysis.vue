@@ -96,14 +96,15 @@ export default {
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
-            hide: false
+            hide: false,
+            facilityFeature: null
         };
     },
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
-        ...mapGetters("Maps", ["projectionCode", "clickCoordinate", "clickPixel", "getVisibleLayerList"]),
+        ...mapGetters("Maps", ["projectionCode", "clickCoordinate", "getVisibleLayerList"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
         ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive", "layerMapById"]),
@@ -262,13 +263,18 @@ export default {
         },
         clickCoordinate (coord) {
             if (this.active && this.mode === "point") {
-                this.setCoordinateFromClick(this.clickCoordinate, this.clickPixel);
+                this.setCoordinateFromClick(this.clickCoordinate);
                 this.placingPointMarker(coord);
             }
         },
         setByFeature (val) {
-            if (val && this.mode === "facility" && this.selectedFacility) {
-                this.setCoordinateFromClick(this.clickCoordinate, this.clickPixel);
+            if (val && this.mode === "facility" && this.facilityFeature) {
+                if (val) {
+                    this.setCoordinateFromFeature(this.facilityFeature);
+                }
+                else {
+                    this.setCoordinateFromClick(this.clickCoordinate);
+                }
             }
         },
         activeVectorLayerList (newValues) {
@@ -424,8 +430,14 @@ export default {
                     layerMap = this.layerMapById(layer.get("id")),
                     unpackedFeature = unpackCluster(selectedFeature)[0];
 
+                this.facilityFeature = unpackedFeature;
                 this.setSelectedFacility(unpackedFeature.get(layerMap.keyOfAttrName));
-                this.setCoordinateFromClick(this.clickCoordinate, this.clickPixel);
+                if (this.setByFeature) {
+                    this.setCoordinateFromFeature(unpackedFeature);
+                }
+                else {
+                    this.setCoordinateFromClick(this.clickCoordinate);
+                }
                 this.placingPointMarker(this.clickCoordinate);
             });
         },

@@ -4,12 +4,9 @@ import GeometryCollection from "ol/geom/GeometryCollection";
 import {setBBoxToGeom} from "../../utils/setBBoxToGeom";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import {
-    polygon as turfPolygon,
-    multiPolygon as turfMultiPolygon,
     lineString as turfLineString,
     featureCollection as turfFeatureCollection
 } from "@turf/helpers";
-import {default as turfSimplify} from "@turf/simplify";
 import {default as turfBuffer} from "@turf/buffer";
 import {readFeatures} from "../components/util.js";
 import {transformFeatures} from "../../utils/features/transform";
@@ -17,6 +14,9 @@ import {getModelByAttributes} from "../../utils/radioBridge.js";
 import {getRecordById} from "../../../../src/api/csw/getRecordById";
 import {filterAllFeatures} from "../../utils/layer/filterAllFeatures";
 import {styleIsochroneFeatures} from "../utils/styleIsochroneFeatures.js";
+import {simplify} from "../../utils/geometry/simplify";
+import {getFlatCoordinates} from "../../utils/geometry/getFlatCoordinates";
+import {transformCoordinates} from "../utils/transformCoordinates";
 
 export const methodConfig = {
     store: null
@@ -121,8 +121,6 @@ export default {
             this.scaleUnit !== "" &&
             distance !== 0
         ) {
-            this.setSetByFeature(false);
-
             const features = await this.getIsochrones({
                 transportType: this.transportType,
                 coordinates: this.coordinate,
@@ -162,55 +160,18 @@ export default {
     /**
      * add coordinate after user click
      * @param {event} clickCoordinate - The coordinate of the click event on the map.
-     * @param {event} clickPixel - The pixel of the click event on the map.
      * @returns {void}
      */
-    setCoordinateFromClick: function (clickCoordinate, clickPixel) {
-        const rawCoords = this.setByFeature ? this.setCoordinatesByFeatures(clickCoordinate, clickPixel) : [clickCoordinate],
-            coordinates = rawCoords.map(coord => Proj.transform(
-                coord,
-                this.projectionCode,
-                "EPSG:4326"
-            ));
-
-        this.setCoordinate(coordinates);
+    setCoordinateFromClick: function (clickCoordinate) {
+        this.setCoordinate(transformCoordinates([clickCoordinate], this.projectionCode));
         this.setSetBySearch(false);
     },
 
-    setCoordinatesByFeatures: function (clickCoordinate, clickPixel) {
-        const feature = mapCollection.getMap("2D").getFeaturesAtPixel(clickPixel, {
-            layerFilter: layer => this.activeVectorLayerList.includes(layer)
-        })[0];
+    setCoordinateFromFeature: function (feature) {
+        const simplifiedGeom = simplify(feature.getGeometry()),
+            coordiantes = getFlatCoordinates(simplifiedGeom);
 
-        if (feature) {
-            const geom = feature.getGeometry();
-
-            return this.simplifyGeometry(geom) || [clickCoordinate];
-        }
-
-        return [clickCoordinate];
-    },
-
-    simplifyGeometry (geom, tolerance = 1) {
-        let simplified, geojson;
-
-        if (geom.getType() === "Polygon") {
-            geojson = turfPolygon(geom.getCoordinates());
-            simplified = turfSimplify(geojson, {tolerance});
-
-            return simplified.geometry.coordinates.flat(1).map(p => [p[0], p[1]]);
-        }
-        if (geom.getType() === "MultiPolygon") {
-            geojson = turfMultiPolygon(geom.getCoordinates());
-            simplified = turfSimplify(geojson, {tolerance});
-
-            return simplified.geometry.coordinates.flat(2).map(p => [p[0], p[1]]);
-        }
-        if (geom.getType() === "Point") {
-            return [[geom.getCoordinates()[0], geom.getCoordinates()[1]]];
-        }
-
-        return null;
+        this.setCoordinate(transformCoordinates(coordiantes, this.projectionCode));
     },
 
     createBufferFromDirections: function () {
@@ -378,7 +339,7 @@ export default {
                         return [...res, geometry.getCoordinates().splice(0, 2)];
                     }
                     if (setByFeature) {
-                        return [...res, ...this.simplifyGeometry(geometry, 10) || [Extent.getCenter(geometry.getExtent())]];
+                        return [...res, ...getFlatCoordinates(simplify(geometry, 10)) || [Extent.getCenter(geometry.getExtent())]];
                     }
                     return [...res, Extent.getCenter(geometry.getExtent())];
 
