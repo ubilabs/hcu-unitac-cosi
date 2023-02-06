@@ -412,11 +412,13 @@ export default {
                                                 <!-- description -->
                                                 <v-row>
                                                     <v-col cols="12">
+                                                        <br><br>
                                                         <v-textarea
                                                             v-model="templateItem.description"
                                                             label="Beschreibung"
                                                             class=""
                                                         />
+                                                        <br><br>
                                                     </v-col>
                                                 </v-row>
                                                 <!-- tool selection -->
