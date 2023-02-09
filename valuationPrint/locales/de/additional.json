@@ -14,7 +14,7 @@
               "pleaseWait": "Bitte warten ...",
               "pdfError": "Fehler beim Erzeugen der PDF.",
               "pdfSuccess": "PDF wurde erstellt.",
-              "report": "Bericht",
+              "report": "WANDA Bericht",
               "imageInTheMaking": "{{imageName}} wird erstellt.",
               "imageSuccess": "{{imageName}} wurde erstellt.",
               "imageError": "Fehler beim Erzeugen vom {{imageName}}.",

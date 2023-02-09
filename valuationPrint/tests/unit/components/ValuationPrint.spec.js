@@ -270,7 +270,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
         describe("getFilenameOfPDF", () => {
             const wrapper = factory.getShallowMount({});
 
-            expect(wrapper.vm.getFilenameOfPDF([features[0], features[1]], "prefix", "2022-07-11__10-31-22")).to.equal("prefix__2022-07-11__10-31-22__12345-67890");
+            expect(wrapper.vm.getFilenameOfPDF("prefix", "2022-07-11")).to.equal("2022-07-11 prefix");
         });
 
         describe("styleSelectedFeatures", () => {

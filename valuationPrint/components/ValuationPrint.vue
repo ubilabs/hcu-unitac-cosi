@@ -75,7 +75,7 @@ export default {
                     this.config.transformer,
                     this.defaultValue,
                     this.projection.getCode(),
-                    this.getFilenameOfPDF(parcel.featureList, this.fileprefix, dayjs().format("YYYY-MM-DD__HH-mm-ss"))
+                    this.getFilenameOfPDF(this.fileprefix, dayjs().format("YYYY-MM-DD"))
                 );
 
                 setTimeout(() => {
@@ -236,7 +236,7 @@ export default {
                     this.config.images[idx],
                     this.defaultValue,
                     this.projection.getCode(),
-                    this.getFilenameOfPDF(this.parcelData.featureList, imageName, dayjs().format("YYYY-MM-DD__HH-mm-ss"))
+                    this.getFilenameOfPDF(imageName, dayjs().format("YYYY-MM-DD"))
                 );
 
             mapfishDialog.attributes.map = mapfishDialog.attributes[imageName + ".map"];
@@ -317,26 +317,13 @@ export default {
         },
 
         /**
-         * Returns the filename of the pdf, taking into account the currently selected parcels.
-         * @param {ol/Feature[]} features The features to create the filename for.
+         * Returns the filename of the pdf with timestamp.
          * @param {String} [fileprefix=""] The prefix to use for the filename.
          * @param {String} [timestamp=""] A timestamp to use for better ui.
          * @returns {String} The current filname.
          */
-        getFilenameOfPDF (features, fileprefix = "", timestamp = "") {
-            if (!Array.isArray(features)) {
-                return "unknown";
-            }
-            let flstnrzae = "";
-
-            features.forEach(feature => {
-                if (flstnrzae) {
-                    flstnrzae += "-";
-                }
-                flstnrzae += feature.get("flstnrzae");
-            });
-
-            return fileprefix + "__" + timestamp + "__" + flstnrzae;
+        getFilenameOfPDF (fileprefix = "", timestamp = "") {
+            return timestamp + " " + fileprefix;
         },
 
         /**
