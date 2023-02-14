@@ -165,6 +165,7 @@ export default {
                 }
 
                 this.removeHighlightFeature();
+                this.setShow(true);
             }
         },
 
@@ -227,6 +228,25 @@ export default {
 
         layerFilter () {
             this.numericalColumns = this.getNumericalColumns();
+        },
+
+        show (val) {
+            if (val) {
+                this.$nextTick(() => {
+                    if (this.active) {
+                        this.$el.style.width = "inherit";
+                        mapCollection.getMap("2D").updateSize();
+                    }
+                });
+            }
+            else {
+                this.$nextTick(() => {
+                    if (this.active) {
+                        this.$el.style.width = "80px";
+                        mapCollection.getMap("2D").updateSize();
+                    }
+                });
+            }
         }
     },
     created () {
@@ -645,6 +665,14 @@ export default {
         highlightVectorFeature,
         openTimeSeriesAnalyse () {
             this.$store.dispatch("Tools/setToolActive", {id: "TimeSeriesAnalyse", active: true});
+            this.setShow(false);
+        },
+        /**
+         * To show or hide the featureList tool
+         * @return {void}
+         */
+        toggleTool () {
+            this.setShow(!this.show);
         }
     }
 };
@@ -653,7 +681,7 @@ export default {
 <template lang="html">
     <Tool
         ref="tool"
-        class=""
+        :class="show ? 'show' : 'hide'"
         :title="$t('additional:modules.tools.cosi.featuresList.title')"
         :icon="icon"
         :active="active"
@@ -675,6 +703,16 @@ export default {
                 >
                     {{ $t('additional:modules.tools.cosi.timeSeriesAnalyse.title') }}
                 </v-btn>
+            </div>
+            <div
+                class="toggle"
+                @click="toggleTool"
+                @keydown="toggleTool"
+            >
+                <span
+                    :class="show ? 'bi bi-chevron-double-right': 'bi bi-chevron-double-left'"
+                    :title="show ? $t('additional:modules.tools.cosi.featuresList.hide') : $t('additional:modules.tools.cosi.featuresList.show')"
+                />
             </div>
             <ToolInfo
                 :url="readmeUrl"
@@ -868,6 +906,7 @@ export default {
                     @updateItems="updateItems"
                 />
             </v-app>
+            <div class="mini-sidebar" />
         </template>
     </Tool>
 </template>
@@ -875,13 +914,6 @@ export default {
 <style lang="scss">
     @import "../../utils/variables.scss";
 
-    .theme--light.v-btn.v-btn--has-bg.time-series {
-        background-color: $green;
-        color: #000000;
-        position: absolute;
-        height: 30px;
-        top: 12px;
-    }
     #features-list-wrapper {
         // height: 100%;
         position: relative;
@@ -935,6 +967,47 @@ export default {
         }
         .number-action{
             cursor: pointer;
+        }
+    }
+</style>
+
+<style lang="scss" scoped>
+    @import "../../utils/variables.scss";
+    .show {
+        .mini-sidebar {
+            display: none;
+        }
+    }
+    .hide {
+        .mini-sidebar {
+            position: absolute;
+            width: 80px;
+            height: 100%;
+            background-color: $green;
+            left: 0;
+            top: 0;
+            z-index: 10;
+        }
+        .toggle {
+            z-index: 11;
+            right: 0px;
+        }
+    }
+    .theme--light.v-btn.v-btn--has-bg.time-series {
+        background-color: $green;
+        color: #000000;
+        position: absolute;
+        height: 30px;
+        top: 12px;
+    }
+    .toggle {
+        position: absolute;
+        right: 15px;
+        top: 11px;
+        padding: 0 10px;
+        cursor: pointer;
+        span {
+            font-size: 30px;
         }
     }
 </style>
