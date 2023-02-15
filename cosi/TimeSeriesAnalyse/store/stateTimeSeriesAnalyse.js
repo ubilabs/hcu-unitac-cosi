@@ -20,5 +20,7 @@ export default {
     onlyDesktop: true,
     renderToWindow: true,
     resizableWindow: true,
-    title: "Time Series Analyse"
+    title: "Time Series Analyse",
+    layerId: undefined,
+    key: "Jahr"
 };
