@@ -78,7 +78,7 @@ export default {
                     dark
                     @click="ExportPDF"
                 >
-                    Convert File
+                    {{ $t('additional:modules.tools.cosi.exportPDF.action.convertFile') }}
                 </v-btn>
             </div>
         </template>

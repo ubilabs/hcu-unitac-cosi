@@ -3,8 +3,9 @@
         "tools": {
             "cosi": {
                 "exportPDF": {
-                    "captions": {
-                    "title": "Export as PDF"
+                    "title": "Export as PDF",
+                    "action": { 
+                        "convertFile": "Convert File" 
                     }
                 }
             }

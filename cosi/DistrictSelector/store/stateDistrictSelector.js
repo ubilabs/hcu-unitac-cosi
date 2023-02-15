@@ -31,7 +31,7 @@ const state = {
     icon: "bi-image",
     id: "districtSelector",
     isVisibleInMenu: true,
-    name: "Gebiet auswählen",
+    name: i18next.t("additional:modules.tools.cosi.districtSelector.selectState"),
     renderToWindow: true,
     resizableWindow: false,
     selectedDistrictLevel: {},
