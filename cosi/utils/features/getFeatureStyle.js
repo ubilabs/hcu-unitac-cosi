@@ -17,21 +17,21 @@ export default function getFeatureStyle (feature, layerStyleFunction) {
         return layerStyleFunction(feature);
     }
     // generate new style if styleRule is set on feature (only WebGL)
-    if (feature._styleRule) {
-        if (feature._styleRule.style.type === "Icon") {
+    if (feature.styleRule) {
+        if (feature.styleRule.style.type === "Icon") {
             return new Style({
                 image: new Icon({
-                    src: (feature._styleRule.style.imagePath || Config.wfsImgPath) + feature._styleRule.style.imageName,
+                    src: (feature.styleRule.style.imagePath || Config.wfsImgPath) + feature.styleRule.style.imageName,
                     width: 40,
                     height: 40
                 })
             });
         }
         return new Style({
-            fill: new Fill({color: feature._styleRule.style.polygonFillColor || feature._styleRule.style.circleFillColor}),
+            fill: new Fill({color: feature.styleRule.style.polygonFillColor || feature.styleRule.style.circleFillColor}),
             stroke: new Stroke({
-                color: feature._styleRule.style.polygonStrokeColor || feature._styleRule.style.circleStrokeColor,
-                width: feature._styleRule.style.polygonStrokeWidth || feature._styleRule.style.circleStrokeWidth
+                color: feature.styleRule.style.polygonStrokeColor || feature.styleRule.style.circleStrokeColor,
+                width: feature.styleRule.style.polygonStrokeWidth || feature.styleRule.style.circleStrokeWidth
             })
         });
     }

@@ -1,7 +1,7 @@
 import {getLayerSource} from "./layer/getLayerSource";
 import Vue from "vue";
 import {getItemsByAttributes, getCollection} from "../utils/radioBridge.js";
-import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
+import webgl from "@masterportal/masterportalapi/src/renderer/webgl";
 import {getCenter} from "ol/extent";
 
 /**
@@ -28,15 +28,12 @@ function filterLayerSourceByBbox (source, bboxGeometry) {
  * @returns {void}
  */
 function updateSource (model, bboxGeometry, url, item, app) {
-    const source = getLayerSource(model.layer);
-    let typ = item.typ;
+    const
+        source = getLayerSource(model.layer),
+        typ = item.typ;
 
     if (!source) {
         return;
-    }
-
-    if (typ === "WebGL") {
-        typ = rawLayerList.getLayerWhere({id: item.sourceId})?.typ || item.sourceId;
     }
 
     source.clear();
@@ -56,9 +53,9 @@ function updateSource (model, bboxGeometry, url, item, app) {
         source.refresh();
         if (bboxGeometry) {
             source.on("featuresloadend", function (evt) {
-                if (item.typ === "WebGL") {
+                if (item.renderer === "webgl") {
                     // run afterloading functions for webGL layer
-                    model.afterLoading(evt.target.getFeatures(), model.attributes);
+                    webgl.afterLoading(evt.target.getFeatures(), model.attributes);
                 }
                 filterLayerSourceByBbox(evt.target, bboxGeometry);
                 if (app) {
@@ -92,7 +89,7 @@ function setBBoxToGeom (bboxGeometry) {
             ...getItemsByAttributes({typ: "WFS", isBaseLayer: false}),
             ...getItemsByAttributes({typ: "GeoJSON", isBaseLayer: false}),
             ...getItemsByAttributes({typ: "VectorBase", isBaseLayer: false}),
-            ...getItemsByAttributes({typ: "WebGL", isBaseLayer: false})
+            ...getItemsByAttributes({typ: "OAF", isBaseLayer: false})
         ];
 
     setBboxGeometryToLayer(layerlist, bboxGeometry, app);
