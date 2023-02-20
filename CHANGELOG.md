@@ -9,6 +9,7 @@
 ### Added
 
 ### Changed
+- In schoolRoutePlanning all streets and house numbers are now listed as results with an overflow.
 
 ### Deprecated
 
