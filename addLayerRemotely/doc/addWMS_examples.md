@@ -1,7 +1,7 @@
 
 # Test from the Browser console:
 
-## Creates a wms layer with the layerid `krankenhaeuser`:
+## Creates a wms layer with the layerid "krankenhaeuser":
 
 ```js
 Backbone.Radio.trigger("addLayerRemotely", "addWMS", {"url":"https://geodienste.hamburg.de/HH_WMS_Krankenhaeuser", "layersToLoad":[{name: "krankenhaeuser", title: "krankenhaeuser", layerOn: true, style: ""}], "folderName":"externe Daten", "zoomTo":true})
