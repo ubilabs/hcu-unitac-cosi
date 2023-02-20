@@ -22,5 +22,8 @@ export default {
     resizableWindow: true,
     title: "Time Series Analyse",
     layerId: undefined,
-    key: "Jahr"
+    key: "Jahr",
+    statisKey: undefined,
+    yearRange: [],
+    count: 10
 };

@@ -3,7 +3,9 @@
         "tools": {
             "cosi": {
                 "timeSeriesAnalyse": {
-                    "title": "Time Series analyse"
+                    "title": "Time Series analyse",
+                    "count": "Count",
+                    "featureCount": "Count of features"
                 }
             }
         }
