@@ -2,6 +2,9 @@
   "bauforum": "changeGUI/loader.js",
   "formular": "view.js",
   "showParcelGFI": "showParcelGFI.js",
+  "addLayerRemotely": {
+    "type": "javascript"
+  },
   "gfiOnAddress": {
     "type": "javascript"
   },
@@ -175,7 +178,6 @@
     "path": "cosi/AreaSelector",
     "type": "tool"
   },
-  "addLayerRemotely": "addLayerRemotely.js",
   "ExportPDF": {
     "path":"cosi/ExportPDF",
     "type": "tool"

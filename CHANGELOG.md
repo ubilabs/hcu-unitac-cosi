@@ -13,7 +13,10 @@ Time library `moment.js` was replaced with [day.js](https://day.js.org/). Please
 ### Changed
 - In schoolRoutePlanning, streets without the prefix `*` in the gazetteer are now searched for.
 - Time handling: moment.js was replaced with day.js.
-- Documentation of `addLayerRemotely` has been extended.
+- addLayerRemotely:
+    - addLayerRemotely can now be addressed via the remote interface using actions.
+    - In addition, the possibility to switch layers visible or invisible has been added.
+    - The documentation and the example have been extended.
 
 ### Deprecated
 
