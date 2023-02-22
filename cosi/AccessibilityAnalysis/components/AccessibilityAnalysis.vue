@@ -610,7 +610,7 @@ export default {
                                 v-if="mode === 'region'"
                                 v-model="_selectedFacilityName"
                                 class="mb-4"
-                                placeholder="Keine Auswahl"
+                                :placeholder="$t('additional:modules.tools.cosi.accessibilityAnalysis.noChoicePlaceholder')"
                                 :items="facilityNames"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.topic')"
                                 outlined
@@ -621,7 +621,7 @@ export default {
                                 v-if="mode === 'path'"
                                 v-model="_selectedDirections"
                                 class="mb-4"
-                                placeholder="Keine Auswahl"
+                                :placeholder="$t('additional:modules.tools.cosi.accessibilityAnalysis.noChoicePlaceholder')"
                                 :item-text="getDirectionsText"
                                 return-object
                                 :items="[routingDirections || {distance: '-', duration: '-'}]"

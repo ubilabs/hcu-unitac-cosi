@@ -50,7 +50,8 @@
                     "paginationRemoveAll": "Alle Ergebnisse in der Erreichbarkeitsanalyse löschen",
                     "paginationDownloadAll": "Alle Ergebnisse in der Erreichbarkeitsanalyse als Geodaten (GeoJSON) herunterladen",
                     "paginationPrev": "Das vorherige Ergebnis anzeigen",
-                    "paginationNext": "Das nächste Ergebnis anzeigen"
+                    "paginationNext": "Das nächste Ergebnis anzeigen",
+                    "noChoicePlaceholder": "Keine Auswahl"
                 }
             }
         }
