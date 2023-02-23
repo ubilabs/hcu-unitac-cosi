@@ -67,7 +67,7 @@ export default {
     watch: {
         /**
          * If the tool is active, activate the select interaction and add overlay to the districtLayers if necessary
-         * If the tool is not actvie, deactivate the interactions (select, drag box) and remove overlay if no districts are selected
+         * If the tool is not active, deactivate the interactions (select, drag box) and remove overlay if no districts are selected
          * and update the extent of the selected features (districts).
          * @param {boolean} newActive - Defines if the tool is active.
          * @returns {void}
@@ -182,6 +182,7 @@ export default {
          * @returns {void}
          */
         checkKey (evt) {
+            // TODO does "Enter" need to be localized here?
             if (evt.code === "Enter") {
                 this.setActive(false);
             }
