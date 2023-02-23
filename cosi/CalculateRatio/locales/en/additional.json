@@ -25,12 +25,13 @@
                     "dataA": "Facilities",
                     "dataB": "Statistical Data",
 
-                    "warning": "Warnung",
+                    "warning": "Warning",
                     "warningForThisArea": "Warning for this area",
                     "warningNoData": "Neither statistical data, nor facility data are loaded. Please select some areas first with the area selection tool or load topics from the main menu.",
                     "noFeaturesWarning": "You have not selected any areas as a basis for statistical data. Please load some areas first via the area selection.",
-                    "noFacilitiesWarning": "Sie haben keine Themengebiete als Grundlage für Einrichtungsdaten ausgewählt. Bitte wählen Sie zuerst die gewünschten Themengebiete über das Hauptmenü aus.",
-                    "noData": "No data was found for the selected facility parameter in the search radius. Please change the parameter or expand your area selection",
+                    "noFacilitiesWarning": "TODO en: Sie haben keine Themengebiete als Grundlage für Einrichtungsdaten ausgewählt. Bitte wählen Sie zuerst die gewünschten Themengebiete über das Hauptmenü aus.",
+                    "noDataInSearch": "No data was found for the selected facility parameter in the search radius. Please change the parameter or expand your area selection",
+                    "noData": "No data available",
 
                     "placeholderA": "Select (counter) parameter",
                     "placeholderB": "Select (denominator) reference value",
@@ -41,6 +42,35 @@
                     "chart": {
                         "labels": {
                             "years": "Years"
+                        }
+                    },
+                    "table": {
+                        "headers": {
+                            "scope": { 
+                                "text": "Area",
+                                "help": "TODO en: In dieser Spalte werden die Identifikatoren für die jeweiligen Datensätze aufgelistet. In den meisten Fällen handelt es sich dabei um die ausgewählten Gebiete."
+                            },
+                            "paramA_val": {
+                                "help": "TODO en: Dies ist das Ergebnis der Datenabfrage des ersten Feldes (1) (links)."
+                            },
+                            "paramB_val": {
+                                "help": "TODO en: Dies ist das Ergebnis der Datenabfrage des zweiten Feldes (2) (rechts)."
+                            },
+                            "relation": {
+                                "help": "TODO en: In diesem Feld werden die Werte des Feldes (1) und des Feldes (2) durcheinander geteilt. Das Ergebnis wird auf zwei Stellen hinter dem Komma gerundet."
+                            },
+                            "capacity": {
+                                "text": "Capacity",
+                                "help": "TODO en: Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F bestimmt wurde. Es gibt an, für wieviele Einheiten der Referenzgruppe die Einrichtungen bereitgestellt werden können."
+                            },
+                            "need": {
+                                "text": "Need",
+                                "help": "TODO en: Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F ({{faktorF}}) bestimmt wurde. Es gibt an, für wieviele Einrichtungen für die Gesamtzahl der Einheiten der Referenzgruppe benötigt werden würden."
+                            },
+                            "coverage": {
+                                "text": "Coverage",
+                                "help": "TODO en: Dieses Feld gibt an, zu wieviel % der Bedarf gedeckt ist. Es wird durch den einstellbaren Faktor F ({{faktorF}}) und den einstellbaren Wert 'für X der Referenzgruppe berechnen' beeinflusst."
+                            }
                         }
                     },
                     "downloadGeoJson": "Download GeoJSON",
@@ -62,7 +92,8 @@
                     "switchFieldType": "Switch between statistical and facility data",
                     "calcPer": "calculate per",
                     "ofData": "of data",
-                    "infoTooltip": "Tool information"
+                    "infoTooltip": "Tool information",
+                    "filenameBase": "supply_analysis"
                 }
             }
         }

@@ -557,7 +557,7 @@ export default {
                     const checkForLackingData = utils.compensateLackingData(this.featureVals);
 
                     if (checkForLackingData === "error") {
-                        this.showAlert(this.$t("additional:modules.tools.cosi.calculateRatio.warningForThisArea") + ": " + district + this.$t("additional:modules.tools.cosi.calculateRatio.noData"));
+                        this.showAlert(this.$t("additional:modules.tools.cosi.calculateRatio.warningForThisArea") + ": " + district + this.$t("additional:modules.tools.cosi.calculateRatio.noDataInSearch"));
                         return;
                     }
 
@@ -682,7 +682,7 @@ export default {
             return json;
         },
         exportAsXlsx (index) {
-            exportXlsx(this.resultData(index), this.selectedYear + "_versorgungsanalyse.xls", {exclude: this.excludedPropsForExport});
+            exportXlsx(this.resultData(index), this.selectedYear + "_" + i18next.t("additional:modules.tools.cosi.calculateRatio.filenameBase"), {exclude: this.excludedPropsForExport});
         },
         /**
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.

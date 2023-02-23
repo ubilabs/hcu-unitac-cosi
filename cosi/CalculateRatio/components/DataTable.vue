@@ -38,58 +38,59 @@ export default {
         headers () {
             const head = [
                 {
-                    text: "Gebiet",
+                    text: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.scope.text"),
                     value: "scope",
                     sortable: false,
                     show: true,
-                    help: "In dieser Spalte werden die Identifikatoren für die jeweiligen Datensätze aufgelistet. In den meisten Fällen handelt es sich dabei um die ausgewählten Gebiete."
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.scope.help")
                 },
                 {
                     text: this.typeA,
                     value: "paramA_val",
                     show: true,
-                    help: "Dies ist das Ergebnis der Datenabfrage des ersten Feldes (1) (links)."
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.paramA_val.help")
                 },
                 {
                     text: this.typeB,
                     value: "paramB_val",
                     show: true,
-                    help: "Dies ist das Ergebnis der Datenabfrage des zweiten Feldes (2) (rechts)."
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.paramB_val.help")
                 },
                 {
                     text: this.typeA + " / " + this.typeB,
                     value: "relation",
                     show: true,
-                    help: "In diesem Feld werden die Werte des Feldes (1) und des Feldes (2) durcheinander geteilt. Das Ergebnis wird auf zwei Stellen hinter dem Komma gerundet."
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.relation.help")
                 },
                 {
-                    text: "Kapazität",
+                    text: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.capacity.text"),
                     value: "capacity",
                     show: this.fActive,
-                    help: "Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F bestimmt wurde. Es gibt an, für wieviele Einheiten der Referenzgruppe die Einrichtungen bereitgestellt werden können."
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.capacity.help")
                 },
                 {
-                    text: "Bedarf",
+                    text: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.need.text"),
                     value: "need",
                     show: this.fActive,
-                    help: "Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F (" + this.faktorF + ") bestimmt wurde. Es gibt an, für wieviele Einrichtungen für die Gesamtzahl der Einheiten der Referenzgruppe benötigt werden würden."
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.need.help", {faktorF: this.faktorF, interpolation: {escapeValue: false}})
                 },
                 {
                     text: "Bedarfsdeckung",
                     value: "coverage",
                     show: true,
-                    help: "Dieses Feld gibt an, zu wieviel % der Bedarf gedeckt ist. Es wird durch den einstellbaren Faktor F (" + this.faktorF + ") und den einstellbaren Wert 'für X der Referenzgruppe berechnen' beeinflusst."
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.coverage.help", {faktorF: this.faktorF, interpolation: {escapeValue: false}})
                 }
             ];
 
             return head.filter(x=>x.show);
         },
 
+        // Do we have to do something here?
         formatData () {
             return this.dataset.map(scope => ({
                 ...scope,
-                paramA_val: scope.paramA_val === undefined || scope.paramA_val === null || scope.paramA_val === "NaN" ? "Keine Daten vorhanden" : scope.paramA_val.toLocaleString("de-DE"),
-                paramB_val: scope.paramB_val === undefined || scope.paramB_val === null || scope.paramB_val === "NaN" ? "Keine Daten vorhanden" : scope.paramB_val.toLocaleString("de-DE"),
+                paramA_val: scope.paramA_val === undefined || scope.paramA_val === null || scope.paramA_val === "NaN" ? i18next.t("additional:modules.tools.cosi.calculateRatio.noData") : scope.paramA_val.toLocaleString("de-DE"),
+                paramB_val: scope.paramB_val === undefined || scope.paramB_val === null || scope.paramB_val === "NaN" ? i18next.t("additional:modules.tools.cosi.calculateRatio.noData") : scope.paramB_val.toLocaleString("de-DE"),
                 relation: scope.relation.toLocaleString("de-DE"),
                 coverage: scope.coverage.toLocaleString("de-DE") + "%",
                 capacity: scope.capacity.toLocaleString("de-DE"),

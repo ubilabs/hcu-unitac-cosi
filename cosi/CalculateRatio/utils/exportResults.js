@@ -51,7 +51,7 @@ export function exportAsGeoJson (index) {
                         color: [0, 0, 0],
                         width: 3
                     }),
-                    text: result.coverage ? parseFloat(result.coverage).toLocaleString("de-DE") : "Keine Daten vorhanden"
+                    text: result.coverage ? parseFloat(result.coverage).toLocaleString("de-DE") : i18next.t("additional:modules.tools.cosi.calculateRatio.noData")
                 })
             });
 
@@ -73,5 +73,5 @@ export function exportAsGeoJson (index) {
         }
     }
 
-    downloadJsonToFile(featureCollection, "Versorgungsanalyse_CoSI.geojson");
+    downloadJsonToFile(featureCollection, i18next.t("additional:modules.tools.cosi.calculateRatio.filenameBase") + "_CoSI.geojson");
 }
