@@ -4,18 +4,45 @@
             "cosi": {
                 "calculateRatio": {
                     "title": "Supply Analysis",
+                    "name": "Ratio",
                     "description": "With the coverage analysis you can determine the coverage of an area with a certain type of facility / infrastructure (see 'Topics').",
+                    "availableColumns": {
+                        "ratio": "Ratio",
+                        "coverage": "Demand coverage (%)",
+                        "capacity": "Capacity",
+                        "need": "Need"
+                    },
+                    "results": {
+                        "all": "Total",
+                        "mean": "Mean",
+                        "count": "Count"
+                    },
+                    "features": {
+                        "type": {
+                            "summable": "Summable"
+                        }
+                    },
                     "dataA": "Facilities",
                     "dataB": "Statistical Data",
+
+                    "warning": "Warnung",
+                    "warningForThisArea": "Warning for this area",
                     "warningNoData": "Neither statistical data, nor facility data are loaded. Please select some areas first with the area selection tool or load topics from the main menu.",
                     "noFeaturesWarning": "You have not selected any areas as a basis for statistical data. Please load some areas first via the area selection.",
                     "noFacilitiesWarning": "Sie haben keine Themengebiete als Grundlage für Einrichtungsdaten ausgewählt. Bitte wählen Sie zuerst die gewünschten Themengebiete über das Hauptmenü aus.",
+                    "noData": "No data was found for the selected facility parameter in the search radius. Please change the parameter or expand your area selection",
+
                     "placeholderA": "Select (counter) parameter",
                     "placeholderB": "Select (denominator) reference value",
-                    "noData": "No data was found for the selected facility parameter in the search radius. Please change the parameter or expand your area selection",
                     "addedSelection": "Sum of selection",
+                    "visualization": "Visualization",
                     "visualizeMap": "Visualize selected dataset in map",
                     "visualizeChart": "generate chart from dataset",
+                    "chart": {
+                        "labels": {
+                            "years": "Years"
+                        }
+                    },
                     "downloadGeoJson": "Download GeoJSON",
                     "downloadGeoJsonTooltip": "Download results as geodata (GeoJSON)",
                     "downloadXlsx": "Download XLSX",

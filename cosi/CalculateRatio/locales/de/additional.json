@@ -4,18 +4,45 @@
             "cosi": {
                 "calculateRatio": {
                     "title": "Versorgungsanalyse",
+                    "name": "Verhältnis",
                     "description": "Mit der Versorgungsanalyse können Sie die Abdeckung eines Gebietes mit einem bestimmten Einrichtungstyp / Infrastruktur ermitteln (s. 'Themen'). Sie können durch einen Klick auf 'Einrichtungen' auch mehrere statistische Werte verrechnen.",
+                    "availableColumns": {
+                        "ratio": "Verhältnis",
+                        "coverage": "Bedarfsdeckung (%)",
+                        "capacity": "Kapazität",
+                        "need": "Bedarf"
+                    },
+                    "results": {
+                        "all": "Gesamt",
+                        "mean": "Durchschnitt",
+                        "count": "Anzahl"
+                    },
+                    "features": {
+                        "type": {
+                            "summable": "Aufsummierbar"
+                        }
+                    },
                     "dataA": "Einrichtungen",
                     "dataB": "Statistische Daten",
+
+                    "warning": "Warnung",
+                    "warningForThisArea": "Warnung für das Gebiet",
                     "warningNoData": "Es sind weder statistische Daten, noch Themendaten geladen. Bitte wählen Sie mit der Gebietsauswahl zuerst einige Gebiete aus oder Laden Sie Themen aus dem Hauptmenü.",
                     "noFeaturesWarning": "Sie haben keine Gebiete als Grundlage für statistische Daten ausgewählt. Bitte laden Sie zuerst einige Gebiete über die Gebietsauswahl.",
                     "noFacilitiesWarning": "Sie haben keine Themengebiete als Grundlage für Einrichtungsdaten ausgewählt. Bitte wählen Sie zuerst die gewünschten Themengebiete über das Hauptmenü aus.",
+                    "noData": "Im Suchradius wurden leider keine Daten für den ausgewählten Einrichtungsparameter gefunden. Bitte wechseln Sie den Parameter oder erweitern Sie Ihre Gebietsauswahl.",
+
                     "placeholderA": "Paramenter (Zähler) auswählen",
                     "placeholderB": "Referenzwert (Nenner) auswählen",
-                    "noData": "Im Suchradius wurden leider keine Daten für den ausgewählten Einrichtungsparameter gefunden. Bitte wechseln Sie den Parameter oder erweitern Sie Ihre Gebietsauswahl.",
                     "addedSelection": "Aufsummierte Auswahl",
+                    "visualization": "Visualisierung",
                     "visualizeMap": "Ausgewählten Datensatz auf Karte visualisieren",
                     "visualizeChart": "Graph aus Datensatz erzeugen",
+                    "chart": {
+                        "labels": {
+                            "years": "Jahre"
+                        }
+                    },
                     "downloadGeoJson": "Download GeoJSON",
                     "downloadGeoJsonTooltip": "Ergebnisse als Geodaten (GeoJSON) herunterladen",
                     "downloadXlsx": "Download XLS",
