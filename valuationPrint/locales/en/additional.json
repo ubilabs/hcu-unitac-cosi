@@ -18,7 +18,10 @@
               "imageInTheMaking": "{{imageName}} is in progress.",
               "imageSuccess": "{{imageName}} is ready.",
               "imageError": "{{imageName}} failed.",
-              "downloadAll": "Download All"
+              "downloadAll": "Download All",
+              "cancel": "Cancel",
+              "type": "Art:",
+              "number": "Geschäfszeichen:"
           }
         }
     }

@@ -18,7 +18,10 @@
               "imageInTheMaking": "{{imageName}} wird erstellt.",
               "imageSuccess": "{{imageName}} wurde erstellt.",
               "imageError": "Fehler beim Erzeugen vom {{imageName}}.",
-              "downloadAll": "Alle Herunterladen"
+              "downloadAll": "Alle Herunterladen",
+              "cancel": "Abbrechen",
+              "type": "Art:",
+              "number": "Geschäfszeichen:"
           }
       }
   }
