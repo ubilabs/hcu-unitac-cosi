@@ -45,6 +45,7 @@ const state = {
     mappingPath: undefined,
     mappingInit: MappingJson,
     readmeUrl: {
+        // TODO: English doc is missing
         "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/districtselector.md",
         "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/gebietsauswahl.md"
     }
