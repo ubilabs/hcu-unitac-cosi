@@ -306,7 +306,10 @@ export default {
                     <v-subheader>
                         {{ $t("additional:modules.tools.cosi.featureEditor.editFeature") }}
                     </v-subheader>
-                    <ToolInfo :url="subReadMeUrl[currentLocale]" />
+                    <ToolInfo
+                        :url="subReadMeUrl[currentLocale]"
+                        :title="$t('additional:modules.tools.cosi.featureEditor.toolinfo.title')"
+                    />
                     <v-card-title primary-title>
                         {{ selectedFeature.properties[selectedFeature.layerMap.keyOfAttrName] }}
                     </v-card-title>

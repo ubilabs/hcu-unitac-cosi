@@ -93,7 +93,10 @@
                     "calcPer": "calculate per",
                     "ofData": "of data",
                     "infoTooltip": "Tool information",
-                    "filenameBase": "supply_analysis"
+                    "filenameBase": "supply_analysis",
+                    "toolinfo": {
+                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    }
                 }
             }
         }

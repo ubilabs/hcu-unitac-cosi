@@ -252,7 +252,7 @@ export default {
             <v-file-input
                 v-model="uploadedTemplate"
                 accept="application/JSON"
-                label="Reportvorlage importieren.."
+                :label="$t('additional:modules.tools.cosi.reportTemplates.importTemplate')"
                 dense
             />
             <v-divider />
@@ -289,7 +289,7 @@ export default {
                                         <v-text-field
                                             v-model="templateItem.title"
                                             class="text-xl-h4 textfieldtitle"
-                                            label="Titel"
+                                            :label="$t('additional:modules.tools.cosi.reportTemplates.titleHeader')"
                                             filled
                                         />
                                     </v-col>
@@ -299,7 +299,7 @@ export default {
                                     <v-col cols="12">
                                         <v-textarea
                                             v-model="templateItem.description"
-                                            label="Beschreibung"
+                                            :label="$t('additional:modules.tools.cosi.reportTemplates.description')"
                                             class=""
                                         />
                                     </v-col>
@@ -309,7 +309,7 @@ export default {
                                     <v-col cols="12">
                                         <v-select
                                             v-model="templateItem.tool"
-                                            label="Tool wählen"
+                                            :label="$t('additional:modules.tools.cosi.reportTemplates.chooseTool')"
                                             :items="supportedTools"
                                         />
                                     </v-col>
@@ -321,7 +321,7 @@ export default {
                                     >
                                         <v-icon>
                                             mdi-map-marker-down
-                                        </v-icon> Datenauswahl übernehmen
+                                        </v-icon> {{ $t('additional:modules.tools.cosi.reportTemplates.adoptDataSelection') }}
                                         <v-icon v-if="templateItem.hasDataSelection">
                                             mdi-check-bold
                                         </v-icon>
@@ -349,7 +349,7 @@ export default {
                                     >
                                         <v-icon>
                                             mdi-map-marker-right
-                                        </v-icon> Gespeicherte Datenauswahl anwenden
+                                        </v-icon> {{ $t('additional:modules.tools.cosi.reportTemplates.useSavedDataSelection') }}
                                     </v-btn><br><br>
                                 </v-row>
                                 <!-- get tool settings -->
@@ -363,7 +363,7 @@ export default {
                                         <!-- get tool settings button -->
                                         <v-icon>
                                             mdi-refresh
-                                        </v-icon> Aktuelle Tool Einstellungen übernehmen
+                                        </v-icon> {{ $t('additional:modules.tools.cosi.reportTemplates.useCurrentSettings') }}
                                         <v-icon v-if="templateItem.hasSettings">
                                             mdi-check-bold
                                         </v-icon>
@@ -387,7 +387,7 @@ export default {
                                     >
                                         <v-icon>
                                             mdi-play
-                                        </v-icon> Tool anwenden
+                                        </v-icon> {{ $t('additional:modules.tools.cosi.reportTemplates.applyTool') }}
                                         <v-icon v-if="templateItem.hasOutput">
                                             mdi-check-bold
                                         </v-icon>
@@ -447,7 +447,7 @@ export default {
                 <v-row>
                     <v-select
                         v-model="selectedExportFormat"
-                        label="Export Format"
+                        :label="$t('additional:modules.tools.cosi.reportTemplates.exportFormat')"
                         :items="supportedExportFormats"
                     />
                 </v-row>
@@ -456,7 +456,7 @@ export default {
                         color="grey lighten-1"
                         @click="exportTemplate()"
                     >
-                        Exportieren
+                        {{ $t('additional:modules.tools.cosi.reportTemplates.export') }}
                     </v-btn>
                 </v-row>
                 <br>
@@ -466,7 +466,7 @@ export default {
                         color="grey lighten-1"
                         @click="downloadObjectAsJson(templateItems,'template')"
                     >
-                        Template speichern
+                        {{ $t('additional:modules.tools.cosi.reportTemplates.saveTemplate') }}
                     </v-btn>
                 </v-row>
             </v-container>

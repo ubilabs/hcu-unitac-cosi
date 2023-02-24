@@ -838,6 +838,7 @@ export default {
                 <div class="addon_wrapper">
                     <ToolInfo
                         :url="readmeUrl"
+                        :title="$t('additional:modules.tools.cosi.calculateRatio.toolinfo.title')"
                         :locale="currentLocale"
                     />
                     <p class="section intro">

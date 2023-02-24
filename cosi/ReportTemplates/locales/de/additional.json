@@ -3,7 +3,18 @@
         "tools": {
             "cosi": {
                 "reportTemplates": {
-                    "title": "Report Template"
+                    "title": "Report Template",
+                    "titleHeader": "Titel",
+                    "importTemplate": "Reportvorlage importieren...",
+                    "description": "Beschreibung",
+                    "chooseTool": "Tool wählen",
+                    "adoptDataSelection": "Datenauswahl übernehmen",
+                    "useSavedDataSelection": "Gespeicherte Datenauswahl anwenden",
+                    "useCurrentSettings": "Aktuelle Tool Einstellungen übernehmen",
+                    "applyTool": "Tool anwenden",
+                    "exportFormat": "Export Format",
+                    "export": "Exportieren",
+                    "saveTemplate": "Template speichern"
                 }
             }
         }

@@ -83,7 +83,7 @@ export function generateGraphObj (graphData, districtLevelLabel, category, times
         type: ["LineChart", "BarChart", "PieChart"],
         color: "rainbow",
         source: "Dashboard",
-        scaleLabels: [category, "Jahre"],
+        scaleLabels: [category, "$t('additional:modules.tools.cosi.dashboard.years')"],
         data: {
             labels: [...timestamps].reverse(),
             datasets: graphData
@@ -168,7 +168,7 @@ export function generateChartsForItems (data, districtCols, districtLevelLabel, 
                 type: ["LineChart", "BarChart"],
                 color: "rainbow",
                 source: "Dashboard",
-                scaleLabels: ["", "Jahre"],
+                scaleLabels: ["", "$t('additional:modules.tools.cosi.dashboard.years')"],
                 data: chartData
             });
         });

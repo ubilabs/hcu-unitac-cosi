@@ -51,7 +51,10 @@
                     "paginationDownloadAll": "Download all results as GeoJSON",
                     "paginationPrev": "Select previous result",
                     "paginationNext": "Select next result",
-                    "noChoicePlaceholder": "No choices"
+                    "noChoicePlaceholder": "No choices",
+                    "toolinfo": {
+                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    }
                 }
             }
         }

@@ -38,7 +38,16 @@
                         "charts": "Charts",
                         "standardCharts": "Create bar- / line- / pie chart",
                         "chartForMultipleRows": "Chart for selected rows",
-                        "correlationChart": "Create correlation / scatter chart"
+                        "correlationChart": "Create correlation / scatter chart",
+                        "visualizationMustBeActive": "Visualisierung in der Karte muss aktiv sein."
+                    },
+                    "more": "weitere",
+                    "years": "Years",
+                    "help": {
+                        "open": "TODO en: Anmerkungen öffnen"
+                    },
+                    "toolinfo": {
+                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
                     }
                 }
             }

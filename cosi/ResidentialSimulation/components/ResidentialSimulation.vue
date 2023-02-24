@@ -41,7 +41,7 @@ export default {
             editStatsTable: false,
             geometry: null,
             neighborhood: {
-                name: "Mein Wohnquartier",
+                name: this.$t("additional:modules.tools.cosi.residentialSimulation.myQuarter"),
                 area: 0,
                 residents: 0,
                 avgHouseholdSize: 2.5,
@@ -421,6 +421,7 @@ export default {
             >
                 <ToolInfo
                     :url="readmeUrl"
+                    :title="$t('additional:modules.tools.cosi.residentialSimulation.toolinfo.title')"
                     :locale="currentLocale"
                 />
                 <v-app absolute>
@@ -436,7 +437,7 @@ export default {
                                 </span>
                             </div>
                             <div class="mb-2">
-                                Neue fiktive Wohnquartiere mitsamt Bewohnerstruktur anlegen und die statistischen Daten im Gebiet entsprechend modifizieren.
+                                {{ $t('additional:modules.tools.cosi.residentialSimulation.description') }}
                             </div>
                             <ReferenceDistrictPicker
                                 :groups-list="groupsList"
@@ -455,12 +456,12 @@ export default {
                             </div>
                             <v-row dense>
                                 <v-col cols="3">
-                                    <v-subheader>Name</v-subheader>
+                                    <v-subheader>{{ $t('additional:modules.tools.cosi.residentialSimulation.headers.name') }} </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-text-field
                                         v-model="neighborhood.name"
-                                        label="Quartiername"
+                                        :label="$t('additional:modules.tools.cosi.residentialSimulation.headers.quartersName')"
                                     />
                                 </v-col>
                             </v-row>
@@ -472,7 +473,7 @@ export default {
                             />
                             <v-row dense>
                                 <v-col cols="3">
-                                    <v-subheader>Grundfläche</v-subheader>
+                                    <v-subheader> {{ $t('additional:modules.tools.cosi.residentialSimulation.headers.floorSpace') }} </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-text-field
@@ -485,13 +486,13 @@ export default {
                             </v-row>
                             <v-row dense>
                                 <v-col cols="3">
-                                    <v-subheader>Bewohnerzahl insgesamt</v-subheader>
+                                    <v-subheader> {{ $t('additional:modules.tools.cosi.residentialSimulation.headers.inhabitantsTotal') }} </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <v-text-field
                                         v-model="neighborhood.residents"
-                                        label="Einwohner gesamt"
-                                        suffix="EW"
+                                        :label="$t('additional:modules.tools.cosi.residentialSimulation.residentsTotalLabel')"
+                                        :suffix="$t('additional:modules.tools.cosi.residentialSimulation.residentsTotalSuffix')"
                                         @input="updateResidents"
                                     />
                                 </v-col>
@@ -600,7 +601,7 @@ export default {
                             </v-row>
                             <v-row dense>
                                 <v-col cols="3">
-                                    <v-subheader>Bevölkerungsdichte</v-subheader>
+                                    <v-subheader> {{ $t('additional:modules.tools.cosi.residentialSimulation.populationDensity') }} </v-subheader>
                                 </v-col>
                                 <v-col cols="9">
                                     <SimpleSlider
@@ -714,7 +715,7 @@ export default {
                                                 color="primary"
                                                 @click="$refs.datePicker.save(neighborhood.year)"
                                             >
-                                                OK
+                                                {{ $t('additional:modules.tools.cosi.residentialSimulation.ok') }}
                                             </v-btn>
                                         </v-date-picker>
                                     </v-menu>

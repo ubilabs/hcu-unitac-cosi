@@ -12,7 +12,10 @@
                     "loadLast": "Restore last session?",
                     "clear": "Clear cached session",
                     "filenamePrompt": "Name your session",
-                    "newSession": "New Session"
+                    "newSession": "New Session",
+                    "toolinfo": {
+                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    }
                 }
             }
         }

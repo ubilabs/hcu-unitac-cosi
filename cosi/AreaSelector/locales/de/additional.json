@@ -5,8 +5,11 @@
                 "areaSelector": {
                     "title": "Manuelle Flächenauswahl",
                     "drawPolygon": "Polygon zeichnen",
-                    "info": "Ein Polygon zeichnen für das Einrichtungen/Fachdaten geladen werden sollen.",
-                    "requestInhabitants": "Einwohnerabfrage"
+                    "requestInhabitants": "Einwohnerabfrage",
+                    "toolinfo": {
+                        "title": "Werkzeuginformationen (Link öffnen)",
+                        "info": "Ein Polygon zeichnen für das Einrichtungen/Fachdaten geladen werden sollen."
+                    }
                 }
             }
         }

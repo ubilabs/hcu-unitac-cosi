@@ -38,11 +38,11 @@
                 "rainbow": "Rainbow color spectrum",
                 "successfullyImportedLabel": "Successfully imported:",
                 "title": "Import file",
-                "layerButton": "Layer hinzufügen",
+                "layerButton": "Add layer",
                 "preNum": "Numerical Values",
-                "filter": "Filterdaten",
+                "filter": "Filter properties",
                 "address": "address data",
-                "facility": "Einrichtungsdaten",
+                "facility": "Sorting properties",
                 "styling": "Styling",
                 "featuresInfo": "Here you can see a list of all possible numerical values of the loaded layer that you can use for analysis purposes in CoSI's tools. Select the relevant values and rename them as desired.",
                 "featuresInfoStyling": "Please determine a styling on the basis of which the topics are to be visualized. Click on the colored square to open the color selection tool.",
@@ -67,7 +67,10 @@
                 "namensfeldTooltip": "If there is an object property that contains the individual name of each entry, please specify it here.",
                 "stylefeldTooltip": "Select by which property the data should be colored",
                 "crsTooltip": "If the data from your file is not visualized in the correct locations, it may be that your file is encoded in a different projection system. Please check the projection system of your data and select it when uploading",
-                "infoTooltip": "Tool information"
+                "infoTooltip": "Tool information",
+                "toolinfo": {
+                    "title": "TODO en: Werkzeuginformationen (Link öffnen)"
+                }
             }
         }
     }

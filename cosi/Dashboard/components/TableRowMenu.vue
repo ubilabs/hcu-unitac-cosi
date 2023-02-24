@@ -116,7 +116,7 @@ export default {
                             <v-list-item
                                 dense
                                 :disabled="!_item.visualized"
-                                :title="!_item.visualized ? 'Visualisierung in der Karte muss aktiv sein.' : ''"
+                                :title="!_item.visualized ? $t('additional:modules.tools.cosi.dashboard.tableRowMenu.visualizationMustBeActive') : ''"
                                 @click="setShowMapNames(!showMapNames)"
                             >
                                 <v-list-item-icon>

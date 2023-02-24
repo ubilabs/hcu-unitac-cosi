@@ -1,7 +1,7 @@
 [
     {
         "title": "Sportangebot",
-        "description": "Die entfernung zu Sportstaetten innerhalb von 5 Minuten mit dem Auto",
+        "description": "Die Entfernung zu Sportstaetten innerhalb von 5 Minuten mit dem Auto",
         "tool": "AccessibilityAnalysis",
         "settings":
         {

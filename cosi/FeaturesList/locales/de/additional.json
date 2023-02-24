@@ -51,6 +51,9 @@
                         "commentsVotingText": " Anzahl Kommentare nach Voting",
                         "voting": "Voting",
                         "allProjects": "Alle Verfahren"
+                    },
+                    "toolinfo": {
+                        "title": "Werkzeuginformationen (Link öffnen)"
                     }
                 }
             }

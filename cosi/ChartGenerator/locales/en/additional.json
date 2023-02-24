@@ -11,7 +11,7 @@
                     "PieChart": "Pie Chart",
                     "ScatterChart": "Scatterplot",
                     "RadarChart": "Radar Chart",
-                    "switchChartType": "Switch chart type for dataset",
+                    "switchChartType": " - switch chart type for dataset",
                     "removeChart": "Remove this chart",
                     "deleteAll": "Remove all charts",
                     "downloadChart": "Download this chart as PNG",
@@ -22,7 +22,10 @@
                     "yToZero": "Scale Y-Axis",
                     "yToZeroTooltip": "Start Y-Axis at 0 or resp. at the lowest possible value",
                     "yStacked": "Stack Y-Axis",
-                    "source": "Source"
+                    "source": "Source",
+                    "toolinfo": {
+                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    }
                 }
             }
         }

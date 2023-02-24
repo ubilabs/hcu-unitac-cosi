@@ -573,6 +573,7 @@ export default {
                 <v-app>
                     <ToolInfo
                         :url="readmeUrl"
+                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.toolinfo.title')"
                         :locale="currentLocale"
                     />
                     <div

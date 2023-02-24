@@ -4,6 +4,8 @@
             "cosi": {
                 "districtSelector": {
                     "title": "Select Area",
+                    "quarters": "TODO en: Quarters",
+                    "districts": "TODO en: Districts",
                     "dropdownLabel": "Please select an administrative level to work on",
                     "districtLevel": "Administrative Level",
                     "multiDropdownLabel": "Areas",
@@ -20,6 +22,9 @@
                     "dataLoading": "Loading data...",
                     "errors": {
                         "dataNotLoaded": "Not all datasets could be loaded entirely! Please try again later. If the issue persists please use the contact form."
+                    },
+                    "toolinfo": {
+                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
                     }
                 }
             }

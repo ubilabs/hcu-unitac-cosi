@@ -4,6 +4,8 @@
             "cosi": {
                 "districtSelector": {
                     "title": "Gebiet auswählen",
+                    "quarters": "Stadtteile",
+                    "districts": "Bezirke",
                     "dropdownLabel": "Bitte wählen Sie einen Bezugsrahmen aus",
                     "districtLevel": "Bezugsrahmen",
                     "multiDropdownLabel": "Gebiete",
@@ -20,6 +22,9 @@
                     "dataLoading": "Datensätze werden geladen",
                     "errors": {
                         "dataNotLoaded": "Es konnten nicht alle Datensätze vollständig geladen werden! Bitte versuchen Sie es später erneut. Sollte der Fehler weiterhin bestehen nutzen Sie bitte das Kontaktformular."
+                    },
+                    "toolinfo": {
+                        "title": "Werkzeuginformationen (Link öffnen)"
                     }
                 }
             }

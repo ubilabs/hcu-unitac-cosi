@@ -36,9 +36,23 @@
                     "paginationRemove": "Diese Analysedaten entfernen",
                     "paginationRemoveAll": "Alle Analysedaten entfernen",
                     "paginationPrev": "Den vorherigen Analysedatensatz auswählen",
-                    "paginationNext": "Den nächsten Analysedatensatz auswählen"
-
-
+                    "paginationNext": "Den nächsten Analysedatensatz auswählen",
+                    "headers": {
+                        "referenceDistrict": "Referenzgebiet",
+                        "filterNumber": "Filter-Nr.",
+                        "name": "Name",
+                        "attribute": "Attribut",
+                        "quotient": "Quotient",
+                        "field": "Feld",
+                        "minimum": "Min.",
+                        "maximum": "Max.",
+                        "referenceValue": "Ref.-Wert",
+                        "minusTolerance": "- Toleranz",
+                        "plusTolerance": "+ Toleranz"
+                    },
+                    "toolinfo": {
+                        "title": "Werkzeuginformationen (Link öffnen)"
+                    }
                 }
             }
         }

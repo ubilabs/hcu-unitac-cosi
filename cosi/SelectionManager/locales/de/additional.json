@@ -21,7 +21,10 @@
                     "title_connect_selections": "Alle aktiven Auswahlen mit Polygon verbinden",
                     "title_slider": "Buffer (m) einstellen",
                     "title_toggle_buffer": "Bufferauswahl aktivieren",
-                    "title_buffer_selection": "Buffer als Auswahl festlegen"
+                    "title_buffer_selection": "Buffer als Auswahl festlegen",
+                    "toolinfo": {
+                        "title": "Werkzeuginformationen (Link öffnen)"
+                    }
                 }
             }
         }

@@ -26,7 +26,10 @@
                     "defineFeature": "Neue Einrichtung definieren",
                     "undo": "Schritt zurück",
                     "pick": "Polygon in der Karte wählen",
-                    "editFeature": "Simulierte Einrichtung löschen?"
+                    "editFeature": "Simulierte Einrichtung löschen?",
+                    "toolinfo": {
+                        "title": "Werkzeuginformationen (Link öffnen)"
+                    }
                 },
                 "moveFeatures": {
                     "title": "Einrichtungen verschieben",
@@ -39,6 +42,7 @@
                 },
                 "scenarioManager": {
                     "title": "Szenariomanager",
+                    "description": "Anlegen und Verwalten der Szenarien für fiktive Daten. In einem Szenario können Einrichtungen und Wohnquartiere simuliert, sowie bestehende Einrichtungen verändert werden.",
                     "createNewTitle": "Neues Szenario anlegen",
                     "createNewSubmit": "Anlegen",
                     "dublicateName": "Bitte wählen Sie einen anderen Namen",
@@ -82,7 +86,10 @@
                     "noScenarioWarning": "Bitte erstellen Sie erst ein Szenario um Einrichtungen bearbeiten zu können.",
                     "reset": "Zurücksetzen",
                     "confirmDelete": "Möchten Sie die ausgewählte Einrichtung wirklich löschen?",
-                    "confirmReset": "Möchten Sie die ausgewählte Einrichtung wirklich auf ihren Ursprungszustand zurücksetzen?"
+                    "confirmReset": "Möchten Sie die ausgewählte Einrichtung wirklich auf ihren Ursprungszustand zurücksetzen?",
+                    "toolinfo": {
+                        "title": "Werkzeuginformationen (Link öffnen)"
+                    }
                 }
             }
         }

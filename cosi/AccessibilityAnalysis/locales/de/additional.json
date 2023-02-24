@@ -51,7 +51,10 @@
                     "paginationDownloadAll": "Alle Ergebnisse in der Erreichbarkeitsanalyse als Geodaten (GeoJSON) herunterladen",
                     "paginationPrev": "Das vorherige Ergebnis anzeigen",
                     "paginationNext": "Das nächste Ergebnis anzeigen",
-                    "noChoicePlaceholder": "Keine Auswahl"
+                    "noChoicePlaceholder": "Keine Auswahl",
+                    "toolinfo": {
+                        "title": "Werkzeuginformationen (Link öffnen)"
+                    }
                 }
             }
         }

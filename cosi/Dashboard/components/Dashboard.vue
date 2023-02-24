@@ -41,6 +41,9 @@ export default {
         DashboardToolbar,
         TableCell
     },
+    i18nOptions: {
+        keyPrefix: "additional:modules.tools.cosi.dashboard"
+    },
     data () {
         return {
             dashboardOpen: false,
@@ -48,7 +51,7 @@ export default {
             baseColumns: [
                 {
                     value: "category",
-                    text: this.$t("additional:modules.tools.cosi.dashboard.categoryCol"),
+                    text: this.$t("categoryCol"),
                     sortable: false,
                     groupable: false,
                     filter: this.filterTable
@@ -61,7 +64,7 @@ export default {
                 },
                 {
                     value: "years",
-                    text: this.$t("additional:modules.tools.cosi.dashboard.timestampCol"),
+                    text: this.$t("timestampCol"),
                     filterable: false,
                     sortable: false,
                     divider: true,
@@ -70,7 +73,7 @@ export default {
             ],
             aggregateColumns: [
                 {
-                    text: this.$t("additional:modules.tools.cosi.dashboard.totalCol"),
+                    text: this.$t("totalCol"),
                     value: "total",
                     align: "end",
                     sortable: false,
@@ -79,7 +82,7 @@ export default {
                     isAggregation: true
                 },
                 {
-                    text: this.$t("additional:modules.tools.cosi.dashboard.avgCol"),
+                    text: this.$t("avgCol"),
                     value: "average",
                     align: "end",
                     sortable: false,
@@ -511,7 +514,7 @@ export default {
                 data = exportTimeline
                     ? this.prepareTableExportWithTimeline(items, this.selectedDistrictNames, this.timestamps, this.timestampPrefix)
                     : this.prepareTableExport(items, this.selectedDistrictNames, this.selectedYear, this.timestampPrefix),
-                filename = composeFilename(this.$t("additional:modules.tools.cosi.dashboard.exportFilename"));
+                filename = composeFilename(this.$t("exportFilename"));
 
             exportXlsx(data, filename, {exclude: [...this.excludedPropsForExport, ...this.unselectedColumnLabels]});
         },
@@ -647,7 +650,7 @@ export default {
 <template lang="html">
     <Tool
         class="no-scroll"
-        :title="$t('additional:modules.tools.cosi.dashboard.title')"
+        :title="$t('title')"
         :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
@@ -666,6 +669,7 @@ export default {
                 <v-main>
                     <ToolInfo
                         :url="readmeUrl"
+                        :title="$t('toolinfo.title')"
                         :locale="currentLocale"
                     />
                     <v-container fluid>
@@ -699,7 +703,7 @@ export default {
                                         v-model="currentTimeStamp"
                                         :items="timestamps"
                                         :height="20"
-                                        :label="$t('additional:modules.tools.cosi.dashboard.timestampCol')"
+                                        :label="$t('timestampCol')"
                                         dense
                                         hide-details
                                     />
@@ -725,7 +729,7 @@ export default {
                                                 class="move-col left"
                                                 icon
                                                 x-small
-                                                :title="$t('additional:modules.tools.cosi.dashboard.moveColLeft')"
+                                                :title="$t('moveColLeft')"
                                                 @click="moveCol(district, 0)"
                                             >
                                                 <v-icon>mdi-chevron-left</v-icon>
@@ -734,7 +738,7 @@ export default {
                                                 class="move-col right"
                                                 icon
                                                 x-small
-                                                :title="$t('additional:modules.tools.cosi.dashboard.moveColRight')"
+                                                :title="$t('moveColRight')"
                                                 @click="moveCol(district, 1)"
                                             >
                                                 <v-icon>mdi-chevron-right</v-icon>
@@ -743,7 +747,7 @@ export default {
                                                 class="move-col minimize"
                                                 icon
                                                 x-small
-                                                :title="$t('additional:modules.tools.cosi.dashboard.minimizeCol')"
+                                                :title="$t('minimizeCol')"
                                                 @click="minimizeCol(district)"
                                             >
                                                 <v-icon>{{ district.minimized ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
@@ -857,7 +861,7 @@ export default {
                                                 </template>
                                             </div>
                                         </template>
-                                        <span>{{ $t('additional:modules.tools.cosi.dashboard.totalCol') }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
+                                        <span>{{ $t('totalCol') }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
                                     </v-tooltip>
                                 </template>
 
@@ -898,7 +902,7 @@ export default {
                                                 </template>
                                             </div>
                                         </template>
-                                        <span>{{ $t('additional:modules.tools.cosi.dashboard.avgCol') }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
+                                        <span>{{ $t('avgCol') }} {{ item.expanded ? '' : `(${currentTimeStamp})` }}</span>
                                     </v-tooltip>
                                 </template>
                             </v-data-table>
@@ -911,7 +915,7 @@ export default {
                     color="primary"
                     class="name-input"
                 >
-                    {{ $t('additional:modules.tools.cosi.dashboard.nameCalc') }}
+                    {{ $t('nameCalc') }}
                     <v-text-field
                         id="title-field"
                         v-model="calculationData.id"
@@ -923,7 +927,7 @@ export default {
                             id="confirm-calc"
                             v-bind="attrs"
                             text
-                            :title="$t('additional:modules.tools.cosi.dashboard.tableRowMenu.calculate')"
+                            :title="$t('tableRowMenu.calculate')"
                             @click="addCalculation(
                                 calculationData.operation,
                                 {field_A: calculationData.field_A, field_B: calculationData.field_B, selectedItems: calculationData.selectedItems},

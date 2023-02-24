@@ -14,7 +14,10 @@
                     "selectedDistricts": "Ausgewählte Gebiete",
                     "activeTool": "Aktive Werkzeuge",
                     "categories": "Statistische Daten",
-                    "calculations": "Berechnungen"
+                    "calculations": "Berechnungen",
+                    "toolinfo": {
+                        "title": "Werkzeuginformationen (Link öffnen)"
+                    }
                 }
             }
         }

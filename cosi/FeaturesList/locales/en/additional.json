@@ -45,6 +45,9 @@
                         "commentsVotingText": " number of comments by voting",
                         "voting": "voting",
                         "allProjects": "All projects"
+                    },
+                    "toolinfo": {
+                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
                     }
                 }
             }
