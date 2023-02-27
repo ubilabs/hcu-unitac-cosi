@@ -25,10 +25,10 @@ const state = {
     activeSelection: null,
     acceptSelection: null, // other tools can commit to this variable. Then, a new selection is added and set as active.
     readmeUrl: {
-        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/colorcodemap.md",
-        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/kartenvisualisierung.md",
-        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/colorcodemap.md",
-        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/cosi-prod/cosi/manuals/kartenvisualisierung.md"
+        "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/dev/cosi/manuals/colorcodemap.md",
+        "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/dev/cosi/manuals/kartenvisualisierung.md",
+        "en": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/dev/cosi/manuals/colorcodemap.md",
+        "de": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/dev/cosi/manuals/kartenvisualisierung.md"
     }
 };
 

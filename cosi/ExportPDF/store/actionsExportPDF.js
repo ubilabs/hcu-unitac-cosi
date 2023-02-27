@@ -37,7 +37,26 @@ function reportTemplateToPDF (context, chapters) {
         const title = {text: chapter.title, style: "header", bold: true, fontSize: 14},
             desc = {text: chapter.description, style: "header"},
             tool = {text: chapter.tool, style: "header"};
-            // settings = {text: chapter.settings, style: "header"};
+        let sourceInfo = "Quelleninformation fehlt.";
+
+        if (chapter.output.sourceInfo) {
+
+            sourceInfo = Object.values(chapter.output.sourceInfo).map((metadata)=>{
+
+                const metadata_no_html_p_tags = metadata;
+
+                // remove html tags
+                metadata_no_html_p_tags.Abstrakt = metadata.Abstrakt.replace(/<p>/g, "\n").replace(/<\/p>/g, "\n");
+                return Object.values(metadata_no_html_p_tags).map((info, index)=>{
+                    return Object.keys(metadata_no_html_p_tags)[index] + ": " + info;
+                });
+            });
+            sourceInfo = sourceInfo.map(x=>{ // add line breaks between sources
+                return [x, "\n"];
+            });
+
+
+        }
 
         docDefinition.content.push(title);
         docDefinition.content.push("\n"); // add line break
@@ -85,6 +104,7 @@ function reportTemplateToPDF (context, chapters) {
 
         docDefinition.content.push("\n"); // add line break
         docDefinition.content.push("\n"); // add line break
+        docDefinition.content.push("Datenquellen:\n\n", sourceInfo);
     }
 
     chapters.forEach(addChapter);

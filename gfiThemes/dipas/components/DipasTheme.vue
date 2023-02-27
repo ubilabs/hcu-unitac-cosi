@@ -1,4 +1,5 @@
 <script>
+import styleList from "@masterportal/masterportalapi/src/vectorStyle/styleList";
 import {mapGetters} from "vuex";
 
 export default {
@@ -16,22 +17,20 @@ export default {
         /**
          * Generates the path for gfi icons.
          * @param  {String} value - gfi feature attribute value for 'Kategorie'(Thema)
-         * @fires StyleList#RadioRequestStyleListReturnModeById
          * @returns {String} the path to the icons
          */
         calculateIconPath (value) {
-            const styleModel = Radio.request("StyleList", "returnModelById", "contributions");
+            const styleObject = styleList.returnStyleObject("contributions");
             let valueStyle,
                 iconPath = this.feature.getTheme()?.params?.gfiIconPath;
 
-            if (styleModel) {
-                if (styleModel.has("rules") && styleModel.get("rules").length > 0) {
-                    valueStyle = styleModel.get("rules").filter(function (rule) {
-                        return rule.conditions.properties.Thema === value;
-                    });
-                    iconPath = this.fetchIconPath(valueStyle);
-                }
+            if (styleObject?.rules?.length > 0) {
+                valueStyle = styleObject.rules.filter(rule => {
+                    return rule.conditions.properties.Thema === value;
+                });
+                iconPath = this.fetchIconPath(valueStyle);
             }
+
             return iconPath;
         },
         /**

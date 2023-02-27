@@ -11,9 +11,9 @@ export default {
             required: true
         }
     },
-    methods: {
-        getStyleByIndex (colors, index, strokeWidth = 0.5, strokeColor = "#e3e3e3") {
-            return `fill: ${colors[index]}; stroke-width: ${strokeWidth}; stroke: ${strokeColor};`;
+    computed: {
+        useTravelTimeIndex () {
+            return this.steps.length === 4;
         }
     }
 
@@ -21,30 +21,35 @@ export default {
 </script>
 
 <template lang="html">
-    <v-col>
-        <h5>
-            {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }}
-        </h5>
-        <div>
-            <template
-                v-for="(step, index) in steps"
+    <v-col
+        cols="8"
+        class="mt-1"
+    >
+        <span class="text-subtitle-2"> {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.legend") }} </span>
+        <template
+            v-for="(step, index) in steps"
+        >
+            <v-icon
+                :key="index"
+                :color="colors[index]"
+                small
             >
-                <svg
-                    :key="index"
-                    width="15"
-                    height="15"
-                >
-                    <circle
-                        cx="7.5"
-                        cy="7.5"
-                        r="7.5"
-                        :style="getStyleByIndex(colors, index)"
-                    />
-                </svg>
-                <span :key="index * 2 + steps.length">
-                    {{ step }}
-                </span>
-            </template>
-        </div>
+                mdi-circle
+            </v-icon>
+            <span
+                :key="index * 2 + steps.length"
+                class="steps"
+            >
+                {{ step }}
+            </span>
+        </template>
+        <v-icon
+            v-if="useTravelTimeIndex"
+            :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.warning')"
+            color="warning"
+            class="float-right"
+        >
+            mdi-alert
+        </v-icon>
     </v-col>
 </template>

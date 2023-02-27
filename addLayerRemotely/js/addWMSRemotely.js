@@ -2,7 +2,7 @@ import {WMSCapabilities} from "ol/format.js";
 import {intersects} from "ol/extent";
 import crsModule from "@masterportal/masterportalapi/src/crs";
 import axios from "axios";
-import store from "../../src/app-store";
+import store from "../../../src/app-store";
 
 /**
  * Adds a WMS through the remote interface

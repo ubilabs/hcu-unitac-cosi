@@ -25,6 +25,7 @@ describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
                 keyOfAttrName: "bezirk_name",
                 referenceLevel: null,
                 stats: {
+                    "layers": ["123"],
                     "keyOfAttrName": "bezirk",
                     "baseUrl": ["https://geodienste.hamburg.de/HH_WFS_Regionalstatistische_Daten_Bezirke"]
                 }
@@ -45,9 +46,9 @@ describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
 
             await actions.loadStatFeatures({commit, dispatch, rootGetters}, payload);
 
-            expect(dispatch.calledThrice).to.be.true;
             expect(dispatch.args).to.deep.equal([
                 ["Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true}],
+                ["fetchMetaData"],
                 ["updateDistricts"],
                 ["Alerting/cleanup", null, {root: true}]
             ]);
@@ -90,8 +91,8 @@ describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
 
             await actions.loadStatFeatures({commit, dispatch, rootGetters}, payload);
 
-            expect(dispatch.args[1][0]).to.equal("loadStatFeatures");
-            expect(dispatch.args[1][1]).to.be.an("object").to.have.all.keys("districts", "districtLevel", "getStatFeatures");
+            expect(dispatch.args[2][0]).to.equal("loadStatFeatures");
+            expect(dispatch.args[2][1]).to.be.an("object").to.have.all.keys("districts", "districtLevel", "getStatFeatures");
         });
     });
 

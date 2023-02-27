@@ -3,6 +3,7 @@ import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import nextFeatureByDistance from "./precompiler.nextFeatureByDistance.js";
 import allFeaturesByDuration from "./precompiler.allFeaturesByDuration.js";
 import {nextGroupedFeaturesByDistance} from "./precompiler.nextGroupedFeaturesByDistance.js";
+import sumNumbers from "./precompiler.sumNumbers.js";
 
 /**
  * Creates the knowledge base by the services config.
@@ -36,9 +37,14 @@ export function createKnowledgeBase (parcelData, services, mapProjection, onstar
 
     collectFeatures(parcelData, config, mapProjection, rawLayerList.getLayerWhere({id: config.layerId}), features => {
         if (features.length === 0) {
-            config.propertyName.forEach(attributeKey => {
-                knowledgeBase[prefix + "." + attributeKey] = undefined;
-            });
+            if (config?.precompiler?.type === "assignAttributes") {
+                knowledgeBase[prefix] = undefined;
+            }
+            else {
+                config.propertyName.forEach(attributeKey => {
+                    knowledgeBase[prefix + "." + attributeKey] = undefined;
+                });
+            }
             createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
         }
         else if (config?.precompiler?.type === "allFeaturesByDuration") {
@@ -88,6 +94,28 @@ export function createKnowledgeBase (parcelData, services, mapProjection, onstar
                 addKnowledgeBaseError(knowledgeBase, error, prefix, Array.isArray(config.propertyName) ? config.propertyName.concat(config.precompiler.key) : [config.precompiler.key]);
                 createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
             });
+        }
+        else if (config?.precompiler?.type === "sumNumbers") {
+            sumNumbers(features, config.precompiler.key, config.precompiler.sumProperty, config.propertyName, attributes => {
+                Object.entries(attributes).forEach(([attributeKey, attributeValue]) => {
+                    knowledgeBase[prefix + "." + attributeKey] = attributeValue;
+                });
+                createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+            }, error=> {
+                onDevError(error);
+                onUserError(config.onerror);
+                addKnowledgeBaseError(knowledgeBase, error, prefix, Array.isArray(config.propertyName) ? config.propertyName.concat(config.precompiler.key) : [config.precompiler.key]);
+                createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
+            });
+        }
+        else if (config?.precompiler?.type === "assignAttributes") {
+            const attributes = [];
+
+            features.forEach(feature => {
+                attributes.push(Object.assign(feature.getProperties(), config.precompiler.attributes));
+            });
+            knowledgeBase[prefix] = attributes;
+            createKnowledgeBase(parcelData, services, mapProjection, onstart, onfinish, onUserError, onDevError, knowledgeBase, idx + 1);
         }
         else {
             const attributes = createAttributesByFeatures(features, config.propertyName);

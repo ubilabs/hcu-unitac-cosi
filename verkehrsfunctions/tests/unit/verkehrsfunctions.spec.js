@@ -4,15 +4,15 @@ import {
     getKfzTrafficCount,
     getPhenomenonTimeRange
 } from "../../verkehrsfunctions";
-import moment from "moment";
+import dayjs from "dayjs";
 
 describe("ADDON: Verkehrsfunctions", () => {
     describe("getPhenomenonTimeRange", () => {
         it("should parse the right time format", function () {
             const startTime = "2020-03-26T18:45:01.000Z",
                 endTime = "2020-03-26T19:00:00.000Z",
-                expectedStart = moment(startTime).format("DD.MM.YYYY, HH:mm"),
-                expectedEnd = moment(endTime).format("HH:mm");
+                expectedStart = dayjs(startTime).format("DD.MM.YYYY, HH:mm"),
+                expectedEnd = dayjs(endTime).format("HH:mm");
 
             expect(getPhenomenonTimeRange(startTime, endTime)).to.equal(expectedStart + " Uhr - " + expectedEnd + " Uhr");
         });

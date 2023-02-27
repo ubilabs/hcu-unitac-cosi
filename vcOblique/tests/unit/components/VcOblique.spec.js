@@ -3,7 +3,7 @@ import {expect} from "chai";
 import sinon from "sinon";
 import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import ObliqueViewerComponent from "../../../components/VcOblique.vue";
-import VcOblique from "../../../store/indexVCOblique";
+import VcOblique from "../../../store/indexVcOblique";
 
 const localVue = createLocalVue();
 

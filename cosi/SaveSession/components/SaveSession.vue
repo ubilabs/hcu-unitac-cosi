@@ -58,7 +58,7 @@ export default {
                         "mode",
                         "coordinate",
                         "clickCoordinate",
-                        "selectedFacilityName",
+                        "selectedFacilityNames",
                         "setByFeature",
                         "transportType",
                         "scaleUnit",

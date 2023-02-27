@@ -3,6 +3,7 @@ import {downloadJsonToFile} from "../../utils/download";
 import store from "../../../../src/app-store";
 import {Point} from "ol/geom.js";
 import Feature from "ol/Feature.js";
+import {filterAllFeatures} from "../../utils/layer/filterAllFeatures";
 
 /**
  * Gets the map's CRS from the app-store
@@ -19,12 +20,8 @@ function getPortalCrs () {
  */
 export function exportAsGeoJson (mapLayer) {
     const projectionCode = getPortalCrs(),
+        features = mapLayer.getSource().getFeatures(),
         featureCollection = featuresToGeoJsonCollection(mapLayer.getSource().getFeatures(), false, projectionCode),
-        stroke = {
-            color: "White",
-            width: 1
-        },
-        colors = this.featureColors,
         startIndex = featureCollection.features.length === 3 ? 0 : 1;
 
     if (!featureCollection.features.length) {
@@ -34,9 +31,12 @@ export function exportAsGeoJson (mapLayer) {
     for (let i = startIndex; i < featureCollection.features.length; i++) {
         const style = {
             fill: {
-                color: colors[i - startIndex]
+                color: features[i].getStyle().getFill().getColor()
             },
-            stroke: stroke
+            stroke: {
+                color: features[i].getStyle().getStroke().getColor(),
+                width: features[i].getStyle().getStroke().getWidth()
+            }
         };
 
         featureCollection.features[i].style = style;
@@ -44,7 +44,16 @@ export function exportAsGeoJson (mapLayer) {
     }
 
     if (startIndex === 1) {
-        featureCollection.features[0].style = this.refFeatureStyle;
+        featureCollection.features[0].style = {
+            fill: {
+                color: features[0].getStyle().getFill().getColor()
+            },
+            stroke: {
+                color: features[0].getStyle().getStroke().getColor(),
+                width: features[0].getStyle().getStroke().getWidth(),
+                lineDash: features[0].getStyle().getStroke().getLineDash()
+            }
+        };
         featureCollection.features[0].properties.index = "ref";
     }
 
@@ -55,7 +64,8 @@ export function exportAsGeoJson (mapLayer) {
         featureCollection.features.push(featureGeoJson);
     }
     else if (this.mode === "region") {
-        const coordinates = this.getCoordinates();
+        const allActviceFeatures = filterAllFeatures(this.activeVectorLayerList, this.isFeatureActive),
+            coordinates = this.getCoordinates(allActviceFeatures);
 
         for (let i = 0; i < coordinates.length; i++) {
             const feature = new Feature(new Point(coordinates[i])),

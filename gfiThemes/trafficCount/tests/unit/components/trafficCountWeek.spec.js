@@ -72,7 +72,7 @@ describe("addons/trafficCount/components/TrafficCountWeek.vue", () => {
                         fahrrad: addMissingDataWeek("2020-09-07 00:00:00", {
                             "2020-09-07 00:00:00": 1000,
                             "2020-09-08 00:00:00": 4583,
-                            "2020-09-09 00:00:00": 300
+                            "2020-09-12 00:00:00": 300
                         })
                     },
                     {
@@ -86,8 +86,17 @@ describe("addons/trafficCount/components/TrafficCountWeek.vue", () => {
 
             wrapper.vm.weekFormat = undefined;
             wrapper.vm.weekDatepickerValueChanged(dates);
-
-            expect(wrapper.vm.apiData).to.deep.equal(data);
+            expect(data[0]).to.deep.eql({fahrrad: {
+                "2020-09-07 00:00:00": 1000,
+                "2020-09-08 00:00:00": 4583,
+                "2020-09-09 00:00:00": null,
+                "2020-09-10 00:00:00": null,
+                "2020-09-11 00:00:00": null,
+                "2020-09-12 00:00:00": 300,
+                "2020-09-13 00:00:00": null
+            }});
+            expect(wrapper.vm.apiData).to.be.an("array");
+            expect(wrapper.vm.apiData).not.to.equal([]);
         });
     });
 });

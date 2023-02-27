@@ -5,6 +5,12 @@
                 "accessibilityAnalysis": {
                     "title": "Erreichbarkeitsanalyse",
                     "dropdownInfo": "Bitte wählen Sie den Modus, in dem Sie arbeiten möchten",
+                    "mode": {
+                      "point": "Erreichbarkeit ab einem Referenzpunkt",
+                      "facility": "Erreichbarkeit ab einer ausgewählten Einrichtung",
+                      "region": "Erreichbarkeit der ausgewählten Einrichtungen",
+                      "path": "Erreichbarkeit entlang einer Route"
+                    },
                     "pointOfReference": "Referenzpunkt: Klicken Sie auf die Karte",
                     "setByFeature": "Von Flächenaußengrenzen ermitteln",
                     "setByFeatureInfo": "Verwendet die Eckpunkte von Polygonen für die Berechnung. Achtung: Kann bei extrem komplexen Flächen zu Fehlern führen.",
@@ -28,7 +34,7 @@
                     "distance": "Entfernung",
                     "time": "Tageszeit",
                     "calculate": "Berechnen",
-                    "clear": "Ergebnis Ausblenden",
+                    "clear": "Ergebnis ausblenden",
                     "help": "Hilfe",
                     "legend": "Legende:",
                     "requestInhabitants": "Einwohnerabfrage",

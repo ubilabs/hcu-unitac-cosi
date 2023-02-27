@@ -103,7 +103,6 @@ export default {
                 }
             }
         },
-
         /**
          * Every time the list of layers of the map changes the function prepareDistricts is called.
          * @param {module:ol/layer[]} newLayerList - An array of layers.
@@ -174,7 +173,6 @@ export default {
         ...mapActions("Tools/DistrictSelector", ["loadStatFeatures", "loadMapping"]),
         ...mapActions("Maps", ["addInteraction", "removeInteraction", "zoomToExtent", "resetView"]),
         ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
-
         /**
          * quickly checks the key evt code
          * and executes createNewScenario
@@ -500,11 +498,12 @@ export default {
             v-if="active"
             #toolBody
         >
-            <v-app>
+            <v-app id="district-selector">
                 <ToolInfo
                     :url="readmeUrl"
                     :title="$t('additional:modules.tools.cosi.districtSelector.toolinfo.title')"
                     :locale="currentLocale"
+                    :summary="$t('additional:modules.tools.cosi.districtSelector.description')"
                 />
                 <form>
                     <v-select
@@ -536,15 +535,6 @@ export default {
                         step="250"
                         min="0"
                     />
-                    <p class="text-caption">
-                        {{ $t('additional:modules.tools.cosi.districtSelector.description') }}
-                        <!-- <v-icon
-                            small
-                            @click="showAlert($t('additional:modules.tools.cosi.districtSelector.help'))"
-                        >
-                            mdi-help-circle
-                        </v-icon> -->
-                    </p>
                     <v-divider />
                     <div>
                         <span class="text-subtitle-2">
@@ -569,13 +559,12 @@ export default {
                                 dense
                                 hide-details
                                 type="checkbox"
-                                :label="`${key} ${$t('additional:modules.tools.cosi.districtSelector.additionalLayerToggle')}`"
+                                :label="`${key}`"
                             />
                         </v-col>
                     </v-row>
                     <v-divider />
                     <v-btn
-                        dense
                         small
                         tile
                         color="grey lighten-1"
@@ -584,7 +573,6 @@ export default {
                         {{ $t('additional:modules.tools.cosi.districtSelector.buttonConfirm') }}
                     </v-btn>
                     <v-btn
-                        dense
                         small
                         tile
                         color="grey lighten-1"
@@ -593,7 +581,6 @@ export default {
                         {{ $t('additional:modules.tools.cosi.districtSelector.buttonReset') }}
                     </v-btn>
                     <v-btn
-                        dense
                         small
                         tile
                         :color="dragBoxButtonColor"
@@ -607,13 +594,23 @@ export default {
     </Tool>
 </template>
 
-<style lang="css" scoped>
-    form {
-        max-width: 430px;;
-    }
-</style>
+<style lang="scss">
+    @import "~variables";
 
-<style lang="css">
+    #district-selector {
+        max-width: 430px;
+        .v-input {
+            border-radius: $border-radius-base;
+            font-size: 14px;
+            .v-label {
+                font-size: 14px;
+            }
+        }
+        button {
+            text-transform: inherit;
+        }
+    }
+
     .ol-dragbox {
         background-color: rgba(255, 255, 255, 0.4);
         border-color: rgba(51, 153, 204, 1);

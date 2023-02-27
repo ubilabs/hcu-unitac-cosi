@@ -5,6 +5,12 @@
                 "accessibilityAnalysis": {
                     "title": "Accessibility Analysis",
                     "dropdownInfo": "Please choose the mode you want to work with:",
+                    "mode": {
+                      "point": "Accessibility from a reference point",
+                      "facility": "Accessibility from a selected facility",
+                      "region": "Accessibility of the selected facilities",
+                      "path": "Accessibility along a route"
+                    },
                     "pointOfReference": "Point of reference: click on the map",
                     "setByFeature": "Select facilities as location (use perimeter of polygons)",
                     "setByFeatureInfo": "Uses the vertices of polygons for the calculation. Caution: Can lead to errors with extremely complex surfaces.",

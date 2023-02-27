@@ -145,7 +145,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             })).to.be.lengthOf(2);
         });
 
-        it("should find one start button per feature and one for the merged feature", async () => {
+        it("should find one start button per feature and one for the merged feature and one for print window", async () => {
             const wrapper = factory.getShallowMount({}, true);
 
             wrapper.vm.select.getFeatures().push(features[0]);
@@ -154,10 +154,10 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
             expect(wrapper.findAll("button").filter(button => {
                 return button.text() === "additional:modules.tools.valuationPrint.startButton";
-            })).to.be.lengthOf(3);
+            })).to.be.lengthOf(4);
         });
 
-        it("should find one start buttons if only one feature is available", async () => {
+        it("should find two start buttons if only one feature is available", async () => {
             const wrapper = factory.getShallowMount({}, true);
 
             wrapper.vm.select.getFeatures().push(features[0]);
@@ -165,6 +165,17 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
             expect(wrapper.findAll("button").filter(button => {
                 return button.text() === "additional:modules.tools.valuationPrint.startButton";
+            })).to.be.lengthOf(2);
+        });
+
+        it("should find one cancel button", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.select.getFeatures().push(features[0]);
+            await wrapper.vm.$forceUpdate();
+
+            expect(wrapper.findAll("button").filter(button => {
+                return button.text() === "additional:modules.tools.valuationPrint.cancel";
             })).to.be.lengthOf(1);
         });
 
@@ -211,7 +222,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
     });
 
     describe("User Interactions", () => {
-        it("should call removeFeature if user click the remove button", async () => {
+        it("should call 'removeFeature' if user click the remove button", async () => {
             const spyRemoveFeature = sinon.spy(ValuationPrint.methods, "removeFeature"),
                 wrapper = factory.getShallowMount({}, true);
 
@@ -225,23 +236,59 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             spyRemoveFeature.restore();
         });
 
-        it("should call 'setParcelData' if user click the start button", async () => {
-            const spySetParcelData = sinon.spy(ValuationPrint.methods, "setParcelData"),
+        it("should call 'showPrintModal' if user click the start button in list", async () => {
+            const spyShowPrintModal = sinon.spy(ValuationPrint.methods, "showPrintModal"),
                 wrapper = factory.getShallowMount({}, true);
 
             wrapper.vm.select.getFeatures().push(features[0]);
-
-            wrapper.vm.select.getFeatures().push(features[1]);
             await wrapper.vm.$forceUpdate();
-            await wrapper.findAll("button").wrappers.forEach(button => {
+            await wrapper.findAll(".valuation-print button").wrappers.forEach(button => {
                 if (button.text() === "additional:modules.tools.valuationPrint.startButton") {
                     button.trigger("click");
                 }
             });
 
-            expect(spySetParcelData.calledThrice).to.be.true;
+            expect(spyShowPrintModal.calledOnce).to.be.true;
+
+            spyShowPrintModal.restore();
+        });
+
+        it("should call 'setParcelData' if user click the start button in print modal", async () => {
+            const spySetParcelData = sinon.spy(ValuationPrint.methods, "setParcelData"),
+                wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.select.getFeatures().push(features[0]);
+            wrapper.vm.select.getFeatures().push(features[1]);
+
+            await wrapper.vm.$forceUpdate();
+            await wrapper.findAll(".confirm button").wrappers.forEach(button => {
+                if (button.text() === "additional:modules.tools.valuationPrint.startButton") {
+                    button.trigger("click");
+                }
+            });
+
+            expect(spySetParcelData.calledOnce).to.be.true;
 
             spySetParcelData.restore();
+        });
+
+        it("should call 'showPrintModal' if user click the cancel button in print modal", async () => {
+            const spyShowPrintModal = sinon.spy(ValuationPrint.methods, "showPrintModal"),
+                wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.select.getFeatures().push(features[0]);
+            wrapper.vm.select.getFeatures().push(features[1]);
+
+            await wrapper.vm.$forceUpdate();
+            await wrapper.findAll(".confirm button").wrappers.forEach(button => {
+                if (button.text() === "additional:modules.tools.valuationPrint.cancel") {
+                    button.trigger("click");
+                }
+            });
+
+            expect(spyShowPrintModal.calledOnce).to.be.true;
+
+            spyShowPrintModal.restore();
         });
     });
 
@@ -270,7 +317,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
         describe("getFilenameOfPDF", () => {
             const wrapper = factory.getShallowMount({});
 
-            expect(wrapper.vm.getFilenameOfPDF([features[0], features[1]], "prefix", "2022-07-11__10-31-22")).to.equal("prefix__2022-07-11__10-31-22__12345-67890");
+            expect(wrapper.vm.getFilenameOfPDF("prefix", "2022-07-11")).to.equal("2022-07-11 prefix");
         });
 
         describe("styleSelectedFeatures", () => {
@@ -385,6 +432,42 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
                 wrapper.vm.addMessage("message", true);
                 expect(wrapper.vm.messageList).to.deep.equal([{message: "message", isError: true}]);
+            });
+        });
+
+        describe("openUrls", () => {
+            let windowOpen;
+
+            beforeEach(() => {
+                windowOpen = sinon.stub(window, "open");
+            });
+
+            afterEach(() => {
+                windowOpen.restore();
+            });
+
+            it("should not call window.open function", () => {
+                const wrapper = factory.getShallowMount({});
+
+                wrapper.vm.openUrls();
+                expect(windowOpen.calledOnce).to.be.false;
+                wrapper.vm.openUrls("");
+                expect(windowOpen.calledOnce).to.be.false;
+                wrapper.vm.openUrls({});
+                expect(windowOpen.calledOnce).to.be.false;
+                wrapper.vm.openUrls([]);
+                expect(windowOpen.calledOnce).to.be.false;
+                wrapper.vm.openUrls(undefined);
+                expect(windowOpen.calledOnce).to.be.false;
+                wrapper.vm.openUrls(true);
+                expect(windowOpen.calledOnce).to.be.false;
+            });
+
+            it("should call window.open function", () => {
+                const wrapper = factory.getShallowMount({});
+
+                wrapper.vm.openUrls([{link: "href"}]);
+                expect(windowOpen.calledOnce).to.be.true;
             });
         });
     });

@@ -42,7 +42,7 @@ export default {
     },
     methods: {
         ...mapActions("MapMarker", ["placingPolygonMarkerByGeom", "removePolygonMarker"]),
-        ...mapActions("Map", ["zoomTo"]),
+        ...mapActions("Maps", ["zoomTo"]),
 
         /**
          * Calculates the sum of residents of the main residence or secondary residence

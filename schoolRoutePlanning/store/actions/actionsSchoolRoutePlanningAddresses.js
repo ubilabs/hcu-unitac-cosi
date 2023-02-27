@@ -36,7 +36,8 @@ export default {
     searchStreets ({rootGetters, dispatch}, {input, layer}) {
         search(input, {
             map: mapCollection.getMap(rootGetters["Maps/mode"]),
-            searchStreets: true
+            searchStreets: true,
+            searchStreetBeforeWord: false
         }, true)
             .then(streets => {
                 const sortedStreetNames = streets.map(street => street.name).sort();
@@ -98,7 +99,8 @@ export default {
         search(streetName, {
             map: mapCollection.getMap(rootGetters.mode),
             searchStreets: true,
-            searchHouseNumbers: true
+            searchHouseNumbers: true,
+            searchStreetBeforeWord: false
         })
             .then(response => {
                 const houseNumbers = response.filter(value => value.type === "houseNumbersForStreet"),

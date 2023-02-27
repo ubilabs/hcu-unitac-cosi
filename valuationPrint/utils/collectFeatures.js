@@ -4,6 +4,7 @@ import {getFeaturePOST as wfsGetFeaturePOST} from "../../../src/api/wfs/getFeatu
 import {intersects, within} from "ol/format/filter";
 import Point from "ol/geom/Point";
 import {WFS} from "ol/format";
+import isObject from "../../../src/utils/isObject";
 
 /**
  * Creates a feature with the given coordinate or requests features via a service.
@@ -35,14 +36,13 @@ export function collectFeatures (parcel, config, mapProjection, service, onsucce
         onsuccess(parcel.featureList);
     }
     else {
-        const propertyNames = config.precompiler ? config.propertyName.concat(config.geometryName) : config.propertyName,
-            payload = {
-                featureNS: service.featureNS,
-                featureTypes: [service.featureType],
-                filter: getFilter(parcel.geometry, config.geometryName, config.filter, config.radius),
-                srsName: mapProjection,
-                propertyNames
-            };
+        const payload = {
+            featureNS: service.featureNS,
+            featureTypes: [service.featureType],
+            filter: getFilter(parcel.geometry, config.geometryName, config.filter, config.radius),
+            srsName: mapProjection,
+            propertyNames: getPropertyNames(config.propertyName, config.geometryName, config.precompiler)
+        };
 
         wfsGetFeaturePOST(service.url, payload, onerror).then(response => {
             if (response) {
@@ -89,4 +89,27 @@ export function getFilter (geometry, geometryName, filterType, radius) {
         return intersects(geometryName, usedGeometry);
     }
     return within(geometryName, usedGeometry);
+}
+
+/**
+ * If the precompiler needs the geometry, it adds the name of the geometry attribute to the propertie names.
+ * @param {String[]} propertyName - A list of the property names.
+ * @param {String} geometryName - The name of the geometry attribute.
+ * @param {Object} precompiler - The precompiler object.
+ * @returns {String[]|undefined} The property names with or without the geometry property or undefined if something failed.
+ */
+export function getPropertyNames (propertyName, geometryName, precompiler) {
+    if (!Array.isArray(propertyName)) {
+        console.error(`addons/valuationPrint/utils/collectFeatures: propertyName is ${propertyName}, but it has to be an array`);
+        return undefined;
+    }
+    if (typeof geometryName !== "string") {
+        console.error(`addons/valuationPrint/utils/collectFeatures: geometryName is ${geometryName}, but it has to be a string`);
+        return propertyName;
+    }
+
+    if (isObject(precompiler) && precompiler.type !== "assignAttributes") {
+        return propertyName.concat(geometryName);
+    }
+    return propertyName;
 }

@@ -2,25 +2,21 @@ import * as Proj from "ol/proj.js";
 import * as Extent from "ol/extent";
 import GeometryCollection from "ol/geom/GeometryCollection";
 import {setBBoxToGeom} from "../../utils/setBBoxToGeom";
-import
-{
-    Fill,
-    Stroke,
-    Style
-} from "ol/style.js";
 import {getSearchResultsCoordinates} from "../../utils/getSearchResultsGeom";
 import {
-    polygon as turfPolygon,
-    multiPolygon as turfMultiPolygon,
     lineString as turfLineString,
     featureCollection as turfFeatureCollection
 } from "@turf/helpers";
-import {default as turfSimplify} from "@turf/simplify";
 import {default as turfBuffer} from "@turf/buffer";
 import {readFeatures} from "../components/util.js";
 import {transformFeatures} from "../../utils/features/transform";
-import {getLayerSource} from "../../utils/layer/getLayerSource";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
+import {getRecordById} from "../../../../src/api/csw/getRecordById";
+import {filterAllFeatures} from "../../utils/layer/filterAllFeatures";
+import {styleIsochroneFeatures} from "../utils/styleIsochroneFeatures.js";
+import {simplify} from "../../utils/geometry/simplify";
+import {getFlatCoordinates} from "../../utils/geometry/getFlatCoordinates";
+import {transformCoordinates} from "../utils/transformCoordinates";
 
 export const methodConfig = {
     store: null
@@ -36,7 +32,7 @@ export default {
         this.askUpdate = false;
 
         try {
-            if (this.mode === "point") {
+            if (this.mode === "point" || this.mode === "facility") {
                 await this.createIsochronesPoint();
             }
             else if (this.mode === "region") {
@@ -79,8 +75,8 @@ export default {
      * @returns {void}
      */
     createIsochronesRegion: async function () {
-        const
-            coordinates = this.getCoordinates(this.setByFeature),
+        const allActviceFeatures = filterAllFeatures(this.activeVectorLayerList, this.isFeatureActive),
+            coordinates = this.getCoordinates(allActviceFeatures, this.setByFeature),
             {distance, maxDistance, minDistance, steps} = this.getDistances();
 
         if (
@@ -125,8 +121,6 @@ export default {
             this.scaleUnit !== "" &&
             distance !== 0
         ) {
-            this.setSetByFeature(false);
-
             const features = await this.getIsochrones({
                 transportType: this.transportType,
                 coordinates: this.coordinate,
@@ -156,7 +150,8 @@ export default {
             }
             return;
         }
-        this.styleFeatures(newFeatures);
+
+        styleIsochroneFeatures(newFeatures, this.isochroneColors);
         this.mapLayer.getSource().addFeatures(newFeatures);
         if (this.mode !== "region") {
             this.setIsochroneAsBbox();
@@ -164,56 +159,19 @@ export default {
     },
     /**
      * add coordinate after user click
-     * @param {event} evt Event from User click
+     * @param {event} clickCoordinate - The coordinate of the click event on the map.
      * @returns {void}
      */
-    setCoordinateFromClick: function (evt) {
-        const rawCoords = this.setByFeature ? this.setCoordinatesByFeatures(evt) : [evt.coordinate],
-            coordinates = rawCoords.map(coord => Proj.transform(
-                coord,
-                this.projectionCode,
-                "EPSG:4326"
-            ));
-
-        this.setCoordinate(coordinates);
-        this.setClickCoordinate(evt.coordinate);
+    setCoordinateFromClick: function (clickCoordinate) {
+        this.setCoordinate(transformCoordinates([clickCoordinate], this.projectionCode));
         this.setSetBySearch(false);
     },
 
-    setCoordinatesByFeatures: function (evt) {
-        const feature = this.map.getFeaturesAtPixel(evt.pixel, {
-            layerFilter: layer => this.activeVectorLayerList.includes(layer)
-        })[0];
+    setCoordinateFromFeature: function (feature) {
+        const simplifiedGeom = simplify(feature.getGeometry()),
+            coordiantes = getFlatCoordinates(simplifiedGeom);
 
-        if (feature) {
-            const geom = feature.getGeometry();
-
-            return this.simplifyGeometry(geom) || [evt.coordinate];
-        }
-
-        return [evt.coordinate];
-    },
-
-    simplifyGeometry (geom, tolerance = 1) {
-        let simplified, geojson;
-
-        if (geom.getType() === "Polygon") {
-            geojson = turfPolygon(geom.getCoordinates());
-            simplified = turfSimplify(geojson, {tolerance});
-
-            return simplified.geometry.coordinates.flat(1).map(p => [p[0], p[1]]);
-        }
-        if (geom.getType() === "MultiPolygon") {
-            geojson = turfMultiPolygon(geom.getCoordinates());
-            simplified = turfSimplify(geojson, {tolerance});
-
-            return simplified.geometry.coordinates.flat(2).map(p => [p[0], p[1]]);
-        }
-        if (geom.getType() === "Point") {
-            return [[geom.getCoordinates()[0], geom.getCoordinates()[1]]];
-        }
-
-        return null;
+        this.setCoordinate(transformCoordinates(coordiantes, this.projectionCode));
     },
 
     createBufferFromDirections: function () {
@@ -241,14 +199,6 @@ export default {
         this.setIsochroneFeatures(bufferFeatures);
     },
 
-    pickDirections: function (evt) {
-        const feature = evt.selected[0];
-
-        if (feature) {
-            this._selectedDirections = feature;
-        }
-    },
-
     /**
      * TODO: replace calls to this function with /addons/cosi/utils/getSearchResultsCoordinate.js
      * @returns {void}
@@ -257,7 +207,7 @@ export default {
         const coord = getSearchResultsCoordinates();
 
         if (coord) {
-            this.setCoordinate([coord]);
+            this.setCoordinate([Proj.transform(coord, this.projectionCode, "EPSG:4326")]);
             this.setClickCoordinate(coord);
             this.setSetBySearch(true);
         }
@@ -288,37 +238,7 @@ export default {
             displayClass: "error"
         });
     },
-    /**
-     * style isochrone features
-     * @param {ol.Feature} features isochone features (polygons)
-     * @returns {void}
-     */
-    styleFeatures: function (features) {
-        const startIndex = features.length === 3 ? 0 : 1;
 
-        for (let i = startIndex; i < features.length; i++) {
-            features[i].setStyle(
-                new Style({
-                    fill: new Fill({
-                        color: this.featureColors[i - startIndex]
-                    }),
-                    stroke: new Stroke({
-                        color: "white",
-                        width: 1
-                    })
-                })
-            );
-        }
-
-        if (startIndex === 1) {
-            features[0].setStyle(
-                new Style({
-                    fill: new Fill(this.refFeatureStyle.fill),
-                    stroke: new Stroke(this.refFeatureStyle.stroke)
-                })
-            );
-        }
-    },
     /**
      * sets facility layers' bbox as the isochrones
      * @fires Core.ConfigLoader#RadioRequestParserGetItemsByAttributes
@@ -343,7 +263,6 @@ export default {
      * @returns {void}
      */
     clear: function () {
-        this.layers = null;
         this.showRequestButton = false;
         this.setSteps([0, 0, 0]);
         this.setRawGeoJson(null);
@@ -396,17 +315,22 @@ export default {
 
         return {distance, maxDistance, minDistance, steps};
     },
-    getCoordinates: function (setByFeature) {
+    // pull meta data for the dataset used for the analysis
+    getMetadataSelectedData: async function () {
+        // first find out what layer we are working with
         const selectedLayerModel = getModelByAttributes({
-            name: this.selectedFacilityName,
-            type: "layer"
-        });
+                name: this.selectedFacilityNames[0],
+                type: "layer"
+            }),
+            // then get the matching metadata as promise
+            metadata = await getRecordById(selectedLayerModel.get("datasets")[0].csw_url, selectedLayerModel.get("datasets")[0].md_id);
 
-        if (selectedLayerModel) {
-            const features = getLayerSource(selectedLayerModel.get("layer"))
-                .getFeatures()
-                .filter(this.isFeatureActive);
+        return metadata;
 
+    },
+
+    getCoordinates: function (features, setByFeature) {
+        if (Array.isArray(features) && features.length > 0) {
             return features
                 .reduce((res, feature) => {
                     const geometry = feature.getGeometry();
@@ -415,7 +339,7 @@ export default {
                         return [...res, geometry.getCoordinates().splice(0, 2)];
                     }
                     if (setByFeature) {
-                        return [...res, ...this.simplifyGeometry(geometry, 10) || [Extent.getCenter(geometry.getExtent())]];
+                        return [...res, ...getFlatCoordinates(simplify(geometry, 10)) || [Extent.getCenter(geometry.getExtent())]];
                     }
                     return [...res, Extent.getCenter(geometry.getExtent())];
 

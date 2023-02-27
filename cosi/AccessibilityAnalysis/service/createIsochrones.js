@@ -47,7 +47,7 @@ export async function createIsochrones ({transportType, coordinates, scaleUnit, 
         progress(100);
         return ret;
     }
-    return createIsochronesPoints({transportType: transportType, coordinates: coordinates, scaleUnit: scaleUnit, distance: distance, maxDistance: maxDistance, selectedFacilityName: null, batchSize: batchSize || 200, progress: progress, baseUrl: baseUrl, projectionCode: projectionCode});
+    return createIsochronesPoints({transportType: transportType, coordinates: coordinates, scaleUnit: scaleUnit, distance: distance, maxDistance: maxDistance, selectedFacilityNames: null, batchSize: batchSize || 200, progress: progress, baseUrl: baseUrl, projectionCode: projectionCode});
 }
 
 /**
@@ -103,12 +103,12 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
 
 /**
  * create isochrones features for selected several coordiantes
- * @param {Object} args {transportType, coordinates, scaleUnit, distance, maxDistance, selectedFacilityName, batchSize, progress, baseUrl, projectionCode}
+ * @param {Object} args {transportType, coordinates, scaleUnit, distance, maxDistance, selectedFacilityNames, batchSize, progress, baseUrl, projectionCode}
  * @param {*} args.coordinates coordinates
  * @param {*} args.scaleUnit scaleUnit
  * @param {*} args.distance distance
  * @param {*} args.maxDistance maxDistance
- * @param {*} args.selectedFacilityName selectedFacilityName
+ * @param {*} args.selectedFacilityNames selectedFacilityNames
  * @param {*} args.batchSize batchSize
  * @param {*} args.progress progress callback
  * @param {*} args.baseUrl baseUrl
@@ -219,7 +219,7 @@ async function createIsochronesPoints (args) {
                 feature.set("value", layeredList[0].get("value"));
                 feature.set("mode", args.transportType);
                 feature.set("unit", args.scaleUnit);
-                feature.set("topic", args.selectedFacilityName);
+                feature.set("topic", args.selectedFacilityNames);
             });
             features = features.concat(layerUnionFeatures);
         }
