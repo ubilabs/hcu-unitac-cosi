@@ -257,8 +257,12 @@ export default {
             return null;
 
         },
+        /**
+         * either delete or copy data selection depending on which way the check box was toggled
+         * @param {integer} index the array item index of the templateItem
+         * @return {void}
+         */
         hasDataToggle (index) {
-            // either delete or copy data selection depending on which way the check box was toggled
             // copy data selection if turned on:
             if (this.templateItems[index].hasDataSelection) {
                 this.copyCurrentDataSelection(index);
@@ -268,8 +272,12 @@ export default {
                 this.clearTemplateItemDataSelection(index);
             }
         },
+        /**
+         * either delete or copy tool settings depending on which way the check box was toggled
+         * @param {integer} index the array item index of the templateItem
+         * @return {void}
+         */
         hasSettingsToggle (index) {
-            // either delete or copy tool settings depending on which way the check box was toggled
             // copy data selection if turned on:
             if (this.templateItems[index].hasSettings) {
                 this.updateToolSettings(index);
@@ -279,10 +287,13 @@ export default {
                 this.clearTemplateItemSettings(index);
             }
         },
+        /**
+         * either delete or copy tool settings depending on which way the check box was toggled
+         * @param {integer} index the array item index of the templateItem
+         * @return {void}
+         */
         hasOutputToggle (index) {
-            // either delete or copy tool settings depending on which way the check box was toggled
             // copy data selection if turned on:
-            // console.log(this.templateItems[index].hasOutput);
             if (this.templateItems[index].hasOutput) {
                 this.updateToolOutput(index);
             }
@@ -291,17 +302,24 @@ export default {
                 this.clearTemplateItemOutput(index);
             }
         },
+        /**
+         * apply data selection and track which one is selected
+         * @param {integer} index the array item index of the templateItem
+         * @return {void}
+         */
         dataSelectionAppliedToggle (index) {
+            // if the dataselection is turned on...
             if (this.templateItems[index].dataSelectionApplied) {
-
+                // set dataSelectionApplied to false for all templateItems except the selected one
                 for (let i = 0; i < this.templateItems.length; i++) {
                     if (i !== index) {
                         this.templateItems[i].dataSelectionApplied = false;
                     }
                 }
+                // apply data selection
                 this.setCurrentDataSelection(this.templateItems[index].dataSelection);
             }
-            // otherwise nothing happens
+            // if dataselection is turned of, nothing happens. Data selection is a one way street - we don't "unselect" data.
 
         },
 
