@@ -599,10 +599,6 @@ export default {
     overflow-y: auto;
     height:100%;
 }
-// .main_container{
-//     overflow-y: auto;
-//         height: 100%;
-//     }
     .textfieldtitle {
         font-size: 2em !important;
 
