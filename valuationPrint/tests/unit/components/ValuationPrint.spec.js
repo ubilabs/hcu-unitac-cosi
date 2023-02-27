@@ -69,6 +69,9 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                         renderToWindow: () => false,
                         resizableWindow: () => false
                     },
+                    slots: {
+                        footer: "<div>Footer</div>"
+                    },
                     store,
                     localVue
                 });
@@ -145,7 +148,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             })).to.be.lengthOf(2);
         });
 
-        it("should find one start button per feature and one for the merged feature and one for print window", async () => {
+        it("should find one start button per feature and one for the merged feature", async () => {
             const wrapper = factory.getShallowMount({}, true);
 
             wrapper.vm.select.getFeatures().push(features[0]);
@@ -154,10 +157,10 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
             expect(wrapper.findAll("button").filter(button => {
                 return button.text() === "additional:modules.tools.valuationPrint.startButton";
-            })).to.be.lengthOf(4);
+            })).to.be.lengthOf(3);
         });
 
-        it("should find two start buttons if only one feature is available", async () => {
+        it("should find one start buttons if only one feature is available", async () => {
             const wrapper = factory.getShallowMount({}, true);
 
             wrapper.vm.select.getFeatures().push(features[0]);
@@ -165,17 +168,6 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
             expect(wrapper.findAll("button").filter(button => {
                 return button.text() === "additional:modules.tools.valuationPrint.startButton";
-            })).to.be.lengthOf(2);
-        });
-
-        it("should find one cancel button", async () => {
-            const wrapper = factory.getShallowMount({}, true);
-
-            wrapper.vm.select.getFeatures().push(features[0]);
-            await wrapper.vm.$forceUpdate();
-
-            expect(wrapper.findAll("button").filter(button => {
-                return button.text() === "additional:modules.tools.valuationPrint.cancel";
             })).to.be.lengthOf(1);
         });
 
@@ -219,6 +211,19 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
             expect(wrapper.find(".urlListEntry").exists()).to.be.false;
         });
+
+        it("should find one cancel button", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.select.getFeatures().push(features[0]);
+            await wrapper.vm.$forceUpdate();
+            await wrapper.find(".confirm").trigger("click");
+            await wrapper.vm.$nextTick();
+
+            expect(wrapper.findAll("button").filter(button => {
+                return button.text() === "additional:modules.tools.valuationPrint.cancel";
+            })).to.be.lengthOf(1);
+        });
     });
 
     describe("User Interactions", () => {
@@ -236,8 +241,8 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             spyRemoveFeature.restore();
         });
 
-        it("should call 'showPrintModal' if user click the start button in list", async () => {
-            const spyShowPrintModal = sinon.spy(ValuationPrint.methods, "showPrintModal"),
+        it("should call 'getAddress' if user click the start button in list", async () => {
+            const spyGetAddress = sinon.spy(ValuationPrint.methods, "getAddress"),
                 wrapper = factory.getShallowMount({}, true);
 
             wrapper.vm.select.getFeatures().push(features[0]);
@@ -248,9 +253,9 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 }
             });
 
-            expect(spyShowPrintModal.calledOnce).to.be.true;
+            expect(spyGetAddress.calledOnce).to.be.true;
 
-            spyShowPrintModal.restore();
+            spyGetAddress.restore();
         });
 
         it("should call 'setParcelData' if user click the start button in print modal", async () => {
@@ -261,7 +266,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             wrapper.vm.select.getFeatures().push(features[1]);
 
             await wrapper.vm.$forceUpdate();
-            await wrapper.findAll(".confirm button").wrappers.forEach(button => {
+            await wrapper.findAll(".p-2 button").wrappers.forEach(button => {
                 if (button.text() === "additional:modules.tools.valuationPrint.startButton") {
                     button.trigger("click");
                 }
@@ -280,7 +285,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             wrapper.vm.select.getFeatures().push(features[1]);
 
             await wrapper.vm.$forceUpdate();
-            await wrapper.findAll(".confirm button").wrappers.forEach(button => {
+            await wrapper.findAll(".p-2 button").wrappers.forEach(button => {
                 if (button.text() === "additional:modules.tools.valuationPrint.cancel") {
                     button.trigger("click");
                 }

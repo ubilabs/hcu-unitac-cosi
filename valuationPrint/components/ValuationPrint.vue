@@ -18,6 +18,8 @@ import axios from "axios";
 import isObject from "../../../src/utils/isObject";
 import dayjs from "dayjs";
 import upperFirst from "../../../src/utils/upperFirst";
+import {collectFeatures} from "../utils/collectFeatures";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 
 export default {
     name: "ValuationPrint",
@@ -32,6 +34,7 @@ export default {
             messageList: [],
             printedFeature: [],
             urlList: [],
+            addresses: [],
             showDownloadAll: false,
             showModal: false
         };
@@ -208,12 +211,12 @@ export default {
         /**
          * Shows the print modal and saves the feature for print window
          * @param {Boolean} val - true or false to decide if open or close the print window
-         * @param {ol/Feature[]} feature - the selected feature for the print window
+         * @param {ol/Feature[]} featureList - the selected feature(s) for the print window
          * @returns {void}
          */
-        showPrintModal (val, feature) {
+        showPrintModal (val, featureList) {
             this.showModal = val;
-            this.printedFeature = feature;
+            this.printedFeature = featureList;
         },
         /**
          * Gets the required attributes from the feature(s) and sets it.
@@ -239,6 +242,50 @@ export default {
             };
 
             this.showPrintModal(false, []);
+        },
+        /**
+         * Gets the address(es) from server according to the config
+         * @param {Boolean} val - true or false to decide if open or close the print window
+         * @param {ol/Feature[]} featureList - the selected feature(s) for the print window
+         * @returns {void}
+         */
+        getAddress (val, featureList) {
+            const feature = featureList.length > 1 ? unionFeatures(featureList) : featureList[0],
+                config = this.config.services.hh_wfs_dog;
+
+            console.log("test");
+
+            collectFeatures(
+                {
+                    geometry: feature.getGeometry()
+                },
+                config,
+                this.projection.getCode(),
+                rawLayerList.getLayerWhere({id: config.layerId}),
+                features => {
+                    const addr = [];
+
+                    features.forEach(feat => {
+                        let address = feat.get("strassenname") + " " + feat.get("hausnummer");
+
+                        if (typeof feat.get("hausnummernzusatz") !== "undefined") {
+                            address += feat.get("hausnummernzusatz");
+                        }
+                        addr.push(address);
+                    });
+                    this.addresses = addr.sort((a, b) => {
+                        if (a < b) {
+                            return -1;
+                        }
+                        else if (a > b) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+                    this.showPrintModal(val, featureList);
+                },
+                error => console.warn(error)
+            );
         },
 
         /**
@@ -406,8 +453,8 @@ export default {
                                 <div>
                                     <button
                                         type="button"
-                                        class="btn btn-primary btn-sm"
-                                        @click="showPrintModal(true, [feature])"
+                                        class="confirm btn btn-primary btn-sm"
+                                        @click="getAddress(true, [feature])"
                                     >
                                         {{ $t('additional:modules.tools.valuationPrint.startButton') }}
                                     </button>
@@ -425,7 +472,7 @@ export default {
                                 <button
                                     type="button"
                                     class="btn btn-primary btn-sm"
-                                    @click="showPrintModal(true, select.getFeatures().getArray())"
+                                    @click="getAddress(true, select.getFeatures().getArray())"
                                 >
                                     {{ $t('additional:modules.tools.valuationPrint.startButton') }}
                                 </button>
@@ -490,60 +537,94 @@ export default {
             <ModalItem
                 :icon="icon"
                 :show-modal="showModal"
+                modal-inner-wrapper-style="min-width: 400px;"
+                modal-content-container-style="padding: 0.5rem"
                 @modalHid="showPrintModal(false, [])"
             >
-                <div class="print-type">
-                    <h4>
-                        {{ $t('additional:modules.tools.valuationPrint.type') }}
-                    </h4>
-                    <label
-                        v-for="(type, index) in printType"
-                        :key="type"
-                        class="col-form-label"
-                    >
-                        <input
-                            :id="type"
-                            type="radio"
-                            name="printType"
-                            :value="type"
-                            :checked="index === 0"
-                            required
+                <template #header>
+                    <h5 class="px-2 mt-2">
+                        {{ $t('additional:modules.tools.valuationPrint.modalTitle') }}
+                    </h5>
+                </template>
+                <template #default>
+                    <div class="border-bottom border-top def-font">
+                        <div class="my-3">
+                            <label
+                                for="number"
+                                class="form-label"
+                            >{{ $t('additional:modules.tools.valuationPrint.number') }}</label>
+                            <input
+                                id="number"
+                                :aria-label="$t('additional:modules.tools.valuationPrint.number')"
+                                type="text"
+                                placeholder="G/W xx.xxxx - xxx"
+                                required
+                                class="form-control"
+                            >
+                        </div>
+                        <div class="mb-3">
+                            <label
+                                for="address-list"
+                                class="form-label"
+                            >{{ $t('additional:modules.tools.valuationPrint.address') }}</label>
+                            <input
+                                id="address-list"
+                                class="form-control"
+                                :value="addresses.length === 1 ? addresses[0] : ''"
+                                list="addresslistOptions"
+                                :placeholder="$t('additional:modules.tools.valuationPrint.placeholder')"
+                            >
+                            <datalist id="addresslistOptions">
+                                <option
+                                    v-for="address in addresses"
+                                    :key="address"
+                                    :value="address"
+                                >
+                                    {{ address }}
+                                </option>
+                            </datalist>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <label
+                                    v-for="(type, index) in printType"
+                                    :key="type"
+                                >
+                                    {{ type }}
+                                    <input
+                                        :id="type"
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="printType"
+                                        :checked="index === 0"
+                                    >
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template #footer>
+                    <div class="p-2">
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            tabindex="0"
+                            @click="setParcelData(printedFeature)"
+                            @keydown="setParcelData(printedFeature)"
                         >
-                        {{ type }}
-                    </label>
-                </div>
-                <div class="print-number">
-                    <h4>
-                        {{ $t('additional:modules.tools.valuationPrint.number') }}
-                    </h4>
-                    <input
-                        id="number"
-                        :aria-label="$t('additional:modules.tools.valuationPrint.number')"
-                        type="text"
-                        placeholder="G/W xx.xxxx - xxx"
-                        required
-                    >
-                </div>
-                <div class="confirm">
-                    <button
-                        type="button"
-                        class="confirm btn btn-primary"
-                        tabindex="0"
-                        @click="setParcelData(printedFeature)"
-                        @keydown="setParcelData(printedFeature)"
-                    >
-                        {{ $t('additional:modules.tools.valuationPrint.startButton') }}
-                    </button>
-                    <button
-                        type="button"
-                        class="confirm btn btn-primary"
-                        tabindex="0"
-                        @click="showPrintModal(false, [])"
-                        @keydown="showPrintModal(false, [])"
-                    >
-                        {{ $t('additional:modules.tools.valuationPrint.cancel') }}
-                    </button>
-                </div>
+                            {{ $t('additional:modules.tools.valuationPrint.startButton') }}
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            tabindex="0"
+                            @click="showPrintModal(false, [])"
+                            @keydown="showPrintModal(false, [])"
+                        >
+                            {{ $t('additional:modules.tools.valuationPrint.cancel') }}
+                        </button>
+                    </div>
+                </template>
             </ModalItem>
         </template>
     </ToolTemplate>
@@ -552,12 +633,19 @@ export default {
 <style lang="scss" scoped>
 @import "~variables";
 
-button {
-    font-size: 13px;
+h5 {
+    font-family: "MasterPortalFont Bold", "Arial Narrow", Arial, sans-serif;
 }
 
-h6 {
-    margin-bottom: 13px;
+.def-font {
+    font-size: 16px;
+    .form-check-label {
+        padding-top: 3px;
+    }
+}
+
+button {
+    font-size: 13px;
 }
 
 .messageListError {
@@ -574,39 +662,17 @@ h6 {
     margin-bottom: 0;
 }
 
-.print-type {
-    min-width: 500px;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    display: grid;
-    border-bottom: 1px solid rgba(34, 34, 34, .25);
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
+.form-check {
     label {
+        display: block;
         cursor: pointer;
         position: relative;
-        padding-left: 20px;
+        margin-top: 5px;
         input {
             position: absolute;
             left: 0;
-            top: 8px;
+            top: -3px;
         }
     }
 }
-
-.print-number {
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    display: inline-block;
-    width: 100%;
-    border-bottom: 1px solid rgba(34, 34, 34, .25);
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-    input {
-        float: left;
-        width: 50%;
-        min-height: 30px;
-    }
-}
-
 </style>

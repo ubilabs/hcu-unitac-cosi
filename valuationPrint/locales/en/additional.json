@@ -20,8 +20,10 @@
               "imageError": "{{imageName}} failed.",
               "downloadAll": "Download All",
               "cancel": "Cancel",
-              "type": "Art:",
-              "number": "Geschäfszeichen:"
+              "number": "Geschäfszeichen:",
+              "address": "Address:",
+              "modalTitle": "Angaben zum A1 Karten Anlagenverzeichnis",
+              "placeholder": "Please choose:"
           }
         }
     }
