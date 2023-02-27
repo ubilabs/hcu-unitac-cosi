@@ -19,7 +19,7 @@ import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
-import setGeomAttributes from "../../utils/setGeomAttributes";
+import setGeomAttributes from "../../utils/features/setGeomAttributes";
 import getFeatureStyle from "../../utils/features/getFeatureStyle";
 
 import

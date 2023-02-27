@@ -26,7 +26,7 @@ import {unpackCluster} from "../../utils/features/unpackCluster";
 import {getAddress} from "../../utils/geocode";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
-import setGeomAttributes from "../../utils/setGeomAttributes";
+import setGeomAttributes from "../../utils/features/setGeomAttributes";
 
 export default {
     name: "ScenarioBuilder",
