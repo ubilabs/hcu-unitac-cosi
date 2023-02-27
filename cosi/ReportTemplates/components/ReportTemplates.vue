@@ -35,7 +35,7 @@ export default {
         /**
          * whenever the template file input changes, load the file and overwrite templateItems array
          * @param {*} file file name (given in file input field)
-         * @return {*} side effect only: templateItems replaced
+         * @return {void}
          */
         uploadedTemplate (file) {
             // this is a bit convoluted:
@@ -43,19 +43,52 @@ export default {
             // 2. define the function that updates our array based on the file
             // 3. tell the fileReader to use that function when the file is loaded
             // 4. use the reader on the file
-            const reader = new FileReader(),
 
+            if (!file) {
+                return;
+            }
+            // 1. create a file reader object
+            const reader = new FileReader(),
+                // 2. define the function that updates our array based on the file
                 updateTemplateItems = (() => { // callback when file is read: replace templateItem array
+
                     return (newItems) => {
+                        // alert and exit if json is not in reportTemplate format
+                        if (!this.templateItemJsonValid(newItems)) {
+                            this.addSingleAlert("Datei ist kein valides Report Template.");
+                            this.uploadedTemplate = null;
+                            return;
+                        }
+                        // ..otherwise update state
                         this.$store.state.Tools.ReportTemplates.templateItems = newItems;
+
                     };
                 })();
 
-            reader.onload = function () { // when file is read, parse json and run callback
-                const jsonObj = JSON.parse(reader.result);
+            // 3. tell the fileReader to use that function when the file is loaded
+            reader.onload = () => { // when file is read, parse json and run callback
+                let parsedJson = null;
 
-                updateTemplateItems(jsonObj);
+                if (reader.result) {
+                    try {
+                        parsedJson = JSON.parse(reader.result);
+                    }
+                    catch (e) {
+                        // on error, clear file input
+                        this.uploadedTemplate = null;
+                        this.addSingleAlert({
+                            content: "Datei nicht lesbar oder kein valides JSON",
+                            category: "Fehler",
+                            displayClass: "error"
+                        });
+                        throw new Error(e); // error in the above string (in this case, yes)!
+                    }
+                }
+
+                updateTemplateItems(parsedJson);
+
             };
+            // 4. use the reader on the file
             reader.readAsText(file); // read file (and inherently run callback which replaces the templateItems array)
         }
     },
@@ -66,8 +99,7 @@ export default {
         // ...
     },
     methods: {
-        ...mapActions("Alerting", ["addSingleAlert"]),
-
+        ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapMutations("Tools/ReportTemplates", Object.keys(mutations)),
         // ...mapActions("Tools/ReportTemplates", Object.keys(actions)),
         ...mapActions("Tools/ToolBridge", ["runTool"]),
@@ -79,6 +111,7 @@ export default {
             // get settings via ToolBridge currentSettings() method
             const toolSettings = this.currentSettings(this.templateItems[templateItemsIndex].tool);
 
+            this.addSingleAlert("test");
             // update array
             this.templateItems[templateItemsIndex].settings = toolSettings; // update settings
             this.templateItems[templateItemsIndex].hasSettings = true; // now handled as UI checkbox
@@ -328,6 +361,33 @@ export default {
             this.clearTemplateItemSettings(index);
             this.copyCurrentDataSelection(index);
             this.updateToolSettings(index);
+
+        },
+        /**
+         * check if json format matches what is expected from reportTemplate(items) array
+         * @param {*} reportTemplate a reportTemplate as Json (matching reportTemplateItems)
+         * @returns {boolean} true if jsonObj is an array and each item has the required keys
+         */
+        templateItemJsonValid (reportTemplate) {
+
+            // must be an array
+            if (!Array.isArray(reportTemplate)) {
+                return false;
+            }
+
+            // each item must have the required keys (if not, return false)
+            const requiredKeys = ["title", "description", "tool", "settings", "hasSettings", "output", "hasOutput", "dataSelection", "hasDataSelection", "dataSelectionApplied", "id"];
+
+            for (const i in reportTemplate) {
+                for (const j in requiredKeys) {
+                    if (!(requiredKeys[j] in reportTemplate[i])) {
+                        return false;
+                    }
+
+                }
+            }
+            // if passed all checks
+            return true;
 
         },
         close () {
