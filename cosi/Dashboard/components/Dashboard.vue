@@ -30,7 +30,7 @@ import exportXlsx from "../../utils/exportXlsx";
 import DashboardToolbar from "./DashboardToolbar.vue";
 import ToolInfo from "../../components/ToolInfo.vue";
 import TableCell from "./TableCell.vue";
-import getMetadata from "../../utils/getMetadata";
+
 
 export default {
     name: "Dashboard",
@@ -122,7 +122,7 @@ export default {
             "keyOfAttrNameStats",
             "mapping",
             "loadend",
-            "metadataUrls"
+            "remoteMetadata"
         ]),
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/ColorCodeMap", ["selectedYear"]),
@@ -225,7 +225,8 @@ export default {
                         {
                             result: data, // change to where results are stored
                             type: "table", // see toolBridge docs for supported output types
-                            request: newRequest // we need to give back the original request as well, leave this as is.
+                            request: newRequest, // we need to give back the original request as well, leave this as is.
+                            sourceInfo: this.remoteMetadata
                         }
                     );
                 };
@@ -279,6 +280,7 @@ export default {
         getRows () {
             let counter = 0;
 
+
             return this.mapping.reduce((rows, category, index, array) => {
                 if (!category[this.keyOfAttrNameStats]) {
                     return rows;
@@ -294,8 +296,7 @@ export default {
                         valueType: category.valueType,
                         isTemp: category.isTemp,
                         calculation: category.calculation,
-                        groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter,
-                        metadata: getMetadata(category, this.keyOfAttrNameStats, {url: this.metadataUrls?.[0]})
+                        groupIndex: array[index].group !== array[index + 1]?.group ? counter++ : counter
                     }
                 ];
             }, []);

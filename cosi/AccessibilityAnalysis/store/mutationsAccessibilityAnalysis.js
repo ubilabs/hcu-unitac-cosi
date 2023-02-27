@@ -34,6 +34,15 @@ const mutations = {
         if (payload && payload.indexOf("translate#") > -1) {
             state.name = payload.substring("translate#".length);
         }
+    },
+    /**
+     * metadata for dataset used in current analysis configuration.
+     * @param {object} state of this component
+     * @param {string} payload name of this component
+     * @returns {void}
+     */
+    setMetadata: (state, payload) => {
+        state.metaData = payload;
     }
 };
 

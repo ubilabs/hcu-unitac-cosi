@@ -53,6 +53,9 @@ const mutations = {
      */
     resetMapping (state) {
         state.mapping = state.mappingInit;
+    },
+    addRemoteMetadata (state, {layerId, metadata}) {
+        state.remoteMetadata[layerId] = metadata;
     }
 };
 

@@ -1,7 +1,7 @@
 import {shallowMount} from "@vue/test-utils";
 import {expect} from "chai";
 import TrafficCountDatePicker from "../../../components/TrafficCountDatePicker.vue";
-import moment from "moment";
+import dayjs from "dayjs";
 
 describe("addons/trafficCount/components/TrafficCountDatePicker.vue", () => {
     let wrapper;
@@ -132,7 +132,7 @@ describe("addons/trafficCount/components/TrafficCountDatePicker.vue", () => {
                 expect(wrapper.vm.toggleSelectedDateWeek()).to.be.false;
             });
             it("should add the whole week of the given moment into selectedDates", () => {
-                const momentDate = moment("2022-09-13", "YYYY-MM-DD"),
+                const momentDate = dayjs("2022-09-13", "YYYY-MM-DD"),
                     expected = ["2022-09-12", "2022-09-13", "2022-09-14", "2022-09-15", "2022-09-16", "2022-09-17", "2022-09-18"];
 
                 wrapper = shallowMount(TrafficCountDatePicker);
@@ -140,7 +140,7 @@ describe("addons/trafficCount/components/TrafficCountDatePicker.vue", () => {
                 expect(wrapper.vm.selectedDates).to.deep.equal(expected);
             });
             it("should remove the whole week of the given moment into selectedDates if it is already selected", () => {
-                const momentDate = moment("2022-09-13", "YYYY-MM-DD"),
+                const momentDate = dayjs("2022-09-13", "YYYY-MM-DD"),
                     expected = [
                         "2022-09-05", "2022-09-06", "2022-09-07", "2022-09-08", "2022-09-09", "2022-09-10", "2022-09-11",
                         "2022-09-19", "2022-09-20", "2022-09-21", "2022-09-22", "2022-09-23", "2022-09-24", "2022-09-25"
@@ -156,7 +156,7 @@ describe("addons/trafficCount/components/TrafficCountDatePicker.vue", () => {
                 expect(wrapper.vm.selectedDates).to.deep.equal(expected);
             });
             it("should add the monday of each entry of selectedDates into inputDates", () => {
-                const momentDate = moment("2022-09-13", "YYYY-MM-DD"),
+                const momentDate = dayjs("2022-09-13", "YYYY-MM-DD"),
                     expected = ["2022-09-05", "2022-09-19", "2022-09-12"];
 
                 wrapper = shallowMount(TrafficCountDatePicker, {
@@ -172,7 +172,7 @@ describe("addons/trafficCount/components/TrafficCountDatePicker.vue", () => {
                 expect(wrapper.vm.inputDates).to.deep.equal(expected);
             });
             it("should only select 2 weeks and remove the first selected week", () => {
-                const momentDate = moment("2022-09-13", "YYYY-MM-DD"),
+                const momentDate = dayjs("2022-09-13", "YYYY-MM-DD"),
                     expected = ["2022-09-19", "2022-09-12"],
                     localWrapper = shallowMount(TrafficCountDatePicker, {
                         propsData: {

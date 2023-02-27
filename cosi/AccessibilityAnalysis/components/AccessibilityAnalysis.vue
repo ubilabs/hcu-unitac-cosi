@@ -12,10 +12,10 @@ import {Select} from "ol/interaction";
 import ToolInfo from "../../components/ToolInfo.vue";
 import travelTimeIndex from "../assets/inrix_traveltimeindex_2021.json";
 import {onSearchbar, offSearchbar, getServiceUrl, onShowFeaturesById, onShowAllFeatures, onFeaturesLoaded, getModelByAttributes} from "../../utils/radioBridge.js";
-import mapCollection from "../../../../src/core/maps/mapCollection";
 import mapCanvasToImage, {exportMapView} from "../../utils/mapCanvasToImage";
 import AccessibilityAnalysisLegend from "./AccessibilityAnalysisLegend.vue";
 import AccessibilityAnalysisTrafficFlow from "./AccessibilityAnalysisTrafficFlow.vue";
+import {unpackCluster} from "../../utils/features/unpackCluster.js";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -27,6 +27,24 @@ export default {
         AccessibilityAnalysisTrafficFlow
     },
     data () {
+        this.availableModes = [
+            {
+                type: "point",
+                text: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.mode.point")
+            },
+            {
+                type: "facility",
+                text: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.mode.facility")
+            },
+            {
+                type: "region",
+                text: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.mode.region")
+            },
+            {
+                type: "path",
+                text: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.mode.path")
+            }
+        ];
         return {
             travelTimeIndex,
             facilityNames: [],
@@ -46,10 +64,6 @@ export default {
                     type: "cycling-regular",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-regular")
                 },
-                // {
-                //     type: "cycling-electric",
-                //     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.cycling-electric")
-                // },
                 {
                     type: "foot-walking",
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes.foot-walking")
@@ -73,48 +87,33 @@ export default {
                     name: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits.distance")
                 }
             ],
-            layers: null,
             legendColors: [
                 "rgba(0, 240, 3, 0.6)",
                 "rgba(200, 200, 3, 0.6)",
                 "rgba(240, 0, 3, 0.6)",
                 "rgba(180, 165, 165, 0.8)"
             ],
-            featureColors: [
-                "rgba(240, 0, 3, 0.2)",
-                "rgba(200, 200, 3, 0.2)",
-                "rgba(0, 240, 3, 0.2)"
-            ],
-            refFeatureStyle: {
-                fill: {
-                    color: "rgba(255, 255, 255, 0)"
-                },
-                stroke: {
-                    color: "rgba(100, 80, 80, 1)",
-                    width: 2,
-                    lineDash: [10, 8]
-                }
-            },
             askUpdate: false,
             abortController: null,
             currentCoordinates: null,
-            select: null,
-            hide: false
-            // map: undefined
+            hide: false,
+            facilityFeature: null
         };
     },
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/AccessibilityAnalysis", Object.keys(getters)),
         ...mapGetters("Tools/AccessibilityAnalysisService", ["progress"]),
-        ...mapGetters("Maps", ["projectionCode"]),
+        ...mapGetters("Maps", ["projectionCode", "clickCoordinate", "getVisibleLayerList"]),
         ...mapGetters("MapMarker", ["markerPoint", "markerPolygon"]),
         ...mapGetters("Tools/DistrictSelector", ["boundingGeometry"]),
-        ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive"]),
+        ...mapGetters("Tools/FeaturesList", ["activeVectorLayerList", "isFeatureActive", "layerMapById"]),
         ...mapGetters("Tools/AreaSelector", {areaSelectorGeom: "geometry"}),
+        ...mapGetters("Tools/SelectionManager", ["activeSelection"]),
         ...mapGetters("Tools/ScenarioBuilder", ["scenarioUpdated"]),
         ...mapGetters("Tools/Routing/Directions", ["directionsRouteSource", "directionsRouteLayer", "routingDirections"]),
         ...mapGetters("Tools/Routing", {routingActive: "active", activeRoutingToolOption: "activeRoutingToolOption"}),
+
         _mode: {
             get () {
                 return this.mode;
@@ -131,12 +130,12 @@ export default {
                 this.setCoordinate(v);
             }
         },
-        _selectedFacilityName: {
+        _selectedFacilityNames: {
             get () {
-                return this.selectedFacilityName;
+                return this.selectedFacilityNames;
             },
             set (v) {
-                this.setSelectedFacilityName(v);
+                this.setSelectedFacilityNames(v);
             }
         },
         _setByFeature: {
@@ -187,14 +186,6 @@ export default {
                 this.setTime(v);
             }
         },
-        _useTravelTimeIndex: {
-            get () {
-                return this.useTravelTimeIndex;
-            },
-            set (v) {
-                this.setUseTravelTimeIndex(v);
-            }
-        },
         _isochroneFeatures: {
             get () {
                 return this.isochroneFeatures;
@@ -202,20 +193,11 @@ export default {
             set (v) {
                 this.setIsochroneFeatures(v);
             }
-        },
-        _steps: {
-            get () {
-                return this.steps;
-            },
-            set (v) {
-                this.setSteps(v);
-            }
         }
     },
     watch: {
         active () {
             if (this.active) {
-                mapCollection.getMap("2D").on("click", this.setCoordinateFromClick);
                 onSearchbar(this.setSearchResultToOrigin);
 
                 if (this.mode === "path") {
@@ -223,7 +205,6 @@ export default {
                 }
             }
             else {
-                mapCollection.getMap("2D").un("click", this.setCoordinateFromClick);
                 offSearchbar(this.setSearchResultToOrigin);
                 this.removePointMarker();
                 this.select.getFeatures().clear();
@@ -239,7 +220,7 @@ export default {
                 this[key] = this.dataSets[newValue].inputs[key];
             }
 
-            if (this.dataSets[newValue].inputs._mode === "point") {
+            if (this.dataSets[newValue].inputs._mode === "point" || this.dataSets[newValue].inputs._mode === "facility") {
                 const icoord = Proj.transform(this.dataSets[newValue].inputs._coordinate[0], "EPSG:4326", this.projectionCode);
 
                 this.placingPointMarker(icoord);
@@ -259,7 +240,15 @@ export default {
         mode () {
             this.setSetByFeature(false);
 
-            if (this.mode === "region") {
+            if (this.mode === "facility") {
+                this.addInteraction(this.select);
+            }
+            else {
+                this.removePointMarker();
+                this.removeInteraction(this.select);
+            }
+
+            if (this.mode === "region" && this.activeSelection === null) {
                 this.resetIsochroneBBox();
             }
 
@@ -270,25 +259,22 @@ export default {
             }
             else {
                 this.removeLayerFromMap(this.directionsLayer);
-
-                if (!this.setByFeature) {
-                    this.removeInteraction(this.select);
-                    this.select.un("select", this.pickDirections.bind(this));
-                }
             }
         },
         clickCoordinate (coord) {
-            this.placingPointMarker(coord);
+            if (this.active && this.mode === "point") {
+                this.setCoordinateFromClick(this.clickCoordinate);
+                this.placingPointMarker(coord);
+            }
         },
         setByFeature (val) {
-            if (val && this.mode === "point") {
-                this.addInteraction(this.select);
-            }
-            else {
-                if (this.select?.getFeatures().getLength() > 0) {
-                    this.select.getFeatures().removeAt(0);
+            if (val && this.mode === "facility" && this.facilityFeature) {
+                if (val) {
+                    this.setCoordinateFromFeature(this.facilityFeature);
                 }
-                this.removeInteraction(this.select);
+                else {
+                    this.setCoordinateFromClick(this.clickCoordinate);
+                }
             }
         },
         activeVectorLayerList (newValues) {
@@ -299,6 +285,11 @@ export default {
 
             if (this.mode === "path" && this.isochroneFeatures.length > 0) {
                 this.askUpdate = true;
+            }
+        },
+        selectedFacilityNames (newValue) {
+            if (Array.isArray(newValue) && newValue.length > 0) {
+                this.updateCurrentMetaData();
             }
         },
         // This watcher makes the addon compatible with toolBridge (see toolbridge docs).
@@ -313,15 +304,16 @@ export default {
             const updateInterface = (request) => {
                     this._mode = request.settings.mode;
                     this._coordinate = request.settings.coordinate;
-                    this._selectedFacilityName = request.settings.selectedFacilityName;
+                    this._selectedFacilityNames = request.settings.selectedFacilityNames;
                     this._selectedDirections = request.settings.selectedDirections;
                     this._transportType = request.settings.transportType;
                     this._scaleUnit = request.settings.scaleUnit;
                     this._distance = request.settings.distance;
                     this._timefi = request.settings.time;
-                    this._useTravelTimeIndex = request.settings.useTravelTimeIndex;
+                    this.setUseTravelTimeIndex(request.settings.useTravelTimeIndex);
                     this._setByFeature = request.settings.setByFeature;
-                    this._steps = request.settings.steps;
+                    this.setSteps(request.settings.steps);
+                    this.setSelectedFacility(request.settings.selectedFacility);
                     return request; // (we care about the side effects only)
                 },
                 /**
@@ -341,13 +333,13 @@ export default {
                 * @returns {Object} null (runs for side effects only)
                 */
                 returnResults = (imgDataUrl) => {
-                // (todo mb: should this maybe be a toolbridge action? could simplify creating the bridge)
                     return this.$store.commit("Tools/ToolBridge/setReceivedResults", // this is where toolBridge expects requested results to arrive
                         {
-                            // result: this.dataSets[this.activeSet].geojson,
+                            // result: this.dataSets[this.activeSet].geojson, // if we ever wanted raw data (atm we dont, and toolBridge supports only single type of output)
                             result: imgDataUrl,
                             type: "image", // see toolBridge docs for supported output types
-                            request: newRequest // we need to give back the original request as well
+                            request: newRequest, // we need to give back the original request as well
+                            sourceInfo: this.metaData ? [this.metaData] : null // return metadata as array if it exists
                         }
                     );
                 };
@@ -364,12 +356,9 @@ export default {
     */
     created () {
         this.$on("close", this.close);
-        this.select = new Select({
-            filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
-        });
+        this.setNonReactiveData();
 
         this.baseUrl = getServiceUrl("bkg_ors") + "/v2/";
-        // this.map = mapCollection.getMap("2D");
     },
 
     /**
@@ -395,6 +384,10 @@ export default {
         onFeaturesLoaded(this.tryUpdateIsochrones);
     },
     methods: {
+        ...mapMutations("Tools/PopulationRequest", {
+            setPopulationRequestGeometry: "setGeometry",
+            setPopulationRequestActive: "setActive"
+        }),
         ...mapMutations("Tools/AccessibilityAnalysis", Object.keys(mutations)),
         ...mapActions("Tools/AccessibilityAnalysisService", ["getIsochrones"]),
         ...mapActions("Tools/SelectionManager", ["addNewSelection"]),
@@ -406,9 +399,53 @@ export default {
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...methods,
 
+
+        /**
+         * Sets all needed non reactive data.
+         * @returns {void}
+         */
+        setNonReactiveData () {
+            this.select = new Select({
+                style: null,
+                filter: (feature, layer) => this.activeVectorLayerList.includes(layer)
+            });
+
+            this.registerSelectListener(this.select);
+        },
+
+        /**
+         * Registers listener for select interaction events.
+         * On "select" the name of the selected feature and the click coordinate is set.
+         * @param {ol/interaction/Select} select - Interaction for selecting features.
+         * @returns {void}
+         */
+        registerSelectListener (select) {
+            select.on("select", evt => {
+                if (evt.selected.length === 0) {
+                    return;
+                }
+
+                const selectedFeature = evt.selected[0],
+                    layer = evt.target.getLayer(selectedFeature),
+                    layerMap = this.layerMapById(layer.get("id")),
+                    unpackedFeature = unpackCluster(selectedFeature)[0];
+
+                this.facilityFeature = unpackedFeature;
+                this.setSelectedFacility(unpackedFeature.get(layerMap.keyOfAttrName));
+                if (this.setByFeature) {
+                    this.setCoordinateFromFeature(unpackedFeature);
+                }
+                else {
+                    this.setCoordinateFromClick(this.clickCoordinate);
+                }
+                this.placingPointMarker(this.clickCoordinate);
+            });
+        },
+
         downloadMap () {
             exportMapView("Erreichbarkeitsanalyse_CoSI");
         },
+
         tryUpdateIsochrones () {
             if (this.mode === "region" && this.currentCoordinates && this.dataSets.length > 0) {
                 const newCoordinates = this.getCoordinates(this.setByFeature);
@@ -459,10 +496,11 @@ export default {
         * closes this component and opens requestInhabitants component and executes makeRequest with the calculated geoJSON of this component
         * @returns {void}
         */
-        requestInhabitants: async function () {
+        async requestInhabitants () {
             this.close();
             await this.$nextTick();
-            this.$root.$emit("populationRequest", this.rawGeoJson);
+            this.setPopulationRequestActive(true);
+            this.setPopulationRequestGeometry(this.rawGeoJson);
         },
         createAnalysisSet: async function () {
             this.hide = false;
@@ -479,15 +517,16 @@ export default {
             analysisSet.inputs = {
                 _mode: JSON.parse(JSON.stringify(this._mode)),
                 _coordinate: JSON.parse(JSON.stringify(this._coordinate)),
-                _selectedFacilityName: JSON.parse(JSON.stringify(this._selectedFacilityName)),
+                _selectedFacilityNames: JSON.parse(JSON.stringify(this._selectedFacilityNames)),
                 _selectedDirections: JSON.parse(JSON.stringify(this._selectedDirections)),
                 _transportType: JSON.parse(JSON.stringify(this._transportType)),
                 _scaleUnit: JSON.parse(JSON.stringify(this._scaleUnit)),
                 _distance: JSON.parse(JSON.stringify(this._distance)),
                 _time: JSON.parse(JSON.stringify(this._time)),
-                _useTravelTimeIndex: JSON.parse(JSON.stringify(this._useTravelTimeIndex)),
+                _useTravelTimeIndex: JSON.parse(JSON.stringify(this.useTravelTimeIndex)),
                 _setByFeature: JSON.parse(JSON.stringify(this._setByFeature)),
-                _steps: JSON.parse(JSON.stringify(this._steps))
+                _steps: JSON.parse(JSON.stringify(this.steps)),
+                _selectedFacility: this.selectedFacility
             };
             this.dataSets.push(analysisSet);
 
@@ -498,7 +537,7 @@ export default {
             }
 
             this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
-            this.addNewSelection({selection: analysisSet.results, source: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.title"), id: this._mode + ", " + this._transportType + ", [...]"});
+            this.addNewSelection({selection: analysisSet.results, source: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.title"), id: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.transportTypes." + this._transportType) + ", " + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.scaleUnits." + this._scaleUnit) + ", [...]"});
         },
         exportAsGeoJson,
         // pagination features
@@ -545,15 +584,39 @@ export default {
             await this.createIsochrones();
 
             this.dataSets[this.activeSet].results = this._isochroneFeatures;
-            this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
+            this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.activeVectorLayerList, this.mapLayer);
 
             this.renderIsochrones(this._isochroneFeatures);
         },
         updateUseTravelTimeIndex (value) {
-            this._useTravelTimeIndex = value;
+            this.setUseTravelTimeIndex(value);
         },
         updateTime (value) {
             this._time = value;
+        },
+        updateCurrentMetaData () {
+            //  when the selected facility changes, we keep track of the metadata for the datasets used in the analysis
+            // this.$store.commit("Tools/AccessibilityAnalysis/setMetaData", {}); // clear any previously stored metadata
+
+            this.getMetadataSelectedData().then(
+                res => { // some code duplicated from actionsDistrictSeletor/fetchMetaData(), as metadata preprocessing may depend on the specific tool
+                    // pick date
+                    let date = "Datum Unbekannt";
+
+                    if (res.getRevisionDate()) {
+                        date = res.getRevisionDate();
+                    }
+                    else if (res.getPublicationDate()) {
+                        date = res.getPublicationDate();
+                    }
+                    else if (res.getCreationDate()) {
+                        date = res.getCreateionDate();
+                    }
+                    // make simple metadata object
+                    const metadata = {Titel: res.getTitle(), Datum: date, Abstrakt: res.getAbstract()};
+
+                    this.$store.commit("Tools/AccessibilityAnalysis/setMetaData", metadata); // fetch locally stored metadata for relevant layers
+                });
         }
     }
 };
@@ -606,16 +669,38 @@ export default {
                                 dense
                                 hide-details
                             />
+                            <v-text-field
+                                v-if="mode === 'facility'"
+                                id="facility"
+                                :value="selectedFacility"
+                                class="mb-4"
+                                label="Klicken Sie auf eine Einrichtung"
+                                type="text"
+                                readonly
+                                outlined
+                                dense
+                                hide-details
+                            />
                             <v-select
                                 v-if="mode === 'region'"
-                                v-model="_selectedFacilityName"
+                                v-model="_selectedFacilityNames"
                                 class="mb-4"
                                 placeholder="Keine Auswahl"
                                 :items="facilityNames"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.topic')"
+                                multiple
                                 outlined
                                 dense
                                 hide-details
+                            />
+                            <v-checkbox
+                                v-if="mode === 'facility' || mode === 'region'"
+                                v-model="_setByFeature"
+                                class="mb-4"
+                                dense
+                                hide-details
+                                :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
+                                :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
                             />
                             <v-select
                                 v-if="mode === 'path'"
@@ -670,6 +755,7 @@ export default {
                             <v-text-field
                                 id="range"
                                 v-model="_distance"
+                                class="mb-4"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.distance')"
                                 type="number"
                                 min="0"
@@ -678,19 +764,7 @@ export default {
                                 hide-details
                             />
                             <v-row dense>
-                                <v-col cols="12">
-                                    <v-checkbox
-                                        v-model="_setByFeature"
-                                        dense
-                                        hide-details
-                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeature')"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.setByFeatureInfo')"
-                                        :disabled="mode === 'path'"
-                                    />
-                                </v-col>
-                            </v-row>
-                            <v-row dense>
-                                <v-col cols="12">
+                                <v-col cols="4">
                                     <v-btn
                                         id="create-isochrones"
                                         dense
@@ -702,9 +776,21 @@ export default {
                                         {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
                                     </v-btn>
                                 </v-col>
+                                <AccessibilityAnalysisLegend
+                                    v-if="dataSets.length > 0"
+                                    :steps="steps"
+                                    :colors="legendColors"
+                                />
                             </v-row>
+                            <v-progress-linear
+                                v-if="progress > 0"
+                                v-model="progress"
+                                background-color="white"
+                            />
+                        </v-form>
+                        <template v-if="dataSets.length > 0">
+                            <v-divider />
                             <v-row
-                                v-if="isochroneFeatures.length > 0"
                                 dense
                             >
                                 <v-col cols="12">
@@ -719,7 +805,7 @@ export default {
                                         {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.clear') }}
                                     </v-btn>
                                     <v-btn
-                                        v-if="mode === 'point'"
+                                        v-if="mode === 'point' || mode === 'facility'"
                                         dense
                                         small
                                         tile
@@ -728,49 +814,33 @@ export default {
                                     >
                                         {{ $t('additional:modules.tools.cosi.accessibilityAnalysis.requestInhabitants') }}
                                     </v-btn>
-                                    <v-icon
-                                        v-if="isochroneFeatures.length > 0 && steps.length === 4"
-                                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.travelTimeIndex.warning')"
-                                    >
-                                        mdi-alert
-                                    </v-icon>
                                 </v-col>
                             </v-row>
-                        </v-form>
-                        <hr>
-                        <AccessibilityAnalysisLegend
-                            :steps="_steps"
-                            :colors="legendColors"
-                        />
-                        <v-row>
-                            <v-col>
-                                <AnalysisPagination
-                                    v-if="dataSets.length > 0"
-                                    :sets="dataSets"
-                                    :active-set="activeSet"
-                                    :downloads="['GEOJSON']"
-                                    :titles="{
-                                        downloads: [$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')],
-                                        downloadAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationDownloadAll'),
-                                        remove: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemove'),
-                                        removeAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemoveAll'),
-                                        next: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationNext'),
-                                        prev: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationPrev'),
-                                    }"
-                                    @setActiveSet="(n) => setActiveSet(n)"
-                                    @setPrevNext="(n) => setPrevNext(n)"
-                                    @removeSingle="(n) => removeSet(n)"
-                                    @removeAll="removeAll"
-                                    @downloadGEOJSON="(n) => downloadSet(n)"
-                                    @downloadAll="downloadAll"
-                                />
-                            </v-col>
-                        </v-row>
-                        <v-progress-linear
-                            v-if="progress > 0"
-                            v-model="progress"
-                            background-color="white"
-                        />
+                            <v-divider />
+                            <v-row>
+                                <v-col>
+                                    <AnalysisPagination
+                                        :sets="dataSets"
+                                        :active-set="activeSet"
+                                        :downloads="['GEOJSON']"
+                                        :titles="{
+                                            downloads: [$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')],
+                                            downloadAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationDownloadAll'),
+                                            remove: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemove'),
+                                            removeAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemoveAll'),
+                                            next: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationNext'),
+                                            prev: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationPrev'),
+                                        }"
+                                        @setActiveSet="(n) => setActiveSet(n)"
+                                        @setPrevNext="(n) => setPrevNext(n)"
+                                        @removeSingle="(n) => removeSet(n)"
+                                        @removeAll="removeAll"
+                                        @downloadGEOJSON="(n) => downloadSet(n)"
+                                        @downloadAll="downloadAll"
+                                    />
+                                </v-col>
+                            </v-row>
+                        </template>
                     </div>
                 </v-app>
             </template>
@@ -822,8 +892,21 @@ export default {
         #download {
             margin-top: 8px;
         }
+
         .v-input {
             border-radius: $border-radius-base;
+            font-size: 14px;
+            .v-label {
+                font-size: 14px;
+            }
+        }
+
+        .v-input--checkbox {
+            padding: 5px 0;
+        }
+
+        button {
+            text-transform: inherit;
         }
     }
 

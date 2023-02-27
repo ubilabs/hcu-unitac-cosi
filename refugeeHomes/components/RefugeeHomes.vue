@@ -142,7 +142,7 @@ export default {
             if (name.includes("-")) {
                 checkedName = name.split("-")[1];
             }
-            const filteredDistricts = this.features?.filter(district => district?.bezirk?.toUpperCase().trim() === checkedName.toUpperCase().trim()),
+            const filteredDistricts = this.features?.filter(district => district?.bezirk?.toUpperCase().trim() === checkedName.toUpperCase().trim() || district?.bezirk?.toUpperCase().trim() === name.toUpperCase().trim()),
                 sortedFeatures = this.sortFeatures(filteredDistricts, this.ranking);
 
             this.addFilteredFeature(sortedFeatures);

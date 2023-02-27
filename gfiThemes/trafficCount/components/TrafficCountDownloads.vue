@@ -1,5 +1,5 @@
 <script>
-import moment from "moment";
+import dayjs from "dayjs";
 import {getPublicHoliday, hasHolidayInWeek} from "../../../../src/utils/calendar.js";
 import ExportButtonCSV from "../../../../src/share-components/exportButton/components/ExportButtonCSV.vue";
 
@@ -146,8 +146,8 @@ export default {
             const api = this.api,
                 timeSet = {
                     interval: this.minInterval,
-                    from: moment().subtract(14, "days").format("YYYY-MM-DD"),
-                    until: moment().format("YYYY-MM-DD")
+                    from: dayjs().subtract(14, "day").format("YYYY-MM-DD"),
+                    until: dayjs().format("YYYY-MM-DD")
                 };
 
             api.downloadData(thingId, meansOfTransport, timeSet, onsuccess, onerror, onstart, oncomplete);
@@ -167,8 +167,8 @@ export default {
             const api = this.api,
                 timeSet = {
                     interval: this.hourInterval,
-                    from: moment().subtract(60, "days").format("YYYY-MM-DD"),
-                    until: moment().format("YYYY-MM-DD")
+                    from: dayjs().subtract(60, "day").format("YYYY-MM-DD"),
+                    until: dayjs().format("YYYY-MM-DD")
                 };
 
             api.downloadData(thingId, meansOfTransport, timeSet, onsuccess, onerror, onstart, oncomplete);
@@ -188,8 +188,8 @@ export default {
             const api = this.api,
                 timeSet = {
                     interval: this.dayInterval,
-                    from: moment().subtract(1, "year").startOf("year").format("YYYY-MM-DD"),
-                    until: moment().format("YYYY-MM-DD")
+                    from: dayjs().subtract(1, "year").startOf("year").format("YYYY-MM-DD"),
+                    until: dayjs().format("YYYY-MM-DD")
                 };
 
             api.downloadData(thingId, meansOfTransport, timeSet, onsuccess, onerror, onstart, oncomplete);
@@ -212,7 +212,7 @@ export default {
                 const timeSet = {
                     interval: this.weekInterval,
                     from: firstDate,
-                    until: moment().format("YYYY-MM-DD")
+                    until: dayjs().format("YYYY-MM-DD")
                 };
 
                 api.downloadData(thingId, meansOfTransport, timeSet, onsuccess, onerror, false, oncomplete);

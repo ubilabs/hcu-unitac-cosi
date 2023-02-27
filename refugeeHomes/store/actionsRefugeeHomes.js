@@ -1,6 +1,22 @@
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import axios from "axios";
 
+/**
+ * Help function to define the namespace
+ * @param {String} str String to search within
+ * @param {String} start Start tag for search
+ * @param {String} end End tag for search
+ * @returns {void}
+ */
+function getStringBetween (str, start, end) {
+    const result = str.match(new RegExp(start + "(.*)" + end));
+
+    if (result === null) {
+        return "app";
+    }
+    return result[1];
+}
+
 const actions = {
     /**
      * Iterates over layerIds defined in the state, creates the url and executes the wfs request.
@@ -10,7 +26,7 @@ const actions = {
      */
     requestRawLayerList ({getters, dispatch}) {
         getters.layerIds.forEach(async (layerId) => {
-            const rawLayer = rawLayerList.getLayerWhere({id: layerId}),
+            const rawLayer = await rawLayerList.getLayerWhere({id: layerId}),
                 getFeatureUrl = await dispatch("buildAndGetRequestUrl", rawLayer);
 
             await dispatch("sendRequest", getFeatureUrl);
@@ -91,20 +107,21 @@ const actions = {
      */
     parseFeatures ({getters, dispatch, commit, rootGetters}, data) {
         const xmlData = new DOMParser().parseFromString(data, "text/xml"),
-            hits = xmlData.getElementsByTagName("wfs:member");
+            hits = xmlData.getElementsByTagName("wfs:member"),
+            nameSpace = getStringBetween(data, "</", ":bezeichnung");
 
         let feature,
             element,
             coordEle,
             coord;
 
-        hits.forEach(hit => {
+        [...hits].forEach(hit => {
             feature = {
                 id: hit.childNodes[1].getAttribute("gml:id")
             };
 
             getters.featureAttributes.forEach((attr) => {
-                element = hit.getElementsByTagName("app:" + attr)[0];
+                element = hit.getElementsByTagName(nameSpace + ":" + attr)[0];
 
                 if (typeof element !== "undefined") {
                     if (attr === "pfad") {

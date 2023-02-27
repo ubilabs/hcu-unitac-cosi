@@ -156,12 +156,12 @@
                         "alleinerz_u10": "Anteil der 6 bis unter 10-Jährigen in Haushalten von Alleinerziehenden",
                         "alleinerz_u16": "Anteil der 10 bis unter 16-Jährigen in Haushalten von Alleinerziehenden",
                         "hilfebeduerftige_u15": "Anteil der unter 15-Jährigen Hilfebedürftigen",
-                        "betr_quote_3_schuleintritt_proz": "Betreuungsquote der 3- bis 5-Jährigen*",
-                        "betr_quote_4_proz": "Betreuungsquote der 4-Jährigen*",
-                        "betr_quote_unter3_proz": "Betreuungsquote der unter 3-Jährigen*",
-                        "betr_quote_2_proz": "Betreuungsquote der 2-Jährigen*",
+                        "betr_quote_3_schuleintritt_proz": "Betreuungsquote der 3- bis unter 6,5-Jährigen",
+                        "betr_quote_4_proz": "Betreuungsquote der 4-Jährigen",
+                        "betr_quote_unter3_proz": "Betreuungsquote der unter 3-Jährigen",
+                        "betr_quote_2_proz": "Betreuungsquote der 2-Jährige",
                         "anteil_unter3_fam_proz": "Anteil der betreuten unter 3-Jährigen mit nicht-deutscher Familiensprache",
-                        "anteil_3_schuleintritt_fam_proz": "Anteil der betreuten 3- bis 5-Jährigen mit nicht-deutscher Familiensprache",
+                        "anteil_3_schuleintritt_fam_proz": "Anteil der betreuten 3- bis unter 6,5-Jährigen mit nicht-deutscher Familiensprache",
                         "anteil_nutzer_bevölkerung_6_9": "Nutzung der JMS-Angebote der 6- bis 9-Jährigen",
                         "anteil_nutzer_bevölkerung_10_15": "Nutzung der JMS-Angebote der 10- bis 15-Jährigen",
                         "anzahl_nutzer_6_9": "Nutzung der JMS-Angebote der 6- bis 9-Jährigen",
@@ -173,12 +173,6 @@
                     },
                     "barchart": {
                         "title": "Kennzahl im Zeitverlauf"
-                    },
-                    "hint": {
-                        "betr_quote_3_schuleintritt_proz": "*) Berechungsgrundlage: Melderegister. Vgl. Hinweise und Informationen zur Kennzahl",
-                        "betr_quote_4_proz": "$t(additional:addons.gfiThemes.bildungsatlas.balkendiagramm.hint.betr_quote_3_schuleintritt_proz)",
-                        "betr_quote_unter3_proz": "$t(additional:addons.gfiThemes.bildungsatlas.balkendiagramm.hint.betr_quote_3_schuleintritt_proz)",
-                        "betr_quote_2_proz": "$t(additional:addons.gfiThemes.bildungsatlas.balkendiagramm.hint.betr_quote_3_schuleintritt_proz)"
                     },
                     "info": {
                         "anzahl_sus_primarstufe": {
@@ -292,15 +286,15 @@
                         },
                         "kita": {
                             "betr_quote_3_schuleintritt_proz": {
-                                "title": "Betreuungsquote der 3- bis 5-Jährigen in den Stadtteilen",
-                                "text": "Bis 2018 wurde die Betreuungsquote der Kinder von 3 bis unter 6 Jahren ausgewiesen. Ab 2018 wird der Anteil der Kinder von 3 bis unter 6,5 Jahren berechnet, für die bessere Lesbarkeit wurde die Überschrift \"Betreuungsquote der 3- bis 5-Jährigen\" belassen. Bei der Betrachtung der Zeitreihen muss dieser Unterschied auch mitbedacht werden."
+                                "title": "Betreuungsquote der 3- bis unter 6,5-Jährigen in den Stadtteilen",
+                                "text": "Es wird der Anteil der Kinder von 3 bis unter 6,5 Jahren berechnet. Bis 2018 wurde die Betreuungsquote der Kinder von 3 bis unter 6 Jahren ausgewiesen. Bei der Betrachtung der Zeitreihen muss dieser Unterschied mitbedacht werden."
                             },
                             "anteil_3_schuleintritt_fam_proz": {
                                 "title": "Kinder mit einer nicht-deutscher Familiensprache",
                                 "text": "Bei der Beantragung eines Kita-Gutscheins geben die Eltern an, welche Sprache überwiegend in der Familie gesprochen wird. Weitere Sprachen, die möglicherweise auch in der Familie gesprochen werden, werden dabei nicht erfasst."
                             },
                             "anteil_unter3_fam_proz": {
-                                "title": "Anteil der betreuten Kinder unter 3 Jahren im Stadtteil, die zu Hause überwiegend eine andere Sprache als deutsch sprechen",
+                                "title": "Kinder mit einer nicht-deutscher Familiensprache",
                                 "text": "Bei der Beantragung eines Kita-Gutscheins geben die Eltern an, welche Sprache überwiegend in der Familie gesprochen wird. Weitere Sprachen, die möglicherweise auch in der Familie gesprochen werden, werden dabei nicht erfasst."
                             },
                             "kinder_vorschulischer_sf": {
@@ -318,51 +312,55 @@
                             "betreuungsquote": {
                                 "betr_quote_3_schuleintritt_proz": {
                                     "title": "Betreuungsquote",
-                                    "text": "Bei der Betreuungsquote der unter 3- bis unter 6,5-Jährigen werden in den Daten nur diejenigen Kinder erfasst, die ein Betreuungsangebot (Kita oder Tagespflege) im Rahmen des Kita-Gutschein-Systems* (einschließlich stadteigene Kitas) in Anspruch nehmen. Außerdem erfasst sind unter 6,5-Jährige, die die Vorschulklasse (VSK) besuchen. Stichtag der Kita- und der VSK-Daten ist der 01.03.2018."
+                                    "text": "Bei der Betreuungsquote der unter 3- bis unter 6,5-Jährigen werden in den Daten nur diejenigen Kinder erfasst, die ein Betreuungsangebot (Kita oder Tagespflege) im Rahmen des Kita-Gutschein-Systems* (einschließlich stadteigene Kitas) in Anspruch nehmen. Außerdem erfasst sind unter 6,5-Jährige, die die Vorschulklasse (VSK) besuchen. Stichtag der Kita- und der VSK-Daten ist der 01.03. des Berichtsjahres."
                                 },
                                 "betr_quote_4_proz": {
                                     "title": "Betreuungsquote der 4-Jährigen in den Stadtteilen",
-                                    "text": "Bei der Betreuungsquote der 4-Jährigen werden nur diejenigen Kinder erfasst, die ein Betreuungsangebot (Kita oder Tagespflege) im Rahmen des Kita-Gutschein-Systems* (einschließlich der stadteigenen Kitas) in Anspruch nehmen. Stichtag ist der 01.03.2018."
+                                    "text": "Bei der Betreuungsquote der 4-Jährigen werden nur diejenigen Kinder erfasst, die ein Betreuungsangebot (Kita oder Tagespflege) im Rahmen des Kita-Gutschein-Systems* (einschließlich der stadteigenen Kitas) in Anspruch nehmen. Stichtag der Kita-Daten ist der 01.03. des Berichtsjahres."
                                 },
                                 "betr_quote_unter3_proz": {
                                     "title": "Betreuungsquote der unter 3-Jährigen in den Stadtteilen",
-                                    "text": "Bei der Betreuungsquote der unter 3-Jährigen werden nur diejenigen Kinder erfasst, die ein Betreuungsangebot (Kita oder Tagespflege) im Rahmen des Kita-Gutschein-Systems* (einschließlich stadteigene Kitas) in Anspruch nehmen. Stichtag der Berechnungen ist der 01.03.2018."
+                                    "text": "Bei der Betreuungsquote der unter 3-Jährigen werden nur diejenigen Kinder erfasst, die ein Betreuungsangebot (Kita oder Tagespflege) im Rahmen des Kita-Gutschein-Systems* (einschließlich stadteigene Kitas) in Anspruch nehmen. Stichtag der Kita-Daten ist der 01.03. des Berichtsjahres."
                                 },
                                 "betr_quote_2_proz": {
                                     "title": "Betreuungsquote der 2-Jährigen in den Stadtteilen",
-                                    "text": "Bei der Betreuungsquote der 2-Jährigen werden nur diejenigen Kinder erfasst, die ein Betreuungsangebot (Kita oder Tagespflege) im Rahmen des Kita-Gutschein-Systems (einschließlich der stadteigene Kitas) in Anspruch nehmen. Stichtag der Berechnungen ist der 01.03.2018."
+                                    "text": "Bei der Betreuungsquote der 2-Jährigen werden nur diejenigen Kinder erfasst, die ein Betreuungsangebot (Kita oder Tagespflege) im Rahmen des Kita-Gutschein-Systems (einschließlich der stadteigene Kitas) in Anspruch nehmen. Stichtag der Berechnungen ist der 01.03. des Berichtsjahres."
                                 },
                                 "anteil_3_schuleintritt_fam_proz": {
-                                    "title": "Anteil der betreuten 3- bis 5-jährigen Kinder, die zu Hause überwiegend eine andere Sprache als deutsch sprechen",
-                                    "text": "Bis 2018 wurde die Betreuungsquote der Kinder von 3 bis unter 6 Jahren ausgewiesen. Ab 2018 wird der Anteil der Kinder von 3 bis unter 6,5 Jahren berechnet, für die bessere Lesbarkeit wurde die Überschrift \"Betreuungsquote der 3- bis 5-Jährigen\" belassen. Bei der Betrachtung der Zeitreihen muss dieser Unterschied auch mitbedacht werden."
+                                    "title": "Anteil der betreuten 3- bis unter 6,5-Jährigen Kinder, die zu Hause überwiegend eine andere Sprache als deutsch sprechen",
+                                    "text": "Es wird wird der Anteil der Kinder von 3 bis unter 6,5 Jahren berechnet an allen betreuten Kindern von 3- bis unter 6,5 Jahren berechnet. Bis 2018 wurde der Anteil der Kinder von 3 bis unter 6 Jahren ausgewiesen. Bei der Betrachtung der Zeitreihen muss dieser Unterschied mitbedacht werden. Stichtag der Kita- und der VSK-Daten ist der 01.03. des Berichtsjahres."
+                                },
+                                "anteil_unter3_fam_proz": {
+                                    "title": "Anteil der betreuten Kinder unter 3 Jahren im Stadtteil, die zu Hause überwiegend eine andere Sprache als deutsch sprechen",
+                                    "text": "Es wird der Anteil der Kinder von unter 3 Jahren mit nicht-deutscher Familiensprache an allen betreuten Kindern unter 3 Jahren berechnet. Stichtag der Kita-Daten ist der 01.03. des Berichtsjahres."
                                 }
                             },
                             "berechnungsgrundlage": {
                                 "betr_quote_3_schuleintritt_proz": {
                                     "title": "Berechnungsgrundlage",
-                                    "text": "Für die Berechnung der Anteile der Betreuungsquoten der 3- bis 5-Jährigen wurden Bevölkerungsdaten aus dem Melderegister verwendet. Die Daten aus dem Melderegister sind gegenüber den Bevölkerungsdaten der amtlichen Statistik leicht überschätzt. Auf der Ebene von gesamt Hamburg und gemessen an den fortgeschriebenen Daten aus dem Zensus 2011 stellt die Überschätzung für die unter 3-Jährigen rund +3,75 % dar. Entsprechend sind die berechneten Betreuungsquoten leicht unterschätzt. Stichtag der Bevölkerungsdaten ist der 31.12.2017."
+                                    "text": "Für die Berechnung der Anteile der Betreuungsquoten der 3- bis 6,5-Jährigen wurden Bevölkerungsdaten aus dem Melderegister verwendet. Die Daten aus dem Melderegister sind gegenüber den Bevölkerungsdaten der amtlichen Statistik leicht überschätzt. Entsprechend sind die berechneten Betreuungsquoten leicht unterschätzt. Stichtag der Bevölkerungsdaten ist der 31.12. des Vorjahres (Bsp.: Kita- und VSK-Daten mit Stichtag 01.03.2022 und Bevölkerungsdaten mit Stichtag 31.12.2021)."
                                 },
                                 "betr_quote_4_proz": {
                                     "title": "Berechnungsgrundlage",
-                                    "text": "Für die Berechnung der Anteile der Betreuungsquoten der 4-Jährigen wurden Bevölkerungsdaten aus dem Melderegister verwendet. Die Daten aus dem Melderegister sind gegenüber den Bevölkerungsdaten der amtlichen Statistik leicht überschätzt. Auf der Ebene von gesamt Hamburg und gemessen an den fortgeschriebenen Daten aus dem Zensus 2011 stellt die Überschätzung für die unter 3-Jährigen rund +3,75 % dar. Entsprechend sind die berechneten Betreuungsquoten leicht unterschätzt. Stichtag der Bevölkerungsdaten ist der 31.12.2017."
+                                    "text": "Für die Berechnung der Anteile der Betreuungsquoten der 4-Jährigen wurden Bevölkerungsdaten aus dem Melderegister verwendet. Die Daten aus dem Melderegister sind gegenüber den Bevölkerungsdaten der amtlichen Statistik leicht überschätzt. Entsprechend sind die berechneten Betreuungsquoten leicht unterschätzt. Stichtag der Bevölkerungsdaten ist der 31.12. des Vorjahres (Bsp.: Kita-Daten mit Stichtag 01.03.2022 und Bevölkerungsdaten mit Stichtag 31.12.2021)."
                                 },
                                 "betr_quote_unter3_proz": {
                                     "title": "Berechnungsgrundlage",
-                                    "text": "Für die Berechnung der Anteile der Betreuungsquoten der unter 3-Jährigen wurden Bevölkerungsdaten aus dem Melderegister verwendet. Die Daten aus dem Melderegister sind gegenüber den Bevölkerungsdaten der amtlichen Statistik leicht überschätzt. Auf der Ebene von gesamt Hamburg und gemessen an den fortgeschriebenen Daten aus dem Zensus 2011 stellt die Überschätzung für die unter 3-Jährigen rund +0,62 % dar. Entsprechend sind die berechneten Betreuungsquoten minimal unterschätzt. Für frühere Jahre war die Berechnungsgrundlage die Fortschreibung der Bevölkerungsdaten aus dem Zensus 1987."
+                                    "text": "Für die Berechnung der Anteile der Betreuungsquoten der unter 3-Jährigen wurden Bevölkerungsdaten aus dem Melderegister verwendet. Die Daten aus dem Melderegister sind gegenüber den Bevölkerungsdaten der amtlichen Statistik leicht überschätzt. Entsprechend sind die berechneten Betreuungsquoten minimal unterschätzt. Stichtag der Bevölkerungsdaten ist der 31.12. des Vorjahres (Bsp.: Kita-Daten mit Stichtag 01.03.2022 und Bevölkerungsdaten mit Stichtag 31.12.2021)."
                                 },
                                 "betr_quote_2_proz": {
                                     "title": "Berechnungsgrundlage",
-                                    "text": "Für die Berechnung der Anteile der Betreuungsquoten der 2-Jährigen wurden Bevölkerungsdaten aus dem Melderegister verwendet. Die Daten aus dem Melderegister sind gegenüber den Bevölkerungsdaten der amtlichen Statistik leicht überschätzt. Auf der Ebene von gesamt Hamburg und gemessen an den fortgeschriebenen Daten aus dem Zensus 2011 stellt die Überschätzung für die 2-Jährigen rund +0,62 % dar. Entsprechend sind die berechneten Betreuungsquoten minimal unterschätzt. Für frühere Jahre war die Berechnungsgrundlage die Fortschreibung der Bevölkerungsdaten aus dem Zensus 1987."
+                                    "text": "Für die Berechnung der Anteile der Betreuungsquoten der 2-Jährigen wurden Bevölkerungsdaten aus dem Melderegister verwendet. Die Daten aus dem Melderegister sind gegenüber den Bevölkerungsdaten der amtlichen Statistik leicht überschätzt. Auf der Ebene von gesamt Hamburg und gemessen an den fortgeschriebenen Daten aus dem Zensus 2011 stellt die Überschätzung für die 2-Jährigen rund +0,62 % dar. Entsprechend sind die berechneten Betreuungsquoten minimal unterschätzt. Stichtag der Bevölkerungsdaten ist der 31.12. des Vorjahres (Bsp.: Kita-Daten mit Stichtag 01.03.2022 und Bevölkerungsdaten mit Stichtag 31.12.2021)."
                                 },
                                 "hoher_anteil_nicht_dt_spr_kl1": {
                                     "title": "Kinder mit nicht-deutscher Familiensprache",
-                                    "text": "Bei der Ermittlung der Kinder mit nicht-deutscher Familiensprache in Klassenstufe 1 wurden sowohl Kinder mit einer nicht-deutschen Erst- als auch einer nicht-deutschen Zweitsprache berücksichtigt. Damit sind alle Kinder erfasst, die zuhause eine andere Sprache als Deutsch sprechen, unabhängig davon, ob zuhause teilweise auch Deutsch gesprochen wird. Erfasst wurden alle Kinder der Klassenstufe 1 sowohl der Grund- als auch der Sonderschulen. Bezugsgröße ist der Wohnort der Kinder."
+                                    "text": "Bei der Beantragung eines Kita-Gutscheins geben die Eltern an, welche Sprache überwiegend in der Familie gesprochen wird. Weitere Sprachen, die möglicherweise auch in der Familie gesprochen werden, werden dabei nicht erfasst."
                                 }
                             },
                             "fallzahlen": {
                                 "betr_quote_3_schuleintritt_proz": {
                                     "title": "Keine oder zu geringe Fallzahlen",
-                                    "text": "Die Anteile der betreuten 3- bis 6,5-jährigen Kinder sind nur in Gebieten ausgewiesen, in denen mindestens 30 Kinder in dieser Altersgruppe leben. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt. Werte aus der Insel Neuwerk wurden dem Stadtteil Finkenwerder zugeordnet."
+                                    "text": "Die Anteile der betreuten 3- bis 6,5-Jährigen Kinder sind nur in Gebieten ausgewiesen, in denen mindestens 30 Kinder in dieser Altersgruppe leben. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt. Werte aus der Insel Neuwerk wurden dem Stadtteil Finkenwerder zugeordnet."
                                 },
                                 "betr_quote_4_proz": {
                                     "title": "Keine oder zu geringe Fallzahlen",
@@ -374,15 +372,15 @@
                                 },
                                 "betr_quote_2_proz": {
                                     "title": "Keine oder zu geringe Fallzahlen",
-                                    "text": "Die Anteile der betreuten 2-jährigen Kinder sind nur in Gebieten ausgewiesen, in denen mindestens 30 Kinder in dieser Altersgruppe leben. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt."
+                                    "text": "Die Anteile der betreuten 2-Jährigen Kinder sind nur in Gebieten ausgewiesen, in denen mindestens 30 Kinder in dieser Altersgruppe leben. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt."
                                 },
                                 "anteil_3_schuleintritt_fam_proz": {
                                     "title": "Keine oder zu geringe Fallzahlen",
-                                    "text": "Die Anteile der betreuten 3- bis 5-jährigen Kinder mit nicht-deutscher Familiensprache an allen betreuten Kindern sind nur in Gebieten ausgewiesen, in denen mindestens 10 Kinder in frühkindlicher Betreuung sind. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt."
+                                    "text": "Die Anteile der betreuten 3- bis unter 6,5-Jährigen Kinder mit nicht-deutscher Familiensprache an allen betreuten Kindern sind nur in Gebieten ausgewiesen, in denen mindestens 10 Kinder in frühkindlicher Betreuung sind. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt."
                                 },
                                 "anteil_unter3_fam_proz": {
                                     "title": "Keine oder zu geringe Fallzahlen",
-                                    "text": "Die Anteile der betreuten 3- bis 5-jährigen Kinder mit nicht-deutscher Familiensprache an allen betreuten Kindern sind nur in Gebieten ausgewiesen, in denen mindestens 10 Kinder in frühkindlicher Betreuung sind. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt."
+                                    "text": "Die Anteile der betreuten unter 3-Jährigen Kinder mit nicht-deutscher Familiensprache an allen betreuten Kindern sind nur in Gebieten ausgewiesen, in denen mindestens 10 Kinder in frühkindlicher Betreuung sind. In Gebieten, in denen es nach diesem Kriterium zu geringe oder gar keine Fallzahlen gibt, werden keine Werte angezeigt und die Flächen grau eingefärbt."
                                 },
                                 "kinder_vorschulischer_sf": {
                                     "title": "Keine oder zu geringe Fallzahlen",
@@ -396,15 +394,15 @@
                             "leistungsarten": {
                                 "betr_quote_3_schuleintritt_proz": {
                                     "title": "Leistungsarten Elementarbereich",
-                                    "text": "Im Hamburger Kita-Gutschein-System* erhalten Eltern einen geldwerten Gutschein für die Betreuung ihrer Kinder entweder in einer Kindertagesstätte oder in der Tagespflege. Die Eltern erhalten je nach Bedarf Gutscheine mit unterschiedlichen Stundenumfängen, die direkt in einer Kita eingelöst werden können. Für die Kindertagespflege erfolgt eine Leistungsbewilligung erst dann, wenn eine geeignete Tagespflegeperson nachgewiesen oder vermittelt werden konnte. Im Datenblatt sind die Anteile der im Stadtteil wohnenden 3- bis 5-Jährigen, die in der Kinderbetreuung gemäß Kita-Gutschein-System sind, nach Leistungsart dargestellt. Unter Leistungsart erfasst wird der Stundenumfang der eingelösten Kita-Gutscheine (5/6/8/10/12 Stunden pro Tag) sowie der Anteil der eingelösten Gutscheine für die Tagespflege (alle Umfänge von unter 10 Stunden bis über 41 Stunden pro Woche zusammengefasst). Weitere Kategorien sind Kita-Gutscheine im Rahmen der Eingliederungshilfe für Kinder mit Behinderung und der Besuch einer Vorschulklasse. Die Bezugsgröße ist der Wohnort der betreuten Kinder."
+                                    "text": "Im Hamburger Kita-Gutschein-System* erhalten Eltern einen geldwerten Gutschein für die Betreuung ihrer Kinder entweder in einer Kindertagesstätte oder in der Tagespflege. Die Eltern erhalten je nach Bedarf Gutscheine mit unterschiedlichen Stundenumfängen, die direkt in einer Kita eingelöst werden können. Für die Kindertagespflege erfolgt eine Leistungsbewilligung erst dann, wenn eine geeignete Tagespflegeperson nachgewiesen oder vermittelt werden konnte. Unter Leistungsart erfasst wird der Stundenumfang der eingelösten Kita-Gutscheine (5/6/8/10/12 Stunden pro Tag) sowie der Anteil der eingelösten Gutscheine für die Tagespflege (alle Umfänge von unter 10 Stunden bis über 41 Stunden pro Woche zusammengefasst). Weitere Kategorien sind Kita-Gutscheine im Rahmen der Eingliederungshilfe für Kinder mit Behinderung und der Besuch einer Vorschulklasse. Die Bezugsgröße ist der Wohnort der betreuten Kinder."
                                 },
                                 "betr_quote_4_proz": {
                                     "title": "Leistungsarten Elementarbereich",
-                                    "text": "Im Hamburger Kita-Gutschein-System* erhalten Eltern einen geldwerten Gutschein für die Betreuung ihrer Kinder entweder in einer Kindertagesstätte oder in der Tagespflege. Die Eltern erhalten je nach Bedarf Gutscheine mit unterschiedlichen Stundenumfängen, die direkt in einer Kita eingelöst werden können. Für die Kindertagespflege erfolgt eine Leistungsbewilligung erst dann, wenn eine geeignete Tagespflegeperson nachgewiesen oder vermittelt werden konnte. Auf dem Datenblatt sind die Anteile der im Stadtteil wohnenden 4-Jährigen, die in der Kinderbetreuung gemäß Kita-Gutschein-System sind, nach Leistungsart dargestellt. Unter Leistungsart gefasst wird der Stundenumfang der eingelösten Kita-Gutscheine (4/5/6/8/10/12 Stunden pro Tag) sowie der Anteil der eingelösten Gutscheine für die Tagespflege (alle Umfänge von unter 10 Stunden bis über 41 Stunden pro Woche zusammengefasst)."
+                                    "text": "Im Hamburger Kita-Gutschein-System* erhalten Eltern einen geldwerten Gutschein für die Betreuung ihrer Kinder entweder in einer Kindertagesstätte oder in der Tagespflege. Die Eltern erhalten je nach Bedarf Gutscheine mit unterschiedlichen Stundenumfängen, die direkt in einer Kita eingelöst werden können. Für die Kindertagespflege erfolgt eine Leistungsbewilligung erst dann, wenn eine geeignete Tagespflegeperson nachgewiesen oder vermittelt werden konnte. Unter Leistungsart gefasst wird der Stundenumfang der eingelösten Kita-Gutscheine (4/5/6/8/10/12 Stunden pro Tag) sowie der Anteil der eingelösten Gutscheine für die Tagespflege (alle Umfänge von unter 10 Stunden bis über 41 Stunden pro Woche zusammengefasst)."
                                 },
                                 "betr_quote_unter3_proz": {
                                     "title": "Leistungsarten Krippe",
-                                    "text": "Im Hamburger Kita-Gutschein-System* erhalten Eltern einen geldwerten Gutschein für die Betreuung ihrer Kinder entweder in einer Kindertagesstätte oder in der Tagespflege. Die Eltern erhalten je nach Bedarf Gutscheine mit unterschiedlichen Stundenumfängen, die direkt in einer Kita eingelöst werden können. Für die Kindertagespflege erfolgt eine Leistungsbewilligung erst dann, wenn eine geeignete Tagespflegeperson nachgewiesen oder vermittelt werden konnte. Im Datenblatt sind die Anteile der im Stadtteil wohnenden unter 3-Jährigen, die in der Kinderbetreuung gemäß Kita-Gutschein-System sind, nach Leistungsart dargestellt. Unter Leistungsart gefasst wird der Stundenumfang der eingelösten Kita-Gutscheine (4/5/6/8/10/12 Stunden pro Tag) sowie der Anteil der eingelösten Gutscheine für die Tagespflege (alle Umfänge von unter 10 Stunden bis über 41 Stunden pro Woche zusammengefasst)."
+                                    "text": "Im Hamburger Kita-Gutschein-System* erhalten Eltern einen geldwerten Gutschein für die Betreuung ihrer Kinder entweder in einer Kindertagesstätte oder in der Tagespflege. Die Eltern erhalten je nach Bedarf Gutscheine mit unterschiedlichen Stundenumfängen, die direkt in einer Kita eingelöst werden können. Für die Kindertagespflege erfolgt eine Leistungsbewilligung erst dann, wenn eine geeignete Tagespflegeperson nachgewiesen oder vermittelt werden konnte. Unter Leistungsart gefasst wird der Stundenumfang der eingelösten Kita-Gutscheine (4/5/6/8/10/12 Stunden pro Tag) sowie der Anteil der eingelösten Gutscheine für die Tagespflege (alle Umfänge von unter 10 Stunden bis über 41 Stunden pro Woche zusammengefasst)."
                                 }
                             },
                             "gutscheinsystem": {

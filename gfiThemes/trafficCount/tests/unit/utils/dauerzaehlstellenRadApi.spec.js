@@ -1,9 +1,10 @@
 import {expect} from "chai";
 import {DauerzaehlstellenRadApi} from "../../../utils/dauerzaehlstellenRadApi";
-import moment from "moment";
+import dayjs from "dayjs";
 
-// change language from moment.js to german
-moment.locale("de");
+// change language from day.js to german
+require("dayjs/locale/de.js");
+dayjs.locale("de");
 
 describe("addons/trafficCount/utils/dauerzaehlstellenRadApi.js", () => {
     let dummyApi = null;
@@ -93,20 +94,20 @@ describe("addons/trafficCount/utils/dauerzaehlstellenRadApi.js", () => {
             expect(result).to.be.an("array").and.to.have.lengthOf(5);
             expect(result[0]).to.be.an("object");
             expect(result[0].result).to.equal(1);
-            expect(result[0].momentStart instanceof moment).to.be.true;
-            expect(result[0].momentEnd instanceof moment).to.be.true;
+            expect(result[0].momentStart instanceof dayjs).to.be.true;
+            expect(result[0].momentEnd instanceof dayjs).to.be.true;
             expect(result[1].result).to.equal(2);
-            expect(result[1].momentStart instanceof moment).to.be.true;
-            expect(result[1].momentEnd instanceof moment).to.be.true;
+            expect(result[1].momentStart instanceof dayjs).to.be.true;
+            expect(result[1].momentEnd instanceof dayjs).to.be.true;
             expect(result[2].result).to.equal(3);
-            expect(result[2].momentStart instanceof moment).to.be.true;
-            expect(result[2].momentEnd instanceof moment).to.be.true;
+            expect(result[2].momentStart instanceof dayjs).to.be.true;
+            expect(result[2].momentEnd instanceof dayjs).to.be.true;
             expect(result[3].result).to.equal(4);
-            expect(result[3].momentStart instanceof moment).to.be.true;
-            expect(result[3].momentEnd instanceof moment).to.be.true;
+            expect(result[3].momentStart instanceof dayjs).to.be.true;
+            expect(result[3].momentEnd instanceof dayjs).to.be.true;
             expect(result[4].result).to.equal(5);
-            expect(result[4].momentStart instanceof moment).to.be.true;
-            expect(result[4].momentEnd instanceof moment).to.be.true;
+            expect(result[4].momentStart instanceof dayjs).to.be.true;
+            expect(result[4].momentEnd instanceof dayjs).to.be.true;
         });
     });
     describe("createGurlittMomentDataWeek", () => {
@@ -135,11 +136,11 @@ describe("addons/trafficCount/utils/dauerzaehlstellenRadApi.js", () => {
             expect(result).to.be.an("array").and.to.have.lengthOf(2);
             expect(result[0]).to.be.an("object");
             expect(result[0].result).to.equal(3);
-            expect(result[0].momentStart instanceof moment).to.be.true;
-            expect(result[0].momentEnd instanceof moment).to.be.true;
+            expect(result[0].momentStart instanceof dayjs).to.be.true;
+            expect(result[0].momentEnd instanceof dayjs).to.be.true;
             expect(result[1].result).to.equal(12);
-            expect(result[1].momentStart instanceof moment).to.be.true;
-            expect(result[1].momentEnd instanceof moment).to.be.true;
+            expect(result[1].momentStart instanceof dayjs).to.be.true;
+            expect(result[1].momentEnd instanceof dayjs).to.be.true;
         });
     });
     describe("createGurlittMomentDataYear", () => {
@@ -168,11 +169,11 @@ describe("addons/trafficCount/utils/dauerzaehlstellenRadApi.js", () => {
             expect(result).to.be.an("array").and.to.have.lengthOf(2);
             expect(result[0]).to.be.an("object");
             expect(result[0].result).to.equal(3);
-            expect(result[0].momentStart instanceof moment).to.be.true;
-            expect(result[0].momentEnd instanceof moment).to.be.true;
+            expect(result[0].momentStart instanceof dayjs).to.be.true;
+            expect(result[0].momentEnd instanceof dayjs).to.be.true;
             expect(result[1].result).to.equal(12);
-            expect(result[1].momentStart instanceof moment).to.be.true;
-            expect(result[1].momentEnd instanceof moment).to.be.true;
+            expect(result[1].momentStart instanceof dayjs).to.be.true;
+            expect(result[1].momentEnd instanceof dayjs).to.be.true;
         });
     });
     describe("waitingListForCallLinkDownload", () => {
@@ -213,28 +214,28 @@ describe("addons/trafficCount/utils/dauerzaehlstellenRadApi.js", () => {
         api.gurlittMomentsWeek = [
             {
                 "result": 14,
-                "momentStart": moment("2020-12-30T23:00:00.000Z"),
-                "momentEnd": moment("2020-12-31T23:00:00.000Z")
+                "momentStart": dayjs("2020-12-30T23:00:00.000Z"),
+                "momentEnd": dayjs("2020-12-31T23:00:00.000Z")
             },
             {
                 "result": 1,
-                "momentStart": moment("2020-12-31T23:00:00.000Z"),
-                "momentEnd": moment("2021-01-01T23:00:00.000Z")
+                "momentStart": dayjs("2020-12-31T23:00:00.000Z"),
+                "momentEnd": dayjs("2021-01-01T23:00:00.000Z")
             },
             {
                 "result": 2,
-                "momentStart": moment("2021-01-01T23:00:00.000Z"),
-                "momentEnd": moment("2021-01-02T23:00:00.000Z")
+                "momentStart": dayjs("2021-01-01T23:00:00.000Z"),
+                "momentEnd": dayjs("2021-01-02T23:00:00.000Z")
             },
             {
                 "result": 3,
-                "momentStart": moment("2021-01-02T23:00:00.000Z"),
-                "momentEnd": moment("2021-01-03T23:00:00.000Z")
+                "momentStart": dayjs("2021-01-02T23:00:00.000Z"),
+                "momentEnd": dayjs("2021-01-03T23:00:00.000Z")
             },
             {
                 "result": 16,
-                "momentStart": moment("2021-01-03T23:00:00.000Z"),
-                "momentEnd": moment("2021-01-04T23:00:00.000Z")
+                "momentStart": dayjs("2021-01-03T23:00:00.000Z"),
+                "momentEnd": dayjs("2021-01-04T23:00:00.000Z")
             }
         ];
 

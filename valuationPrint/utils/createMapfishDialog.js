@@ -2,6 +2,7 @@ import {concatStringByDatakey} from "./translator.concatStringByDatakey";
 import {getFixedMap} from "./translator.getFixedMap";
 import {getProportionMap} from "./translator.getProportionMap";
 import {getWalkerMap} from "./translator.getWalkerMap";
+import {mergeObjectsByDatakey} from "./translator.mergeObjectsByDatakey";
 
 /**
  * Creates the mapfish dialog from the transformer configuration and the knowledge base.
@@ -56,6 +57,9 @@ export function createMapfishDialog (parcel, knowledgeBase, transformer, default
                         }
                     }
                 }
+            }
+            else if (transformerConfig.type === "datasource") {
+                mapfishDialog[prefix + "." + postfix] = mergeObjectsByDatakey(transformerConfig.datakey, knowledgeBase, defaultValue);
             }
             else {
                 mapfishDialog[prefix + "." + postfix] = transformerConfig.content;

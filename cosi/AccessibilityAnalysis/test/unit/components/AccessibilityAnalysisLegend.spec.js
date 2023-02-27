@@ -34,50 +34,54 @@ describe("AccessibilityAnalysisLegend.vue", () => {
     });
 
     describe("Component DOM", () => {
-        it("should exist", async () => {
+        it("should exist", () => {
             const wrapper = factory.getShallowMount();
 
             expect(wrapper.exists()).to.be.true;
         });
 
-        it("should find as many circles as colors", async () => {
+        it("should find as many circles as colors", () => {
             const wrapper = factory.getShallowMount(),
-                circleWrapperArray = wrapper.findAll("circle");
+                circleWrapperArray = wrapper.findAllComponents({name: "v-icon"});
 
             expect(circleWrapperArray).to.have.lengthOf(wrapper.vm.colors.length);
         });
 
-        it("should find the expected circle", async () => {
+        it("should find the expected step value", () => {
             const wrapper = factory.getShallowMount(),
-                circleWrapperArray = wrapper.findAll("circle"),
+                stepsWrapperArray = wrapper.findAll(".steps");
+
+            expect(stepsWrapperArray.wrappers[1].text()).to.be.equal("43");
+        });
+
+        it("should find the three circle icons, if useTravelTimeIndex is false", () => {
+            const wrapper = factory.getShallowMount(),
+                circleWrapperArray = wrapper.findAllComponents({name: "v-icon"});
+
+            expect(wrapper.vm.useTravelTimeIndex).to.be.false;
+            expect(circleWrapperArray.wrappers.length).to.be.equal(3);
+        });
+
+        it("should find the five circle icons, if useTravelTimeIndex is true", async () => {
+            const wrapper = factory.getShallowMount();
+
+            await wrapper.setProps({
+                steps: [23, 43, 55, 123]
+            });
+
+            expect(wrapper.vm.useTravelTimeIndex).to.be.true;
+            expect(wrapper.findAllComponents({name: "v-icon"}).wrappers.length).to.be.equal(5);
+        });
+
+        it("should find the expected circle attributes", () => {
+            const wrapper = factory.getShallowMount(),
+                circleWrapperArray = wrapper.findAllComponents({name: "v-icon"}),
                 expectedCircle = {
-                    "cx": "7.5",
-                    "cy": "7.5",
-                    "r": "7.5",
-                    "style": "fill: rot; stroke-width: 0.5; stroke: #e3e3e3;"
+                    "color": "rot",
+                    "small": ""
                 };
 
             expect(circleWrapperArray.wrappers[0].attributes()).to.deep.equal(expectedCircle);
-        });
-    });
-
-    describe("Methdos", () => {
-        describe("getStyleByIndex", () => {
-            it("should return the correct color style with defaults", async () => {
-                const wrapper = factory.getShallowMount(),
-                    expectedStyle = "fill: lila; stroke-width: 0.5; stroke: #e3e3e3;",
-                    colorStyle = wrapper.vm.getStyleByIndex(["rot", "gelb", "lila"], 2);
-
-                expect(colorStyle).to.deep.equal(expectedStyle);
-            });
-
-            it("should return the correct color style", async () => {
-                const wrapper = factory.getShallowMount(),
-                    expectedStyle = "fill: lila; stroke-width: 0.6; stroke: #121212;",
-                    colorStyle = wrapper.vm.getStyleByIndex(["rot", "gelb", "lila"], 2, 0.6, "#121212");
-
-                expect(colorStyle).to.deep.equal(expectedStyle);
-            });
         });
     });
 });

@@ -1,5 +1,5 @@
 import {convertColor} from "../../src/utils/convertColor";
-import moment from "moment";
+import dayjs from "dayjs";
 
 /**
  * ComplexTypes are invented by the LGV to represent wfs array structures.
@@ -454,7 +454,7 @@ function sortComplexTypeDefault (complexType) {
 /** private */
 
 /**
- * private function of complexType.js - sorts the given complexType by keys with the given moment format
+ * private function of complexType.js - sorts the given complexType by keys with the given dayjs format
  * @param {ComplexType} complexType the complex type to sort
  * @param {String} format the format to sort with
  * @returns {ComplexType} the sorted complex type
@@ -467,7 +467,7 @@ function sortComplexTypeTimeseries (complexType, format) {
         else if (typeof secondEl !== "object" || secondEl === null || !Object.prototype.hasOwnProperty.call(secondEl, "key")) {
             return -1;
         }
-        return moment(firstEl.key, format).diff(moment(secondEl.key, format));
+        return dayjs(firstEl.key, format).diff(dayjs(secondEl.key, format));
     });
 }
 

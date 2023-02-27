@@ -48,7 +48,7 @@ describe("addons/geoAnalyze/components/GeoAnalyzeResultBuilding.vue", () => {
         },
         store = new Vuex.Store({
             modules: {
-                Map: {
+                Maps: {
                     namespaced: true,
                     actions: mockMapActions
                 },

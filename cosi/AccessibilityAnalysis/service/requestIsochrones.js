@@ -1,5 +1,6 @@
 import axios from "axios";
 import GeoJSON from "ol/format/GeoJSON";
+import {splitIntoChunks} from "../../utils/array/splitIntoChunks";
 
 /**
  * send request to get Isochrone geoJSON
@@ -30,8 +31,9 @@ async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, 
         if (baseUrl_ === "https://api.openrouteservice.org/v2/") {
             headers.Authorization = "5b3ce3597851110001cf6248ef277cc626c440eb819e9299870c194c";
         }
+
         promises.push(
-            axios.post(url, JSON.stringify(opts), {
+            axios.post(url + "/geojson", JSON.stringify(opts), {
                 headers: headers,
                 cancelToken: abort && abort.token
             }).then((response) => {
@@ -54,23 +56,6 @@ async function requestIsochrones (pathType, coordinates, rangeType, rangeArray, 
         return features;
     });
 
-}
-
-/**
- * Split an array into chunks.
- * @param {Array} arr - The Array to split.
- * @param {Number} size - Size of one chunk.
- * @returns {Array} The split chunks.
- */
-function splitIntoChunks (arr, size) {
-    const chunks = [];
-
-    while (arr.length > 0) {
-        const tempArray = arr.splice(0, size);
-
-        chunks.push(tempArray);
-    }
-    return chunks;
 }
 
 export default requestIsochrones;

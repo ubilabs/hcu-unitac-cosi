@@ -1,9 +1,13 @@
 import {expect} from "chai";
 import {TrafficCountApi} from "../../../utils/trafficCountApi";
-import moment from "moment";
+import dayjs from "dayjs";
+import isoWeek from "dayjs/plugin/isoWeek";
 
-// change language from moment.js to german
-moment.locale("de");
+dayjs.extend(isoWeek);
+
+// change language from day.js to german
+require("dayjs/locale/de.js");
+dayjs.locale("de");
 
 describe("addons/trafficCount/utils/trafficCountApi.js", () => {
     describe("TrafficCountApi.constructor", () => {
@@ -895,7 +899,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
                     }
                 },
                 api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
-                lastMonday = moment().startOf("isoWeek").toISOString();
+                lastMonday = dayjs().startOf("isoWeek").toISOString();
 
             api.updateTotal("thingId", "meansOfTransport", "onupdate", "onerror", "onstart", "oncomplete");
 
@@ -926,7 +930,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
                     }
                 },
                 api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
-                expectedDate = moment(phenomenonTimeA).format("YYYY-MM-DD"),
+                expectedDate = dayjs(phenomenonTimeA).format("YYYY-MM-DD"),
                 // the sum ist two times the result sum because onupdate is called twice in this function (total + last week)
                 expectedValue = 12;
 
@@ -970,7 +974,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
                     }
                 },
                 api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
-                expectedDate = moment(phenomenonTimeA).format("YYYY-MM-DD"),
+                expectedDate = dayjs(phenomenonTimeA).format("YYYY-MM-DD"),
                 expectedValue = 8;
 
             api.updateTotal("thingId", "meansOfTransport", (date, value) => {
@@ -1110,7 +1114,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
                     }
                 },
                 api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
-                expectedDate = moment("2020-12-31T00:00:00.000Z").format("YYYY-MM-DD"),
+                expectedDate = dayjs("2020-12-31T00:00:00.000Z").format("YYYY-MM-DD"),
                 expectedValue = 3;
 
             api.updateWorkingDayAverage("thingId", "meansOfTransport", 365, holidays, (date, value) => {
@@ -1169,10 +1173,10 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
                     }
                 },
                 api = new TrafficCountApi("https://www.example.com", "v1234", {}, dummySensorThingsHttp, true, "noSingletonOpt"),
-                expectedDate = moment(phenomenonTimeA).format("YYYY-MM-DD"),
+                expectedDate = dayjs(phenomenonTimeA).format("YYYY-MM-DD"),
                 expectedValue = 1;
 
-            api.updateHighestWorkloadDay("thingId", "meansOfTransport", moment(phenomenonTimeA).format("YYYY"), (date, value) => {
+            api.updateHighestWorkloadDay("thingId", "meansOfTransport", dayjs(phenomenonTimeA).format("YYYY"), (date, value) => {
                 lastDate = date;
                 lastValue = value;
             }, "onerror", "onstart", "oncomplete");
@@ -1338,9 +1342,9 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
                 phenomenonTimeB = "2020-03-23T12:14:30.123Z",
                 phenomenonTimeC = "2020-03-24T23:59:59.999Z",
-                expectedDateTimeA = moment(phenomenonTimeA).format("YYYY-MM-DD HH:mm:ss"),
-                expectedDateTimeB = moment(phenomenonTimeB).format("YYYY-MM-DD HH:mm:ss"),
-                expectedDateTimeC = moment(phenomenonTimeC).format("YYYY-MM-DD HH:mm:ss"),
+                expectedDateTimeA = dayjs(phenomenonTimeA).format("YYYY-MM-DD HH:mm:ss"),
+                expectedDateTimeB = dayjs(phenomenonTimeB).format("YYYY-MM-DD HH:mm:ss"),
+                expectedDateTimeC = dayjs(phenomenonTimeC).format("YYYY-MM-DD HH:mm:ss"),
                 dummySensorThingsHttp = {
                     get: (url, onupdate) => {
                         onupdate([{
@@ -1413,9 +1417,9 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
                 phenomenonTimeB = "2020-03-23T12:14:30.123Z",
                 phenomenonTimeC = "2020-03-24T23:59:59.999Z",
-                expectedDateTimeA = moment(phenomenonTimeA).format("YYYY-MM-DD HH:mm:ss"),
-                expectedDateTimeB = moment(phenomenonTimeB).format("YYYY-MM-DD HH:mm:ss"),
-                expectedDateTimeC = moment(phenomenonTimeC).format("YYYY-MM-DD HH:mm:ss"),
+                expectedDateTimeA = dayjs(phenomenonTimeA).format("YYYY-MM-DD HH:mm:ss"),
+                expectedDateTimeB = dayjs(phenomenonTimeB).format("YYYY-MM-DD HH:mm:ss"),
+                expectedDateTimeC = dayjs(phenomenonTimeC).format("YYYY-MM-DD HH:mm:ss"),
                 dummySensorThingsHttp = {
                     get: (url, onupdate) => {
                         onupdate([{
@@ -1470,9 +1474,9 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
             const phenomenonTimeA = "2020-03-22T00:00:00.000Z",
                 phenomenonTimeB = "2020-03-23T12:14:30.123Z",
                 phenomenonTimeC = "2020-03-24T23:59:59.999Z",
-                expectedDateTimeA = moment(phenomenonTimeA).format("YYYY-MM-DD HH:mm:ss"),
-                expectedDateTimeB = moment(phenomenonTimeB).format("YYYY-MM-DD HH:mm:ss"),
-                expectedDateTimeC = moment(phenomenonTimeC).format("YYYY-MM-DD HH:mm:ss"),
+                expectedDateTimeA = dayjs(phenomenonTimeA).format("YYYY-MM-DD HH:mm:ss"),
+                expectedDateTimeB = dayjs(phenomenonTimeB).format("YYYY-MM-DD HH:mm:ss"),
+                expectedDateTimeC = dayjs(phenomenonTimeC).format("YYYY-MM-DD HH:mm:ss"),
                 dummySensorThingsHttp = {
                     get: (url, onupdate) => {
                         if (url.indexOf("Anzahl_Kfz") !== -1) {
@@ -1612,7 +1616,7 @@ describe("addons/trafficCount/utils/trafficCountApi.js", () => {
             let lastDatetime = false,
                 lastErrorMessage = false;
             const resultTimeA = "2020-03-22T00:00:00.000Z",
-                expectedDateTimeA = moment(resultTimeA).format("YYYY-MM-DD HH:mm:ss"),
+                expectedDateTimeA = dayjs(resultTimeA).format("YYYY-MM-DD HH:mm:ss"),
                 dummySensorThingsHttp = {
                     get: (url, onupdate) => {
                         onupdate([{

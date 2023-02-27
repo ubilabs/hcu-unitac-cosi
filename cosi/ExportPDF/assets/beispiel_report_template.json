@@ -8,7 +8,7 @@
             "mode": "region",
             "coordinate":
             [],
-            "selectedFacilityName": "Sportstätten",
+            "selectedFacilityNames": "Sportstätten",
             "selectedDirections": null,
             "transportType": "driving-car",
             "scaleUnit": "time",
@@ -34,7 +34,7 @@
                     "mode": "region",
                     "coordinate":
                     [],
-                    "selectedFacilityName": "Sportstätten",
+                    "selectedFacilityNames": "Sportstätten",
                     "selectedDirections": null,
                     "transportType": "driving-car",
                     "scaleUnit": "time",

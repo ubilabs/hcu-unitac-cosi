@@ -1,5 +1,5 @@
 <script>
-import moment from "moment";
+import dayjs from "dayjs";
 
 export default {
     name: "TrafficCountDatePickerSwitcher",
@@ -15,7 +15,7 @@ export default {
     },
     computed: {
         currentSwitchMoment () {
-            return moment(this.currentSwitch, this.currentSwitchFormat);
+            return dayjs(this.currentSwitch, this.currentSwitchFormat);
         }
     },
     methods: {

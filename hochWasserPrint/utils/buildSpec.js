@@ -13,6 +13,8 @@ import {convertColor} from "../../../src/utils/convertColor";
 import {MVTEncoder} from "@geoblocks/print";
 import VectorTileLayer from "ol/layer/VectorTile";
 import {getLastPrintedExtent} from "../store/actions/actionsPrintInitialization";
+import styleList from "@masterportal/masterportalapi/src/vectorStyle/styleList";
+import {getRulesForFeature} from "@masterportal/masterportalapi/src/vectorStyle/lib/getRuleForIndex";
 
 const BuildSpecModel = {
     defaults: {
@@ -493,7 +495,7 @@ const BuildSpecModel = {
         const layerModel = Radio.request("ModelList", "getModelByAttributes", {id: layer?.get("id")});
 
         if (typeof layerModel?.get === "function") {
-            return Radio.request("StyleList", "returnModelById", layerModel.get("styleId"));
+            return styleList.returnStyleObject(layerModel.get("styleId"));
         }
         return undefined;
     },
@@ -1004,20 +1006,20 @@ const BuildSpecModel = {
      */
     getStyleAttributes: function (layer, feature) {
         const layerId = layer.get("id"),
-            styleList = this.getStyleModel(layer);
+            styleObject = this.getStyleModel(layer);
         let styleFields = ["styleId"],
             layerModel = Radio.request("ModelList", "getModelByAttributes", {id: layer.get("id")});
 
-        if (typeof styleList !== "undefined") {
+        if (typeof styleObject !== "undefined") {
             layerModel = this.getChildModelIfGroupLayer(layerModel, layerId);
 
             if (layerModel.get("styleId")) {
-                const featureRules = styleList.getRulesForFeature(feature);
+                const featureRules = getRulesForFeature(styleObject, feature);
 
                 styleFields = featureRules?.[0]?.conditions ? Object.keys(featureRules[0].conditions.properties) : [""];
             }
             else {
-                styleFields = [styleList.get("styleField")];
+                styleFields = [styleObject.get("styleField")];
             }
         }
 

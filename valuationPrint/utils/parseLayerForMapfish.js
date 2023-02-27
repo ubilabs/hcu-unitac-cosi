@@ -19,7 +19,7 @@ async function buildLayers (layerList) {
                 return [];
             }
 
-            printLayers.push(await BuildSpec.buildLayerType(item.layer, currentResolution, item.dpi));
+            printLayers.push(await BuildSpec.buildLayerType(item.layer, currentResolution, item.dpi, true));
             printLayers.forEach(printLayer => {
                 if (typeof printLayer !== "undefined") {
                     printLayer.opacity = item.opacity;

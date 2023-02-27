@@ -8,6 +8,7 @@ import {mapActions, mapGetters, mapMutations} from "vuex";
 import mutations from "../store/mutationsValuationPrint";
 import {Select} from "ol/interaction";
 import {singleClick} from "ol/events/condition";
+import ModalItem from "../../../src/share-components/modals/components/ModalItem.vue";
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import {unionFeatures} from "../utils/unionFeatures";
 import {createKnowledgeBase} from "../utils/createKnowledgeBase.js";
@@ -15,20 +16,24 @@ import {createMapfishDialog} from "../utils/createMapfishDialog.js";
 import {startPrintProcess} from "../utils/startPrintProcess.js";
 import axios from "axios";
 import isObject from "../../../src/utils/isObject";
-import moment from "moment";
+import dayjs from "dayjs";
 import upperFirst from "../../../src/utils/upperFirst";
 
 export default {
     name: "ValuationPrint",
     components: {
-        ToolTemplate
+        ToolTemplate,
+        ModalItem
     },
     data () {
         return {
             selectedFeatures: [],
             parcelData: null,
             messageList: [],
-            urlList: []
+            printedFeature: [],
+            urlList: [],
+            showDownloadAll: false,
+            showModal: false
         };
     },
     computed: {
@@ -65,6 +70,7 @@ export default {
                 return;
             }
             createKnowledgeBase(parcel, this.config.services, this.projection.getCode(), message => {
+                this.showDownloadAll = false;
                 this.addMessage(message, false);
             }, knowledgeBase => {
                 const mapfishDialog = createMapfishDialog(
@@ -73,7 +79,7 @@ export default {
                     this.config.transformer,
                     this.defaultValue,
                     this.projection.getCode(),
-                    this.getFilenameOfPDF(parcel.featureList, this.fileprefix, moment().format("YYYY-MM-DD__HH-mm-ss"))
+                    this.getFilenameOfPDF(this.fileprefix, dayjs().format("YYYY-MM-DD"))
                 );
 
                 setTimeout(() => {
@@ -110,6 +116,7 @@ export default {
         this.imageAppId = "";
         this.defaultValue = "";
         this.fileprefix = "";
+        this.printType = ["Gutachten", "Wertbeurteilung"];
 
         this.setConfig();
         this.setSelectInteraction();
@@ -123,6 +130,8 @@ export default {
             if (model) {
                 model.set("isActive", false);
             }
+
+            this.showPrintModal(false, []);
         });
     },
     methods: {
@@ -196,7 +205,16 @@ export default {
             this.select.on("change:active", this.styleSelectedFeatures);
             this.addInteraction(this.select);
         },
-
+        /**
+         * Shows the print modal and saves the feature for print window
+         * @param {Boolean} val - true or false to decide if open or close the print window
+         * @param {ol/Feature[]} feature - the selected feature for the print window
+         * @returns {void}
+         */
+        showPrintModal (val, feature) {
+            this.showModal = val;
+            this.printedFeature = feature;
+        },
         /**
          * Gets the required attributes from the feature(s) and sets it.
          * @param {ol/Feature[]} featureList - An array of features.
@@ -219,6 +237,8 @@ export default {
                 featureList,
                 geometry: feature.getGeometry()
             };
+
+            this.showPrintModal(false, []);
         },
 
         /**
@@ -234,7 +254,7 @@ export default {
                     this.config.images[idx],
                     this.defaultValue,
                     this.projection.getCode(),
-                    this.getFilenameOfPDF(this.parcelData.featureList, imageName, moment().format("YYYY-MM-DD__HH-mm-ss"))
+                    this.getFilenameOfPDF(imageName, dayjs().format("YYYY-MM-DD"))
                 );
 
             mapfishDialog.attributes.map = mapfishDialog.attributes[imageName + ".map"];
@@ -260,7 +280,9 @@ export default {
                     this.addUrl(url, upperFirst(imageName));
                     if (this.config.images[idx + 1]) {
                         this.startImageProcess(idx + 1);
+                        return;
                     }
+                    this.showDownloadAll = true;
                 });
             }, 0);
         },
@@ -313,26 +335,29 @@ export default {
         },
 
         /**
-         * Returns the filename of the pdf, taking into account the currently selected parcels.
-         * @param {ol/Feature[]} features The features to create the filename for.
+         * Returns the filename of the pdf with timestamp.
          * @param {String} [fileprefix=""] The prefix to use for the filename.
          * @param {String} [timestamp=""] A timestamp to use for better ui.
          * @returns {String} The current filname.
          */
-        getFilenameOfPDF (features, fileprefix = "", timestamp = "") {
-            if (!Array.isArray(features)) {
-                return "unknown";
+        getFilenameOfPDF (fileprefix = "", timestamp = "") {
+            return timestamp + " " + fileprefix;
+        },
+
+        /**
+         * Opens all the Urls in window for downloading
+         * @param {Object[]} urlList The list of url objects in Array
+         * @returns {void}
+         */
+        openUrls (urlList) {
+            if (!Array.isArray(urlList) || !urlList.length) {
+                return;
             }
-            let flstnrzae = "";
-
-            features.forEach(feature => {
-                if (flstnrzae) {
-                    flstnrzae += "-";
+            urlList.forEach(url => {
+                if (url?.link) {
+                    window.open(url.link);
                 }
-                flstnrzae += feature.get("flstnrzae");
             });
-
-            return fileprefix + "__" + timestamp + "__" + flstnrzae;
         }
     }
 };
@@ -382,7 +407,7 @@ export default {
                                     <button
                                         type="button"
                                         class="btn btn-primary btn-sm"
-                                        @click="setParcelData([feature])"
+                                        @click="showPrintModal(true, [feature])"
                                     >
                                         {{ $t('additional:modules.tools.valuationPrint.startButton') }}
                                     </button>
@@ -400,7 +425,7 @@ export default {
                                 <button
                                     type="button"
                                     class="btn btn-primary btn-sm"
-                                    @click="setParcelData(select.getFeatures().getArray())"
+                                    @click="showPrintModal(true, select.getFeatures().getArray())"
                                 >
                                     {{ $t('additional:modules.tools.valuationPrint.startButton') }}
                                 </button>
@@ -447,11 +472,79 @@ export default {
                                         target="_blank"
                                     >{{ url.name }}</a>
                                 </li>
+                                <li v-if="showDownloadAll">
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-sm"
+                                        @click="openUrls(urlList)"
+                                        @keydown="openUrls(urlList)"
+                                    >
+                                        {{ $t('additional:modules.tools.valuationPrint.downloadAll') }}
+                                    </button>
+                                </li>
                             </ul>
                         </p>
                     </div>
                 </div>
             </div>
+            <ModalItem
+                :icon="icon"
+                :show-modal="showModal"
+                @modalHid="showPrintModal(false, [])"
+            >
+                <div class="print-type">
+                    <h4>
+                        {{ $t('additional:modules.tools.valuationPrint.type') }}
+                    </h4>
+                    <label
+                        v-for="(type, index) in printType"
+                        :key="type"
+                        class="col-form-label"
+                    >
+                        <input
+                            :id="type"
+                            type="radio"
+                            name="printType"
+                            :value="type"
+                            :checked="index === 0"
+                            required
+                        >
+                        {{ type }}
+                    </label>
+                </div>
+                <div class="print-number">
+                    <h4>
+                        {{ $t('additional:modules.tools.valuationPrint.number') }}
+                    </h4>
+                    <input
+                        id="number"
+                        :aria-label="$t('additional:modules.tools.valuationPrint.number')"
+                        type="text"
+                        placeholder="G/W xx.xxxx - xxx"
+                        required
+                    >
+                </div>
+                <div class="confirm">
+                    <button
+                        type="button"
+                        class="confirm btn btn-primary"
+                        tabindex="0"
+                        @click="setParcelData(printedFeature)"
+                        @keydown="setParcelData(printedFeature)"
+                    >
+                        {{ $t('additional:modules.tools.valuationPrint.startButton') }}
+                    </button>
+                    <button
+                        type="button"
+                        class="confirm btn btn-primary"
+                        tabindex="0"
+                        @click="showPrintModal(false, [])"
+                        @keydown="showPrintModal(false, [])"
+                    >
+                        {{ $t('additional:modules.tools.valuationPrint.cancel') }}
+                    </button>
+                </div>
+            </ModalItem>
         </template>
     </ToolTemplate>
 </template>
@@ -479,6 +572,41 @@ h6 {
 
 .list-inline, .list-unstyled {
     margin-bottom: 0;
+}
+
+.print-type {
+    min-width: 500px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    display: grid;
+    border-bottom: 1px solid rgba(34, 34, 34, .25);
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    label {
+        cursor: pointer;
+        position: relative;
+        padding-left: 20px;
+        input {
+            position: absolute;
+            left: 0;
+            top: 8px;
+        }
+    }
+}
+
+.print-number {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    display: inline-block;
+    width: 100%;
+    border-bottom: 1px solid rgba(34, 34, 34, .25);
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    input {
+        float: left;
+        width: 50%;
+        min-height: 30px;
+    }
 }
 
 </style>

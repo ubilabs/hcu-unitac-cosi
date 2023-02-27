@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import * as addWMS from "../../addWMSRemotely";
+import * as addWMS from "../../../js/addWMSRemotely";
 
 describe("ADDON: addLayerRemotely", () => {
 

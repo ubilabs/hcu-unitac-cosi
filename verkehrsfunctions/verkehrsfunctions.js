@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import thousandsSeparator from "../../src/utils/thousandsSeparator.js";
 
 Backbone.Events.listenTo(Radio.channel("GFI"), {
@@ -102,18 +102,18 @@ function getKfzTrafficCount (absTrafficCount, layerName, type) {
  * @return {String} time phenomenonTime converted with UTC
  */
 function getPhenomenonTimeRange (startTime, endTime) {
-    const startDay = moment(startTime).format("DD.MM.YYYY"),
-        endDay = moment(endTime).format("DD.MM.YYYY");
+    const startDay = dayjs(startTime).format("DD.MM.YYYY"),
+        endDay = dayjs(endTime).format("DD.MM.YYYY");
 
     let time = "";
 
     if (startDay !== endDay) {
-        time = moment(startTime).format("DD.MM.YYYY, HH:mm") +
-            " Uhr - " + moment(endTime).add(1, "seconds").format("DD.MM.YYYY, HH:mm") + " Uhr";
+        time = dayjs(startTime).format("DD.MM.YYYY, HH:mm") +
+            " Uhr - " + dayjs(endTime).add(1, "second").format("DD.MM.YYYY, HH:mm") + " Uhr";
     }
     else {
-        time = moment(startTime).format("DD.MM.YYYY, HH:mm") +
-            " Uhr - " + moment(endTime).add(1, "seconds").format("HH:mm") + " Uhr";
+        time = dayjs(startTime).format("DD.MM.YYYY, HH:mm") +
+            " Uhr - " + dayjs(endTime).add(1, "second").format("HH:mm") + " Uhr";
     }
 
     return time;
