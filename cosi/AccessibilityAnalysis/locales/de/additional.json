@@ -9,7 +9,8 @@
                       "point": "Erreichbarkeit ab einem Referenzpunkt",
                       "facility": "Erreichbarkeit ab einer ausgewählten Einrichtung",
                       "region": "Erreichbarkeit der ausgewählten Einrichtungen",
-                      "path": "Erreichbarkeit entlang einer Route"
+                      "path": "Erreichbarkeit entlang einer Route",
+                      "area": "Erreichbarkeit im Gebiet"
                     },
                     "pointOfReference": "Referenzpunkt: Klicken Sie auf die Karte",
                     "setByFeature": "Von Flächenaußengrenzen ermitteln",

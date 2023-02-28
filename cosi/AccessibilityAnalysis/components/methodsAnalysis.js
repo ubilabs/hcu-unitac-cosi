@@ -177,7 +177,7 @@ export default {
     createBufferFromDirections: function () {
         let bufferFeatures;
         const
-            featureType = "Erreichbarkeit entlang einer Route",
+            featureType = this.$t("additional:modules.tools.cosi.accessibilityAnalysis.mode.path"),
             distance = parseFloat(this.distance) / 1000,
             steps = [distance, distance * 2 / 3, distance / 3],
             coords = this.selectedDirections?.lineString
