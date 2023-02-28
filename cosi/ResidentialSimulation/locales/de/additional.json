@@ -57,7 +57,7 @@
                         "inhabitantsTotal": "Bewohnerzahl insgesamt"
                     },
                     "residentsTotalLabel": "Einwohner gesamt",
-                    "residentsTotalSuffix": "TODO en: EW",
+                    "residentsTotalSuffix": "EW",
                     "ok": "OK",
                     "myQuarter": "Mein Wohnquartier"
                 },

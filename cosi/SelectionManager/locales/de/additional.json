@@ -4,7 +4,6 @@
             "cosi": {
                 "selectionManager": {
                     "title": "Auswahlverwaltung",
-                    "infoTooltip": "Werkzeuginformationen",
                     "noData": "Keine Daten vorhanden",
                     "mergedSelections": "Kombinierte Auswahl",
                     "allSelections": "Alle aktiven ausgewählt",
@@ -27,7 +26,7 @@
                     "title_toggle_buffer": "Bufferauswahl aktivieren",
                     "title_buffer_selection": "Buffer als Auswahl festlegen",
                     "toolinfo": {
-                        "title": "Werkzeuginformationen (Link öffnen)"
+                        "title": "Werkzeuginformationen"
                     }
                 }
             }

@@ -4,7 +4,6 @@
             "cosi": {
                 "selectionManager": {
                     "title": "Selection Manager",
-                    "infoTooltip": "Tool Info",
                     "noData": "No data available",
                     "mergedSelections": "Merged Selections",
                     "allSelections": "TODO en: Alle aktiven ausgewählt",

@@ -4,7 +4,6 @@
             "cosi": {
                 "calculateRatio": {
                     "title": "Versorgungsanalyse",
-                    "name": "Verhältnis",
                     "description": "Mit der Versorgungsanalyse können Sie die Abdeckung eines Gebietes mit einem bestimmten Einrichtungstyp / Infrastruktur ermitteln (s. 'Themen'). Sie können durch einen Klick auf 'Einrichtungen' auch mehrere statistische Werte verrechnen.",
                     "availableColumns": {
                         "ratio": "Verhältnis",
@@ -92,10 +91,9 @@
                     "switchFieldType": "Statistische Daten / Einrichtungsdaten wechseln",
                     "calcPer": "berechnen pro",
                     "ofData": "der Datengrundlage",
-                    "infoTooltip": "Werkzeuginformationen",
                     "filenameBase": "versorgungsanalyse",
                     "toolinfo": {
-                        "title": "Werkzeuginformationen (Link öffnen)"
+                        "title": "Werkzeuginformationen"
                     }
                 }
             }

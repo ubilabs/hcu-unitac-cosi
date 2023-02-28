@@ -4,7 +4,6 @@
             "cosi": {
                 "calculateRatio": {
                     "title": "Supply Analysis",
-                    "name": "Ratio",
                     "description": "With the coverage analysis you can determine the coverage of an area with a certain type of facility / infrastructure (see 'Topics').",
                     "availableColumns": {
                         "ratio": "Ratio",
@@ -92,10 +91,9 @@
                     "switchFieldType": "Switch between statistical and facility data",
                     "calcPer": "calculate per",
                     "ofData": "of data",
-                    "infoTooltip": "Tool information",
                     "filenameBase": "supply_analysis",
                     "toolinfo": {
-                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
+                        "title": "Tool information"
                     }
                 }
             }

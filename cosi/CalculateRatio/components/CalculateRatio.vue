@@ -79,7 +79,7 @@ export default {
             // Clone of the results array for helping updating the displayed table live
             resultsClone: [],
             // Selected column to render in CCM
-            columnSelector: {name: this.$t("additional:modules.tools.cosi.calculateRatio.name"), key: "relation"}
+            columnSelector: {name: this.$t("additional:modules.tools.cosi.calculateRatio.availableColumns.ratio"), key: "relation"}
         };
     },
     computed: {

@@ -180,7 +180,6 @@ export default {
          * @returns {void}
          */
         checkKey (evt) {
-            // TODO does "Enter" need to be localized here?
             if (evt.code === "Enter") {
                 this.setActive(false);
             }

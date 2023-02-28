@@ -38,17 +38,17 @@
                     "paginationPrev": "Select the previous analysis set",
                     "paginationNext": "Select the next analysis set",
                     "headers": {
-                        "referenceDistrict": "Referenzgebiet",
-                        "filterNumber": "Filter-Nr.",
+                        "referenceDistrict": "Reference district",
+                        "filterNumber": "Filter number",
                         "name": "Name",
-                        "attribute": "Attribut",
+                        "attribute": "Attribute",
                         "quotient": "Quotient",
-                        "field": "Feld",
+                        "field": "Field",
                         "minimum": "Min.",
                         "maximum": "Max.",
-                        "referenceValue": "Ref.-Wert",
-                        "minusTolerance": "- Toleranz",
-                        "plusTolerance": "+ Toleranz"
+                        "referenceValue": "Ref. value",
+                        "minusTolerance": "- Tolerance",
+                        "plusTolerance": "+ Tolerance"
                     },
                     "toolinfo": {
                         "title": "TODO en: Werkzeuginformationen (Link öffnen)"

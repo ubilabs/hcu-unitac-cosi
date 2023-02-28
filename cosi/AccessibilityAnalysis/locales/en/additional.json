@@ -9,7 +9,8 @@
                       "point": "Accessibility from a reference point",
                       "facility": "Accessibility from a selected facility",
                       "region": "Accessibility of the selected facilities",
-                      "path": "Accessibility along a route"
+                      "path": "Accessibility along a route",
+                      "area": "Accessibility within an area"
                     },
                     "pointOfReference": "Point of reference: click on the map",
                     "setByFeature": "Select facilities as location (use perimeter of polygons)",

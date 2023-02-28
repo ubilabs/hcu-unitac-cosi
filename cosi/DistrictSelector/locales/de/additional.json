@@ -4,8 +4,6 @@
             "cosi": {
                 "districtSelector": {
                     "title": "Gebiet auswählen",
-                    "quarters": "Stadtteile",
-                    "districts": "Bezirke",
                     "dropdownLabel": "Bitte wählen Sie einen Bezugsrahmen aus",
                     "districtLevel": "Bezugsrahmen",
                     "multiDropdownLabel": "Gebiete",

@@ -8,7 +8,7 @@
                     "requestInhabitants": "Einwohnerabfrage",
                     "toolinfo": {
                         "title": "Werkzeuginformationen (Link öffnen)",
-                        "info": "Ein Polygon zeichnen für das Einrichtungen/Fachdaten geladen werden sollen."
+                        "info": "Ein Polygon zeichnen, für das Einrichtungen/Fachdaten geladen werden sollen."
                     }
                 }
             }

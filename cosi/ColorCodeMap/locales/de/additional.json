@@ -3,7 +3,6 @@
         "tools": {
             "colorCodeMap": {
                 "title": "Kartenvisualisierungswerkzeug",
-                "infoTooltip": "Werkzeuginformationen",
                 "minimize": "Maximieren / Minimieren",
                 "toggleVisualization": "Visualisierung an / aus",
                 "prev": "Vorherigen Datensatz auswählen",
@@ -14,7 +13,10 @@
                 "needViz": "Kartenvisualisierung muss aktiv sein, um Gebietsnamen einblenden zu können",
                 "metadata": "Anmerkungen öffnen",
                 "noData": "Keine Daten vorhanden",
-                "yearsLabel": "Jahre"
+                "yearsLabel": "Jahre",
+                "toolinfo": {
+                    "title": "Werkzeuginformationen"
+                }
             }
         }
     }

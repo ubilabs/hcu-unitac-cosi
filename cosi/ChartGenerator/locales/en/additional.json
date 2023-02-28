@@ -5,7 +5,6 @@
                 "chartGenerator": {
                     "title": "Chart Generator",
                     "description": "Creates chars to visualize data.",
-                    "infoTooltip": "Tool Information",
                     "LineChart": "Line Chart",
                     "BarChart": "Bar Chart",
                     "PieChart": "Pie Chart",
@@ -24,7 +23,7 @@
                     "yStacked": "Stack Y-Axis",
                     "source": "Source",
                     "toolinfo": {
-                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
+                        "title": "Tool Information"
                     }
                 }
             }

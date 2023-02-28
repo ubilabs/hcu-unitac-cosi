@@ -595,7 +595,7 @@ export default {
             <div class="btn_grp">
                 <button
                     class="help_button"
-                    :title="$t('additional:modules.tools.colorCodeMap.infoTooltip')"
+                    :title="$t('additional:modules.tools.colorCodeMap.toolinfo.title')"
                     @click="showInfo"
                 >
                     <v-icon>

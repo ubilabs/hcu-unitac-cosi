@@ -70,7 +70,6 @@ const actions = {
                 });
 
             dispatch("loadStatFeatures", {
-                // TODO: Hamburg should be a variable
                 districts: referenceLevel.label === "Hamburg" ? referenceLevel.districts : refDistricts,
                 districtLevel: referenceLevel,
                 getStatFeatures: wfsGetFeature

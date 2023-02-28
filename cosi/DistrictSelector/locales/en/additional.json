@@ -4,8 +4,6 @@
             "cosi": {
                 "districtSelector": {
                     "title": "Select Area",
-                    "quarters": "TODO en: Quarters",
-                    "districts": "TODO en: Districts",
                     "dropdownLabel": "Please select an administrative level to work on",
                     "districtLevel": "Administrative Level",
                     "multiDropdownLabel": "Areas",
