@@ -23,7 +23,12 @@
               "number": "Geschäfszeichen:",
               "address": "Address:",
               "modalTitle": "Angaben zum A1 Karten Anlagenverzeichnis",
-              "placeholder": "Please choose:"
+              "specificationReport": "A1 Karten Anlagenverzeichnis",
+              "placeholder": "Please choose:",
+              "formError": {
+                "missingDocumentName": "Please insert the dokument name.",
+                "missingAddress": "Please select or insert an address."
+              }
           }
         }
     }

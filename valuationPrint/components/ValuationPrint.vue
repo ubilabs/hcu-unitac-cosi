@@ -34,9 +34,16 @@ export default {
             messageList: [],
             printedFeature: [],
             urlList: [],
-            addresses: [],
+            addressList: [],
             showDownloadAll: false,
-            showModal: false
+            showModal: false,
+            chosenType: "Gutachten",
+            errors: {
+                address: false,
+                documentNumber: false
+            },
+            specificAddress: "",
+            documentNumber: ""
         };
     },
     computed: {
@@ -72,6 +79,7 @@ export default {
                 console.error("No config found for transformer");
                 return;
             }
+
             createKnowledgeBase(parcel, this.config.services, this.projection.getCode(), message => {
                 this.showDownloadAll = false;
                 this.addMessage(message, false);
@@ -96,12 +104,12 @@ export default {
                     error => {
                         this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfError"), true);
                         console.error(error);
-                        this.startImageProcess();
+                        this.startSpecificationProcess();
                     },
                     url => {
                         this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfSuccess"));
                         this.addUrl(url, this.$t("additional:modules.tools.valuationPrint.report"));
-                        this.startImageProcess();
+                        this.startSpecificationProcess();
                     });
                 }, 0);
             }, errorMsg => {
@@ -109,6 +117,16 @@ export default {
             }, error => {
                 console.error(error);
             });
+        },
+        /**
+         * In case of an input the error flag for the document number is set to false.
+         * @param {Boolean} newValue The new input value.
+         * @returns {void}
+         */
+        documentNumber (newValue) {
+            if (newValue.length) {
+                this.errors.documentNumber = false;
+            }
         }
     },
     created () {
@@ -170,6 +188,7 @@ export default {
                     this.printUrl = this.getRestServiceById(response.data.settings.printServiceId).url;
                     this.pdfAppId = response.data.settings.pdfAppId;
                     this.imageAppId = response.data.settings.imageAppId;
+                    this.pdfSpecificationAppId = response.data.settings.pdfSpecificationAppId;
                     this.defaultValue = response.data.settings.defaultValue;
                     this.fileprefix = response.data.settings.fileprefix;
                 })
@@ -217,6 +236,20 @@ export default {
         showPrintModal (val, featureList) {
             this.showModal = val;
             this.printedFeature = featureList;
+
+            if (this.showModal && Array.isArray(this.addressList)) {
+                if (this.addressList.length === 1) {
+                    this.specificAddress = this.addressList[0];
+                    this.$refs.addressInput.value = this.specificAddress;
+                    return;
+                }
+                this.specificAddress = "";
+                this.$refs.addressInput.value = "";
+            }
+            if (!this.showModal) {
+                this.errors.address = false;
+                this.errors.documentNumber = false;
+            }
         },
         /**
          * Gets the required attributes from the feature(s) and sets it.
@@ -224,6 +257,9 @@ export default {
          * @returns {void}
          */
         setParcelData (featureList) {
+            if (!this.formValidation()) {
+                return;
+            }
             if (!Array.isArray(featureList) || !featureList.length) {
                 console.error(`startValuation: ${featureList} has to be a non empty array`);
                 return;
@@ -251,9 +287,7 @@ export default {
          */
         getAddress (val, featureList) {
             const feature = featureList.length > 1 ? unionFeatures(featureList) : featureList[0],
-                config = this.config.services.hh_wfs_dog;
-
-            console.log("test");
+                config = this.config?.services?.hh_wfs_dog;
 
             collectFeatures(
                 {
@@ -261,19 +295,26 @@ export default {
                 },
                 config,
                 this.projection.getCode(),
-                rawLayerList.getLayerWhere({id: config.layerId}),
+                rawLayerList.getLayerWhere({id: config?.layerId}),
                 features => {
                     const addr = [];
 
                     features.forEach(feat => {
-                        let address = feat.get("strassenname") + " " + feat.get("hausnummer");
+                        if (typeof feat?.get !== "function") {
+                            return;
+                        }
+                        let address = feat.get("strassenname");
+
+                        if (typeof feat.get("hausnummer") !== "undefined") {
+                            address += " " + feat.get("hausnummer");
+                        }
 
                         if (typeof feat.get("hausnummernzusatz") !== "undefined") {
                             address += feat.get("hausnummernzusatz");
                         }
                         addr.push(address);
                     });
-                    this.addresses = addr.sort((a, b) => {
+                    this.addressList = addr.sort((a, b) => {
                         if (a < b) {
                             return -1;
                         }
@@ -334,6 +375,53 @@ export default {
             }, 0);
         },
 
+        /**
+         * Starts the process for the specification to print.
+         * @returns {void}
+         */
+        startSpecificationProcess () {
+            if (this.specificAddress === "" && this.addressList.length === 1) {
+                this.specificAddress = this.addressList[0];
+            }
+
+            const mapfishDialog = createMapfishDialog(
+                    this.parcelData,
+                    {},
+                    this.config.specification,
+                    this.defaultValue,
+                    this.projection.getCode(),
+                    this.getFilenameOfPDF(this.$t("additional:modules.tools.valuationPrint.specificationReport"), dayjs().format("YYYY-MM-DD"))
+                ),
+                replacedparcelData = {
+                    "angabenZumGrundstueck.geschaeftszeichen": this.documentNumber.trim(),
+                    "angabenZumGrundstueck.strasse": this.specificAddress.trim(),
+                    "angabenZumGrundstueck.art": this.chosenType.trim()
+                };
+
+            Object.entries(replacedparcelData).forEach(([key, value]) => {
+                mapfishDialog.attributes[key] = value;
+            });
+
+            setTimeout(()=> {
+                startPrintProcess(this.printUrl, "pdf", this.pdfSpecificationAppId, mapfishDialog, (url, payload) => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfInTheMaking"));
+                    return axios.post(url, payload);
+                },
+                () => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pleaseWait"));
+                },
+                error => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfError"), true);
+                    console.error(error);
+                    this.startImageProcess();
+                },
+                (url) => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfSuccess"));
+                    this.addUrl(url, this.$t("additional:modules.tools.valuationPrint.modalTitle"));
+                    this.startImageProcess();
+                });
+            }, 0);
+        },
         /**
          * Sets the style of the selected features depending on the activity of the select interaction.
          * If the interaction is active, all existing featurers are styled using the select interaction style.
@@ -405,6 +493,39 @@ export default {
                     window.open(url.link);
                 }
             });
+        },
+        /**
+         * Sets the specific address
+         * @param {Event} evt input event
+         * @returns {void}
+         */
+        setSpecificAddress (evt) {
+            if (typeof evt?.target?.value !== "string") {
+                return;
+            }
+            this.errors.address = false;
+            this.specificAddress = evt.target.value;
+        },
+        /**
+         * Validates the form and sets the error flags in the errors object.
+         * @returns {Boolean} true if form is valid, false if not.
+         */
+        formValidation () {
+            let isValid = true;
+
+            if (!this.documentNumber || this.documentNumber.trim() === "") {
+                this.errors.documentNumber = true;
+                isValid = false;
+                this.documentNumber = "";
+            }
+            if (!this.specificAddress || this.specificAddress.trim() === "") {
+                this.errors.address = true;
+                isValid = false;
+                if (isObject(this.$refs.addressInput) && Object.prototype.hasOwnProperty.call(this.$refs.addressInput, "value")) {
+                    this.$refs.addressInput.value = "";
+                }
+            }
+            return isValid;
         }
     }
 };
@@ -453,7 +574,7 @@ export default {
                                 <div>
                                     <button
                                         type="button"
-                                        class="confirm btn btn-primary btn-sm"
+                                        class="confirm btn btn-primary btn-sm start-button"
                                         @click="getAddress(true, [feature])"
                                     >
                                         {{ $t('additional:modules.tools.valuationPrint.startButton') }}
@@ -471,7 +592,7 @@ export default {
                             <template v-if="selectedFeatures.length > 1">
                                 <button
                                     type="button"
-                                    class="btn btn-primary btn-sm"
+                                    class="btn btn-primary btn-sm start-button"
                                     @click="getAddress(true, select.getFeatures().getArray())"
                                 >
                                     {{ $t('additional:modules.tools.valuationPrint.startButton') }}
@@ -555,12 +676,18 @@ export default {
                             >{{ $t('additional:modules.tools.valuationPrint.number') }}</label>
                             <input
                                 id="number"
+                                v-model="documentNumber"
                                 :aria-label="$t('additional:modules.tools.valuationPrint.number')"
                                 type="text"
                                 placeholder="G/W xx.xxxx - xxx"
-                                required
-                                class="form-control"
+                                :class="`form-control ${errors.documentNumber ? 'is-invalid' : ''}`"
                             >
+                            <div
+                                v-if="errors.documentNumber"
+                                class="invalid-feedback"
+                            >
+                                {{ $t('additional:modules.tools.valuationPrint.formError.missingDocumentName') }}
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label
@@ -569,34 +696,42 @@ export default {
                             >{{ $t('additional:modules.tools.valuationPrint.address') }}</label>
                             <input
                                 id="address-list"
-                                class="form-control"
-                                :value="addresses.length === 1 ? addresses[0] : ''"
+                                ref="addressInput"
+                                :class="`form-control ${errors.address ? 'is-invalid' : ''}`"
                                 list="addresslistOptions"
                                 :placeholder="$t('additional:modules.tools.valuationPrint.placeholder')"
+                                @change="setSpecificAddress"
                             >
                             <datalist id="addresslistOptions">
                                 <option
-                                    v-for="address in addresses"
+                                    v-for="address in addressList"
                                     :key="address"
                                     :value="address"
                                 >
                                     {{ address }}
                                 </option>
                             </datalist>
+                            <div
+                                v-if="errors.address"
+                                class="invalid-feedback"
+                            >
+                                {{ $t('additional:modules.tools.valuationPrint.formError.missingAddress') }}
+                            </div>
                         </div>
                         <div class="mb-3">
                             <div class="form-check">
                                 <label
-                                    v-for="(type, index) in printType"
+                                    v-for="type in printType"
                                     :key="type"
                                 >
                                     {{ type }}
                                     <input
                                         :id="type"
+                                        v-model="chosenType"
                                         class="form-check-input"
                                         type="radio"
                                         name="printType"
-                                        :checked="index === 0"
+                                        :value="type"
                                     >
                                 </label>
                             </div>
@@ -607,10 +742,10 @@ export default {
                     <div class="p-2">
                         <button
                             type="button"
-                            class="btn btn-primary"
+                            class="btn btn-primary confirm-print"
                             tabindex="0"
-                            @click="setParcelData(printedFeature)"
-                            @keydown="setParcelData(printedFeature)"
+                            @click.prevent="setParcelData(printedFeature)"
+                            @keydown.prevent="setParcelData(printedFeature)"
                         >
                             {{ $t('additional:modules.tools.valuationPrint.startButton') }}
                         </button>

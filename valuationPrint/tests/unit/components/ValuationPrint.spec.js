@@ -6,6 +6,7 @@ import {Select} from "ol/interaction";
 import sinon from "sinon";
 import ValuationPrint from "../../../components/ValuationPrint.vue";
 import Vuex from "vuex";
+import ModalItem from "../../../../../src/share-components/modals/components/ModalItem.vue";
 
 config.mocks.$t = key => key;
 
@@ -46,11 +47,15 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
         mockMapActions = {
             addInteraction: sinon.spy()
         },
+        mockMapGetters = {
+            projection: sinon.stub().returns({getCode: sinon.stub()})
+        },
         store = new Vuex.Store({
             modules: {
                 Maps: {
                     namespaced: true,
-                    actions: mockMapActions
+                    actions: mockMapActions,
+                    getters: mockMapGetters
                 }
             }
         }),
@@ -73,7 +78,8 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                         footer: "<div>Footer</div>"
                     },
                     store,
-                    localVue
+                    localVue,
+                    stubs: {ModalItem}
                 });
             }
         };
@@ -155,9 +161,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             wrapper.vm.select.getFeatures().push(features[1]);
             await wrapper.vm.$forceUpdate();
 
-            expect(wrapper.findAll("button").filter(button => {
-                return button.text() === "additional:modules.tools.valuationPrint.startButton";
-            })).to.be.lengthOf(3);
+            expect(wrapper.findAll(".start-button").length).to.be.equals(3);
         });
 
         it("should find one start buttons if only one feature is available", async () => {
@@ -166,9 +170,7 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             wrapper.vm.select.getFeatures().push(features[0]);
             await wrapper.vm.$forceUpdate();
 
-            expect(wrapper.findAll("button").filter(button => {
-                return button.text() === "additional:modules.tools.valuationPrint.startButton";
-            })).to.be.lengthOf(1);
+            expect(wrapper.findAll(".start-button").length).to.be.equals(1);
         });
 
         it("should not add an error class to the list entry if no error is added", async () => {
@@ -212,17 +214,13 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             expect(wrapper.find(".urlListEntry").exists()).to.be.false;
         });
 
-        it("should find one cancel button", async () => {
-            const wrapper = factory.getShallowMount({}, true);
+        describe("modal", () => {
+            it("should render", () => {
+                const wrapper = factory.getShallowMount({}, true);
 
-            wrapper.vm.select.getFeatures().push(features[0]);
-            await wrapper.vm.$forceUpdate();
-            await wrapper.find(".confirm").trigger("click");
-            await wrapper.vm.$nextTick();
-
-            expect(wrapper.findAll("button").filter(button => {
-                return button.text() === "additional:modules.tools.valuationPrint.cancel";
-            })).to.be.lengthOf(1);
+                wrapper.vm.showModal = true;
+                expect(wrapper.findAllComponents(ModalItem).wrappers.length).to.be.equals(1);
+            });
         });
     });
 
@@ -262,11 +260,8 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
             const spySetParcelData = sinon.spy(ValuationPrint.methods, "setParcelData"),
                 wrapper = factory.getShallowMount({}, true);
 
-            wrapper.vm.select.getFeatures().push(features[0]);
-            wrapper.vm.select.getFeatures().push(features[1]);
-
-            await wrapper.vm.$forceUpdate();
-            await wrapper.findAll(".p-2 button").wrappers.forEach(button => {
+            wrapper.vm.showModal = true;
+            wrapper.findAll(".confirm-print").wrappers.forEach(button => {
                 if (button.text() === "additional:modules.tools.valuationPrint.startButton") {
                     button.trigger("click");
                 }
@@ -374,11 +369,13 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
         describe("setParcelData", () => {
             it("should set the parcelData object", () => {
+                sinon.stub(ValuationPrint.methods, "formValidation").returns(true);
                 const wrapper = factory.getShallowMount({}, true);
 
                 wrapper.vm.setParcelData([features[0]]);
 
                 expect(wrapper.vm.parcelData).to.have.all.keys("center", "geometry", "extent", "feature", "featureList");
+                sinon.restore();
             });
             it("should not set the parcelData object", () => {
                 const wrapper = factory.getShallowMount({}, true);
@@ -393,12 +390,14 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
                 expect(wrapper.vm.parcelData).to.be.null;
             });
             it("should reset the message list", () => {
+                sinon.stub(ValuationPrint.methods, "formValidation").returns(true);
                 const wrapper = factory.getShallowMount({}, true);
 
                 wrapper.vm.addMessage("message");
                 wrapper.vm.setParcelData([features[0]]);
 
                 expect(wrapper.vm.messageList).to.be.an("array").that.is.empty;
+                sinon.restore();
             });
         });
 
@@ -473,6 +472,43 @@ describe("addons/valuation/components/ValuationPrint.vue", () => {
 
                 wrapper.vm.openUrls([{link: "href"}]);
                 expect(windowOpen.calledOnce).to.be.true;
+            });
+        });
+
+        describe("formValidation", () => {
+            it("should return false and set matching error only for documentNumber", () => {
+                const wrapper = factory.getShallowMount({});
+                let isValid = false;
+
+                wrapper.vm.specificAddress = "foo";
+                isValid = wrapper.vm.formValidation();
+                expect(isValid).to.be.false;
+                expect(wrapper.vm.errors.documentNumber).to.be.true;
+            });
+            it("should return false and set matching error only for documentNumber", () => {
+                const wrapper = factory.getShallowMount({});
+                let isValid = false;
+
+                wrapper.vm.documentNumber = "foo";
+                isValid = wrapper.vm.formValidation();
+                expect(isValid).to.be.false;
+                expect(wrapper.vm.errors.address).to.be.true;
+            });
+            it("should return false and set matching errors", () => {
+                const wrapper = factory.getShallowMount({});
+                let isValid = false;
+
+                expect(isValid).to.be.false;
+                isValid = wrapper.vm.formValidation();
+                expect(wrapper.vm.errors).to.deep.equals({documentNumber: true, address: true});
+            });
+            it("should return true", () => {
+                const wrapper = factory.getShallowMount({});
+
+                wrapper.vm.documentNumber = "foo";
+                wrapper.vm.specificAddress = "foo";
+                expect(wrapper.vm.formValidation()).to.be.true;
+                expect(wrapper.vm.errors).to.deep.equals({documentNumber: false, address: false});
             });
         });
     });
