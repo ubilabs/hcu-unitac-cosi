@@ -62,7 +62,7 @@ export default {
 </script>
 
 <template>
-    <div v-if="url || infoText">
+    <div>
         <v-row
             dense
             justify="end"
@@ -80,6 +80,7 @@ export default {
                 cols="1"
             >
                 <v-btn
+                    v-if="infoText || url"
                     :title="title"
                     class="info_btn"
                     depressed
@@ -99,5 +100,8 @@ export default {
 <style lang="scss" scoped>
     .info_btn {
         margin: 0 0 0 auto;
+    }
+    p {
+        margin-bottom: 0;
     }
 </style>
