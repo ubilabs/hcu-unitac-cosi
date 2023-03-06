@@ -65,6 +65,8 @@
                     "paginationRemoveAll": "Alle Versorgungsanalysen im Werkzeug löschen",
                     "calculate": "Berechnen",
                     "calculateTooltip": "Datensätze berechnen",
+                    "incompleteDataset": "Datensätze unvollständig",
+                    "incompleteDatasetExplanation": "Mit einem * gekennzeichnete Datensätze enthalten Einrichtungen, für die das ausgewählte Parameter (wie bspw. bei Schulen \"Schülerzahl\") nicht hinterlegt ist. In diesem Fall wird für diesen Datensatz mit dem Medianwert der vorhandenen vollständigen Datensätze kalkuliert.",
                     "reset": "Zurücksetzen",
                     "resetTooltip": "Alle Eingaben zurücksetzen",
                     "swapFields": "Datenfelder A und B tauschen",

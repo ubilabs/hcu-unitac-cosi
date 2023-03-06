@@ -63,6 +63,8 @@
                     "paginationRemoveAll": "Delete all analysises in the tool",
                     "calculate": "Calculate",
                     "calculateTooltip": "Run calculation on datasets",
+                    "incompleteDataset": "Incomplete datasets",
+                    "incompleteDatasetExplanation": "TODO en: Mit einem * gekennzeichnete Datensätze enthalten Einrichtungen, für die das ausgewählte Parameter (wie bspw. bei Schulen \"Schülerzahl\") nicht hinterlegt ist. In diesem Fall wird für diesen Datensatz mit dem Medianwert der vorhandenen vollständigen Datensätze kalkuliert.",
                     "reset": "Reset",
                     "resetTooltip": "Reset all settings",
                     "swapFields": "Swap fields A and B",
