@@ -24,6 +24,7 @@ import translateFeature from "./translateFeature";
  */
 addPolyfills();
 
+
 /**
  * @description Bundles the CoSI Utils into one export
  */

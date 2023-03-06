@@ -19,6 +19,8 @@ import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
 import LocationScore from "./LocationScore.vue";
+import setGeomAttributes from "../../utils/features/setGeomAttributes";
+import getFeatureStyle from "../../utils/features/getFeatureStyle";
 
 import
 {
@@ -126,7 +128,7 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated", "geomAttributes"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue", extent: "extent"}),
         ...mapGetters("Tools/DistanceScoreService", ["wmsLayersInfo"]),
         ...mapState(["configJson"]),
@@ -329,18 +331,23 @@ export default {
             if (this.groupActiveLayer.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
 
-                    const features = getLayerSource(vectorLayer).getFeatures(),
+                    const features = getLayerSource(vectorLayer)?.getFeatures() || [],
                         // only features that can be seen on the map
                         visibleFeatures = features.filter(this.isFeatureActive),
                         layerMap = this.layerMapById(vectorLayer.get("id")),
-                        layerStyleFunction = vectorLayer.getStyleFunction();
+                        layerStyleFunction = vectorLayer.getStyleFunction?.();
 
                     list.push(...this.checkDisabledFeatures(vectorLayer));
                     return [...list, ...visibleFeatures.map((feature) => {
+                        /**
+                         * Set area attributes for polygons, where they are not set in the dataset
+                         * @todo should go somewhere else...
+                         */
+                        setGeomAttributes(feature, this.geomAttributes);
                         return {
                             key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
-                            style: feature.getStyle() || layerStyleFunction(feature),
+                            style: getFeatureStyle(feature, layerStyleFunction),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
                             group: layerMap.group,
                             layerName: layerMap.id,

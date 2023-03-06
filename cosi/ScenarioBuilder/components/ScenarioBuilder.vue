@@ -26,6 +26,7 @@ import {unpackCluster} from "../../utils/features/unpackCluster";
 import {getAddress} from "../../utils/geocode";
 import LoaderOverlay from "../../../../src/utils/loaderOverlay.js";
 import {getModelByAttributes} from "../../utils/radioBridge.js";
+import setGeomAttributes from "../../utils/features/setGeomAttributes";
 
 export default {
     name: "ScenarioBuilder",
@@ -262,14 +263,15 @@ export default {
             // create unique hash as ID
             feature.setId(hash({...properties, geom: geometry}));
 
-            // set additional attributes based on geometry
-            if (geometry.getType() === "Polygon" || geometry.getType() === "MultiPolygon") {
-                const area = Math.round((geometry.getArea() + Number.EPSILON) * 100) / 100;
+            setGeomAttributes(feature, this.geomAttributes);
+            // // set additional attributes based on geometry
+            // if (geometry.getType() === "Polygon" || geometry.getType() === "MultiPolygon") {
+            //     const area = Math.round((geometry.getArea() + Number.EPSILON) * 100) / 100;
 
-                for (const attr of this.areaAttributes) {
-                    feature.set(attr.key, area * attr.factorToSqm);
-                }
-            }
+            //     for (const attr of this.areaAttributes) {
+            //         feature.set(attr.key, area * attr.factorToSqm);
+            //     }
+            // }
         },
 
         /**
