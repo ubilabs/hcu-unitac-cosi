@@ -219,7 +219,7 @@ export default {
             activeLayerMapping = this.getActiveLayers(),
             layerCharts = activeLayerMapping.reduce((res, layerMap) => {
                 const
-                    numVals = this.selectedFeatureLayers.length > 0 ?
+                    numVals = this.distanceScoreEnabled ?
                         [...layerMap.numericalValues, {id: "distanceScore", name: "Anbindng"}, {id: "count", name: "Anzahl"}] :
                         [...layerMap.numericalValues, {id: "count", name: "Anzahl"}],
                     charts = numVals.map(numVal => {
