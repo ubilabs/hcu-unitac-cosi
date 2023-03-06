@@ -5,6 +5,20 @@
 
 ## Unreleased - in development
 ### __Breaking Changes__
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+---
+## v2.31.0 - 2023-03-01
+### __Breaking Changes__
 Time library `moment.js` was replaced with [day.js](https://day.js.org/). Please consider to use `day.js` in your future pull requests.
 
 ### Added
@@ -17,14 +31,6 @@ Time library `moment.js` was replaced with [day.js](https://day.js.org/). Please
     - addLayerRemotely can now be addressed via the remote interface using actions.
     - In addition, the possibility to switch layers visible or invisible has been added.
     - The documentation and the example have been extended.
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
----
 
 ## v2.29.0 - 2023-01-04
 ### __Breaking Changes__

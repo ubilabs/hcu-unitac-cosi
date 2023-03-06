@@ -8,8 +8,9 @@ import ChartDataset from "../../ChartGenerator/classes/ChartDataset";
 export function createHistogram (items) {
     let
         allScores = items
-            .filter(i=>!isNaN(i.weightedDistanceScores.score))
-            .map(i=>i.weightedDistanceScores.score);
+            .filter(i=>!isNaN(parseInt(i.distanceScore, 10)))
+            .map(i=>parseInt(i.distanceScore, 10));
+
     const
         maxVal = Math.max(...allScores),
         minVal = Math.min(...allScores),
@@ -45,18 +46,19 @@ export default {
      * @returns {void}
      */
     showDistanceScoreForItem (item) {
+        // Object.keys(this.selected[0].weightedDistanceScores),
         const
-            type = this.selectedFeatureLayers.length > 2 ? "RadarChart" : "BarChart",
+            type = Object.keys(item.weightedDistanceScores).length > 2 ? "RadarChart" : "BarChart",
             data = {
-                labels: this.selectedFeatureLayers.map(l => l.id),
+                labels: Object.keys(item.weightedDistanceScores),
                 datasets: [{
                     label: item.name,
-                    data: this.selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value?.toFixed(3))
+                    data: Object.keys(item.weightedDistanceScores).map(l => item.weightedDistanceScores[l].value?.toFixed(1))
                 }]
             },
             chartDataset = new ChartDataset({
                 id: "sb-" + item.key,
-                name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} - Gewichteter Durchschnitt: ${item.weightedDistanceScores.score.toLocaleString(this.currentLocale)} (Standortanalyse)`,
+                name: `${this.$t("additional:modules.tools.cosi.featuresList.scoresDialogTitle")} - Gewichteter Durchschnitt: ${item.distanceScore.toLocaleString(this.currentLocale)} (Standortanalyse)`,
                 type,
                 color: "rainbow",
                 source: "Standortanalyse",
@@ -69,17 +71,18 @@ export default {
     /**
      * Displays a chart of all distance score layers for the selected items of the table
      * Either bar-chart or radar chart for >=3 layers.
+     * @param {Object[]} selectedFeatureLayers -
      * @returns {void}
      */
-    showDistanceScoresForSelected () {
+    showDistanceScoresForSelected (selectedFeatureLayers) {
         const
-            type = this.selectedFeatureLayers.length > 2 ? "RadarChart" : "BarChart",
+            type = selectedFeatureLayers.length > 2 ? "RadarChart" : "BarChart",
             data = {
-                labels: this.selectedFeatureLayers.map(l => l.id),
+                labels: selectedFeatureLayers.map(l => l.id),
                 datasets: this.getActiveItems().map(item => ({
                     label: item.name,
-                    data: this.selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value),
-                    tooltip: `Gewichteter Durchschnitt: ${item.weightedDistanceScores.score.toLocaleString("de-DE")}`
+                    data: selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value),
+                    tooltip: `Gewichteter Durchschnitt: ${item.distanceScore.toLocaleString("de-DE")}`
                 }))
             },
             chartDataset = new ChartDataset({
@@ -96,16 +99,17 @@ export default {
     },
     /**
      * Displays a histogram for the distribution of the distance scores
+     * @param {Object[]} selectedFeatureLayers -
      * @returns {void}
      */
-    showDistanceScoreHistogram () {
+    showDistanceScoreHistogram (selectedFeatureLayers) {
         const
             histogram = createHistogram(this.getActiveItems()),
             chartData = {
                 labels: histogram.quantiles.map(v => Math.round(v)),
                 datasets: [{
                     data: histogram.data,
-                    label: this.selectedFeatureLayers.map(l => l.id).join(", "),
+                    label: selectedFeatureLayers.map(l => l.id).join(", "),
                     barPercentage: 1,
                     categoryPercentage: 1
                 }]

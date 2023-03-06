@@ -1,34 +1,24 @@
 <script>
 export default {
-    name: "LayerWeights",
+    name: "LocationScoreWeights",
     props: {
-        value: Boolean,
-        weights: {type: Object, default: null},
-        layers: {type: Array, default: null}
-    },
-    data () {
-        return {
-            layerWeights: {}
-        };
-    },
-    computed: {
-        show: {
-            get () {
-                return this.value;
-            },
-            set (value) {
-                this.$emit("input", value);
-            }
+        isVisible: {
+            type: Boolean,
+            required: true
+        },
+        layers: {
+            type: Array,
+            required: true
         }
     },
-    watch: {
-        show (newValue) {
-            if (!newValue) {
-                this.$emit("update", this.layerWeights);
-            }
-            else {
-                this.layerWeights = {...this.weights};
-            }
+    computed: {
+        show () {
+            return this.isVisible;
+        }
+    },
+    methods: {
+        updateIsVisible () {
+            this.$emit("updateShowWeightsDialog", false);
         }
     }
 };
@@ -54,7 +44,7 @@ export default {
                     </v-subheader>
                     <v-card-text>
                         <v-slider
-                            v-model="layerWeights[layer.layerId]"
+                            v-model="layer.weighting"
                             class="align-center"
                             :max="1"
                             :min="0"
@@ -63,7 +53,7 @@ export default {
                         >
                             <template #append>
                                 <v-text-field
-                                    v-model="layerWeights[layer.layerId]"
+                                    v-model="layer.weighting"
                                     class="mt-0 pt-0 slider-text"
                                     hide-details
                                     single-line
@@ -84,7 +74,7 @@ export default {
                     <v-btn
                         color="primary"
                         text
-                        @click="show = false"
+                        @click="updateIsVisible"
                     >
                         Ok
                     </v-btn>

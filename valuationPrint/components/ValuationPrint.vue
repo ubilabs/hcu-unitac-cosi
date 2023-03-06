@@ -18,6 +18,8 @@ import axios from "axios";
 import isObject from "../../../src/utils/isObject";
 import dayjs from "dayjs";
 import upperFirst from "../../../src/utils/upperFirst";
+import {collectFeatures} from "../utils/collectFeatures";
+import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 
 export default {
     name: "ValuationPrint",
@@ -32,8 +34,16 @@ export default {
             messageList: [],
             printedFeature: [],
             urlList: [],
+            addressList: [],
             showDownloadAll: false,
-            showModal: false
+            showModal: false,
+            chosenType: "Gutachten",
+            errors: {
+                address: false,
+                documentNumber: false
+            },
+            specificAddress: "",
+            documentNumber: ""
         };
     },
     computed: {
@@ -69,6 +79,7 @@ export default {
                 console.error("No config found for transformer");
                 return;
             }
+
             createKnowledgeBase(parcel, this.config.services, this.projection.getCode(), message => {
                 this.showDownloadAll = false;
                 this.addMessage(message, false);
@@ -93,12 +104,12 @@ export default {
                     error => {
                         this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfError"), true);
                         console.error(error);
-                        this.startImageProcess();
+                        this.startSpecificationProcess();
                     },
                     url => {
                         this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfSuccess"));
                         this.addUrl(url, this.$t("additional:modules.tools.valuationPrint.report"));
-                        this.startImageProcess();
+                        this.startSpecificationProcess();
                     });
                 }, 0);
             }, errorMsg => {
@@ -106,6 +117,16 @@ export default {
             }, error => {
                 console.error(error);
             });
+        },
+        /**
+         * In case of an input the error flag for the document number is set to false.
+         * @param {Boolean} newValue The new input value.
+         * @returns {void}
+         */
+        documentNumber (newValue) {
+            if (newValue.length) {
+                this.errors.documentNumber = false;
+            }
         }
     },
     created () {
@@ -167,6 +188,7 @@ export default {
                     this.printUrl = this.getRestServiceById(response.data.settings.printServiceId).url;
                     this.pdfAppId = response.data.settings.pdfAppId;
                     this.imageAppId = response.data.settings.imageAppId;
+                    this.pdfSpecificationAppId = response.data.settings.pdfSpecificationAppId;
                     this.defaultValue = response.data.settings.defaultValue;
                     this.fileprefix = response.data.settings.fileprefix;
                 })
@@ -208,12 +230,26 @@ export default {
         /**
          * Shows the print modal and saves the feature for print window
          * @param {Boolean} val - true or false to decide if open or close the print window
-         * @param {ol/Feature[]} feature - the selected feature for the print window
+         * @param {ol/Feature[]} featureList - the selected feature(s) for the print window
          * @returns {void}
          */
-        showPrintModal (val, feature) {
+        showPrintModal (val, featureList) {
             this.showModal = val;
-            this.printedFeature = feature;
+            this.printedFeature = featureList;
+
+            if (this.showModal && Array.isArray(this.addressList)) {
+                if (this.addressList.length === 1) {
+                    this.specificAddress = this.addressList[0];
+                    this.$refs.addressInput.value = this.specificAddress;
+                    return;
+                }
+                this.specificAddress = "";
+                this.$refs.addressInput.value = "";
+            }
+            if (!this.showModal) {
+                this.errors.address = false;
+                this.errors.documentNumber = false;
+            }
         },
         /**
          * Gets the required attributes from the feature(s) and sets it.
@@ -221,6 +257,9 @@ export default {
          * @returns {void}
          */
         setParcelData (featureList) {
+            if (!this.formValidation()) {
+                return;
+            }
             if (!Array.isArray(featureList) || !featureList.length) {
                 console.error(`startValuation: ${featureList} has to be a non empty array`);
                 return;
@@ -239,6 +278,55 @@ export default {
             };
 
             this.showPrintModal(false, []);
+        },
+        /**
+         * Gets the address(es) from server according to the config
+         * @param {Boolean} val - true or false to decide if open or close the print window
+         * @param {ol/Feature[]} featureList - the selected feature(s) for the print window
+         * @returns {void}
+         */
+        getAddress (val, featureList) {
+            const feature = featureList.length > 1 ? unionFeatures(featureList) : featureList[0],
+                config = this.config?.services?.hh_wfs_dog;
+
+            collectFeatures(
+                {
+                    geometry: feature.getGeometry()
+                },
+                config,
+                this.projection.getCode(),
+                rawLayerList.getLayerWhere({id: config?.layerId}),
+                features => {
+                    const addr = [];
+
+                    features.forEach(feat => {
+                        if (typeof feat?.get !== "function") {
+                            return;
+                        }
+                        let address = feat.get("strassenname");
+
+                        if (typeof feat.get("hausnummer") !== "undefined") {
+                            address += " " + feat.get("hausnummer");
+                        }
+
+                        if (typeof feat.get("hausnummernzusatz") !== "undefined") {
+                            address += feat.get("hausnummernzusatz");
+                        }
+                        addr.push(address);
+                    });
+                    this.addressList = addr.sort((a, b) => {
+                        if (a < b) {
+                            return -1;
+                        }
+                        else if (a > b) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+                    this.showPrintModal(val, featureList);
+                },
+                error => console.warn(error)
+            );
         },
 
         /**
@@ -287,6 +375,53 @@ export default {
             }, 0);
         },
 
+        /**
+         * Starts the process for the specification to print.
+         * @returns {void}
+         */
+        startSpecificationProcess () {
+            if (this.specificAddress === "" && this.addressList.length === 1) {
+                this.specificAddress = this.addressList[0];
+            }
+
+            const mapfishDialog = createMapfishDialog(
+                    this.parcelData,
+                    {},
+                    this.config.specification,
+                    this.defaultValue,
+                    this.projection.getCode(),
+                    this.getFilenameOfPDF(this.$t("additional:modules.tools.valuationPrint.specificationReport"), dayjs().format("YYYY-MM-DD"))
+                ),
+                replacedparcelData = {
+                    "angabenZumGrundstueck.geschaeftszeichen": this.documentNumber.trim(),
+                    "angabenZumGrundstueck.strasse": this.specificAddress.trim(),
+                    "angabenZumGrundstueck.art": this.chosenType.trim()
+                };
+
+            Object.entries(replacedparcelData).forEach(([key, value]) => {
+                mapfishDialog.attributes[key] = value;
+            });
+
+            setTimeout(()=> {
+                startPrintProcess(this.printUrl, "pdf", this.pdfSpecificationAppId, mapfishDialog, (url, payload) => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfInTheMaking"));
+                    return axios.post(url, payload);
+                },
+                () => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pleaseWait"));
+                },
+                error => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfError"), true);
+                    console.error(error);
+                    this.startImageProcess();
+                },
+                (url) => {
+                    this.addMessage(this.$t("additional:modules.tools.valuationPrint.pdfSuccess"));
+                    this.addUrl(url, this.$t("additional:modules.tools.valuationPrint.modalTitle"));
+                    this.startImageProcess();
+                });
+            }, 0);
+        },
         /**
          * Sets the style of the selected features depending on the activity of the select interaction.
          * If the interaction is active, all existing featurers are styled using the select interaction style.
@@ -358,6 +493,39 @@ export default {
                     window.open(url.link);
                 }
             });
+        },
+        /**
+         * Sets the specific address
+         * @param {Event} evt input event
+         * @returns {void}
+         */
+        setSpecificAddress (evt) {
+            if (typeof evt?.target?.value !== "string") {
+                return;
+            }
+            this.errors.address = false;
+            this.specificAddress = evt.target.value;
+        },
+        /**
+         * Validates the form and sets the error flags in the errors object.
+         * @returns {Boolean} true if form is valid, false if not.
+         */
+        formValidation () {
+            let isValid = true;
+
+            if (!this.documentNumber || this.documentNumber.trim() === "") {
+                this.errors.documentNumber = true;
+                isValid = false;
+                this.documentNumber = "";
+            }
+            if (!this.specificAddress || this.specificAddress.trim() === "") {
+                this.errors.address = true;
+                isValid = false;
+                if (isObject(this.$refs.addressInput) && Object.prototype.hasOwnProperty.call(this.$refs.addressInput, "value")) {
+                    this.$refs.addressInput.value = "";
+                }
+            }
+            return isValid;
         }
     }
 };
@@ -406,8 +574,8 @@ export default {
                                 <div>
                                     <button
                                         type="button"
-                                        class="btn btn-primary btn-sm"
-                                        @click="showPrintModal(true, [feature])"
+                                        class="confirm btn btn-primary btn-sm start-button"
+                                        @click="getAddress(true, [feature])"
                                     >
                                         {{ $t('additional:modules.tools.valuationPrint.startButton') }}
                                     </button>
@@ -424,8 +592,8 @@ export default {
                             <template v-if="selectedFeatures.length > 1">
                                 <button
                                     type="button"
-                                    class="btn btn-primary btn-sm"
-                                    @click="showPrintModal(true, select.getFeatures().getArray())"
+                                    class="btn btn-primary btn-sm start-button"
+                                    @click="getAddress(true, select.getFeatures().getArray())"
                                 >
                                     {{ $t('additional:modules.tools.valuationPrint.startButton') }}
                                 </button>
@@ -490,60 +658,108 @@ export default {
             <ModalItem
                 :icon="icon"
                 :show-modal="showModal"
+                modal-inner-wrapper-style="min-width: 400px;"
+                modal-content-container-style="padding: 0.5rem"
                 @modalHid="showPrintModal(false, [])"
             >
-                <div class="print-type">
-                    <h4>
-                        {{ $t('additional:modules.tools.valuationPrint.type') }}
-                    </h4>
-                    <label
-                        v-for="(type, index) in printType"
-                        :key="type"
-                        class="col-form-label"
-                    >
-                        <input
-                            :id="type"
-                            type="radio"
-                            name="printType"
-                            :value="type"
-                            :checked="index === 0"
-                            required
+                <template #header>
+                    <h5 class="px-2 mt-2">
+                        {{ $t('additional:modules.tools.valuationPrint.modalTitle') }}
+                    </h5>
+                </template>
+                <template #default>
+                    <div class="border-bottom border-top def-font">
+                        <div class="my-3">
+                            <label
+                                for="number"
+                                class="form-label"
+                            >{{ $t('additional:modules.tools.valuationPrint.number') }}</label>
+                            <input
+                                id="number"
+                                v-model="documentNumber"
+                                :aria-label="$t('additional:modules.tools.valuationPrint.number')"
+                                type="text"
+                                placeholder="G/W xx.xxxx - xxx"
+                                :class="`form-control ${errors.documentNumber ? 'is-invalid' : ''}`"
+                            >
+                            <div
+                                v-if="errors.documentNumber"
+                                class="invalid-feedback"
+                            >
+                                {{ $t('additional:modules.tools.valuationPrint.formError.missingDocumentName') }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label
+                                for="address-list"
+                                class="form-label"
+                            >{{ $t('additional:modules.tools.valuationPrint.address') }}</label>
+                            <input
+                                id="address-list"
+                                ref="addressInput"
+                                :class="`form-control ${errors.address ? 'is-invalid' : ''}`"
+                                list="addresslistOptions"
+                                :placeholder="$t('additional:modules.tools.valuationPrint.placeholder')"
+                                @change="setSpecificAddress"
+                            >
+                            <datalist id="addresslistOptions">
+                                <option
+                                    v-for="address in addressList"
+                                    :key="address"
+                                    :value="address"
+                                >
+                                    {{ address }}
+                                </option>
+                            </datalist>
+                            <div
+                                v-if="errors.address"
+                                class="invalid-feedback"
+                            >
+                                {{ $t('additional:modules.tools.valuationPrint.formError.missingAddress') }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <label
+                                    v-for="type in printType"
+                                    :key="type"
+                                >
+                                    {{ type }}
+                                    <input
+                                        :id="type"
+                                        v-model="chosenType"
+                                        class="form-check-input"
+                                        type="radio"
+                                        name="printType"
+                                        :value="type"
+                                    >
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template #footer>
+                    <div class="p-2">
+                        <button
+                            type="button"
+                            class="btn btn-primary confirm-print"
+                            tabindex="0"
+                            @click.prevent="setParcelData(printedFeature)"
+                            @keydown.prevent="setParcelData(printedFeature)"
                         >
-                        {{ type }}
-                    </label>
-                </div>
-                <div class="print-number">
-                    <h4>
-                        {{ $t('additional:modules.tools.valuationPrint.number') }}
-                    </h4>
-                    <input
-                        id="number"
-                        :aria-label="$t('additional:modules.tools.valuationPrint.number')"
-                        type="text"
-                        placeholder="G/W xx.xxxx - xxx"
-                        required
-                    >
-                </div>
-                <div class="confirm">
-                    <button
-                        type="button"
-                        class="confirm btn btn-primary"
-                        tabindex="0"
-                        @click="setParcelData(printedFeature)"
-                        @keydown="setParcelData(printedFeature)"
-                    >
-                        {{ $t('additional:modules.tools.valuationPrint.startButton') }}
-                    </button>
-                    <button
-                        type="button"
-                        class="confirm btn btn-primary"
-                        tabindex="0"
-                        @click="showPrintModal(false, [])"
-                        @keydown="showPrintModal(false, [])"
-                    >
-                        {{ $t('additional:modules.tools.valuationPrint.cancel') }}
-                    </button>
-                </div>
+                            {{ $t('additional:modules.tools.valuationPrint.startButton') }}
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            tabindex="0"
+                            @click="showPrintModal(false, [])"
+                            @keydown="showPrintModal(false, [])"
+                        >
+                            {{ $t('additional:modules.tools.valuationPrint.cancel') }}
+                        </button>
+                    </div>
+                </template>
             </ModalItem>
         </template>
     </ToolTemplate>
@@ -552,12 +768,19 @@ export default {
 <style lang="scss" scoped>
 @import "~variables";
 
-button {
-    font-size: 13px;
+h5 {
+    font-family: "MasterPortalFont Bold", "Arial Narrow", Arial, sans-serif;
 }
 
-h6 {
-    margin-bottom: 13px;
+.def-font {
+    font-size: 16px;
+    .form-check-label {
+        padding-top: 3px;
+    }
+}
+
+button {
+    font-size: 13px;
 }
 
 .messageListError {
@@ -574,39 +797,17 @@ h6 {
     margin-bottom: 0;
 }
 
-.print-type {
-    min-width: 500px;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    display: grid;
-    border-bottom: 1px solid rgba(34, 34, 34, .25);
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
+.form-check {
     label {
+        display: block;
         cursor: pointer;
         position: relative;
-        padding-left: 20px;
+        margin-top: 5px;
         input {
             position: absolute;
             left: 0;
-            top: 8px;
+            top: -3px;
         }
     }
 }
-
-.print-number {
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    display: inline-block;
-    width: 100%;
-    border-bottom: 1px solid rgba(34, 34, 34, .25);
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-    input {
-        float: left;
-        width: 50%;
-        min-height: 30px;
-    }
-}
-
 </style>

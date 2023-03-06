@@ -9,6 +9,7 @@ export function createVectorLayerMappingObject (layer) {
         addressField = layer.addressField || "adresse";
 
     return {
+        // hier die group erweitern und default für weighting?
         layerId: layer.id,
         id: layer.name,
         numericalValues: layer.numericalValues || [],
@@ -85,7 +86,7 @@ export default function getVectorlayerMapping (topicsConfig, path = ["Fachdaten"
         }
 
         // assign the not grouped layers to the misc category
-        if (vectorlayerHierarchy.Layer) {
+        if (vectorlayerHierarchy.Layer && vectorlayerHierarchy.Layer.length) {
             mapping.push({
                 group: misc,
                 layer: mapVectorLayersInFolder(vectorlayerHierarchy.Layer, condition)
