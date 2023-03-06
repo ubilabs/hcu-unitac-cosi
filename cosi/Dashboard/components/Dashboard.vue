@@ -515,7 +515,7 @@ export default {
                 data = exportTimeline
                     ? this.prepareTableExportWithTimeline(items, this.selectedDistrictNames, this.timestamps, this.timestampPrefix)
                     : this.prepareTableExport(items, this.selectedDistrictNames, this.selectedYear, this.timestampPrefix),
-                filename = composeFilename(this.$t("exportFilename"));
+                filename = composeFilename(this.$t("exportFilename"), this.currentLocale);
 
             exportXlsx(data, filename, {exclude: [...this.excludedPropsForExport, ...this.unselectedColumnLabels]});
         },
