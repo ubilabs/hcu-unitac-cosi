@@ -7,7 +7,7 @@
                     "drawPolygon": "Draw polygon",
                     "requestInhabitants": "Request inhabitants",
                     "toolinfoInfo": "Draw a polygon for which facilities and other data will be loaded.",
-                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

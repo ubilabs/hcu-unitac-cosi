@@ -67,7 +67,7 @@
                 "namensfeldTooltip": "If there is an object property that contains the individual name of each entry, please specify it here.",
                 "stylefeldTooltip": "Select by which property the data should be colored",
                 "crsTooltip": "If the data from your file is not visualized in the correct locations, it may be that your file is encoded in a different projection system. Please check the projection system of your data and select it when uploading",
-                "toolinfoTitle": "Tool information"
+                "infoTooltip": "Tool information"
             }
         }
     }

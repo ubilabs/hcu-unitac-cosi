@@ -22,7 +22,7 @@
                     "yToZeroTooltip": "Y-Achse bei 0 oder beim niedrigstem Wert des Datensatzes starten.",
                     "yStacked": "Y-Achse stapeln",
                     "source": "Quelle",
-                    "toolinfoTitle": "Werkzeuginformationen"
+                    "infoTooltip": "Werkzeuginformationen"
                 }
             }
         }

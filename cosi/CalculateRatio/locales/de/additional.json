@@ -76,7 +76,7 @@
                     "calcPer": "berechnen pro",
                     "ofData": "der Datengrundlage",
                     "filenameBase": "versorgungsanalyse",
-                    "toolinfoTitle": "Werkzeuginformationen"
+                    "infoTooltip": "Werkzeuginformationen"
                 }
             }
         }

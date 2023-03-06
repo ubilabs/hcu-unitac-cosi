@@ -30,7 +30,7 @@
                     "no": "Nein",
                     "success": "Sitzung erfolgreich gespeichert!",
                     "settingsChanged": "Ihre Einstellungen wurden geändert",
-                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

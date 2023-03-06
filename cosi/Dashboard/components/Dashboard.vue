@@ -670,7 +670,7 @@ export default {
                 <v-main>
                     <ToolInfo
                         :url="readmeUrl"
-                        :title="$t('toolinfoTitle')"
+                        :title="$t('infoTooltip')"
                         :locale="currentLocale"
                     />
                     <v-container fluid>

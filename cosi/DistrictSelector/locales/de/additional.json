@@ -20,7 +20,7 @@
                     "errors": {
                         "dataNotLoaded": "Es konnten nicht alle Datensätze vollständig geladen werden! Bitte versuchen Sie es später erneut. Sollte der Fehler weiterhin bestehen nutzen Sie bitte das Kontaktformular."
                     },
-                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

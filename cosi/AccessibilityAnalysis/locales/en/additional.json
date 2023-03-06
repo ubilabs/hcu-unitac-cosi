@@ -59,7 +59,7 @@
                     "paginationPrev": "Select previous result",
                     "paginationNext": "Select next result",
                     "noChoicePlaceholder": "No choices",
-                    "toolinfoTitle": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

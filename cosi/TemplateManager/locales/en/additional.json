@@ -14,7 +14,7 @@
                     "selectedDistricts": "Selected Districts",
                     "activeTool": "Active Tool",
                     "categories": "Statistical Data",
-                    "toolinfoTitle": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

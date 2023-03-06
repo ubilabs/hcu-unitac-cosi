@@ -185,7 +185,7 @@ export default {
                 <v-container>
                     <ToolInfo
                         :url="readmeUrl"
-                        :title="$t('additional:modules.tools.cosi.templateManager.toolinfoTitle')"
+                        :title="$t('additional:modules.tools.cosi.templateManager.infoTooltip')"
                         :locale="currentLocale"
                     />
                     <div class="mb-2">

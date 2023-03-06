@@ -15,7 +15,7 @@
                     "activeTool": "Aktive Werkzeuge",
                     "categories": "Statistische Daten",
                     "calculations": "Berechnungen",
-                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

@@ -500,7 +500,7 @@ export default {
             <v-app id="district-selector">
                 <ToolInfo
                     :url="readmeUrl"
-                    :title="$t('additional:modules.tools.cosi.districtSelector.toolinfoTitle')"
+                    :title="$t('additional:modules.tools.cosi.districtSelector.infoTooltip')"
                     :locale="currentLocale"
                     :summary="$t('additional:modules.tools.cosi.districtSelector.description')"
                 />

@@ -50,7 +50,7 @@
                         "minusTolerance": "- Tolerance",
                         "plusTolerance": "+ Tolerance"
                     },
-                    "toolinfoTitle": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

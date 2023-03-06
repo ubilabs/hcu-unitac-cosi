@@ -409,7 +409,7 @@ export default {
             >
                 <ToolInfo
                     :url="readmeUrl"
-                    :title="$t('additional:modules.tools.cosi.scenarioBuilder.toolinfoTitle')"
+                    :title="$t('additional:modules.tools.cosi.scenarioBuilder.infoTooltip')"
                     :locale="currentLocale"
                 />
                 <v-app id="scenario-builder-wrapper">

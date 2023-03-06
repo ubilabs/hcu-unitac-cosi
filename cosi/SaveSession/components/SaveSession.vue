@@ -428,7 +428,7 @@ export default {
                 <v-app class="clamp-40vw">
                     <ToolInfo
                         :url="readmeUrl"
-                        :title="$t('additional:modules.tools.cosi.saveSession.toolinfoTitle')"
+                        :title="$t('additional:modules.tools.cosi.saveSession.infoTooltip')"
                         :locale="currentLocale"
                     />
                     <v-container class="flex btn-grid">

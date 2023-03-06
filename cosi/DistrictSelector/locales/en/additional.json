@@ -20,7 +20,7 @@
                     "errors": {
                         "dataNotLoaded": "Not all datasets could be loaded entirely! Please try again later. If the issue persists please use the contact form."
                     },
-                    "toolinfoTitle": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

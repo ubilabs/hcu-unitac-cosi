@@ -506,7 +506,7 @@ export default {
                     <p>{{ $t('additional:modules.tools.cosi.selectionManager.title') }}</p>
                     <ToolInfo
                         :url="readmeUrl"
-                        :title="$t('additional:modules.tools.cosi.selectionManager.toolinfoTitle')"
+                        :title="$t('additional:modules.tools.cosi.selectionManager.infoTooltip')"
                         :locale="currentLocale"
                     />
                 </div>

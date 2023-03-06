@@ -6,7 +6,7 @@
                     "title": "Manuelle Flächenauswahl",
                     "drawPolygon": "Polygon zeichnen",
                     "requestInhabitants": "Einwohnerabfrage",
-                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)",
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)",
                     "toolinfoInfo": "Ein Polygon zeichnen, für das Einrichtungen/Fachdaten geladen werden sollen."
                 }
             }

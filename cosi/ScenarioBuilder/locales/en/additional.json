@@ -26,7 +26,7 @@
                     "undo": "undo",
                     "pick": "Choose polygon in the map",
                     "editFeature": "Delete simulated Feature?",
-                    "toolinfoTitle": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)"
                 },
                 "moveFeatures": {
                     "title": "TODO en: Einrichtungen verschieben",
@@ -81,7 +81,7 @@
                     "reset": "Reset",
                     "confirmDelete": "TODO en: Möchten Sie die ausgewählte Einrichtung wirklich löschen?",
                     "confirmReset": "TODO en: Möchten Sie die ausgewählte Einrichtung wirklich auf ihren Ursprungszustand zurücksetzen?",
-                    "toolinfoTitle": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

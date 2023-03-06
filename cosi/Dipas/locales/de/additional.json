@@ -24,7 +24,7 @@
                         "label": "Automatisches Update",
                         "help": "Neue Beiträge automatisch nachladen."
                     },
-                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

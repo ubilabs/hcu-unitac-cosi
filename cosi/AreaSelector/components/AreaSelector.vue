@@ -149,7 +149,7 @@ export default {
             <v-app class="clamp-600px">
                 <ToolInfo
                     :url="readmeUrl"
-                    :title="$t('additional:modules.tools.cosi.areaSelector.toolinfoTitle')"
+                    :title="$t('additional:modules.tools.cosi.areaSelector.infoTooltip')"
                     :locale="currentLocale"
                     :summary="$t('additional:modules.tools.cosi.areaSelector.toolinfoInfo')"
                 />

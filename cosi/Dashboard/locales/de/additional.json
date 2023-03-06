@@ -46,7 +46,7 @@
                     "help": {
                         "open": "Anmerkungen öffnen"
                     },
-                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

@@ -55,7 +55,7 @@
                         "voting": "Voting",
                         "allProjects": "Alle Verfahren"
                     },
-                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }
