@@ -46,9 +46,7 @@
                     "help": {
                         "open": "TODO en: Anmerkungen öffnen"
                     },
-                    "toolinfo": {
-                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
-                    }
+                    "toolinfoTitle": "TODO en: Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

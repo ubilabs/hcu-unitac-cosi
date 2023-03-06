@@ -47,9 +47,7 @@
                     "dateOfCompletion": "Jahr der Fertigstellung",
                     "valueError": "Die Operation würde folgende ungültige Werte zu Folge haben:",
                     "bounds": "Grenzwerte:",
-                    "toolinfo": {
-                        "title": "Werkzeuginformationen (Link öffnen)"
-                    },
+                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)",
                     "headers": {
                         "name": "Name",
                         "quartersName": "Quartiersname",

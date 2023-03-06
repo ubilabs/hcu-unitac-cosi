@@ -381,7 +381,7 @@ export default {
             >
                 <ToolInfo
                     :url="readmeUrl"
-                    :title="$t('additional:modules.tools.cosiFileImport.toolinfo.title')"
+                    :title="$t('additional:modules.tools.cosiFileImport.toolinfoTitle')"
                     :locale="currentLocale"
                 />
                 <p

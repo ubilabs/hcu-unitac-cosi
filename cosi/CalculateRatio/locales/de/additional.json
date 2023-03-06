@@ -17,9 +17,7 @@
                         "count": "Anzahl"
                     },
                     "features": {
-                        "type": {
-                            "summable": "Aufsummierbar"
-                        }
+                        "summable": "Aufsummierbar"
                     },
                     "dataA": "Einrichtungen",
                     "dataB": "Statistische Daten",
@@ -43,34 +41,18 @@
                             "years": "Jahre"
                         }
                     },
-                    "table": {
-                        "headers": {
-                            "scope": { 
-                                "text": "Gebiet",
-                                "help": "In dieser Spalte werden die Identifikatoren für die jeweiligen Datensätze aufgelistet. In den meisten Fällen handelt es sich dabei um die ausgewählten Gebiete."
-                            },
-                            "paramA_val": {
-                                "help": "Dies ist das Ergebnis der Datenabfrage des ersten Feldes (1) (links)."
-                            },
-                            "paramB_val": {
-                                "help": "Dies ist das Ergebnis der Datenabfrage des zweiten Feldes (2) (rechts)."
-                            },
-                            "relation": {
-                                "help": "In diesem Feld werden die Werte des Feldes (1) und des Feldes (2) durcheinander geteilt. Das Ergebnis wird auf zwei Stellen hinter dem Komma gerundet."
-                            },
-                            "capacity": {
-                                "text": "Kapazität",
-                                "help": "Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F bestimmt wurde. Es gibt an, für wieviele Einheiten der Referenzgruppe die Einrichtungen bereitgestellt werden können."
-                            },
-                            "need": {
-                                "text": "Bedarf",
-                                "help": "Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F ({{faktorF}}) bestimmt wurde. Es gibt an, für wieviele Einrichtungen für die Gesamtzahl der Einheiten der Referenzgruppe benötigt werden würden."
-                            },
-                            "coverage": {
-                                "text": "Bedarfsdeckung",
-                                "help": "Dieses Feld gibt an, zu wieviel % der Bedarf gedeckt ist. Es wird durch den einstellbaren Faktor F ({{faktorF}}) und den einstellbaren Wert 'für X der Referenzgruppe berechnen' beeinflusst."
-                            }
-                        }
+                    "tableHeaders": {
+                        "scopeText": "Gebiet",
+                        "scopeHelp": "In dieser Spalte werden die Identifikatoren für die jeweiligen Datensätze aufgelistet. In den meisten Fällen handelt es sich dabei um die ausgewählten Gebiete.",
+                        "paramA_valHelp": "Dies ist das Ergebnis der Datenabfrage des ersten Feldes (1) (links).",
+                        "paramB_valHelp": "Dies ist das Ergebnis der Datenabfrage des zweiten Feldes (2) (rechts).",
+                        "relationHelp": "In diesem Feld werden die Werte des Feldes (1) und des Feldes (2) durcheinander geteilt. Das Ergebnis wird auf zwei Stellen hinter dem Komma gerundet.",
+                        "capacityText": "Kapazität",
+                        "capacityHelp": "Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F bestimmt wurde. Es gibt an, für wieviele Einheiten der Referenzgruppe die Einrichtungen bereitgestellt werden können.",
+                        "needText": "Bedarf",
+                        "needHelp": "Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F ({{faktorF}}) bestimmt wurde. Es gibt an, für wieviele Einrichtungen für die Gesamtzahl der Einheiten der Referenzgruppe benötigt werden würden.",
+                        "coverageText": "Bedarfsdeckung",
+                        "coverageHelp": "Dieses Feld gibt an, zu wieviel % der Bedarf gedeckt ist. Es wird durch den einstellbaren Faktor F ({{faktorF}}) und den einstellbaren Wert 'für X der Referenzgruppe berechnen' beeinflusst."
                     },
                     "downloadGeoJson": "Download GeoJSON",
                     "downloadGeoJsonTooltip": "Ergebnisse als Geodaten (GeoJSON) herunterladen",
@@ -92,9 +74,7 @@
                     "calcPer": "berechnen pro",
                     "ofData": "der Datengrundlage",
                     "filenameBase": "versorgungsanalyse",
-                    "toolinfo": {
-                        "title": "Werkzeuginformationen"
-                    }
+                    "toolinfoTitle": "Werkzeuginformationen"
                 }
             }
         }

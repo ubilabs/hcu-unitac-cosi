@@ -14,9 +14,7 @@
                 "metadata": "Anmerkungen öffnen",
                 "noData": "Keine Daten vorhanden",
                 "yearsLabel": "Jahre",
-                "toolinfo": {
-                    "title": "Werkzeuginformationen"
-                }
+                "toolinfoTitle": "Werkzeuginformationen"
             }
         }
     }

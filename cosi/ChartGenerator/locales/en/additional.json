@@ -22,9 +22,7 @@
                     "yToZeroTooltip": "Start Y-Axis at 0 or resp. at the lowest possible value",
                     "yStacked": "Stack Y-Axis",
                     "source": "Source",
-                    "toolinfo": {
-                        "title": "Tool Information"
-                    }
+                    "toolinfoTitle": "Tool Information"
                 }
             }
         }

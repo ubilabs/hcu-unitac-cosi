@@ -59,9 +59,7 @@
                     "paginationPrev": "Das vorherige Ergebnis anzeigen",
                     "paginationNext": "Das nächste Ergebnis anzeigen",
                     "noChoicePlaceholder": "Keine Auswahl",
-                    "toolinfo": {
-                        "title": "Werkzeuginformationen (Link öffnen)"
-                    }
+                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

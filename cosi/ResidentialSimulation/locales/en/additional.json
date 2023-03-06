@@ -47,9 +47,7 @@
                     "dateOfCompletion": "TODO en: Jahr der Fertigstellung",
                     "valueError": "TODO en: Die Operation würde folgende ungültige Werte zu Folge haben:",
                     "bounds": "TODO en: Grenzwerte:",
-                    "toolinfo": {
-                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
-                    },
+                    "toolinfoTitle": "TODO en: Werkzeuginformationen (Link öffnen)",
                     "headers": {
                         "name": "Name",
                         "quartersName": "TODO en: Quartiersname",

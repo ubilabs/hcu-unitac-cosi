@@ -27,9 +27,7 @@
                     "undo": "Schritt zurück",
                     "pick": "Polygon in der Karte wählen",
                     "editFeature": "Simulierte Einrichtung löschen?",
-                    "toolinfo": {
-                        "title": "Werkzeuginformationen (Link öffnen)"
-                    }
+                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)"
                 },
                 "moveFeatures": {
                     "title": "Einrichtungen verschieben",
@@ -87,9 +85,7 @@
                     "reset": "Zurücksetzen",
                     "confirmDelete": "Möchten Sie die ausgewählte Einrichtung wirklich löschen?",
                     "confirmReset": "Möchten Sie die ausgewählte Einrichtung wirklich auf ihren Ursprungszustand zurücksetzen?",
-                    "toolinfo": {
-                        "title": "Werkzeuginformationen (Link öffnen)"
-                    }
+                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

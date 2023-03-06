@@ -149,9 +149,9 @@ export default {
             <v-app class="clamp-600px">
                 <ToolInfo
                     :url="readmeUrl"
-                    :title="$t('additional:modules.tools.cosi.areaSelector.toolinfo.title')"
+                    :title="$t('additional:modules.tools.cosi.areaSelector.toolinfoTitle')"
                     :locale="currentLocale"
-                    :summary="$t('additional:modules.tools.cosi.areaSelector.toolinfo.info')"
+                    :summary="$t('additional:modules.tools.cosi.areaSelector.toolinfoInfo')"
                 />
                 <div id="area-selector">
                     <GeometryPicker

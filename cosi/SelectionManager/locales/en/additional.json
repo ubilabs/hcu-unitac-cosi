@@ -21,9 +21,7 @@
                     "title_slider": "TODO en: Buffer (m) einstellen",
                     "title_toggle_buffer": "TODO en: Bufferauswahl aktivieren",
                     "title_buffer_selection": "TODO en: Buffer als Auswahl festlegen",
-                    "toolinfo": {
-                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
-                    }
+                    "toolinfoTitle": "TODO en: Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

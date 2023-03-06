@@ -291,7 +291,7 @@ export default {
             >
                 <ToolInfo
                     :url="readmeUrl"
-                    :title="$t('additional:modules.tools.cosi.chartGenerator.toolinfo.title')"
+                    :title="$t('additional:modules.tools.cosi.chartGenerator.toolinfoTitle')"
                     :locale="currentLocale"
                 />
                 <div

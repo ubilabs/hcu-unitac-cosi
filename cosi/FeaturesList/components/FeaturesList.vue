@@ -747,7 +747,7 @@ export default {
         >
             <ToolInfo
                 :url="readmeUrl"
-                :title="$t('additional:modules.tools.cosi.featuresList.toolinfo.title')"
+                :title="$t('additional:modules.tools.cosi.featuresList.toolinfoTitle')"
                 :locale="currentLocale"
             />
             <v-app id="features-list-wrapper">

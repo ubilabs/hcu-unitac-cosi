@@ -38,47 +38,47 @@ export default {
         headers () {
             const head = [
                 {
-                    text: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.scope.text"),
+                    text: i18next.t("additional:modules.tools.cosi.calculateRatio.tableHeaders.scopeText"),
                     value: "scope",
                     sortable: false,
                     show: true,
-                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.scope.help")
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.tableHeaders.scopeHelp")
                 },
                 {
                     text: this.typeA,
                     value: "paramA_val",
                     show: true,
-                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.paramA_val.help")
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.tableHeaders.paramA_valHelp")
                 },
                 {
                     text: this.typeB,
                     value: "paramB_val",
                     show: true,
-                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.paramB_val.help")
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.paramB_valHelp")
                 },
                 {
                     text: this.typeA + " / " + this.typeB,
                     value: "relation",
                     show: true,
-                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.relation.help")
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.tableHeaders.relationHelp")
                 },
                 {
-                    text: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.capacity.text"),
+                    text: i18next.t("additional:modules.tools.cosi.calculateRatio.tableHeaders.capacityText"),
                     value: "capacity",
                     show: this.fActive,
-                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.capacity.help")
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.tableHeaders.capacityHelp")
                 },
                 {
-                    text: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.need.text"),
+                    text: i18next.t("additional:modules.tools.cosi.calculateRatio.tableHeaders.needText"),
                     value: "need",
                     show: this.fActive,
-                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.need.help", {faktorF: this.faktorF, interpolation: {escapeValue: false}})
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.tableHeaders.needHelp", {faktorF: this.faktorF, interpolation: {escapeValue: false}})
                 },
                 {
-                    text: "Bedarfsdeckung",
+                    text: i18next.t("additional:modules.tools.cosi.calculateRatio.tableHeaders.coverageText"),
                     value: "coverage",
                     show: true,
-                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.table.headers.coverage.help", {faktorF: this.faktorF, interpolation: {escapeValue: false}})
+                    help: i18next.t("additional:modules.tools.cosi.calculateRatio.tableHeaders.coverageHelp", {faktorF: this.faktorF, interpolation: {escapeValue: false}})
                 }
             ];
 

@@ -6,10 +6,8 @@
                     "title": "Manuelle Flächenauswahl",
                     "drawPolygon": "Polygon zeichnen",
                     "requestInhabitants": "Einwohnerabfrage",
-                    "toolinfo": {
-                        "title": "Werkzeuginformationen (Link öffnen)",
-                        "info": "Ein Polygon zeichnen, für das Einrichtungen/Fachdaten geladen werden sollen."
-                    }
+                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)",
+                    "toolinfoInfo": "Ein Polygon zeichnen, für das Einrichtungen/Fachdaten geladen werden sollen."
                 }
             }
         }

@@ -6,10 +6,8 @@
                     "title": "Manual Area Selection",
                     "drawPolygon": "Draw polygon",
                     "requestInhabitants": "Request inhabitants",
-                    "toolinfo": {
-                        "info": "Draw a polygon for which facilities and other data will be loaded.",
-                        "title": "Werkzeuginformationen (Link öffnen)"
-                    }
+                    "toolinfoInfo": "Draw a polygon for which facilities and other data will be loaded.",
+                    "toolinfoTitle": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

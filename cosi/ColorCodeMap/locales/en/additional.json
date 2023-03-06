@@ -14,9 +14,7 @@
                 "metadata": "Open notes",
                 "noData": "no data available",
                 "yearsLabal": "Years",
-                "toolinfo": {
-                    "title": "Tool Info"
-                }
+                "toolinfoTitle": "Tool Info"
             }
         }
     }

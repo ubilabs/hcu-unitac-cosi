@@ -421,7 +421,7 @@ export default {
             >
                 <ToolInfo
                     :url="readmeUrl"
-                    :title="$t('additional:modules.tools.cosi.residentialSimulation.toolinfo.title')"
+                    :title="$t('additional:modules.tools.cosi.residentialSimulation.toolinfoTitle')"
                     :locale="currentLocale"
                 />
                 <v-app absolute>

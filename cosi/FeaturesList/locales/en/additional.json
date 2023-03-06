@@ -55,9 +55,7 @@
                         "voting": "voting",
                         "allProjects": "All projects"
                     },
-                    "toolinfo": {
-                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
-                    }
+                    "toolinfoTitle": "TODO en: Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

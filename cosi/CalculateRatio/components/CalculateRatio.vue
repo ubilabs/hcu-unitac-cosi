@@ -270,7 +270,7 @@ export default {
 
                     if (attr.summable) {
                         if (this.subFeaturesList.length === 0) {
-                            this.subFeaturesList.push({header: this.$t("additional:modules.tools.cosi.features.type.summable")});
+                            this.subFeaturesList.push({header: this.$t("additional:modules.tools.cosi.features.summable")});
                             this.subFeaturesList.push({value: attr.value, text: attr.value});
                         }
                         else {
@@ -838,7 +838,7 @@ export default {
                 <div class="addon_wrapper">
                     <ToolInfo
                         :url="readmeUrl"
-                        :title="$t('additional:modules.tools.cosi.calculateRatio.toolinfo.title')"
+                        :title="$t('additional:modules.tools.cosi.calculateRatio.toolinfoTitle')"
                         :locale="currentLocale"
                     />
                     <p class="section intro">

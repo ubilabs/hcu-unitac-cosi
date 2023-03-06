@@ -754,7 +754,7 @@ export default {
         <template #toolBody>
             <ToolInfo
                 :url="readmeUrl"
-                :title="$t('toolinfo.title')"
+                :title="$t('toolinfoTitle')"
                 :locale="currentLocale"
             />
             <v-app>
