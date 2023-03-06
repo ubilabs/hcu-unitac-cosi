@@ -8,6 +8,7 @@
                     "availableColumns": {
                         "ratio": "Ratio",
                         "coverage": "Demand coverage (%)",
+                        "coverageOld": "TODO en: Bedarfsdeckung (1,0 ~ 100%)",
                         "capacity": "Capacity",
                         "need": "Need"
                     },

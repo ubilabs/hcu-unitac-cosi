@@ -79,7 +79,7 @@ export default {
                 datasets: this.getActiveItems().map(item => ({
                     label: item.name,
                     data: this.selectedFeatureLayers.map(l => item.weightedDistanceScores[l.layerId].value),
-                    tooltip: `${this.$t("additional:modules.tools.cosi.featuresList.weightedAverage")}: ${item.weightedDistanceScores.score.toLocaleString("de-DE")}`
+                    tooltip: `${this.$t("additional:modules.tools.cosi.featuresList.weightedAverage")}: ${item.weightedDistanceScores.score.toLocaleString(this.currentLocale)}`
                 }))
             },
             chartDataset = new ChartDataset({

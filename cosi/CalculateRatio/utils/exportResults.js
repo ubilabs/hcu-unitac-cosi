@@ -51,7 +51,7 @@ export function exportAsGeoJson (index) {
                         color: [0, 0, 0],
                         width: 3
                     }),
-                    text: result.coverage ? parseFloat(result.coverage).toLocaleString("de-DE") : i18next.t("additional:modules.tools.cosi.calculateRatio.noData")
+                    text: result.coverage ? parseFloat(result.coverage).toLocaleString(this.currentLocale) : i18next.t("additional:modules.tools.cosi.calculateRatio.noData")
                 })
             });
 
