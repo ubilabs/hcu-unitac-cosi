@@ -24,7 +24,7 @@
                     "noToolSettingsAvailable": "Keine Tool Einstellungen verfügbar",
                     "sourceInfoMissing": "Quelleninformation fehlt.",
                     "tips": "<span style='color:orange;'>Weiterverarbeitung in Word: <ul><li>Neues Word Dokument öffnen</li><li>In Word Querformat einstellen</li><li>Inhalt dieser seite markieren (Strg+A) und in Word kopieren</li><li>Alles markieren und Schriftgröße verkleinern</li><li>Zeilenumbrüche in Kopfzeilen von Tabellen einfügen</li><li>Sollten Tabellen nach wie vor zu breit sein, Anzahl der Spalten bzw. ausgewählten Gebiete begrenzen</li><li>Spaltenbreite anpassen</li></ul></span>",
-                    "savedDataSelectionEmpty": "Gespeicherte Datenauswahl ist leer",
+                    "savedDataSelectionEmpty": "Gespeicherte Datenauswahl ist leer"
                 }
             }
         }
