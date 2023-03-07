@@ -657,7 +657,7 @@ export default {
 
         exportTable: function (index) {
             const
-                date = new Date().toLocaleDateString(this.currentLocale, {year: "numeric", month: "numeric", day: "numeric"}),
+                date = new Date().toLocaleDateString(currentLocale, {year: "numeric", month: "numeric", day: "numeric"}),
                 filename = `${this.$t("exportFilename")}_${date}`,
                 data = [
                     // this.resultTableHeaders.map(header => header.text),

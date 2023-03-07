@@ -477,7 +477,7 @@ export default {
         exportTable () {
             const data = this.getActiveItems(),
                 exportData = this.exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
-                filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename", this.currentLocale));
+                filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename", currentLocale));
 
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
         },
