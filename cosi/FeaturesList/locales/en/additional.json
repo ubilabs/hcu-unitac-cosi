@@ -4,6 +4,7 @@
             "cosi": {
                 "featuresList": {
                     "title": "Facilities Overview",
+                    "titleLocationScore": "Location Score",
                     "help": "Lists all active facilities for the selected districts",
                     "layerFilter": "Filter list by topic",
                     "search": "Search List",
@@ -20,11 +21,11 @@
                     "exportTable": "Export overview",
                     "exportDetails": "include details",
                     "exportFilename": "TODO en: CoSI_Einrichtungsübersicht",
-                    "weighting": "TODO en: Gewichtung",
                     "distanceScoreChartTooltip": "TODO en: Standortbewertung für ausgewählte visualisieren",
                     "distanceScoreHistogramTooltip": "TODO en: Verteilung der Standortbewertungen visualisieren",
                     "distanceScore": "Anbindung (Ø in m)",
                     "connection": "Anbindung",
+                    "weighting": "Weighting of the layer",
                     "distanceScoreLayerLabel": "Layers for distance scoreing (SB)",
                     "distanceScoreChartYLabel": "distance / m",
                     "abort": "abort",

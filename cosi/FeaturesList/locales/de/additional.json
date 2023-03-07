@@ -4,6 +4,7 @@
             "cosi": {
                 "featuresList": {
                     "title": "Einrichtungsübersicht",
+                    "titleLocationScore": "Standortbewertung",
                     "help": "Listet alle geladenen Einrichtungen für die ausgewählten Gebiete",
                     "layerFilter": "Liste nach Thema filtern",
                     "search": "Liste durchsuchen",
@@ -20,12 +21,12 @@
                     "exportTable": "Übersicht exportieren",
                     "exportDetails": "Detailansicht mit exportieren",
                     "exportFilename": "CoSI_Einrichtungsübersicht",
-                    "weighting": "Gewichtung",
+                    "weighting": "Gewichtung der Einrichtungen",
                     "distanceScoreChartTooltip": "Standortbewertung für ausgewählte visualisieren",
                     "distanceScoreHistogramTooltip": "Verteilung der Standortbewertungen visualisieren",
                     "distanceScore": "Anbindung (Ø in m)",
                     "connection": "Anbindung",
-                    "distanceScoreLayerLabel": "Fachdaten für die Standortbewertung",
+                    "distanceScoreLayerLabel": "Einrichtungen für die Standortbewertung",
                     "distanceScoreChartYLabel": "Anbindung in m",
                     "abort": "Abbrechen",
                     "warning": "ACHTUNG: ",

@@ -36,7 +36,7 @@ async function fetchMatrix (sources, destinations, profile, serviceId, fallbackI
     });
     const baseUrl = getServiceUrl(serviceId) + "/v2/",
         service = "matrix",
-        uri = baseUrl + service + "/" + (profile || "foot-walking"),
+        uri = baseUrl + service + "/" + (profile || "foot-walking") + "/json",
         opts = {
             "metrics": ["distance"],
             locations: [...sources, ...destinations],

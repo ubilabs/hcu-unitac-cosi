@@ -11,7 +11,6 @@ import {getLayerSource} from "../../utils/layer/getLayerSource";
 import highlightVectorFeature from "../../utils/highlightVectorFeature";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
-import LayerWeights from "./LayerWeights.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
 import {isEqual} from "../../utils/array/isEqual";
@@ -19,6 +18,7 @@ import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
+import LocationScore from "./LocationScore.vue";
 
 import
 {
@@ -39,7 +39,7 @@ export default {
         ToolInfo,
         DetailView,
         FeatureIcon,
-        LayerWeights
+        LocationScore
     },
     data () {
         return {
@@ -47,9 +47,7 @@ export default {
             weight: 0,
             showWeightsDialog: false,
             showScoresDialog: false,
-            layerWeights: {},
             currentScores: {},
-            selectedDistanceScoreLayers: [],
             search: "",
             layerFilter: [],
             expanded: [],
@@ -152,26 +150,8 @@ export default {
             },
             set (value) {
                 this.setFeaturesListItems(value);
+                this.numericalColumns = this.getNumericalColumns();
             }
-        },
-        layerOptions () {
-            const layers = this.getLayerList(),
-                groups = layers.reduce((acc, el)=> ({...acc, [el.group]: [...acc[el.group] || [], el]}), {});
-
-            let ret = [];
-
-            for (const g in groups) {
-                ret.push({header: g});
-                ret = ret.concat(groups[g]);
-            }
-
-            return ret;
-        },
-        selectedFeatureLayers () {
-            return this.selectedDistanceScoreLayers.filter(l=>l.group !== "Wms Layers");
-        },
-        selectedWmsLayers () {
-            return this.selectedDistanceScoreLayers.filter(l=>l.group === "Wms Layers");
         }
     },
     watch: {
@@ -239,19 +219,9 @@ export default {
             this.numericalColumns = this.getNumericalColumns();
         },
 
-        selectedDistanceScoreLayers () {
-            for (const layer of this.selectedFeatureLayers) {
-                if (this.layerWeights[layer.layerId] === undefined) {
-                    this.layerWeights[layer.layerId] = 1;
-                }
-            }
-            this.updateDistanceScores();
-            this.numericalColumns = this.getNumericalColumns();
-        },
-
         items (newItems, oldItems) {
             if (!deepEqual(newItems.map(i=>i.key), oldItems.map(i=>i.key))) {
-                this.updateDistanceScores();
+                // this.updateDistanceScores();
             }
             if (newItems.length > 0 && newItems.some(item => item.group === "DIPAS")) {
                 this.dipasInFeaturesList = true;
@@ -261,9 +231,6 @@ export default {
             }
             this.showDistanceScoreFeatures();
         },
-
-        layerWeights: "updateDistanceScores",
-        extent: "updateDistanceScores",
 
         layerFilter () {
             this.numericalColumns = this.getNumericalColumns();
@@ -328,7 +295,7 @@ export default {
                 numCols[numCols.length - 1].divider = true;
             }
 
-            if (this.selectedFeatureLayers.length > 0) {
+            if (this.items.length && typeof this.items[0].distanceScore !== "undefined") {
                 numCols.push({
                     text: this.$t("additional:modules.tools.cosi.featuresList.distanceScore"),
                     value: "distanceScore",
@@ -338,10 +305,14 @@ export default {
                 });
             }
 
-            for (const l of this.selectedWmsLayers) {
-                numCols.push({
-                    text: l.name,
-                    value: l.name
+            if (this.items.length) {
+                this.wmsLayersInfo.forEach(info => {
+                    if (Object.hasOwn(this.items[0], info.name)) {
+                        numCols.push({
+                            text: info.name,
+                            value: info.name
+                        });
+                    }
                 });
             }
 
@@ -594,25 +565,7 @@ export default {
                 width: Math.round(100 * val / maxVal) + "%"
             };
         },
-        getLayerList () {
-            const groups = this.mapping,
-                allLayers = [];
 
-            for (const g of groups) {
-                for (const l of g.layer) {
-                    const layer = rawLayerList.getLayerWhere({id: l.layerId});
-
-                    if (layer) {
-                        allLayers.push({id: l.id, layerId: l.layerId, url: layer.url, group: g.group, featureType: layer.featureType});
-                    }
-                }
-            }
-            for (const l of this.wmsLayersInfo) {
-                allLayers.push({...l, id: l.name, layerId: l.id, group: "Wms Layers"});
-            }
-
-            return allLayers;
-        },
         getDistrictsAndTypes (items) {
             const
                 districts = {},
@@ -638,58 +591,18 @@ export default {
 
             return {districts, types};
         },
-        async updateSelectedDistanceScoreLayers (layerIds) {
-            this.selectedDistanceScoreLayers = layerIds;
-        },
-        async updateDistanceScores () {
-            if (this.items && this.items.length) {
-                const items = [];
-
-                this.distanceScoreQueue = this.items.map(item=>{
-                    const ret = {...item};
-
-                    delete ret.weightedDistanceScores;
-                    delete ret.distanceScore;
-                    return ret;
-                });
-
-                while (this.distanceScoreQueue.length) {
-                    const item = this.distanceScoreQueue.shift();
-
-                    if (this.selectedFeatureLayers.length > 0) {
-                        const ret = await this.getDistanceScore({feature: item.feature, layerIds: this.selectedFeatureLayers.map(l=>l.layerId),
-                            weights: this.selectedFeatureLayers.map(l=>this.layerWeights[l.layerId]),
-                            extent: this.extent ? this.extent : undefined});
-
-                        item.weightedDistanceScores = ret;
-                        item.distanceScore = ret !== null ? ret.score.toFixed(1) : "na";
-                    }
-                    for (const layer of this.selectedWmsLayers) {
-                        const value = await this.getFeatureValues({feature: item.feature, layerId: layer.layerId});
-
-                        item[layer.name] = value;
-                    }
-
-                    items.push(item);
-                }
-
-                this.items = items;
-
-                // set the selected items on the updated list
-                this.selected = this.selected.map(sel => this.items.find(item => item.key === sel.key));
-            }
-        },
 
         showDistanceScoreFeatures () {
-            if (this.distScoreLayer === null) {
+            if (this.distScoreLayer === null || this.selected.length === 0) {
                 return;
             }
 
-            const colorMap = this.selectedDistanceScoreLayers.reduce((acc, layer, index) => (
-                {...acc, [layer.layerId]: getColorFromNumber(index, this.selectedDistanceScoreLayers.length)}), {});
+            const test = Object.keys(this.selected[0].weightedDistanceScores),
+                colorMap = test.reduce((acc, layerId, index) => (
+                    {...acc, [layerId]: getColorFromNumber(index, test.length)}), {});
 
             this.distScoreLayer.getSource().clear();
-            this.items.filter(item=>this.selected.find(s=>s.key === item.key)).forEach(item => {
+            this.selected.forEach(item => {
                 if (item.weightedDistanceScores) {
                     for (const [layerId, entry] of Object.entries(item.weightedDistanceScores)) {
                         if (entry.feature) {
@@ -722,8 +635,11 @@ export default {
                 }
             });
         },
-        updateWeights (weights) {
-            this.layerWeights = {...weights};
+        updateItems (items) {
+            this.items = items;
+
+            // set the selected items on the updated list
+            this.selected = this.selected.map(sel => this.items.find(item => item.key === sel.key));
         },
         highlightVectorFeature
     }
@@ -926,93 +842,15 @@ export default {
                                 </template>
                             </v-data-table>
                         </div>
-                        <v-row
-                            v-if="distanceScoreEnabled"
-                            dense
-                        >
-                            <v-col>
-                                <v-autocomplete
-                                    id="selectedDistanceScoreLayers"
-                                    :value="selectedDistanceScoreLayers"
-                                    :items="layerOptions"
-                                    :label="$t('additional:modules.tools.cosi.featuresList.distanceScoreLayerLabel')"
-                                    outlined
-                                    dense
-                                    multiple
-                                    item-text="id"
-                                    return-object
-                                    hide-details
-                                    @input="updateSelectedDistanceScoreLayers"
-                                >
-                                    <template #selection="{ item, index }">
-                                        <v-chip
-                                            v-if="index < 2"
-                                            small
-                                        >
-                                            <span>{{ item.id }}</span>
-                                        </v-chip>
-                                        <span
-                                            v-if="index === 2"
-                                            class="grey--text text-caption"
-                                        >
-                                            (+{{ selectedDistanceScoreLayers.length - 2 }} andere)
-                                        </span>
-                                    </template>
-                                </v-autocomplete>
-                            </v-col>
-                            <v-col>
-                                <v-btn
-                                    v-if="selectedFeatureLayers.length>0"
-                                    id="weights"
-                                    depressed
-                                    tile
-                                    @click.native="showWeightsDialog=true"
-                                >
-                                    {{ $t('additional:modules.tools.cosi.featuresList.weighting') }}
-                                </v-btn>
-                                <v-btn
-                                    v-if="selectedFeatureLayers.length > 0"
-                                    id="distance-score-chart-btn"
-                                    depressed
-                                    tile
-                                    :title="$t('additional:modules.tools.cosi.featuresList.distanceScoreChartTooltip')"
-                                    @click.native="showDistanceScoresForSelected"
-                                >
-                                    <v-icon>mdi-radar</v-icon>
-                                </v-btn>
-                                <v-btn
-                                    v-if="selectedFeatureLayers.length > 0"
-                                    id="distance-score-histogram-btn"
-                                    depressed
-                                    tile
-                                    :title="$t('additional:modules.tools.cosi.featuresList.distanceScoreHistogramTooltip')"
-                                    @click.native="showDistanceScoreHistogram"
-                                >
-                                    <v-icon>mdi-chart-histogram</v-icon>
-                                </v-btn>
-                                <v-btn
-                                    v-if="distanceScoreQueue.length > 0"
-                                    id="weights"
-                                    depressed
-                                    tile
-                                    @click.native="distanceScoreQueue=[]"
-                                >
-                                    {{ $t('additional:modules.tools.cosi.featuresList.abort') }}
-                                </v-btn>
-                            </v-col>
-                            <v-progress-linear
-                                v-if="distanceScoreQueue.length>0"
-                                :value="100-(distanceScoreQueue.length/items.length)*100"
-                                background-color="white"
-                            />
-                        </v-row>
                     </form>
                 </div>
-                <LayerWeights
-                    v-model="showWeightsDialog"
-                    :weights="layerWeights"
-                    :layers="selectedFeatureLayers"
-                    @update="updateWeights"
+                <LocationScore
+                    v-if="distanceScoreEnabled"
+                    :grouped-layer="mapping"
+                    :facilities="items"
+                    @showDistanceScoreHistogram="showDistanceScoreHistogram"
+                    @showDistanceScoresForSelected="showDistanceScoresForSelected"
+                    @updateItems="updateItems"
                 />
             </v-app>
         </template>
@@ -1023,7 +861,7 @@ export default {
     @import "../../utils/variables.scss";
 
     #features-list-wrapper {
-        height: 100%;
+        // height: 100%;
         position: relative;
 
         .selection {
@@ -1038,16 +876,19 @@ export default {
                font-size: 12px;
             }
         }
+        button {
+            text-transform: inherit;
+        }
     }
     #features-list {
         height: 100%;
         .features-list-table-wrapper {
-           height: calc(100% - 220px);
+        //    height: calc(100% - 220px);
             display: block;
             position: relative;
            .features-list-table {
                height: 100%;
-               margin-bottom: 60px;
+               margin-bottom: 30px;
                .v-data-table {
                    height: 100%;
                    .v-data-table__wrapper {
