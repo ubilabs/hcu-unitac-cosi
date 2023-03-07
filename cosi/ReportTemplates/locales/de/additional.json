@@ -4,17 +4,27 @@
             "cosi": {
                 "reportTemplates": {
                     "title": "Report Template",
-                    "titleHeader": "Titel",
-                    "importTemplate": "Reportvorlage importieren...",
+                    "selectFile": "Datei wählen..",
+                    "titleHeader": "Titel bla foo",
                     "description": "Beschreibung",
                     "chooseTool": "Tool wählen",
-                    "adoptDataSelection": "Datenauswahl übernehmen",
-                    "useSavedDataSelection": "Gespeicherte Datenauswahl anwenden",
-                    "useCurrentSettings": "Aktuelle Tool Einstellungen übernehmen",
-                    "applyTool": "Tool anwenden",
+                    "dataSelection": "Datenauswahl",
+                    "toolSettings": "Tool Einstellungen",
+                    "adoptDataSelection": "Datenauswahl anwenden",
+                    "results": "Ergebnisse",
                     "exportFormat": "Export Format",
                     "export": "Exportieren",
-                    "saveTemplate": "Template speichern"
+                    "import": "Importieren",
+                    "edit": "Bearbeiten",
+                    "apply": "Anwenden",
+                    "importableTemplateJson": "Importierbares Template (json)",
+                    "noValidReportTemplate": "Datei ist kein valides Report Template.",
+                    "notReadableOrNoValidJson": "Datei nicht lesbar oder kein valides JSON",
+                    "error": "Fehler",
+                    "noToolSettingsAvailable": "Keine Tool Einstellungen verfügbar",
+                    "sourceInfoMissing": "Quelleninformation fehlt.",
+                    "tips": "<span style='color:orange;'>Weiterverarbeitung in Word: <ul><li>Neues Word Dokument öffnen</li><li>In Word Querformat einstellen</li><li>Inhalt dieser seite markieren (Strg+A) und in Word kopieren</li><li>Alles markieren und Schriftgröße verkleinern</li><li>Zeilenumbrüche in Kopfzeilen von Tabellen einfügen</li><li>Sollten Tabellen nach wie vor zu breit sein, Anzahl der Spalten bzw. ausgewählten Gebiete begrenzen</li><li>Spaltenbreite anpassen</li></ul></span>",
+                    "savedDataSelectionEmpty": "Gespeicherte Datenauswahl ist leer",
                 }
             }
         }
