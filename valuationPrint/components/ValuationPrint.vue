@@ -679,7 +679,7 @@ export default {
                                 v-model="documentNumber"
                                 :aria-label="$t('additional:modules.tools.valuationPrint.number')"
                                 type="text"
-                                placeholder="G/W xx.xxxx - xxx"
+                                placeholder="xx.xxxx - xxx"
                                 :class="`form-control ${errors.documentNumber ? 'is-invalid' : ''}`"
                             >
                             <div
