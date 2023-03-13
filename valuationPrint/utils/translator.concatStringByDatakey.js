@@ -246,6 +246,7 @@ function formatValue (value, options) {
  * @param {Boolean} [options.thousandsSeparator] true if thousandsSeparator should be used.
  * @param {String} [options.thousandsSeparator.delimAbs] The letter(s) to use as thousand point.
  * @param {String} [options.thousandsSeparator.delimDec] The letter(s) to use as decimal point.
+ * @param {String} [options.postfix] postfix of the value.
  * @returns {String} The formated value.
  */
 function formatValueNumber (value, options) {
@@ -278,8 +279,13 @@ function formatValueNumber (value, options) {
     }
 
     if (typeof options?.thousandsSeparator?.delimAbs === "string" && typeof options?.thousandsSeparator?.delimDec === "string") {
-        return thousandsSeparator(saveValue, options.thousandsSeparator.delimAbs, options.thousandsSeparator.delimDec);
+        saveValue = thousandsSeparator(saveValue, options.thousandsSeparator.delimAbs, options.thousandsSeparator.delimDec);
     }
+
+    if (typeof options?.postfix === "string") {
+        saveValue = String(saveValue) + options.postfix;
+    }
+
     return String(saveValue);
 }
 

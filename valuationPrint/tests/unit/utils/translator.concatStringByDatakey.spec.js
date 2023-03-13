@@ -65,6 +65,13 @@ describe("addons/valuationPrint/utils/translator.concatStringByDatakey.js", () =
 
             expect(formatValueNumber("1234.5678", options)).to.equal("1|234_57");
         });
+        it("should combine number and postfix", () => {
+            const options = {
+                postfix: " m²"
+            };
+
+            expect(formatValueNumber("1234.5678", options)).to.equal("1234.5678 m²");
+        });
     });
     describe("formatValue", () => {
         it("should return the given value as it is if anything but an object is given as options", () => {

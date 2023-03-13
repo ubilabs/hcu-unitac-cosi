@@ -59,7 +59,7 @@ export function createMapfishDialog (parcel, knowledgeBase, transformer, default
                 }
             }
             else if (transformerConfig.type === "datasource") {
-                mapfishDialog[prefix + "." + postfix] = mergeObjectsByDatakey(transformerConfig.datakey, knowledgeBase, defaultValue);
+                mapfishDialog[prefix + "." + postfix] = mergeObjectsByDatakey(transformerConfig.datakey, knowledgeBase, defaultValue, transformerConfig.options);
             }
             else {
                 mapfishDialog[prefix + "." + postfix] = transformerConfig.content;
