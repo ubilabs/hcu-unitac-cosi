@@ -24,7 +24,7 @@ function addElemWithDataAppToBody () {
     document.body.append(app);
 }
 
-describe.only("addons/cosi/FeaturesList/components/FeaturesListScore.vue", () => {
+describe("addons/cosi/FeaturesList/components/FeaturesListScore.vue", () => {
     before(() => {
         addElemWithDataAppToBody();
         global.requestAnimationFrame = (fn) => fn();
