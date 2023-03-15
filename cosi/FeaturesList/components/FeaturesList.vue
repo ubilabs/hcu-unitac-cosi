@@ -15,10 +15,9 @@ import {prepareTableExport, prepareDetailsExport, composeFilename} from "../util
 import exportXlsx from "../../utils/exportXlsx";
 import {isEqual} from "../../utils/array/isEqual";
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
-import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
-import LocationScore from "./LocationScore.vue";
+import FeaturesScore from "./FeaturesListScore.vue";
 import setGeomAttributes from "../../utils/features/setGeomAttributes";
 import getFeatureStyle from "../../utils/features/getFeatureStyle";
 
@@ -41,15 +40,10 @@ export default {
         ToolInfo,
         DetailView,
         FeatureIcon,
-        LocationScore
+        FeaturesScore
     },
     data () {
         return {
-            distanceScoreQueue: [],
-            weight: 0,
-            showWeightsDialog: false,
-            showScoresDialog: false,
-            currentScores: {},
             search: "",
             layerFilter: [],
             expanded: [],
@@ -221,10 +215,7 @@ export default {
             this.numericalColumns = this.getNumericalColumns();
         },
 
-        items (newItems, oldItems) {
-            if (!deepEqual(newItems.map(i=>i.key), oldItems.map(i=>i.key))) {
-                // this.updateDistanceScores();
-            }
+        items (newItems) {
             if (newItems.length > 0 && newItems.some(item => item.group === "DIPAS")) {
                 this.dipasInFeaturesList = true;
             }
@@ -297,7 +288,7 @@ export default {
                 numCols[numCols.length - 1].divider = true;
             }
 
-            if (this.items.length && typeof this.items[0].distanceScore !== "undefined") {
+            if (this.items.length && typeof this.items[0]?.score?.value !== "undefined") {
                 numCols.push({
                     text: this.$t("additional:modules.tools.cosi.featuresList.distanceScore"),
                     value: "distanceScore",
@@ -603,15 +594,18 @@ export default {
             if (this.distScoreLayer === null || this.selected.length === 0) {
                 return;
             }
+            if (!this.selected[0].score) {
+                return;
+            }
 
-            const test = Object.keys(this.selected[0].weightedDistanceScores),
+            const test = Object.keys(this.selected[0].score.distance),
                 colorMap = test.reduce((acc, layerId, index) => (
                     {...acc, [layerId]: getColorFromNumber(index, test.length)}), {});
 
             this.distScoreLayer.getSource().clear();
             this.selected.forEach(item => {
-                if (item.weightedDistanceScores) {
-                    for (const [layerId, entry] of Object.entries(item.weightedDistanceScores)) {
+                if (item.score.distance) {
+                    for (const [layerId, entry] of Object.entries(item.score.distance)) {
                         if (entry.feature) {
                             const feature = new Feature({geometry: entry.feature.getGeometry()});
 
@@ -834,6 +828,7 @@ export default {
                                         >
                                             <div>
                                                 {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
+                                                {{ item[col] }}
                                             </div>
                                             <div>
                                                 <v-chip
@@ -850,10 +845,10 @@ export default {
                         </div>
                     </form>
                 </div>
-                <LocationScore
+                <FeaturesScore
                     v-if="distanceScoreEnabled"
                     :grouped-layer="mapping"
-                    :facilities="items"
+                    :feature-list="items"
                     @showDistanceScoreHistogram="showDistanceScoreHistogram"
                     @showDistanceScoresForSelected="showDistanceScoresForSelected"
                     @updateItems="updateItems"
