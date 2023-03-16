@@ -1,5 +1,4 @@
 import Cluster from "ol/source/Cluster";
-import VectorLayer from "ol/layer/Vector";
 
 /**
  * Returns the raw vector source of a vector layer, both clustered and not.
@@ -7,8 +6,8 @@ import VectorLayer from "ol/layer/Vector";
  * @returns {ol/source/Vector|null} The raw vector source or null if no source exists.
  */
 function getLayerSource (layer) {
-    if (typeof layer !== "object" || !(layer instanceof VectorLayer) || layer.getSource() === null) {
-        console.error("utils/layer/getLayerSource: layer must be a vector layer with a source", layer);
+    if (typeof layer !== "object" || layer === null || typeof layer.getSource !== "function" || typeof layer.getSource()?.getFeatures !== "function") {
+        console.error("utils/layer/getLayerSource: layer must be a layer with a vector source", layer);
         return null;
     }
     const source = layer.getSource();
