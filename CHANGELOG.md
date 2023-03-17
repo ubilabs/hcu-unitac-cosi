@@ -10,6 +10,8 @@
 
 ### Changed
 - In schoolRoutePlanning all streets and house numbers are now listed as results with an overflow.
+- The version of node was updated, must be `>= 16.13.2 <= 16.18.1`
+- The version of npm was updated, must be `>= 8.1.2 <= 8.19.3`
 
 ### Deprecated
 
