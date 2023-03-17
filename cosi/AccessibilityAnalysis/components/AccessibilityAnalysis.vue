@@ -193,6 +193,21 @@ export default {
             set (v) {
                 this.setIsochroneFeatures(v);
             }
+        },
+        selectedFacilityLayer () {
+            const selectedLayerNames = {},
+                selectedLayer = [];
+
+            this.selectedFacilityNames.forEach(name => {
+                selectedLayerNames[name] = true;
+            });
+
+            this.activeVectorLayerList.forEach(layer => {
+                if (Object.prototype.hasOwnProperty.call(selectedLayerNames, layer.get("name"))) {
+                    selectedLayer.push(layer);
+                }
+            });
+            return selectedLayer;
         }
     },
     watch: {

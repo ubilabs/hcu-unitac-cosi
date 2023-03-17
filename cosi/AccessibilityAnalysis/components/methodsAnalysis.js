@@ -75,8 +75,8 @@ export default {
      * @returns {void}
      */
     createIsochronesRegion: async function () {
-        const allActviceFeatures = filterAllFeatures(this.activeVectorLayerList, this.isFeatureActive),
-            coordinates = this.getCoordinates(allActviceFeatures, this.setByFeature),
+        const allActiveFeatures = filterAllFeatures(this.selectedFacilityLayer, this.isFeatureActive),
+            coordinates = this.getCoordinates(allActiveFeatures, this.setByFeature),
             {distance, maxDistance, minDistance, steps} = this.getDistances();
 
         if (
