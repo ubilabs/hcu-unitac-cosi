@@ -145,9 +145,7 @@ export default {
         this.mapLayer.getSource().clear();
 
         if (newFeatures.length === 0) {
-            if (this.mode !== "region") {
-                setBBoxToGeom.call(this, this.areaSelectorGeom || this.boundingGeometry);
-            }
+            setBBoxToGeom.call(this, this.areaSelectorGeom || this.boundingGeometry);
             return;
         }
 
@@ -251,6 +249,7 @@ export default {
 
         setBBoxToGeom.call(this, geometryCollection);
     },
+
     /**
     * resets facility layers' bbox
     * @returns {void}
