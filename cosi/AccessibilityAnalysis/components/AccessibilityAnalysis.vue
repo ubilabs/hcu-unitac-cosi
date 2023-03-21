@@ -223,7 +223,6 @@ export default {
                 offSearchbar(this.setSearchResultToOrigin);
                 this.removePointMarker();
                 this.select.getFeatures().clear();
-                this.removeLayerFromMap(this.directionsLayer);
             }
         },
         activeSet (newValue) {
