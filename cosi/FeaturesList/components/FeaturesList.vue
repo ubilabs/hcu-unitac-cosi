@@ -895,7 +895,8 @@ export default {
                    .v-data-table__wrapper {
                     overflow-x: auto;
                     overflow-y: auto;
-                    height: 100%;
+                    max-height: 70vh;
+                    background-color: white;
                    }
                    td.detail-view {
                        .v-data-table__wrapper {
