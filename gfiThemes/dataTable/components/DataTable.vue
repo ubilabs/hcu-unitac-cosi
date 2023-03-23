@@ -91,7 +91,11 @@ export default {
 
     table {
         margin: 0;
-
+        th {
+            position: sticky;
+            top: 0px;
+            background: $white;
+        }
         td, th {
             padding: 6px;
         }
