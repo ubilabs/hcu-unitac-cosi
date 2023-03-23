@@ -8,10 +8,16 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe("/src/modules/tools/gfi/components/themes/dataTable/components/DataTable.vue", () => {
-    let wrapper;
-
-    const featureData = {
-            getTheme: () => "DataTable",
+    let wrapper,
+        featureData = {
+            getTheme: () => {
+                return {
+                    "name": "DataTable",
+                    "params": {
+                        "enableDownload": true
+                    }
+                };
+            },
             getTitle: () => "DataTable",
             getAttributesToShow: () => {
                 return {};
@@ -59,9 +65,9 @@ describe("/src/modules/tools/gfi/components/themes/dataTable/components/DataTabl
                     }
                 }];
             }
-        },
+        };
 
-        mockGetters = {
+    const mockGetters = {
             gfiFeatures: () => featureData
         },
 
@@ -113,5 +119,34 @@ describe("/src/modules/tools/gfi/components/themes/dataTable/components/DataTabl
                 expect(td.text()).to.equal(Object.values(wrapper.vm.refinedData.rows[indexTr])[indexTd]);
             });
         });
+    });
+
+    it("The enableDownload in computed section should be true", () => {
+        expect(wrapper.vm.enableDownload).to.be.true;
+    });
+
+    it("It should contains a download button", () => {
+        expect(wrapper.find(".download").exists()).to.be.true;
+    });
+
+    it("It should not contain a download button", () => {
+        featureData = {
+            getTheme: () => "DataTable",
+            getTitle: () => "DataTable",
+            getAttributesToShow: () => {
+                return {};
+            },
+            getMimeType: () => "text/xml",
+            getFeatures: () => []
+        };
+        wrapper = shallowMount(DataTableTheme, {
+            store,
+            localVue,
+            propsData: {
+                feature: featureData
+            }
+        });
+
+        expect(wrapper.find(".download").exists()).to.be.false;
     });
 });
