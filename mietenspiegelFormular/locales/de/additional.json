@@ -1,0 +1,9 @@
+{
+  "modules": {
+      "tools": {
+          "mietenspiegelFormular": {
+              "title": "Formular"
+          }
+      }
+  }
+}
