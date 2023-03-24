@@ -292,7 +292,9 @@ export default {
             }
         },
         activeVectorLayerList (newValues) {
-            this.setFacilityLayers(newValues);
+            if (newValues.length > 0) {
+                this.setFacilityLayers(newValues);
+            }
         },
         routingDirections () {
             this._selectedDirections = this.routingDirections;
@@ -500,7 +502,14 @@ export default {
         * @returns {void}
         */
         setFacilityLayers: function (vectorLayers) {
-            this.facilityNames = vectorLayers.map(v => v.get("name"));
+            this.facilityNames = [];
+            vectorLayers.forEach(layer => {
+                layer.getSource().on("featuresloadend", () => {
+                    if (layer.getSource().getFeatures().length > 0) {
+                        this.facilityNames.push(layer.get("name"));
+                    }
+                });
+            });
         },
 
         getDirectionsText: function (routingDirections) {
@@ -658,7 +667,6 @@ export default {
                     >
                         <v-form>
                             <v-select
-                                ref="mode"
                                 v-model="_mode"
                                 class="mb-4"
                                 :items="availableModes"
@@ -668,7 +676,6 @@ export default {
                                 outlined
                                 dense
                                 hide-details
-                                @click:append="$refs.mode.blur()"
                             />
                             <v-text-field
                                 v-if="mode === 'point'"
