@@ -19,7 +19,8 @@ const state = {
     renderToWindow: false,
     resizableWindow: true,
     isVisibleInMenu: true,
-    deactivateGFI: false
+    deactivateGFI: false,
+    layerIdMetadata: null
 };
 
 export default state;
