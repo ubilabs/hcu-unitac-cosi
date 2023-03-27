@@ -2,7 +2,11 @@
   "modules": {
       "tools": {
           "mietenspiegelFormular": {
-              "title": "Formular"
+              "title": "Formular",
+              "errorMessages": {
+                "noDataFound": "Für diese Adresse wurden keine Daten gefunden.",
+                "noUrl": "Es konnte keine Abfrage an die Koordinaten geschickt werden."
+              }
           }
       }
   }

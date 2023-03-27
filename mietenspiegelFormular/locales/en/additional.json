@@ -2,7 +2,11 @@
   "modules": {
       "tools": {
           "mietenspiegelFormular": {
-              "title": "Form"
+              "title": "Form",
+              "errorMessages": {
+                "noDataFound": "No informations found.",
+                "noUrl": "No query could be sent to the coordinates."
+              }
           }
         }
     }

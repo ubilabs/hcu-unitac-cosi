@@ -20,7 +20,8 @@ const state = {
     resizableWindow: true,
     isVisibleInMenu: true,
     deactivateGFI: false,
-    layerIdMetadata: null
+    layerIdMetadata: null,
+    rentIndexLayerId: undefined
 };
 
 export default state;

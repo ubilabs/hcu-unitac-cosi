@@ -6,6 +6,9 @@ import mutations from "../store/mutationsMietenspiegelFormular";
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import {getFeatureGET} from "../../../src/api/wfs/getFeature";
 import {WFS} from "ol/format.js";
+import {onSearchbar} from "../utils/radioBridge.js";
+import {requestGfi} from "../../../src/api/wmsGetFeatureInfo";
+import isObject from "../../../src/utils/isObject";
 
 export default {
     name: "MietenspiegelFormular",
@@ -14,10 +17,23 @@ export default {
     },
     data () {
         return {
+            residentialInformation: {},
+            errorMessage: ""
         };
     },
     computed: {
-        ...mapGetters("Tools/MietenspiegelFormular", Object.keys(getters))
+        ...mapGetters("Tools/MietenspiegelFormular", Object.keys(getters)),
+        ...mapGetters("Maps", ["projection", "getLayerById", "resolution"])
+    },
+    watch: {
+        residentialInformation: {
+            handler () {
+                if (!this.active) {
+                    this.setActive(true);
+                }
+            },
+            deep: true
+        }
     },
     async created () {
         this.METADATA = await this.getFeatureProperties(this.layerIdMetadata);
@@ -25,10 +41,22 @@ export default {
         this.$on("close", () => {
             this.setActive(false);
         });
+        this.onSearchbar(result => {
+            const layer = this.getLayerById({layerId: this.rentIndexLayerId, searchInGroupLayers: false}),
+                url = this.getFeatureInfoUrlByLayer(result?.coordinate, layer, this.projection.getCode());
+
+            this.getResidentialInformation(url, layer, residentialInformation => {
+                this.errorMessage = "";
+                this.residentialInformation = residentialInformation;
+            }, error => {
+                this.errorMessage = error;
+            });
+        });
     },
     methods: {
         ...mapMutations("Tools/MietenspiegelFormular", Object.keys(mutations)),
-
+        onSearchbar,
+        requestGfi,
         /**
          * Gets the properties of a feature from a layer.
          * @param {String} layerId - The id of the layer.
@@ -45,6 +73,47 @@ export default {
                 metaDataFeature = wfsReader.readFeatures(response)[index];
 
             return metaDataFeature.getProperties();
+        },
+        /**
+         * Gets the featureInfoUrl for given coordinate.
+         * @param {Number[]} coordinate The coordinate.
+         * @param {ol/Layer} layer The layer.
+         * @param {String} crsCode The crs code.
+         * @returns {String|null} The url info string.
+         */
+        getFeatureInfoUrlByLayer (coordinate, layer, crsCode) {
+            if (!Array.isArray(coordinate) || !coordinate.length || !isObject(layer) || typeof crsCode !== "string") {
+                return null;
+            }
+            return layer.getSource().getFeatureInfoUrl(coordinate, this.resolution, crsCode, {INFO_FORMAT: "text/xml"});
+        },
+        /**
+         * Gets the residential informations.
+         * @param {String} url The url to use.
+         * @param {ol/Layer} layer The layer to get the infos from.
+         * @param {Function} onsuccess Function to call on success.
+         * @param {Function} onerror Function to call on error. Passes an translation key.
+         * @returns {Boolean} false if an error occured.
+         */
+        getResidentialInformation (url, layer, onsuccess, onerror) {
+            if (typeof url !== "string") {
+                if (typeof onerror === "function") {
+                    onerror("additional:modules.tools.mietenspiegelFormular.errorMessages.noUrl");
+                }
+                return false;
+            }
+            this.requestGfi("text/xml", url, layer).then(response => {
+                if (!Array.isArray(response) || !isObject(response[0])) {
+                    if (typeof onerror === "function") {
+                        onerror("additional:modules.tools.mietenspiegelFormular.errorMessages.noDataFound");
+                    }
+                    return;
+                }
+                if (typeof onsuccess === "function") {
+                    onsuccess(response[0].getProperties());
+                }
+            });
+            return true;
         }
     }
 };
@@ -63,7 +132,20 @@ export default {
             #toolBody
         >
             <div class="mietenspiegel-formular">
-                Test
+                <div
+                    v-if="errorMessage"
+                    class="alert alert-warning"
+                    role="alert"
+                >
+                    {{ $t(errorMessage) }}
+                </div>
+                <div
+                    v-for="(value, key) in residentialInformation"
+                    v-else
+                    :key="key"
+                >
+                    <span>{{ key }} : {{ value }}</span>
+                </div>
             </div>
         </template>
     </ToolTemplate>

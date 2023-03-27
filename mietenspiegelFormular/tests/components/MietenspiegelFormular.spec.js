@@ -54,6 +54,15 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
                 actions: {
                     addSingleAlert: () => sinon.stub()
                 }
+            },
+            Maps: {
+                namespaced: true,
+                getters: {
+                    projection: {
+                        getCode: () => sinon.stub()
+                    },
+                    resolution: 0
+                }
             }
         });
         sinon.spy(MietenspiegelFormular.methods, "getFeatureProperties");
@@ -100,6 +109,112 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
             const wrapper = factory.getShallowMount({}, true);
 
             expect(wrapper.find(".mietenspiegel-formular").exists()).to.be.true;
+        });
+
+        it("should render an error message", async () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            wrapper.vm.errorMessage = "foo";
+            await wrapper.vm.$nextTick();
+            expect(wrapper.find(".alert-warning").exists()).to.be.true;
+        });
+
+        it("should not render an error message", () => {
+            const wrapper = factory.getShallowMount({addressInformation: {strasse: "foo"}}, true);
+
+            expect(wrapper.find(".alert-warning").exists()).to.be.false;
+        });
+    });
+
+    describe("methods", () => {
+        describe("getFeatureInfoUrlByLayer", () => {
+            it("should return null if first param is not an array", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getFeatureInfoUrlByLayer()).to.be.null;
+            });
+            it("should return null if first param is an array but has no length", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([])).to.be.null;
+            });
+            it("should return null if the second param is not a object", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], undefined)).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], null)).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], [])).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], "string")).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], 1234)).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], true)).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], false)).to.be.null;
+            });
+            it("should return null if the last param is not a string", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {}, undefined)).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {}, null)).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {}, true)).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {}, false)).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {}, 1234)).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {}, [])).to.be.null;
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {}, {})).to.be.null;
+            });
+            it("should return a string", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {
+                    getSource: () => {
+                        return {
+                            getFeatureInfoUrl: () => "foo"
+                        };
+                    }
+                }, "2345")).to.be.equal("foo");
+            });
+        });
+        describe("getResidentialInformation", () => {
+            it("should return false if first param is not an string", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getResidentialInformation()).to.be.false;
+            });
+            it("should return false and call onerror function if first param is not an string", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getResidentialInformation(undefined, undefined, undefined, error => {
+                    expect(error).to.be.equal("additional:modules.tools.mietenspiegelFormular.errorMessages.noUrl");
+                })).to.be.false;
+            });
+            it("should call the requestGfi function to fetch the address informations", () => {
+                const requestGfiStub = sinon.stub(MietenspiegelFormular.methods, "requestGfi").resolves(["foo"]),
+                    wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getResidentialInformation("foo", {})).to.be.true;
+                expect(requestGfiStub.calledOnce).to.be.true;
+            });
+            it("should call the onsuccess function", () => {
+                const resultObject = {foo: "foo"},
+                    requestGfiStub = sinon.stub(MietenspiegelFormular.methods, "requestGfi").resolves([{
+                        getProperties: () => {
+                            return resultObject;
+                        }
+                    }]),
+                    wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getResidentialInformation("foo", {}, response => {
+                    expect(response).to.deep.equal(resultObject);
+                })).to.be.true;
+                expect(requestGfiStub.calledOnce).to.be.true;
+            });
+            it("should call the onerror function if response from requestGFI is not an array", () => {
+                const requestGfiStub = sinon.stub(MietenspiegelFormular.methods, "requestGfi").resolves(undefined),
+                    wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getResidentialInformation("foo", {}, undefined, error => {
+                    expect(error).to.be.equal("additional:modules.tools.mietenspiegelFormular.errorMessages.noDataFound");
+                })).to.be.true;
+                expect(requestGfiStub.calledOnce).to.be.true;
+            });
         });
     });
 
