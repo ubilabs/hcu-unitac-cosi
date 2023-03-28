@@ -3,9 +3,13 @@
 import {mapGetters} from "vuex";
 import getters from "../../../../src/modules/tools/gfi/store/gettersGfi";
 import {isWebLink} from "../../../../src/utils/urlHelper.js";
+import ExportButtonCSV from "../../../../src/share-components/exportButton/components/ExportButtonCSV.vue";
 
 export default {
     name: "DataTable",
+    components: {
+        ExportButtonCSV
+    },
     props: {
         feature: {
             type: Object,
@@ -33,7 +37,14 @@ export default {
             });
 
             return result;
+        },
+        enableDownload: function () {
+            return this.feature?.getTheme()?.params?.enableDownload;
         }
+    },
+    created () {
+        this.downloadData = this.refinedData?.rows;
+        this.fileName = this.feature?.getTitle();
     },
     methods: {
         ...mapGetters("Tools/Gfi", Object.keys(getters)),
@@ -80,6 +91,18 @@ export default {
                 </tr>
             </tbody>
         </table>
+        <div
+            v-if="enableDownload === true"
+            class="download"
+        >
+            <ExportButtonCSV
+                :url="false"
+                :filename="fileName"
+                :data="downloadData"
+                :use-semicolon="true"
+                :title="$t('modules.tools.filter.download.labelBtn')"
+            />
+        </div>
     </div>
 </template>
 
@@ -99,6 +122,11 @@ export default {
         td, th {
             padding: 6px;
         }
+    }
+    .download {
+        position: sticky;
+        bottom: 20px;
+        float: right;
     }
 }
 </style>
