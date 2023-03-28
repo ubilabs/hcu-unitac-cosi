@@ -504,11 +504,16 @@ export default {
         setFacilityLayers: function (vectorLayers) {
             this.facilityNames = [];
             vectorLayers.forEach(layer => {
-                layer.getSource().on("featuresloadend", () => {
-                    if (layer.getSource().getFeatures().length > 0) {
-                        this.facilityNames.push(layer.get("name"));
-                    }
-                });
+                if (layer.getSource().getFeatures().length > 0) {
+                    this.facilityNames.push(layer.get("name"));
+                }
+                else {
+                    layer.getSource().on("featuresloadend", () => {
+                        if (layer.getSource().getFeatures().length > 0) {
+                            this.facilityNames.push(layer.get("name"));
+                        }
+                    });
+                }
             });
         },
 
