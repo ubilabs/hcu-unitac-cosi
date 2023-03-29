@@ -172,6 +172,47 @@ describe("/src/modules/tools/gfi/components/themes/dataTable/components/DataTabl
 
             expect(wrapper.findAll(".bootstrap-icon, .bi-arrow-down-up, .origin-order").length).to.be.equal(0);
         });
+        it("should have an dropdown as table head", async () => {
+            const newFeature = {
+                    getTheme: () => {
+                        return {
+                            "name": "DataTable",
+                            "params": {
+                                "enableDownload": true,
+                                "isFilterable": true
+                            }
+                        };
+                    },
+                    getAttributesToShow: () => {
+                        return {
+                            "Entnahme Datum": "Entnahme Datum"
+                        };
+                    },
+                    getFeatures: () => {
+                        return [{
+                            getMappedProperties: () => {
+                                return {
+                                    "Entnahme Datum": "2019"
+                                };
+                            }
+                        }];
+                    },
+                    getTitle: sinon.stub()
+                },
+                wrapperNew = shallowMount(DataTableTheme, {
+                    localVue,
+                    propsData: {
+                        feature: newFeature
+                    },
+                    computed: {
+                        isFilterable () {
+                            return true;
+                        }
+                    }
+                });
+
+            expect(wrapperNew.findAll(".multiselect-dropdown").exists()).to.be.true;
+        });
     });
 
     describe("User Interactions", () => {
@@ -379,6 +420,148 @@ describe("/src/modules/tools/gfi/components/themes/dataTable/components/DataTabl
 
                 expect(wrapper.vm.columns[0].order).to.be.equal("origin");
                 expect(wrapper.vm.columns[1].order).to.be.equal("desc");
+            });
+        });
+
+        describe("getUniqueValuesByColumnName", () => {
+            it("should return an empty array if first param is not a string", () => {
+                expect(wrapper.vm.getUniqueValuesByColumnName(undefined)).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName(null)).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName({})).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName([])).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName(true)).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName(false)).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName(1234)).to.deep.equal([]);
+            });
+
+            it("should return an empty array if second param is not an array", () => {
+                expect(wrapper.vm.getUniqueValuesByColumnName("foo", {})).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName("foo", "string")).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName("foo", 1234)).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName("foo", true)).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName("foo", false)).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName("foo", undefined)).to.deep.equal([]);
+                expect(wrapper.vm.getUniqueValuesByColumnName("foo", null)).to.deep.equal([]);
+            });
+
+            it("should return an empty array if second param is an empty array", () => {
+                expect(wrapper.vm.getUniqueValuesByColumnName("foo", [])).to.deep.equal([]);
+            });
+
+            it("should return an empty array if given head is not found in objects of the array", () => {
+                const rows = [
+                        {
+                            foo: "bar",
+                            fuz: "buz"
+                        },
+                        {
+                            foo: "bar",
+                            fuz: "buz"
+                        }
+                    ],
+                    head = "fow";
+
+                expect(wrapper.vm.getUniqueValuesByColumnName(head, rows)).to.deep.equal([]);
+            });
+
+            it("should return an array with keys as strings", () => {
+                const rows = [
+                        {
+                            foo: "bar",
+                            fuz: "buz"
+                        },
+                        {
+                            foo: "bar",
+                            fuz: "buz"
+                        }
+                    ],
+                    head = "foo";
+
+                expect(wrapper.vm.getUniqueValuesByColumnName(head, rows)).to.deep.equal(["bar"]);
+            });
+        });
+        describe("addFilter", () => {
+            it("should not update the filterObject property", () => {
+                const copy = JSON.parse(JSON.stringify(wrapper.vm.filterObject));
+
+                wrapper.vm.addFilter();
+                expect(wrapper.vm.filterObject).to.deep.equal(copy);
+            });
+
+            it("should update the filterObject property", () => {
+                const result = {foo: {bar: true}};
+
+                wrapper.vm.addFilter("bar", "foo");
+                expect(wrapper.vm.filterObject).to.deep.equal(result);
+            });
+        });
+        describe("removeFilter", () => {
+            it("should not update the filterObject property", () => {
+                const copy = JSON.parse(JSON.stringify(wrapper.vm.filterObject));
+
+                wrapper.vm.removeFilter();
+                expect(wrapper.vm.filterObject).to.deep.equal(copy);
+            });
+
+            it("should update the filterObject property", () => {
+                const result = {foo: {bar: true}};
+
+                wrapper.vm.filterObject = {foo: {bar: true, buz: true}};
+                wrapper.vm.removeFilter("buz", "foo");
+                expect(wrapper.vm.filterObject).to.deep.equal(result);
+            });
+        });
+        describe("getFilteredRows", () => {
+            it("should return an empty array if first param is not an object", () => {
+                expect(wrapper.vm.getFilteredRows(undefined)).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows(null)).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows(true)).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows(false)).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows("string")).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows(1234)).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows([])).to.be.an("array").and.to.be.empty;
+            });
+
+            it("should return an empty array if the second param is not an array", () => {
+                expect(wrapper.vm.getFilteredRows({}, undefined)).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows({}, null)).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows({}, {})).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows({}, true)).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows({}, false)).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows({}, "string")).to.be.an("array").and.to.be.empty;
+                expect(wrapper.vm.getFilteredRows({}, 1234)).to.be.an("array").and.to.be.empty;
+            });
+
+            it("should return an array of found elements", () => {
+                const filterObject = {foo: {bar: true}},
+                    rows = [
+                        {foo: "bar", fow: "wow"},
+                        {foo: "baz", fow: "wow"}
+                    ],
+                    expected = [{foo: "bar", fow: "wow"}];
+
+                expect(wrapper.vm.getFilteredRows(filterObject, rows)).to.deep.equals(expected);
+            });
+            it("should return an array of found elements", () => {
+                const filterObject = {foo: {bar: true}, fow: {wow: true}},
+                    rows = [
+                        {foo: "bar", fow: "wow"},
+                        {foo: "bar", fow: "pow"},
+                        {foo: "baz", fow: "wow"}
+                    ],
+                    expected = [{foo: "bar", fow: "wow"}];
+
+                expect(wrapper.vm.getFilteredRows(filterObject, rows)).to.deep.equals(expected);
+            });
+            it("should return an empty array if no elements found", () => {
+                const filterObject = {foob: {bar: true}, foww: {wow: true}},
+                    rows = [
+                        {foo: "bar", fow: "wow"},
+                        {foo: "bar", fow: "pow"},
+                        {foo: "baz", fow: "wow"}
+                    ];
+
+                expect(wrapper.vm.getFilteredRows(filterObject, rows)).to.be.an("array").and.to.be.empty;
             });
         });
     });
