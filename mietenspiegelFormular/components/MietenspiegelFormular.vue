@@ -1,6 +1,6 @@
 <script>
 import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
-import {mapGetters, mapMutations} from "vuex";
+import {mapGetters, mapMutations, mapActions} from "vuex";
 import getters from "../store/gettersMietenspiegelFormular";
 import mutations from "../store/mutationsMietenspiegelFormular";
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
@@ -23,7 +23,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/MietenspiegelFormular", Object.keys(getters)),
-        ...mapGetters("Maps", ["projection", "getLayerById", "resolution"])
+        ...mapGetters("Maps", ["clickCoordinate", "projection", "getLayerById", "resolution"])
     },
     watch: {
         residentialInformation: {
@@ -33,6 +33,9 @@ export default {
                 }
             },
             deep: true
+        },
+        clickCoordinate (coord) {
+            this.residentialInformationByCoordinate(coord, this.rentIndexLayerId);
         }
     },
     async created () {
@@ -42,19 +45,12 @@ export default {
             this.setActive(false);
         });
         this.onSearchbar(result => {
-            const layer = this.getLayerById({layerId: this.rentIndexLayerId, searchInGroupLayers: false}),
-                url = this.getFeatureInfoUrlByLayer(result?.coordinate, layer, this.projection.getCode());
-
-            this.getResidentialInformation(url, layer, residentialInformation => {
-                this.errorMessage = "";
-                this.residentialInformation = residentialInformation;
-            }, error => {
-                this.errorMessage = error;
-            });
+            this.residentialInformationByCoordinate(result?.coordinate, this.rentIndexLayerId);
         });
     },
     methods: {
         ...mapMutations("Tools/MietenspiegelFormular", Object.keys(mutations)),
+        ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         onSearchbar,
         requestGfi,
         /**
@@ -112,6 +108,29 @@ export default {
                 if (typeof onsuccess === "function") {
                     onsuccess(response[0].getProperties());
                 }
+            });
+            return true;
+        },
+        /**
+         * Sets the residential informations for given coordinate.
+         * @param {Number[]} coordinate - The coordinate.
+         * @param {String} layerId - The id of the layer.
+         * @return {Boolean} - Return false if layerId is not a string.
+         */
+        residentialInformationByCoordinate (coordinate, layerId) {
+            if (typeof layerId !== "string") {
+                return false;
+            }
+            const layer = this.getLayerById({layerId: layerId, searchInGroupLayers: false}),
+                url = this.getFeatureInfoUrlByLayer(coordinate, layer, this.projection.getCode());
+
+            this.getResidentialInformation(url, layer, residentialInformation => {
+                this.errorMessage = "";
+                this.residentialInformation = residentialInformation;
+                this.placingPointMarker(coordinate);
+            }, error => {
+                this.errorMessage = error;
+                this.removePointMarker();
             });
             return true;
         }

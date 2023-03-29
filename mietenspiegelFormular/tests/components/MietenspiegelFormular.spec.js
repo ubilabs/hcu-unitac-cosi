@@ -126,7 +126,79 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
         });
     });
 
-    describe("methods", () => {
+    describe("Lifecycle Hooks", () => {
+        it("should call 'getFeatureProperties' in the created hook", () => {
+            factory.getShallowMount();
+
+            expect(MietenspiegelFormular.methods.getFeatureProperties.calledOnce).to.be.true;
+        });
+
+        it("should set 'METADATA' in the created hook", async () => {
+            const wrapper = factory.getShallowMount();
+
+            await wrapper.vm.$nextTick();
+            expect(wrapper.vm.METADATA).to.have.all.keys("erhebungsstand", "hinweis", "herausgeber", "titel", "merkmaletext");
+        });
+    });
+
+    describe("Watchers", () => {
+        describe("clickCoordinate", () => {
+            it("should call 'residentialInformationByCoordinate' after clickCoordinate was changed", async () => {
+                const spyResidentialInformationByCoordinate = sinon.stub(MietenspiegelFormular.methods, "residentialInformationByCoordinate"),
+                    wrapper = factory.getShallowMount();
+
+                await wrapper.vm.$options.watch.clickCoordinate.call(wrapper.vm);
+
+                expect(spyResidentialInformationByCoordinate.calledOnce).to.be.true;
+                spyResidentialInformationByCoordinate.restore();
+            });
+        });
+    });
+
+    describe("Methods", () => {
+        describe("getFeatureProperties", () => {
+            it("should return false if the given param is null", async () => {
+                const wrapper = factory.getShallowMount(),
+                    props = await wrapper.vm.getFeatureProperties(null);
+
+                expect(props).to.be.false;
+            });
+
+            it("should return false if the given param is undefined", async () => {
+                const wrapper = factory.getShallowMount(),
+                    props = await wrapper.vm.getFeatureProperties(undefined);
+
+                expect(props).to.be.false;
+            });
+
+            it("should return false if the given param is a number", async () => {
+                const wrapper = factory.getShallowMount(),
+                    props = await wrapper.vm.getFeatureProperties(666);
+
+                expect(props).to.be.false;
+            });
+
+            it("should return false if the given param is an object", async () => {
+                const wrapper = factory.getShallowMount(),
+                    props = await wrapper.vm.getFeatureProperties({});
+
+                expect(props).to.be.false;
+            });
+
+            it("should return false if the given param is an array", async () => {
+                const wrapper = factory.getShallowMount(),
+                    props = await wrapper.vm.getFeatureProperties([]);
+
+                expect(props).to.be.false;
+            });
+
+            it("should return false if the given param is a boolean", async () => {
+                const wrapper = factory.getShallowMount(),
+                    props = await wrapper.vm.getFeatureProperties(true);
+
+                expect(props).to.be.false;
+            });
+        });
         describe("getFeatureInfoUrlByLayer", () => {
             it("should return null if first param is not an array", () => {
                 const wrapper = factory.getShallowMount({}, true);
@@ -216,65 +288,17 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
                 expect(requestGfiStub.calledOnce).to.be.true;
             });
         });
-    });
+        describe("residentialInformationByCoordinate", () => {
+            it("should return false if second param is not a string", () => {
+                const wrapper = factory.getShallowMount({}, true);
 
-    describe("Lifecycle Hooks", () => {
-        it("should call 'getFeatureProperties' in the created hook", () => {
-            factory.getShallowMount();
-
-            expect(MietenspiegelFormular.methods.getFeatureProperties.calledOnce).to.be.true;
-        });
-
-        it("should set 'METADATA' in the created hook", async () => {
-            const wrapper = factory.getShallowMount();
-
-            await wrapper.vm.$nextTick();
-            expect(wrapper.vm.METADATA).to.have.all.keys("erhebungsstand", "hinweis", "herausgeber", "titel", "merkmaletext");
-        });
-    });
-
-    describe("Methods", () => {
-        describe("getFeatureProperties", () => {
-            it("should return false if the given param is null", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties(null);
-
-                expect(props).to.be.false;
-            });
-
-            it("should return false if the given param is undefined", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties(undefined);
-
-                expect(props).to.be.false;
-            });
-
-            it("should return false if the given param is a number", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties(666);
-
-                expect(props).to.be.false;
-            });
-
-            it("should return false if the given param is an object", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties({});
-
-                expect(props).to.be.false;
-            });
-
-            it("should return false if the given param is an array", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties([]);
-
-                expect(props).to.be.false;
-            });
-
-            it("should return false if the given param is a boolean", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties(true);
-
-                expect(props).to.be.false;
+                expect(wrapper.vm.residentialInformationByCoordinate(undefined, undefined)).to.be.false;
+                expect(wrapper.vm.residentialInformationByCoordinate(undefined, null)).to.be.false;
+                expect(wrapper.vm.residentialInformationByCoordinate(undefined, true)).to.be.false;
+                expect(wrapper.vm.residentialInformationByCoordinate(undefined, false)).to.be.false;
+                expect(wrapper.vm.residentialInformationByCoordinate(undefined, 1234)).to.be.false;
+                expect(wrapper.vm.residentialInformationByCoordinate(undefined, [])).to.be.false;
+                expect(wrapper.vm.residentialInformationByCoordinate(undefined, {})).to.be.false;
             });
         });
     });
