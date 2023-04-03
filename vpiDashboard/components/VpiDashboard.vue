@@ -12,6 +12,7 @@ export default {
     }
 };
 </script>
+
 <template lang="html">
     <ToolTemplate
         :title="$t(name)"
