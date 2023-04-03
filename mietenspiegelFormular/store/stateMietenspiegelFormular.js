@@ -21,7 +21,8 @@ const state = {
     isVisibleInMenu: true,
     deactivateGFI: false,
     layerIdMetadata: null,
-    rentIndexLayerId: undefined
+    rentIndexLayerId: undefined,
+    layerIdCalculation: null
 };
 
 export default state;

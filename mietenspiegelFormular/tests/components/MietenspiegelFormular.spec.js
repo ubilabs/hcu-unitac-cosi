@@ -31,7 +31,8 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
                     icon: () => "small",
                     renderToWindow: () => false,
                     resizableWindow: () => false,
-                    layerIdMetadata: () => ""
+                    layerIdMetadata: () => "",
+                    layerIdCalculation: () => ""
                 },
                 localVue
             });
@@ -65,6 +66,7 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
                 }
             }
         });
+        sinon.spy(MietenspiegelFormular.methods, "getCalculationData");
         sinon.spy(MietenspiegelFormular.methods, "getFeatureProperties");
         sinon.stub(rawLayerList, "getLayerWhere").returns({version: "", url: "", featureType: ""});
         sinon.stub(wfsRequest, "getFeatureGET").returns(`<?xml version='1.0' encoding='UTF-8'?>
@@ -127,18 +129,28 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
     });
 
     describe("Lifecycle Hooks", () => {
-        it("should call 'getFeatureProperties' in the created hook", () => {
-            factory.getShallowMount();
+        it("should call 'getFeatureProperties' in the created hook", async () => {
+            await factory.getShallowMount();
 
             expect(MietenspiegelFormular.methods.getFeatureProperties.calledOnce).to.be.true;
+        });
+
+        it("should call 'getCalculationData' in the created hook", async () => {
+            const wrapper = factory.getShallowMount();
+
+            await wrapper.vm.$nextTick();
+            await wrapper.vm.$nextTick();
+            expect(MietenspiegelFormular.methods.getCalculationData.calledOnce).to.be.true;
         });
 
         it("should set 'METADATA' in the created hook", async () => {
             const wrapper = factory.getShallowMount();
 
             await wrapper.vm.$nextTick();
+            await wrapper.vm.$nextTick();
             expect(wrapper.vm.METADATA).to.have.all.keys("erhebungsstand", "hinweis", "herausgeber", "titel", "merkmaletext");
         });
+
     });
 
     describe("Watchers", () => {
@@ -156,47 +168,17 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
     });
 
     describe("Methods", () => {
-        describe("getFeatureProperties", () => {
-            it("should return false if the given param is null", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties(null);
+        describe("getFeaturesByLayerId", () => {
+            it("should return false if param is not a string", async () => {
+                const wrapper = factory.getShallowMount({}, true);
 
-                expect(props).to.be.false;
-            });
-
-            it("should return false if the given param is undefined", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties(undefined);
-
-                expect(props).to.be.false;
-            });
-
-            it("should return false if the given param is a number", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties(666);
-
-                expect(props).to.be.false;
-            });
-
-            it("should return false if the given param is an object", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties({});
-
-                expect(props).to.be.false;
-            });
-
-            it("should return false if the given param is an array", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties([]);
-
-                expect(props).to.be.false;
-            });
-
-            it("should return false if the given param is a boolean", async () => {
-                const wrapper = factory.getShallowMount(),
-                    props = await wrapper.vm.getFeatureProperties(true);
-
-                expect(props).to.be.false;
+                expect(await wrapper.vm.getFeaturesByLayerId(undefined)).to.be.false;
+                expect(await wrapper.vm.getFeaturesByLayerId(null)).to.be.false;
+                expect(await wrapper.vm.getFeaturesByLayerId(true)).to.be.false;
+                expect(await wrapper.vm.getFeaturesByLayerId(false)).to.be.false;
+                expect(await wrapper.vm.getFeaturesByLayerId(1234)).to.be.false;
+                expect(await wrapper.vm.getFeaturesByLayerId([])).to.be.false;
+                expect(await wrapper.vm.getFeaturesByLayerId({})).to.be.false;
             });
         });
         describe("getFeatureInfoUrlByLayer", () => {

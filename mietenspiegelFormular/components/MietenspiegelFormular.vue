@@ -39,7 +39,8 @@ export default {
         }
     },
     async created () {
-        this.METADATA = await this.getFeatureProperties(this.layerIdMetadata);
+        this.METADATA = await this.getFeatureProperties();
+        this.calculationData = await this.getCalculationData();
 
         this.$on("close", () => {
             this.setActive(false);
@@ -55,21 +56,45 @@ export default {
         requestGfi,
         /**
          * Gets the properties of a feature from a layer.
-         * @param {String} layerId - The id of the layer.
          * @param {Number} index - The index of the feature.
-         * @return {Object|Boolean} The feature properties or false if the layer id is not given.
+         * @return {Object} The feature properties.
          */
-        async getFeatureProperties (layerId, index = 0) {
+        async getFeatureProperties (index = 0) {
+            const metaDataFeature = await this.getFeaturesByLayerId(this.layerIdMetadata);
+
+            return metaDataFeature[index].getProperties();
+        },
+        /**
+         * Gets the properties of features from a layer.
+         * @return {Object} The feature properties.
+         */
+        async getCalculationData () {
+            const calculationDataFeatures = [],
+                dataFeatures = await this.getFeaturesByLayerId(this.layerIdCalculation);
+
+            dataFeatures.forEach(feat => {
+                calculationDataFeatures.push(feat?.getProperties());
+            });
+
+            return calculationDataFeatures;
+        },
+        /**
+         * Gets the features from a layer.
+         * @param {Number} layerId - The layer Id of the feature.
+         * @return {Object|Boolean} The feature properties.
+         */
+        async getFeaturesByLayerId (layerId) {
             if (typeof layerId !== "string") {
                 return false;
             }
             const rawLayer = rawLayerList.getLayerWhere({id: layerId}),
                 response = await getFeatureGET(rawLayer.url, {version: rawLayer.version, featureType: rawLayer.featureType}),
                 wfsReader = new WFS({version: rawLayer.version}),
-                metaDataFeature = wfsReader.readFeatures(response)[index];
+                features = wfsReader.readFeatures(response);
 
-            return metaDataFeature.getProperties();
+            return features;
         },
+
         /**
          * Gets the featureInfoUrl for given coordinate.
          * @param {Number[]} coordinate The coordinate.
