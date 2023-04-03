@@ -30,6 +30,7 @@ export default {
         </template>
     </ToolTemplate>
 </template>
+
 <style scoped>
 
 </style>
