@@ -14,10 +14,10 @@ const getters = {
     ...generateSimpleGetters(stateVpiDashboard),
 
     // NOTE overwrite (or create additional) getters here if you need special behavior in them
-    getAverageVisitorsPerDay({frequencyData}) {
-        const daily = frequencyData?.unique?.dayly;
+    getAverageVisitorsPerDay: (state) => (day) => {
+        const daily = state.frequencyData?.unique?.dayly;
         console.log(daily);
-        const averageVisitorsOnDay = daily.filter((element) => {return element.weekday === 'sa'})
+        const averageVisitorsOnDay = daily.filter((element) => {return element.weekday === day})
         return averageVisitorsOnDay[0].avg;
     },
     getBestDay ({frequencyData}) {
