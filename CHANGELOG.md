@@ -3,21 +3,11 @@
 
 [Semantic versioning](https://semver.org/spec/v2.0.0.html) is used.
 
-## Unreleased - in development
-### __Breaking Changes__
-
-### Added
-
+## v2.32.0 - 2023-04-05
 ### Changed
 - In schoolRoutePlanning all streets and house numbers are now listed as results with an overflow.
 - The version of node was updated, must be `>= 16.13.2 <= 16.18.1`
 - The version of npm was updated, must be `>= 8.1.2 <= 8.19.3`
-
-### Deprecated
-
-### Removed
-
-### Fixed
 
 ---
 ## v2.31.0 - 2023-03-01
