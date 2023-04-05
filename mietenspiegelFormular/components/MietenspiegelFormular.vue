@@ -23,7 +23,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/MietenspiegelFormular", Object.keys(getters)),
-        ...mapGetters("Maps", ["clickCoordinate", "projection", "getLayerById", "resolution"])
+        ...mapGetters("Maps", ["clickCoordinate", "projection", "getLayerById", "resolution", "getView"])
     },
     watch: {
         residentialInformation: {
@@ -35,7 +35,7 @@ export default {
             deep: true
         },
         clickCoordinate (coord) {
-            this.residentialInformationByCoordinate(coord, this.rentIndexLayerId);
+            this.residentialInformationByCoordinate(coord, this.rentIndexLayerId, this.resolution);
         }
     },
     async created () {
@@ -46,7 +46,9 @@ export default {
             this.setActive(false);
         });
         this.onSearchbar(result => {
-            this.residentialInformationByCoordinate(result?.coordinate, this.rentIndexLayerId);
+            const resolutions = [...this.getView.getResolutions()].sort();
+
+            this.residentialInformationByCoordinate(result?.coordinate, this.rentIndexLayerId, resolutions[0]);
         });
     },
     methods: {
@@ -100,13 +102,14 @@ export default {
          * @param {Number[]} coordinate The coordinate.
          * @param {ol/Layer} layer The layer.
          * @param {String} crsCode The crs code.
+         * @param {Number} resolution The resolution.
          * @returns {String|null} The url info string.
          */
-        getFeatureInfoUrlByLayer (coordinate, layer, crsCode) {
+        getFeatureInfoUrlByLayer (coordinate, layer, crsCode, resolution) {
             if (!Array.isArray(coordinate) || !coordinate.length || !isObject(layer) || typeof crsCode !== "string") {
                 return null;
             }
-            return layer.getSource().getFeatureInfoUrl(coordinate, this.resolution, crsCode, {INFO_FORMAT: "text/xml"});
+            return layer.getSource().getFeatureInfoUrl(coordinate, resolution, crsCode, {INFO_FORMAT: "text/xml"});
         },
         /**
          * Gets the residential informations.
@@ -140,14 +143,15 @@ export default {
          * Sets the residential informations for given coordinate.
          * @param {Number[]} coordinate - The coordinate.
          * @param {String} layerId - The id of the layer.
+         * @param {Number} resolution - The resolution.
          * @return {Boolean} - Return false if layerId is not a string.
          */
-        residentialInformationByCoordinate (coordinate, layerId) {
+        residentialInformationByCoordinate (coordinate, layerId, resolution) {
             if (typeof layerId !== "string") {
                 return false;
             }
             const layer = this.getLayerById({layerId: layerId, searchInGroupLayers: false}),
-                url = this.getFeatureInfoUrlByLayer(coordinate, layer, this.projection.getCode());
+                url = this.getFeatureInfoUrlByLayer(coordinate, layer, this.projection.getCode(), resolution);
 
             this.getResidentialInformation(url, layer, residentialInformation => {
                 this.errorMessage = "";
