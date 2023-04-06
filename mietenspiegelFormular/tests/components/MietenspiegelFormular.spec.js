@@ -66,7 +66,9 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
             }
         });
         sinon.spy(MietenspiegelFormular.methods, "getCalculationData");
+        sinon.spy(MietenspiegelFormular.methods, "modifyMietenspiegelData");
         sinon.spy(MietenspiegelFormular.methods, "getFeatureProperties");
+        sinon.spy(MietenspiegelFormular.methods, "getFormKeys");
         sinon.stub(rawLayerList, "getLayerWhere").returns({version: "", url: "", featureType: ""});
         sinon.stub(wfsRequest, "getFeatureGET").returns(`<?xml version='1.0' encoding='UTF-8'?>
         <wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs https://geodienste.hamburg.de/HH_WFS_Mietenspiegel?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&amp;TYPENAME=app:mietenspiegel_metadaten&amp;NAMESPACE=xmlns(app=http%3A%2F%2Fwww.deegree.org%2Fapp)" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml">
@@ -114,6 +116,26 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
             expect(wrapper.find(".mietenspiegel-formular").exists()).to.be.true;
         });
 
+        it("should render if active is true", () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            expect(wrapper.find("form").exists()).to.be.true;
+        });
+        it("should find a select component for Baualtersklasse", () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            expect(wrapper.find(".select-baualtersklasse").exists()).to.be.true;
+        });
+        it("should find a select component for Wohnfläche", () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            expect(wrapper.find(".select-wohnflaeche").exists()).to.be.true;
+        });
+        it("should find notes", () => {
+            const wrapper = factory.getShallowMount({}, true);
+
+            expect(wrapper.find(".notes").exists()).to.be.true;
+        });
         it("should render an error message", async () => {
             const wrapper = factory.getShallowMount({});
 
@@ -130,18 +152,18 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
     });
 
     describe("Lifecycle Hooks", () => {
-        it("should call 'getFeatureProperties' in the created hook", async () => {
-            await factory.getShallowMount();
-
-            expect(MietenspiegelFormular.methods.getFeatureProperties.calledOnce).to.be.true;
-        });
-
         it("should call 'getCalculationData' in the created hook", async () => {
             const wrapper = factory.getShallowMount();
 
             await wrapper.vm.$nextTick();
             await wrapper.vm.$nextTick();
             expect(MietenspiegelFormular.methods.getCalculationData.calledOnce).to.be.true;
+        });
+
+        it("should call 'getFeatureProperties' in the created hook", async () => {
+            await factory.getShallowMount();
+
+            expect(MietenspiegelFormular.methods.getFeatureProperties.calledOnce).to.be.true;
         });
 
         it("should set 'METADATA' in the created hook", async () => {
@@ -151,7 +173,22 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
             await wrapper.vm.$nextTick();
             expect(wrapper.vm.METADATA).to.have.all.keys("erhebungsstand", "hinweis", "herausgeber", "titel", "merkmaletext");
         });
+        it("should call 'getFormKeys' in the created hook", async () => {
+            const wrapper = factory.getShallowMount();
 
+            await wrapper.vm.$nextTick();
+            await wrapper.vm.$nextTick();
+            await wrapper.vm.$nextTick();
+            expect(MietenspiegelFormular.methods.getFormKeys.calledOnce).to.be.true;
+        });
+        it("should call 'modifyMietenspiegelData' in the created hook", async () => {
+            const wrapper = factory.getShallowMount();
+
+            await wrapper.vm.$nextTick();
+            await wrapper.vm.$nextTick();
+            await wrapper.vm.$nextTick();
+            expect(MietenspiegelFormular.methods.modifyMietenspiegelData.calledOnce).to.be.true;
+        });
     });
 
     describe("Watchers", () => {
@@ -298,6 +335,112 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
                 expect(wrapper.vm.residentialInformationByCoordinate(undefined, 1234)).to.be.false;
                 expect(wrapper.vm.residentialInformationByCoordinate(undefined, [])).to.be.false;
                 expect(wrapper.vm.residentialInformationByCoordinate(undefined, {})).to.be.false;
+            });
+        });
+        describe("getFormKeys", () => {
+            it("should return false if param is not a string", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getFormKeys(undefined)).to.be.false;
+                expect(wrapper.vm.getFormKeys(null)).to.be.false;
+                expect(wrapper.vm.getFormKeys(true)).to.be.false;
+                expect(wrapper.vm.getFormKeys(false)).to.be.false;
+                expect(wrapper.vm.getFormKeys(1234)).to.be.false;
+                expect(wrapper.vm.getFormKeys([])).to.be.false;
+                expect(wrapper.vm.getFormKeys({})).to.be.false;
+            });
+        });
+        describe("modifyMietenspiegelData", () => {
+            it("should return false if param is not an array", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.modifyMietenspiegelData(undefined)).to.be.false;
+                expect(wrapper.vm.modifyMietenspiegelData(null)).to.be.false;
+                expect(wrapper.vm.modifyMietenspiegelData(true)).to.be.false;
+                expect(wrapper.vm.modifyMietenspiegelData(false)).to.be.false;
+                expect(wrapper.vm.modifyMietenspiegelData(1234)).to.be.false;
+                expect(wrapper.vm.modifyMietenspiegelData("string")).to.be.false;
+                expect(wrapper.vm.modifyMietenspiegelData({})).to.be.false;
+            });
+        });
+        describe("getUniqueValuesByAttributes", () => {
+            it("should return false if param is not a string", () => {
+                const wrapper = factory.getShallowMount({}, true),
+                    calc = [
+                        {
+                            "Baualtersklasse/Bezugsfertigkeit": "bis 31.12.1918"
+                        },
+                        {
+                            "Baualtersklasse/Bezugsfertigkeit": "bis 31.11.1918"
+                        },
+                        {
+                            "Baualtersklasse/Bezugsfertigkeit": "bis 31.12.1918"
+                        },
+                        {
+                            "Baualtersklasse/Bezugsfertigkeit": "bis 31.12.1918"
+                        }
+                    ];
+
+                expect(wrapper.vm.getUniqueValuesByAttributes(undefined, calc)).to.be.false;
+                expect(wrapper.vm.getUniqueValuesByAttributes(null, calc)).to.be.false;
+                expect(wrapper.vm.getUniqueValuesByAttributes(true, calc)).to.be.false;
+                expect(wrapper.vm.getUniqueValuesByAttributes(false, calc)).to.be.false;
+                expect(wrapper.vm.getUniqueValuesByAttributes(1234, calc)).to.be.false;
+                expect(wrapper.vm.getUniqueValuesByAttributes([], calc)).to.be.false;
+                expect(wrapper.vm.getUniqueValuesByAttributes({}, calc)).to.be.false;
+            });
+            it("should return an array with unique values for attribute", () => {
+                const wrapper = factory.getShallowMount({}, true),
+                    calc = [
+                        {
+                            "Baualtersklasse/Bezugsfertigkeit": "bis 31.12.1918"
+                        },
+                        {
+                            "Baualtersklasse/Bezugsfertigkeit": "bis 31.11.1918"
+                        },
+                        {
+                            "Baualtersklasse/Bezugsfertigkeit": "bis 31.12.1918"
+                        },
+                        {
+                            "Baualtersklasse/Bezugsfertigkeit": "bis 31.12.1918"
+                        }
+                    ],
+                    item = "Baualtersklasse/Bezugsfertigkeit",
+                    expected = ["bis 31.12.1918", "bis 31.11.1918"];
+
+                expect(wrapper.vm.getUniqueValuesByAttributes(item, calc)).to.deep.equal(expected);
+            });
+            it("should return an empty array, if calculationData is not an array", () => {
+                const wrapper = factory.getShallowMount({}, true),
+                    item = "Baualtersklasse/Bezugsfertigkeit",
+                    expected = [];
+
+                expect(wrapper.vm.getUniqueValuesByAttributes(item, undefined)).to.deep.equal(expected);
+                expect(wrapper.vm.getUniqueValuesByAttributes(item, null)).to.deep.equal(expected);
+                expect(wrapper.vm.getUniqueValuesByAttributes(item, true)).to.deep.equal(expected);
+                expect(wrapper.vm.getUniqueValuesByAttributes(item, false)).to.deep.equal(expected);
+                expect(wrapper.vm.getUniqueValuesByAttributes(item, 1234)).to.deep.equal(expected);
+                expect(wrapper.vm.getUniqueValuesByAttributes(item, {})).to.deep.equal(expected);
+            });
+        });
+        describe("convertDateFormat", () => {
+            it("should return false if param is not a string", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.convertDateFormat(undefined)).to.be.false;
+                expect(wrapper.vm.convertDateFormat(null)).to.be.false;
+                expect(wrapper.vm.convertDateFormat(true)).to.be.false;
+                expect(wrapper.vm.convertDateFormat(false)).to.be.false;
+                expect(wrapper.vm.convertDateFormat(1234)).to.be.false;
+                expect(wrapper.vm.convertDateFormat([])).to.be.false;
+                expect(wrapper.vm.convertDateFormat({})).to.be.false;
+            });
+            it("should convert the date format from YYYY-MM-DD to DD.MM.YYYY", () => {
+                const wrapper = factory.getShallowMount({}, true),
+                    date = "2021-08-11",
+                    expected = "11.08.2021";
+
+                expect(wrapper.vm.convertDateFormat(date)).to.deep.equal(expected);
             });
         });
     });

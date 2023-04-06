@@ -2,11 +2,17 @@
   "modules": {
       "tools": {
           "mietenspiegelFormular": {
-              "title": "Form",
+              "title": "Residential Locations",
               "errorMessages": {
                 "noDataFound": "No informations found.",
                 "noUrl": "No query could be sent to the coordinates."
-              }
+              },
+              "street": "Street",
+              "cityDistrict": "City District",
+              "pleaseSelect": "Please select",
+              "editor": "Editor:",
+              "collectionStatus": "Collection Status:",
+              "notice": "Notice:"
           }
         }
     }

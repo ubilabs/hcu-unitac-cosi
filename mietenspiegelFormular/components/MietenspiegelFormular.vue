@@ -9,6 +9,7 @@ import {WFS} from "ol/format.js";
 import {onSearchbar} from "../utils/radioBridge.js";
 import {requestGfi} from "../../../src/api/wmsGetFeatureInfo";
 import isObject from "../../../src/utils/isObject";
+import dayjs from "dayjs";
 
 export default {
     name: "MietenspiegelFormular",
@@ -18,7 +19,10 @@ export default {
     data () {
         return {
             residentialInformation: {},
-            errorMessage: ""
+            errorMessage: "",
+            formKeys: [],
+            METADATA: [],
+            calculationData: {}
         };
     },
     computed: {
@@ -42,6 +46,8 @@ export default {
     async created () {
         this.METADATA = await this.getFeatureProperties();
         this.calculationData = await this.getCalculationData();
+        this.formKeys = this.getFormKeys(this.METADATA?.merkmaletext);
+        this.modifyMietenspiegelData(this.calculationData);
 
         this.$on("close", this.close);
         this.onSearchbar(result => {
@@ -172,6 +178,77 @@ export default {
                 this.removePointMarker();
             });
             return true;
+        },
+        /**
+         * Gets the property names from Metadata.
+         * @param {String} keys - The property names in one string.
+         * @return {Array|Boolean} - Return Array with key names.
+         */
+        getFormKeys (keys) {
+            if (typeof keys !== "string") {
+                return false;
+            }
+            const dataString = keys.split("|"),
+                index = dataString.indexOf("Wohnlage");
+
+            if (index !== -1) {
+                dataString[index] = "Kategorie";
+            }
+            return dataString;
+        },
+        /**
+        * Get key value pairs from metadata string
+        * @param {Array} calc - The feature properties.
+        * @return {Array|Boolean} - The Object with new key values.
+        */
+        modifyMietenspiegelData (calc) {
+            if (!Array.isArray(calc)) {
+                return false;
+            }
+            calc.forEach((data) => {
+                const newKeys = data.merkmale?.split("|");
+
+                if (Array.isArray(newKeys)) {
+                    for (let i = 0; i < newKeys?.length; i++) {
+                        data[this.formKeys[i]] = newKeys[i];
+                    }
+                }
+            });
+            return calc;
+        },
+        /**
+         * Returns unique values for drop down.
+         * @param {String} attr - The name of the property which is filtering.
+         * @param {Array} calculationData - The feature properties.
+         * @return {Array|Boolean} - The unique values.
+         */
+        getUniqueValuesByAttributes (attr, calculationData) {
+            if (typeof attr !== "string") {
+                return false;
+            }
+            const filtered = [];
+
+            if (Array.isArray(calculationData)) {
+                for (let i = 0; i < calculationData?.length; i++) {
+                    if (filtered.indexOf(calculationData[i][attr]) === -1) {
+                        filtered.push(calculationData[i][attr]);
+                    }
+                }
+            }
+            return filtered;
+        },
+        /**
+         * Converts the date format from "YYYY-MM-DD" to "DD.MM.YYYY"
+         * @param {String} date - The date with other format.
+         * @return {String|Boolean} - The correct time format.
+         */
+        convertDateFormat (date) {
+            if (typeof date !== "string") {
+                return false;
+            }
+            const dateFormat = dayjs(date).format("DD.MM.YYYY");
+
+            return dateFormat;
         }
     }
 };
@@ -198,11 +275,130 @@ export default {
                     {{ $t(errorMessage) }}
                 </div>
                 <div
-                    v-for="(value, key) in residentialInformation"
                     v-else
-                    :key="key"
                 >
-                    <span>{{ key }} : {{ value }}</span>
+                    <form>
+                        <div class="mt-0 mb-3">
+                            <label
+                                for="street"
+                                class="form-label mb-0 py-0"
+                            >{{ $t('additional:modules.tools.mietenspiegelFormular.street') }}</label>
+                            <input
+                                id="street"
+                                type="text"
+                                readonly
+                                class="form-control-plaintext py-0"
+                                :value="`${residentialInformation.strasse + ' ' + residentialInformation.hausnummer + ' ' + (residentialInformation.hausnummer_zusatz !== undefined ? residentialInformation.hausnummer_zusatz : '')}`"
+                            >
+                        </div>
+                        <div class="my-3">
+                            <label
+                                for="district"
+                                class="form-label mb-0 py-0"
+                            >{{ $t('additional:modules.tools.mietenspiegelFormular.cityDistrict') }}</label>
+                            <input
+                                id="district"
+                                type="text"
+                                readonly
+                                class="form-control-plaintext py-0"
+                                :value="`${residentialInformation.stadtteil}`"
+                            >
+                        </div>
+                        <div class="my-3">
+                            <label
+                                for="mietenspiegel-baualterklasse-select"
+                                class="form-label mb-0 py-0"
+                            >
+                                {{ formKeys[0] }}
+                            </label>
+                            <select
+                                id="mietenspiegel-baualtersklasse-select"
+                                class="select-baualtersklasse form-select select-style"
+                            >
+                                <option selected>
+                                    {{ $t('additional:modules.tools.mietenspiegelFormular.pleaseSelect') }}
+                                </option>
+                                <option
+                                    v-for="(data, key) in getUniqueValuesByAttributes('Baualtersklasse/Bezugsfertigkeit', calculationData)"
+                                    :key="key"
+                                    :value="data"
+                                >
+                                    {{ data }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label
+                                for="ausstattung"
+                                class="form-label mb-0 py-0"
+                            >{{ formKeys[1] }} </label>
+                            <input
+                                id="ausstattung"
+                                type="text"
+                                readonly
+                                class="form-control-plaintext py-0"
+                                :value="`${calculationData[0]?.Ausstattung}`"
+                            >
+                        </div>
+                        <div class="my-3">
+                            <label
+                                for="kategorie"
+                                class="form-label mb-0 py-0"
+                            >{{ formKeys[2] }} </label>
+                            <input
+                                id="kategorie"
+                                type="text"
+                                readonly
+                                class="form-control-plaintext py-0"
+                                :value="`${residentialInformation.bezeichnung}`"
+                            >
+                        </div>
+                        <div class="my-3">
+                            <label
+                                for="mietenspiegel-wohnflaeche-select"
+                                class="form-label mb-0 py-0"
+                            >
+                                {{ formKeys[3] }}
+                            </label>
+                            <select
+                                id="mietenspiegel-wohnflaeche-select"
+                                class="select-wohnflaeche form-select select-style"
+                            >
+                                <option selected>
+                                    {{ $t('additional:modules.tools.mietenspiegelFormular.pleaseSelect') }}
+                                </option>
+                                <option
+                                    v-for="(data, key) in getUniqueValuesByAttributes('Wohnfläche', calculationData)"
+                                    :key="key"
+                                    :value="data"
+                                >
+                                    {{ data }}
+                                </option>
+                            </select>
+                        </div>
+                        <div
+                            class="notes border-top p-2 position-absolute"
+                        >
+                            <div class="mt-3 def-text">
+                                {{ $t('additional:modules.tools.mietenspiegelFormular.editor') }}
+                            </div>
+                            <div>
+                                {{ METADATA?.herausgeber }}
+                            </div>
+                            <div class="def-text">
+                                {{ $t('additional:modules.tools.mietenspiegelFormular.collectionStatus') }}
+                            </div>
+                            <div>
+                                {{ convertDateFormat(METADATA?.erhebungsstand) }}
+                            </div>
+                            <div class="def-text">
+                                {{ $t('additional:modules.tools.mietenspiegelFormular.notice') }}
+                            </div>
+                            <div class="mb-3">
+                                {{ METADATA?.hinweis }}
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </template>
@@ -210,5 +406,11 @@ export default {
 </template>
 
 <style>
+input[readonly], .select-style {
+  font-size: 14px;
+}
 
+.form-label, .def-text {
+    font-weight: bold;
+}
 </style>
