@@ -4,9 +4,9 @@ import {mapGetters} from "vuex";
 import getters from "../../../../src/modules/tools/gfi/store/gettersGfi";
 import {isWebLink} from "../../../../src/utils/urlHelper.js";
 import ExportButtonCSV from "../../../../src/share-components/exportButton/components/ExportButtonCSV.vue";
-import sortBy from "../../../../src/utils/sortBy";
 import isObject from "../../../../src/utils/isObject";
 import Multiselect from "vue-multiselect";
+import localeCompare from "../../../../src/utils/localeCompare";
 
 export default {
     name: "DataTable",
@@ -30,6 +30,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("Language", ["currentLocale"]),
         /**
          * Gets the unsorted and unfiltered rows.
          * @returns {Object[]} The origin rows.
@@ -137,13 +138,20 @@ export default {
          * @returns {Object[]} The sorted rows.
          */
         getSortedRows (rows, order, columnName) {
-            if (order === "asc") {
-                return sortBy(rows, columnName);
+            if (order === "origin") {
+                return this.originFilteredRows ? this.originFilteredRows : this.originRows;
             }
-            if (order === "desc") {
-                return sortBy(rows, columnName).reverse();
-            }
-            return this.originFilteredRows ? this.originFilteredRows : this.originRows;
+            const sorted = [...rows].sort((a, b) => {
+                if (typeof a[columnName] === "undefined") {
+                    return -1;
+                }
+                if (typeof b[columnName] === "undefined") {
+                    return 1;
+                }
+                return localeCompare(a[columnName], b[columnName], this.currentLocale, {ignorePunctuation: true});
+            });
+
+            return order === "asc" ? sorted : sorted.reverse();
         },
 
         /**
@@ -194,7 +202,7 @@ export default {
                     result[row[columnName]] = true;
                 }
             });
-            return Object.keys(result);
+            return Object.keys(result).sort((a, b) => localeCompare(a, b, this.currentLocale, {ignorePunctuation: true}));
         },
 
         /**

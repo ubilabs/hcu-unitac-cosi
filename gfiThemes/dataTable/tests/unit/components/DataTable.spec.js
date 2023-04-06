@@ -15,71 +15,83 @@ describe("/src/modules/tools/gfi/components/themes/dataTable/components/DataTabl
         spyRunSorting;
 
     const featureData = {
-        getTheme: () => {
-            return {
-                "name": "DataTable",
-                "params": {
-                    "enableDownload": true,
-                    "isSortable": true
-                }
-            };
-        },
-        getTitle: () => "DataTable",
-        getAttributesToShow: () => {
-            return {
-                entnahme_datum: "Entnahme Datum",
-                ohg_in_meter: "OHG in Meter"
-            };
-        },
-        getMimeType: () => "text/xml",
-        getFeatures: () => {
-            return [{
-                getMappedProperties: () => {
-                    return {
-                        "Entnahme Datum": "2019",
-                        "OHG in Meter": "0.10",
-                        "UHG in Meter": "0.35",
-                        "Arsen": "15,9",
-                        "Cadmium": "1,38",
-                        "Chrom": "21,6",
-                        "Kupfer": "290,0",
-                        "Quecksilber": "0,285",
-                        "Nickel": "24,9",
-                        "Blei": "289,0",
-                        "Thallium": "---",
-                        "Zink": "393,0",
-                        "Molybdän": "4,53",
-                        "Einheit": "mg/kg TM"
-                    };
-                }
+            getTheme: () => {
+                return {
+                    "name": "DataTable",
+                    "params": {
+                        "enableDownload": true,
+                        "isSortable": true
+                    }
+                };
             },
-            {
-                getMappedProperties: () => {
-                    return {
-                        "Entnahme Datum": "2019",
-                        "OHG in Meter": "0.00",
-                        "UHG in Meter": "0.10",
-                        "Arsen": "14,7",
-                        "Cadmium": "1,34",
-                        "Chrom": "40,5",
-                        "Kupfer": "774,0",
-                        "Quecksilber": "0,346",
-                        "Nickel": "22,9",
-                        "Blei": "209,0",
-                        "Thallium": "---",
-                        "Zink": "568,0",
-                        "Molybdän": "19,8",
-                        "Einheit": "mg/kg TM"
-                    };
+            getTitle: () => "DataTable",
+            getAttributesToShow: () => {
+                return {
+                    entnahme_datum: "Entnahme Datum",
+                    ohg_in_meter: "OHG in Meter"
+                };
+            },
+            getMimeType: () => "text/xml",
+            getFeatures: () => {
+                return [{
+                    getMappedProperties: () => {
+                        return {
+                            "Entnahme Datum": "2019",
+                            "OHG in Meter": "0.10",
+                            "UHG in Meter": "0.35",
+                            "Arsen": "15,9",
+                            "Cadmium": "1,38",
+                            "Chrom": "21,6",
+                            "Kupfer": "290,0",
+                            "Quecksilber": "0,285",
+                            "Nickel": "24,9",
+                            "Blei": "289,0",
+                            "Thallium": "---",
+                            "Zink": "393,0",
+                            "Molybdän": "4,53",
+                            "Einheit": "mg/kg TM"
+                        };
+                    }
+                },
+                {
+                    getMappedProperties: () => {
+                        return {
+                            "Entnahme Datum": "2019",
+                            "OHG in Meter": "0.00",
+                            "UHG in Meter": "0.10",
+                            "Arsen": "14,7",
+                            "Cadmium": "1,34",
+                            "Chrom": "40,5",
+                            "Kupfer": "774,0",
+                            "Quecksilber": "0,346",
+                            "Nickel": "22,9",
+                            "Blei": "209,0",
+                            "Thallium": "---",
+                            "Zink": "568,0",
+                            "Molybdän": "19,8",
+                            "Einheit": "mg/kg TM"
+                        };
+                    }
+                }];
+            }
+        },
+        store = new Vuex.Store({
+            namespaces: true,
+            modules: {
+                Language: {
+                    namespaced: true,
+                    getters: {
+                        currentLocale: () => "de-DE"
+                    }
                 }
-            }];
-        }
-    };
+            }
+        });
 
     beforeEach(() => {
         spyRunSorting = sinon.spy(DataTableTheme.methods, "runSorting");
         wrapper = shallowMount(DataTableTheme, {
             localVue,
+            store,
             propsData: {
                 feature: featureData
             }
@@ -320,8 +332,36 @@ describe("/src/modules/tools/gfi/components/themes/dataTable/components/DataTabl
 
                 expect(originRows).to.deep.equal(wrapper.vm.originRows);
             });
+            it("should return the rows in ascending order with the undefined data at the beginning", () => {
+                const rows = [
+                        {
+                            "name": "klm"
+                        },
+                        {
+                            "name": "xyz"
+                        },
+                        {},
+                        {
+                            "name": "abc"
+                        }
+                    ],
+                    expectRows = [
+                        {},
+                        {
+                            "name": "abc"
+                        },
+                        {
+                            "name": "klm"
+                        },
+                        {
+                            "name": "xyz"
+                        }
+                    ],
+                    sortedRows = wrapper.vm.getSortedRows(rows, "asc", "name");
 
-            it("should return the rows in ascending order sorted by name ", () => {
+                expect(sortedRows).to.deep.equal(expectRows);
+            });
+            it("should return the rows in ascending order sorted by name", () => {
                 const rows = [
                         {
                             "name": "klm"
@@ -348,8 +388,36 @@ describe("/src/modules/tools/gfi/components/themes/dataTable/components/DataTabl
 
                 expect(sortedRows).to.deep.equal(expectRows);
             });
+            it("should return the rows in descending order sorted by name with the undefined data at the end", () => {
+                const rows = [
+                        {
+                            "name": "klm"
+                        },
+                        {
+                            "name": "xyz"
+                        },
+                        {},
+                        {
+                            "name": "abc"
+                        }
+                    ],
+                    expectRows = [
+                        {
+                            "name": "xyz"
+                        },
+                        {
+                            "name": "klm"
+                        },
+                        {
+                            "name": "abc"
+                        },
+                        {}
+                    ],
+                    sortedRows = wrapper.vm.getSortedRows(rows, "desc", "name");
 
-            it("should return the rows in descending order sorted by name ", () => {
+                expect(sortedRows).to.deep.equal(expectRows);
+            });
+            it("should return the rows in descending order sorted by name", () => {
                 const rows = [
                         {
                             "name": "klm"
