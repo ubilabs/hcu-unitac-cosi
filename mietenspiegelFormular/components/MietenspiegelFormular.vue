@@ -34,6 +34,7 @@ export default {
             },
             deep: true
         },
+
         clickCoordinate (coord) {
             this.residentialInformationByCoordinate(coord, this.rentIndexLayerId, this.resolution);
         }
@@ -42,12 +43,11 @@ export default {
         this.METADATA = await this.getFeatureProperties();
         this.calculationData = await this.getCalculationData();
 
-        this.$on("close", () => {
-            this.setActive(false);
-        });
+        this.$on("close", this.close);
         this.onSearchbar(result => {
             const resolutions = [...this.getView.getResolutions()].sort();
 
+            this.setActive(true);
             this.residentialInformationByCoordinate(result?.coordinate, this.rentIndexLayerId, resolutions[0]);
         });
     },
@@ -56,6 +56,16 @@ export default {
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         onSearchbar,
         requestGfi,
+
+        /**
+         * Closing the tool and sets the error message default.
+         * @returns {void}
+         */
+        close () {
+            this.errorMessage = "";
+            this.setActive(false);
+        },
+
         /**
          * Gets the properties of a feature from a layer.
          * @param {Number} index - The index of the feature.

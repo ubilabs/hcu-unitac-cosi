@@ -17,7 +17,7 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
     let store;
 
     const factory = {
-        getShallowMount: (values = {}, isActive = false) => {
+        getShallowMount: (values = {}) => {
             return shallowMount(MietenspiegelFormular, {
                 store,
                 data () {
@@ -26,7 +26,6 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
                     };
                 },
                 computed: {
-                    active: () => isActive,
                     name: () => "Hallo",
                     icon: () => "small",
                     renderToWindow: () => false,
@@ -107,14 +106,16 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
             expect(wrapper.find(".mietenspiegel-formular").exists()).to.be.false;
         });
 
-        it("should render if active is true", () => {
-            const wrapper = factory.getShallowMount({}, true);
+        it("should render if active is true", async () => {
+            const wrapper = factory.getShallowMount({});
 
+            wrapper.vm.setActive(true);
+            await wrapper.vm.$nextTick();
             expect(wrapper.find(".mietenspiegel-formular").exists()).to.be.true;
         });
 
         it("should render an error message", async () => {
-            const wrapper = factory.getShallowMount({}, true);
+            const wrapper = factory.getShallowMount({});
 
             wrapper.vm.errorMessage = "foo";
             await wrapper.vm.$nextTick();
@@ -122,7 +123,7 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
         });
 
         it("should not render an error message", () => {
-            const wrapper = factory.getShallowMount({addressInformation: {strasse: "foo"}}, true);
+            const wrapper = factory.getShallowMount({addressInformation: {strasse: "foo"}});
 
             expect(wrapper.find(".alert-warning").exists()).to.be.false;
         });
@@ -168,9 +169,25 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
     });
 
     describe("Methods", () => {
+        describe("close", () => {
+            it("should set 'errorMessage' to an empty string", async () => {
+                const wrapper = factory.getShallowMount({errorMessage: "error"});
+
+                wrapper.vm.close();
+                await wrapper.vm.$nextTick();
+                expect(wrapper.vm.errorMessage).to.be.equal("");
+            });
+            it("should set 'active' to false", async () => {
+                const wrapper = factory.getShallowMount({errorMessage: "error"});
+
+                wrapper.vm.close();
+                await wrapper.vm.$nextTick();
+                expect(wrapper.vm.active).to.be.false;
+            });
+        });
         describe("getFeaturesByLayerId", () => {
             it("should return false if param is not a string", async () => {
-                const wrapper = factory.getShallowMount({}, true);
+                const wrapper = factory.getShallowMount({});
 
                 expect(await wrapper.vm.getFeaturesByLayerId(undefined)).to.be.false;
                 expect(await wrapper.vm.getFeaturesByLayerId(null)).to.be.false;
@@ -183,17 +200,17 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
         });
         describe("getFeatureInfoUrlByLayer", () => {
             it("should return null if first param is not an array", () => {
-                const wrapper = factory.getShallowMount({}, true);
+                const wrapper = factory.getShallowMount({});
 
                 expect(wrapper.vm.getFeatureInfoUrlByLayer()).to.be.null;
             });
             it("should return null if first param is an array but has no length", () => {
-                const wrapper = factory.getShallowMount({}, true);
+                const wrapper = factory.getShallowMount({});
 
                 expect(wrapper.vm.getFeatureInfoUrlByLayer([])).to.be.null;
             });
             it("should return null if the second param is not a object", () => {
-                const wrapper = factory.getShallowMount({}, true);
+                const wrapper = factory.getShallowMount({});
 
                 expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], undefined)).to.be.null;
                 expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], null)).to.be.null;
@@ -204,7 +221,7 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
                 expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], false)).to.be.null;
             });
             it("should return null if the last param is not a string", () => {
-                const wrapper = factory.getShallowMount({}, true);
+                const wrapper = factory.getShallowMount({});
 
                 expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {}, undefined)).to.be.null;
                 expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {}, null)).to.be.null;
@@ -215,7 +232,7 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
                 expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {}, {})).to.be.null;
             });
             it("should return a string", () => {
-                const wrapper = factory.getShallowMount({}, true);
+                const wrapper = factory.getShallowMount({});
 
                 expect(wrapper.vm.getFeatureInfoUrlByLayer([0, 0], {
                     getSource: () => {
@@ -228,12 +245,12 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
         });
         describe("getResidentialInformation", () => {
             it("should return false if first param is not an string", () => {
-                const wrapper = factory.getShallowMount({}, true);
+                const wrapper = factory.getShallowMount({});
 
                 expect(wrapper.vm.getResidentialInformation()).to.be.false;
             });
             it("should return false and call onerror function if first param is not an string", () => {
-                const wrapper = factory.getShallowMount({}, true);
+                const wrapper = factory.getShallowMount({});
 
                 expect(wrapper.vm.getResidentialInformation(undefined, undefined, undefined, error => {
                     expect(error).to.be.equal("additional:modules.tools.mietenspiegelFormular.errorMessages.noUrl");
@@ -241,7 +258,7 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
             });
             it("should call the requestGfi function to fetch the address informations", () => {
                 const requestGfiStub = sinon.stub(MietenspiegelFormular.methods, "requestGfi").resolves(["foo"]),
-                    wrapper = factory.getShallowMount({}, true);
+                    wrapper = factory.getShallowMount({});
 
                 expect(wrapper.vm.getResidentialInformation("foo", {})).to.be.true;
                 expect(requestGfiStub.calledOnce).to.be.true;
@@ -253,7 +270,7 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
                             return resultObject;
                         }
                     }]),
-                    wrapper = factory.getShallowMount({}, true);
+                    wrapper = factory.getShallowMount({});
 
                 expect(wrapper.vm.getResidentialInformation("foo", {}, response => {
                     expect(response).to.deep.equal(resultObject);
@@ -262,7 +279,7 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
             });
             it("should call the onerror function if response from requestGFI is not an array", () => {
                 const requestGfiStub = sinon.stub(MietenspiegelFormular.methods, "requestGfi").resolves(undefined),
-                    wrapper = factory.getShallowMount({}, true);
+                    wrapper = factory.getShallowMount({});
 
                 expect(wrapper.vm.getResidentialInformation("foo", {}, undefined, error => {
                     expect(error).to.be.equal("additional:modules.tools.mietenspiegelFormular.errorMessages.noDataFound");
@@ -272,7 +289,7 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
         });
         describe("residentialInformationByCoordinate", () => {
             it("should return false if second param is not a string", () => {
-                const wrapper = factory.getShallowMount({}, true);
+                const wrapper = factory.getShallowMount({});
 
                 expect(wrapper.vm.residentialInformationByCoordinate(undefined, undefined)).to.be.false;
                 expect(wrapper.vm.residentialInformationByCoordinate(undefined, null)).to.be.false;
