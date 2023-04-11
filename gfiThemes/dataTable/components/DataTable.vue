@@ -281,7 +281,10 @@ export default {
 </script>
 
 <template>
-    <div id="table-data-container">
+    <div
+        id="table-data-container"
+        :class="enableDownload ? 'enable-download' : ''"
+    >
         <table
             class="table table-hover"
         >
@@ -291,7 +294,7 @@ export default {
                     :key="col.index"
                     class="filter-select-box-container"
                 >
-                    <div
+                    <span
                         v-if="isFilterable"
                         class="multiselect-dropdown"
                     >
@@ -318,12 +321,12 @@ export default {
                                 >{{ col.name }}</span>
                             </template>d
                         </Multiselect>
-                    </div>
+                    </span>
                     <span v-else>{{ col.name }}</span>
-                    <div
+                    <span
                         v-if="isSortable"
                         class="bootstrap-icon"
-                        :class="getIconClassByOrder(col.order)"
+                        :class="getIconClassByOrder(col.order) + ' sort'"
                         @click="runSorting(col)"
                         @keypress="runSorting(col)"
                     />
@@ -374,6 +377,16 @@ export default {
     margin:6px 15px 0 12px;
     min-height: 350px;
 
+    &.enable-download {
+        margin:6px 15px 60px 12px;
+    }
+
+    .sort {
+        position: absolute;
+        right: 10px;
+        top: 18px;
+        z-index: 50;
+    }
     .origin-order {
         opacity: 0.3;
         &:hover {
@@ -383,91 +396,128 @@ export default {
 
     table {
         margin: 0;
+        table-layout: fixed;
         th {
+            padding: 6px 15px 6px 6px;
             position: sticky;
             top: 0px;
             background: $white;
-            div {
+            vertical-align: top;
+            span {
                 cursor: pointer;
+                padding: 0;
+            }
+            .multiselect-dropdown {
+                padding: 0;
             }
         }
-        td, th {
+        td{
             padding: 6px;
         }
     }
     .download {
         position: sticky;
-        bottom: 20px;
+        bottom: 22px;
         float: right;
     }
-    .filter-select-box-container .multiselect {
-        margin:0;
-        padding: 0;
-    }
-    .filter-select-box-container .multiselect .multiselect__single {
-        margin:0;
-        padding: 0;
-    }
-    .filter-select-box-container .multiselect, .filter-select-box-container .multiselect__input, .filter-select-box-container .multiselect__single {
-        font-family: inherit;
-        font-size: $font-size-base;
-    }
-    .filter-select-box-container .multiselect .multiselect__tags {
-        border: none;
-        box-shadow: none;
-    }
-    .filter-select-box-container .multiselect .multiselect__option {
-        display: block;
-        min-height: 16px;
-        line-height: 8px;
-        text-decoration: none;
-        text-transform: none;
-        vertical-align: middle;
-        position: relative;
-        cursor: pointer;
-        white-space: nowrap;
-        padding: 10px 12px;
-    }
-    .filter-select-box-container .multiselect .multiselect__option--highlight, .filter-select-box-container .multiselect .multiselect__option--selected {
-        background: $light_blue;
-        outline: none;
-        color: $white;
-    }
-    .filter-select-box-container .multiselect .option__image {
-        width: 22px;
-    }
-    .filter-select-box-container .multiselect .multiselect__option--highlight:after {
-        content: attr(data-select);
-        background: $light_blue;
-        color: $white;
-    }
-    .filter-select-box-container .multiselect .multiselect__tag-icon::after {
-        content: "\D7";
-        color: $light_grey;
-        font-size: $font_size_big;
-    }
-    .filter-select-box-container .multiselect .multiselect__tag-icon:hover {
-        background: $light_blue;
-    }
-    .filter-select-box-container .multiselect .multiselect__placeholder {
-        display: none;
-    }
-    .filter-select-box-container .multiselect .multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
-        background: $light_grey;
-    }
-    .filter-select-box-container .multiselect__select {
-        height: 34px;
-        line-height: 14px;
-    }
-    .filter-select-box-container .multiselect__select::before {
-        top: 64%;
-    }
-    .filter-select-box-container .multiselect--active {
-        color: $black;
-        background-color: $white;
-        border-color: $light_blue;
-        outline: 0;
-        box-shadow: unset;
+    .filter-select-box-container {
+        .multiselect {
+            margin:0;
+            padding: 0;
+            .multiselect__single {
+                font-family: inherit;
+                font-size: $font-size-base;
+                margin:0;
+                padding: 0;
+            }
+            .filter-select-box-container {
+                .multiselect__input {
+                    font-family: inherit;
+                    font-size: $font-size-base;
+                }
+            }
+            .multiselect__tags {
+                border: none;
+                box-shadow: none;
+                padding: 8px 40px 0 0;
+            }
+            .multiselect__option {
+                display: block;
+                min-height: 16px;
+                line-height: 8px;
+                text-decoration: none;
+                text-transform: none;
+                vertical-align: middle;
+                position: relative;
+                cursor: pointer;
+                white-space: nowrap;
+                padding: 10px 12px;
+            }
+            .multiselect__option--selected {
+                background: $light_blue;
+                outline: none;
+                color: $white;
+            }
+            .option__image {
+                width: 22px;
+            }
+            .multiselect__option--highlight {
+                background: $light_blue;
+                outline: none;
+                color: $white;
+                &::after {
+                    content: attr(data-select);
+                    background: $light_blue;
+                    color: $white;
+                }
+            }
+            .multiselect__tag-icon {
+                &::after {
+                    content: "\D7";
+                    color: $light_grey;
+                    font-size: $font_size_big;
+                }
+                &:hover {
+                    background: $light_blue;
+                }
+                &:hover {
+                    background: $light_grey;
+                }
+                &:focus {
+                    background: $light_grey;
+                }
+            }
+            .multiselect__placeholder {
+                display: none;
+            }
+            .multiselect__select {
+                height: 34px;
+                line-height: 14px;
+                top: inherit;
+                &::before {
+                    top: 64%;
+                }
+            }
+            .multiselect__content-wrapper {
+                overflow-y: auto;
+                width: auto;
+                top: 54px;
+            }
+        }
+        .multiselect__select {
+            height: 34px;
+            line-height: 14px;
+            &::before {
+                top: 64%;
+            }
+        }
+        .multiselect--active {
+            color: $black;
+            background-color: $white;
+            border-color: $light_blue;
+            outline: 0;
+            box-shadow: unset;
+        }
     }
 }
 </style>
