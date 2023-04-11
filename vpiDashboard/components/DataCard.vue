@@ -47,41 +47,59 @@ export default {
 </script>
 
 <template>
-    <div>
+
         <div class="card statistic-card">
             <h4>{{ title }}</h4>
             <div v-if="navigation">
-                <Paginator @pager="getPagerValue" />
+                <Paginator @pager="getPagerValue" :subtitle="subtitle" />
             </div>
-            <div v-if="subtitle">
+             <div v-else>
                 <span class="current-index sub-index">{{ subtitle }}</span>
             </div>
             <div>
                 <span class="statistic-value-text">{{ number }}</span>
             </div>
-            <div>
+            <div class="buttons">
                 <button @click="showChart('overview')">
-                    Show All Data Chart
+                    All Data
                 </button>
                 <button @click="showChart('monthlyoverview')">
-                    Show Details Chart
+                    Details
                 </button>
             </div>
         </div>
-    </div>
 </template>
 
 <style lang="scss">
+
+.card{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width:12rem;
+  max-width: 12rem;
+  height:12rem;
+  padding:1rem;
+}
+
+.card h4{
+  font-size: 0.7rem;
+  text-align: center;
+  margin-bottom: 0;
+  
+}
 .statistic-card {
     background: #f6f7f8;
     border-radius: 3px;
-    padding: 10pt;
     border: none;
-    min-height: 100%;
-    width: 100%;
-    height: 100%
 }
-
+.card .buttons{
+  width:100%;
+  display: flex;
+  justify-content: center;
+  gap:1rem;
+}
 .statistic-value-text {
     font-family: "HamburgSans-Regular", sans-serif;
     font-style: normal;
@@ -90,7 +108,6 @@ export default {
     text-align: center;
     letter-spacing: .2px;
     color: #000;
-    margin-top: 15pt;
     display: block;
 }
 </style>

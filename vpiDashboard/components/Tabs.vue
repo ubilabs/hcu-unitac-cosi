@@ -1,92 +1,53 @@
 <script>
-import Tab from "./Tab.vue";
 export default {
-    name: "Tabs",
-    components: {
-        Tab
-    },
-    data () {
-        return {
-            selected: false
-        };
+  name: "Tabs",
+  props:{
+    TabItems: []
+  },
+  methods:{
+    selectTab(index){
+      this.TabItems.forEach(tab => {
+        if(tab.index == index){
+          tab.selected = true;
+          this.currentTabIndex = tab.index;
+        }else{
+          tab.selected = false;
+        }  
+      })
     }
+  }, 
+  data() {
+    return {
+      currentTabIndex: 0
+    };
+  }
 };
 </script>
 
 <template>
-    <ul
-        class="tab-list center"
-        role="tablist"
-    >
-        <Tab
-            tabname="activities"
-            :tabindex="0"
-            :selected="false"
-        />
-        <Tab
-            tabname="indivuelle besucher"
-            :tabindex="1"
-            :selected="true"
-        />
-        <Tab
-            tabname="geschlecht"
-            :tabindex="2"
-            :selected="false"
-        />
-        <Tab
-            tabname="altersgruppe"
-            :tabindex="3"
-            :selected="false"
-        />
-        <Tab
-            tabname="Verweildauer"
-            :tabindex="3"
-            :selected="false"
-        />
-        <Tab
-            tabname="besuchertypen"
-            :tabindex="3"
-            :selected="false"
-        />
-        <Tab
-            tabname="distanz"
-            :tabindex="3"
-            :selected="false"
-        />
+  <div>
+    <ul class="nav nav-tabs">
+      <li class="nav-item" v-for="(tab, index) in TabItems" :key="index">
+        <a class="nav-link" :class="{ active: tab.selected }" @click="selectTab(tab.index)">{{ tab.name }}</a>
+      </li>
     </ul>
+    <div :class="`tab-content-` + currentTabIndex">
+      <slot :name="`tab-content-` + currentTabIndex"></slot>
+    </div>
+  </div>
 </template>
 
-<style lang="scss">
-.center {
-    justify-content: center;
+<style scoped>
+.nav{
+  margin-bottom:1rem;
 }
-.tab-list {
-    list-style: none;
-    display: flex;
-    padding-left: 0;
-    margin-bottom: 0;
-}
-
-.tab-list__item[aria-selected=true] {
-    font-weight: 700;
-    color: white;
-    background: #1a1a1a;
+.nav-item{
+  cursor: pointer;
+  color:black;
+  font-size: 0.7rem;
 }
 
-.tab-list__item:first-child {
-    border-radius: 3px 0 0 3px;
-}
-
-.tab-list__item {
-    padding: 10px 15px;
-    cursor: pointer;
-    user-select: none;
-    transition: border .3s ease-in-out;
-    position: relative;
-    bottom: -1px;
-    font-size: 8px;
-    letter-spacing: .2px;
-    width: 100%;
-    text-align: center;
+.nav-item .nav-link{
+  color:gray;
 }
 </style>

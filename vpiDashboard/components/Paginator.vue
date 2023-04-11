@@ -6,7 +6,8 @@ export default {
             type: Object,
             required: false,
             default: () => ({name: "Paginator"})
-        }
+        }, 
+        subtitle: "",
     },
     methods: {
         previous () {
@@ -37,7 +38,7 @@ export default {
                     </a>
                 </li>
                 <li class="page-item paginator-index">
-                    {{ navigationFilter.name }}
+                  {{ subtitle }}
                 </li>
                 <li
                     class="page-item"
@@ -57,7 +58,14 @@ export default {
 </template>
 
 <style scoped>
+.pagination{
+  padding:0;
+  margin:0;
+}
 .paginator-index {
-    margin-top: 5px;
+    margin: 0 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 </style>
