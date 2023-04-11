@@ -7,6 +7,7 @@ import ExportButtonCSV from "../../../../src/share-components/exportButton/compo
 import isObject from "../../../../src/utils/isObject";
 import Multiselect from "vue-multiselect";
 import localeCompare from "../../../../src/utils/localeCompare";
+import {getCenter as getCenterOfExtent} from "ol/extent";
 
 export default {
     name: "DataTable",
@@ -31,6 +32,8 @@ export default {
     },
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
+        ...mapGetters("Maps", ["projection"]),
+        ...mapGetters("Tools/Gfi", Object.keys(getters)),
         /**
          * Gets the unsorted and unfiltered rows.
          * @returns {Object[]} The origin rows.
@@ -63,6 +66,25 @@ export default {
          */
         sortingColumn: function () {
             return this.columns.find(column => column.order !== "origin");
+        },
+        rowsWithAdditionalData () {
+            if (typeof this.feature?.getBBox !== "function" || !this.feature?.getBBox()) {
+                return this.rows;
+            }
+            const result = JSON.parse(JSON.stringify(this.rows)),
+                extent = this.feature.getBBox(),
+                epsg = this.projection.getCode(),
+                coordinates = getCenterOfExtent(extent);
+
+            result.forEach(row => {
+                const obj = {
+                    EPSG: epsg,
+                    Coordinates: coordinates
+                };
+
+                Object.assign(row, obj);
+            });
+            return result;
         }
     },
     watch: {
@@ -85,7 +107,6 @@ export default {
         this.fileName = this.feature?.getTitle();
     },
     methods: {
-        ...mapGetters("Tools/Gfi", Object.keys(getters)),
         isWebLink,
         isObject,
         /**
@@ -362,7 +383,7 @@ export default {
             <ExportButtonCSV
                 :url="false"
                 :filename="fileName"
-                :data="rows"
+                :data="rowsWithAdditionalData"
                 :use-semicolon="true"
                 :title="$t('modules.tools.filter.download.labelBtn')"
             />
