@@ -22,7 +22,12 @@ export default {
             errorMessage: "",
             formKeys: [],
             METADATA: [],
-            calculationData: {}
+            calculationData: {},
+            buildingAgeClass: "",
+            livingSpace: "",
+            rangeMin: "",
+            rangeMax: "",
+            averageValue: ""
         };
     },
     computed: {
@@ -38,9 +43,19 @@ export default {
             },
             deep: true
         },
-
+        buildingAgeClass (newVal) {
+            if (newVal && this.livingSpace) {
+                this.setRentPrice(this.getRentPrice(newVal, this.livingSpace, this.calculationData));
+            }
+        },
+        livingSpace (newVal) {
+            if (newVal && this.buildingAgeClass) {
+                this.setRentPrice(this.getRentPrice(this.buildingAgeClass, newVal, this.calculationData));
+            }
+        },
         clickCoordinate (coord) {
             this.residentialInformationByCoordinate(coord, this.rentIndexLayerId, this.resolution);
+            this.reset();
         }
     },
     async created () {
@@ -62,6 +77,64 @@ export default {
         ...mapActions("MapMarker", ["placingPointMarker", "removePointMarker"]),
         onSearchbar,
         requestGfi,
+
+        /**
+         * Returns the min, max and middle value price for the rent from calculation data with given attributes.
+         * @param {String} buildingAgeClass - the buildingAgeClass attribute to looking for in calculationData.
+         * @param {String} livingSpace - the livingSpace attribute to looking for in calculationData.
+         * @param {Object[]} calculationData - The calculated data array.
+         * @returns {Object} - The Object with min, max and middle value for the rent price.
+         */
+        getRentPrice (buildingAgeClass, livingSpace, calculationData) {
+            const result = {};
+
+            if (!Array.isArray(calculationData) || !calculationData.length || typeof buildingAgeClass !== "string" || typeof livingSpace !== "string") {
+                return result;
+            }
+
+            for (let i = 0; i < calculationData?.length; i++) {
+                if (Object.prototype.hasOwnProperty.call(calculationData[i], "Baualtersklasse/Bezugsfertigkeit") &&
+                    Object.prototype.hasOwnProperty.call(calculationData[i], "Wohnfläche") &&
+                    calculationData[i]["Baualtersklasse/Bezugsfertigkeit"] === buildingAgeClass &&
+                    calculationData[i]["Wohnfläche"] === livingSpace) {
+                    result.rangeMin = calculationData[i].spanne_min;
+                    result.rangeMax = calculationData[i].spanne_max;
+                    result.averageValue = calculationData[i].mittelwert;
+                    break;
+                }
+            }
+
+            return result;
+        },
+
+        /**
+         * Sets the rent price.
+         * @param {Object} calculatedRent - Object with min, max and middle value for the rent.
+         * @returns {void}
+         */
+        setRentPrice (calculatedRent) {
+            this.rangeMin = "";
+            this.rangeMax = "";
+            this.averageValue = "";
+
+            if (typeof calculatedRent?.rangeMin !== "undefined" && calculatedRent?.rangeMax !== "undefined" && calculatedRent?.averageValue !== "undefined") {
+                this.rangeMin = calculatedRent.rangeMin;
+                this.rangeMax = calculatedRent.rangeMax;
+                this.averageValue = calculatedRent.averageValue;
+            }
+        },
+
+        /**
+         * Resets the rent price and drop down.
+         * @returns {void}
+         */
+        reset () {
+            this.buildingAgeClass = "";
+            this.livingSpace = "";
+            this.rangeMin = "";
+            this.rangeMax = "";
+            this.averageValue = "";
+        },
 
         /**
          * Closing the tool and sets the error message default.
@@ -313,6 +386,7 @@ export default {
                             </label>
                             <select
                                 id="mietenspiegel-baualtersklasse-select"
+                                v-model="buildingAgeClass"
                                 class="select-baualtersklasse form-select select-style"
                             >
                                 <option selected>
@@ -362,6 +436,7 @@ export default {
                             </label>
                             <select
                                 id="mietenspiegel-wohnflaeche-select"
+                                v-model="livingSpace"
                                 class="select-wohnflaeche form-select select-style"
                             >
                                 <option selected>
@@ -379,6 +454,46 @@ export default {
                         <div
                             class="notes border-top p-2 position-absolute"
                         >
+                            <div class="calculated-rent border-bottom">
+                                <div
+                                    class="def-text calculated-rentprice-title"
+                                >
+                                    {{ $t('additional:modules.tools.mietenspiegelFormular.rentPriceTitle') }}
+                                </div>
+                                <div>
+                                    <span class="def-text">
+                                        {{ $t('additional:modules.tools.mietenspiegelFormular.middle') }}
+                                    </span>
+                                    <span v-if="averageValue">
+                                        {{ averageValue }}
+                                    </span>
+                                    <span v-else>
+                                        ---
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="def-text">
+                                        {{ $t('additional:modules.tools.mietenspiegelFormular.min') }}
+                                    </span>
+                                    <span v-if="rangeMin">
+                                        {{ rangeMin }}
+                                    </span>
+                                    <span v-else>
+                                        ---
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="def-text">
+                                        {{ $t('additional:modules.tools.mietenspiegelFormular.max') }}
+                                    </span>
+                                    <span v-if="rangeMax">
+                                        {{ rangeMax }}
+                                    </span>
+                                    <span v-else>
+                                        ---
+                                    </span>
+                                </div>
+                            </div>
                             <div class="mt-3 def-text">
                                 {{ $t('additional:modules.tools.mietenspiegelFormular.editor') }}
                             </div>
@@ -405,12 +520,18 @@ export default {
     </ToolTemplate>
 </template>
 
-<style>
+<style lang="scss">
 input[readonly], .select-style {
   font-size: 14px;
 }
 
 .form-label, .def-text {
     font-weight: bold;
+    &.calculated-rentprice-title {
+        margin: 0 0 12px 0;
+    }
+}
+.calculated-rent {
+    height: 112px;
 }
 </style>

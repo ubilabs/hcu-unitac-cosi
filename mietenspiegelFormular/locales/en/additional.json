@@ -12,7 +12,11 @@
               "pleaseSelect": "Please select",
               "editor": "Editor:",
               "collectionStatus": "Collection Status:",
-              "notice": "Notice:"
+              "notice": "Notice:",
+              "middle": "Average:",
+              "min": "Tension Min.:",
+              "max": "Tension Max.:",
+              "rentPriceTitle": "Net base rent without heating and without operating costs (in EUR/m²) "
           }
         }
     }
