@@ -28,7 +28,8 @@ export default {
             pieChartData: false,
             chartGivenOptions: {},
             firstYear: 1980,
-            secondYear: 2022
+            secondYear: 2022,
+            interval: null
         };
     },
     computed: {
@@ -47,6 +48,9 @@ export default {
                 this.setFeatures();
             }
         }
+    },
+    mounted () {
+        this.sliderInstance = this.min;
     },
     async created () {
         this.$on("close", this.close);
@@ -190,18 +194,30 @@ export default {
          */
         openChart (typ) {
             if (typ === "bar") {
+                if (this.barChartData) {
+                    this.barChartData = false;
+                    return;
+                }
                 this.barChartData = this.getCountsForChart(typ, this.key, this.statisKey, this.firstYear, this.secondYear, this.count, this.features);
                 this.chartGivenOptions = this.getGivenOptions(typ, this.statiskey);
                 this.lineChartData = false;
                 this.pieChartData = false;
             }
             else if (typ === "line") {
+                if (this.lineChartData) {
+                    this.lineChartData = false;
+                    return;
+                }
                 this.lineChartData = this.getCountsForChart(typ, this.key, this.statisKey, this.firstYear, this.secondYear, this.count, this.features);
                 this.chartGivenOptions = this.getGivenOptions(typ, this.statiskey);
                 this.barChartData = false;
                 this.pieChartData = false;
             }
             else if (typ === "pie") {
+                if (this.pieChartData) {
+                    this.pieChartData = false;
+                    return;
+                }
                 this.pieChartData = this.getCountsForChart(typ, this.key, this.statisKey, this.firstYear, this.secondYear, this.count, this.features);
                 this.chartGivenOptions = this.getGivenOptions(typ, this.statiskey);
                 this.barChartData = false;
@@ -327,7 +343,7 @@ export default {
             return {
                 datasets: [{
                     backgroundColor: "#57A845",
-                    data: totalCount,
+                    data: totalCount.reverse(),
                     label: this.$t("additional:modules.tools.cosi.timeSeriesAnalyse.count"),
                     borderColor: typ === "pie" ? "#ffffff" : "#57A845"
                 }],
@@ -348,7 +364,7 @@ export default {
             }
 
             return labels;
-        }
+        },
         /**
          * Gets the data for chart
          * @param {String|String[]} statiskey - the property as key for chart
@@ -362,6 +378,64 @@ export default {
 
         }
         */
+
+        /**
+         * Plays the slider
+         * @returns {void}
+         */
+        playSlider () {
+            this.interval = setInterval(() => {
+                this.firstYear++;
+                this.firstYear = this.firstYear.toString();
+                if (this.firstYear >= this.max) {
+                    clearInterval(this.interval);
+                    this.firstYear = this.max;
+                    this.pauseSlider();
+                }
+            }, 250); // adjust the interval to control the speed of movement
+        },
+        /**
+         * Stops the slider
+         * @returns {void}
+         */
+        pauseSlider () {
+            clearInterval(this.interval);
+            this.interval = null;
+        },
+        /**
+         * Toggles the slider
+         * @returns {void}
+         */
+        toggleIsPlaying () {
+            if (!this.interval) {
+                this.playSlider();
+            }
+            else {
+                this.pauseSlider();
+            }
+        },
+        /**
+         * Decrements the slider
+         * @returns {void}
+         */
+        decrementSlider () {
+            if (this.firstYear > this.min) {
+                this.firstYear--;
+                this.firstYear = this.firstYear.toString();
+            }
+            clearInterval(this.interval);
+        },
+        /**
+         * Increments the slider
+         * @returns {void}
+         */
+        incrementSlider () {
+            if (this.firstYear < this.max) {
+                this.firstYear++;
+                this.firstYear = this.firstYear.toString();
+            }
+            clearInterval(this.interval);
+        }
     }
 };
 </script>
@@ -405,7 +479,45 @@ export default {
                     :given-options="chartGivenOptions"
                 />
             </div>
-            <div class="slider-range">
+            <div class="animation-button">
+                <button
+                    @click="decrementSlider()"
+                >
+                    <v-icon
+                        v-model="firstYear"
+                        :min="min"
+                    >
+                        mdi-skip-previous
+                    </v-icon>
+                </button>
+                <button
+                    @click="toggleIsPlaying()"
+                >
+                    <v-icon
+                        v-if="!interval"
+                    >
+                        mdi-play
+                    </v-icon>
+                    <v-icon
+                        v-else
+                    >
+                        mdi-pause
+                    </v-icon>
+                </button>
+                <button
+                    @click="incrementSlider()"
+                >
+                    <v-icon
+                        v-model="firstYear"
+                    >
+                        mdi-skip-next
+                    </v-icon>
+                </button>
+            </div>
+            <div
+                id="app"
+                class="slider-range"
+            >
                 <label
                     for="firstYear"
                 >{{ firstYear }}</label>
@@ -475,15 +587,27 @@ export default {
 <style lang="scss" scoped>
 .time-series.tool-window-vue{
     bottom: 20px;
-    min-width: 480px;
+    min-width: 600px;
     top: inherit;
 }
 * {
     box-sizing: border-box;
 }
 
+.animation-button {
+    float: left;
+    height: 80px;
+    margin-top: 40px;
+    margin-right: 20px;
+    button {
+        i {
+            font-size: 30px;
+        }
+    }
+}
+
 .slider-range {
-    width: calc(100% - 140px);
+    width: calc(100% - 250px);
     float: left;
 }
 
