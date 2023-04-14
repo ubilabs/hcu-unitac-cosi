@@ -151,6 +151,11 @@ export default {
         },
         showChart (chartoverview) {
             this.changeChart(chartoverview);
+            let cards = document.querySelectorAll(".statistic-card");
+            cards.forEach(card => {
+              card.classList.remove("blue-card");
+            });
+
         }
     }
 };

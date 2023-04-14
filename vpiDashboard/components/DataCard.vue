@@ -38,18 +38,32 @@ export default {
     },
     methods: {
         ...mapActions("Tools/VpiDashboard", Object.keys(actions)),
-        showChart (chartoverview) {
+        showChart (chartoverview, title) {
             this.changeChart(chartoverview);
-        },
-        getPagerValue (index) {
+            this.changeChartStyle(title)
+          },
+          getPagerValue (index) {
             this.$emit("pager", index);
+          }, 
+          changeChartStyle(title){
+          console.log(title)
+            let cardId = "card" + title;
+            let cards = document.querySelectorAll(".statistic-card");
+            cards.forEach(card => {
+              card.classList.remove("blue-card");
+              if(card.id == cardId) card.classList.toggle("blue-card")
+            });
+            // let card = document.getElementById(cardId);
+            // card.classList.add("blue-card");
+            // card.classList.remove("grey-card");
+            // // card.style.background = "#003063";
         }
     }
 };
 </script>
 
 <template>
-    <div class="card statistic-card">
+    <div class="card statistic-card" :id="`card`+ title">
         <h4>{{ title }}</h4>
         <div v-if="navigation">
             <Paginator
@@ -67,7 +81,7 @@ export default {
         <div class="buttons">
             <button
                 v-if="detail !== ''"
-                @click="showChart(`${detail}overview`)"
+                @click="showChart(`${detail}overview`, title)"
             >
                 Details
             </button>
@@ -87,6 +101,7 @@ export default {
   height:12rem;
   padding:1rem;
 }
+
 
 .card h4{
   font-size: 0.7rem;
@@ -115,4 +130,18 @@ export default {
     color: #000;
     display: block;
 }
+
+
+.blue-card{
+  background-color: #003063 !important;
+  color:white;
+}
+.blue-card .page-item a{
+  background-color:#003063 !important;
+  color:white;
+}
+.blue-card .statistic-value-text {
+  color:white;
+}
+
 </style>
