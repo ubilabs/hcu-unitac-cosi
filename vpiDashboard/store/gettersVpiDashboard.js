@@ -43,6 +43,28 @@ const getters = {
 
         return split_yearly.reduce((n, {avg}) => n + avg, 0);
     },
+    getBarChartDailyData ({frequencyData}) {
+        const daily = frequencyData?.unique?.dayly,
+            labels = [],
+            day_data = [];
+
+        daily.forEach((element, index) => {
+            labels.push(element.weekday);
+            day_data.push(element.sum);
+        });
+
+        const data = {
+            labels: labels.reverse(),
+            datasets: [{
+                label: "Average Unique Visitors (Day)",
+                data: day_data.reverse(),
+                hoverOffset: 4,
+                backgroundColor: "#FD763B"
+            }]
+        };
+
+        return data;
+    },
     getBarChartMonthlyData ({frequencyData}) {
         const monthly = frequencyData?.unique?.monthly,
             labels = [],

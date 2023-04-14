@@ -74,6 +74,18 @@ export default {
                     ]
                 }
             },
+            chartDailyData: {
+                bar: {
+                    datasets: [
+                        {
+                            backgroundColor: "#FD736B",
+                            data: [1, 2, 3],
+                            hoverOffset: 4,
+                            label: "Label"
+                        }
+                    ]
+                }
+            },
             TabItems: [
                 {
                     index: 0,
@@ -142,6 +154,8 @@ export default {
             this.chartdata.line = this.getLineChartData;
             this.chartMonthsData.bar = this.getBarChartMonthlyData;
             this.chartMonthsData.line = this.getLineChartMonthlyData;
+
+            this.chartDailyData.bar = this.getBarChartDailyData;
         },
         getDayPager (index) {
             this.avgBestDay = Math.round(this.getAverageVisitorsPerDay(this.filterData.bestAvgDay[index])).toLocaleString(this.currentLocale);
@@ -217,7 +231,7 @@ export default {
                                                         :number="avgBestMonth"
                                                         :navigation="true"
                                                         :filter-data="filterData.bestAvgMonth"
-                                                        detail="monthly"
+                                                        detail="daily"
                                                         @pager="getMonthPager"
                                                     />
 <!--                                                    <DataCard-->
@@ -247,6 +261,12 @@ export default {
                                                             class="row chart bar"
                                                         >
                                                             <BarchartItem :data="chartMonthsData.bar" />
+                                                        </div>
+                                                        <div
+                                                            v-if="chartData === 'dailyoverview'"
+                                                            class="row chart bar"
+                                                        >
+                                                            <BarchartItem :data="chartDailyData.bar" />
                                                         </div>
                                                     </div>
                                                     <!-- Line Chart -->
