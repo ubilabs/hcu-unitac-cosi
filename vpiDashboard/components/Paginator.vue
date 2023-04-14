@@ -6,16 +6,60 @@ export default {
             type: Object,
             required: false,
             default: () => ({name: "Paginator"})
-        }, 
-        subtitle: "",
+        },
+        paginatorData: {
+            type: Array,
+            required: false,
+            default: ["eins", "zwei", "drei"]
+        },
+        subtitle: {
+            type: String,
+            required: false,
+            default: ""
+        }
+    },
+    data () {
+        return {
+            index: 0
+        };
+    },
+    computed: {
+        weekday () {
+            const weekday = new Array(7);
+
+            weekday[0] = "Monday";
+            weekday[1] = "Tuesday";
+            weekday[2] = "Wednesday";
+            weekday[3] = "Thursday";
+            weekday[4] = "Friday";
+            weekday[5] = "Saturday";
+            weekday[6] = "Sunday";
+
+            return weekday[this.index];
+        },
+        sizeOfArray () {
+            return this.paginatorData.length;
+        }
     },
     methods: {
         previous () {
-            this.$emit("pager", "previous");
-            console.log(this.$parent.$data);
+            if (this.index === 0) {
+                this.index = this.sizeOfArray - 1;
+            }
+            else {
+                this.index -= 1;
+            }
+
+            this.$emit("pager", this.index);
         },
         next () {
-            this.$emit("pager", "next");
+            if (this.index === this.sizeOfArray - 1) {
+                this.index = 0;
+            }
+            else {
+                this.index += 1;
+            }
+            this.$emit("pager", this.index);
         }
     }
 };
@@ -38,7 +82,7 @@ export default {
                     </a>
                 </li>
                 <li class="page-item paginator-index">
-                  {{ subtitle }}
+                    {{ paginatorData[index] }}
                 </li>
                 <li
                     class="page-item"

@@ -20,8 +20,14 @@ export default {
     },
     data () {
         return {
+            chartType: "bar",
+            filterData: {
+                bestAvgDay: ["mo", "tu", "we", "th", "fr", "sa", "su"],
+                bestAvgMonth: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            },
             avgBestDay: 0,
             avgBestHour: 0,
+            avgBestMonth: 0,
             individualVisitorsPerYear: 0,
             layerList: null,
             chartdata: {
@@ -46,7 +52,6 @@ export default {
                     ]
                 }
             },
-            monthdata: 0,
             chartMonthsData: {
                 bar: {
                     datasets: [
@@ -104,7 +109,8 @@ export default {
         };
     },
     computed: {
-        ...mapGetters("Tools/VpiDashboard", Object.keys(getters))
+        ...mapGetters("Tools/VpiDashboard", Object.keys(getters)),
+        ...mapGetters("Language", ["currentLocale"])
     },
     async created () {
         this.$on("close", this.close);
@@ -122,17 +128,30 @@ export default {
                 model.set("isActive", false);
             }
         },
+        setChartType (chartType) {
+            this.chartType = chartType;
+        },
         async getWhatALocationData () {
             await this.getIndividualVisitors();
-            this.avgBestDay = Math.round(this.getAverageVisitorsPerDay("su")).toLocaleString("de-DE");
-            this.avgBestHour = Math.round(this.getBestHour[0].avg).toLocaleString("de-DE");
-            this.individualVisitorsPerYear = Math.round(this.getIndividualVisitorsPerYear).toLocaleString("de-DE");
+            this.avgBestDay = Math.round(this.getAverageVisitorsPerDay(this.filterData.bestAvgDay[0])).toLocaleString(this.currentLocale);
+            this.avgBestHour = Math.round(this.getBestHour[0].avg).toLocaleString(this.currentLocale);
+            this.avgBestMonth = Math.round(this.getAverageVisitorsPerMonth(this.filterData.bestAvgMonth[0])).toLocaleString(this.currentLocale);
+            this.individualVisitorsPerYear = Math.round(this.getIndividualVisitorsPerYear).toLocaleString(this.currentLocale);
+            // Create the chart data
             this.chartdata.bar = this.getBarChartData;
             this.chartdata.line = this.getLineChartData;
-            this.monthdata = Math.round(this.getIndividualVisitorsPerMonth).toLocaleString("de-De");
             this.chartMonthsData.bar = this.getBarChartMonthlyData;
             this.chartMonthsData.line = this.getLineChartMonthlyData;
         },
+        getDayPager (index) {
+            this.avgBestDay = Math.round(this.getAverageVisitorsPerDay(this.filterData.bestAvgDay[index])).toLocaleString(this.currentLocale);
+        },
+        getMonthPager (index) {
+            this.avgBestMonth = Math.round(this.getAverageVisitorsPerMonth(this.filterData.bestAvgMonth[index])).toLocaleString(this.currentLocale);
+        },
+        showChart (chartoverview) {
+            this.changeChart(chartoverview);
+        }
     }
 };
 </script>
@@ -184,50 +203,102 @@ export default {
                                                         title="Ø individuelle tägliche Besucher an einem"
                                                         :number="avgBestDay"
                                                         :navigation="true"
-                                                        subtitle="Samstag"
+                                                        :filter-data="filterData.bestAvgDay"
+                                                        detail="monthly"
+                                                        @pager="getDayPager"
                                                     />
                                                     <DataCard
-                                                        title="Ø individuelle tägliche Besucher pro Tag"
-                                                        :number="avgBestHour"
+                                                        title="Ø individuelle tägliche Besucher pro Monat"
+                                                        :number="avgBestMonth"
                                                         :navigation="true"
-                                                        subtitle="06:00 12:00"
+                                                        :filter-data="filterData.bestAvgMonth"
+                                                        detail="monthly"
+                                                        @pager="getMonthPager"
                                                     />
-                                                    <DataCard
-                                                        title="Ø individuelle tägliche Besucher pro Monat in"
-                                                        :number="monthdata"
-                                                        :navigation="true"
-                                                        subtitle="Januar"
-                                                    />
-                                                    <DataCard
-                                                        title="Bestes Jahr"
-                                                        :number="2023"
-                                                        :navigation="false"
-                                                        subtitle="Jahr zu Datum"
-                                                    />
+<!--                                                    <DataCard-->
+<!--                                                        title="Ø individuelle tägliche Besucher pro Monat in"-->
+<!--                                                        :number="monthdata"-->
+<!--                                                        :navigation="true"-->
+<!--                                                        subtitle="Januar"-->
+<!--                                                    />-->
+<!--                                                    <DataCard-->
+<!--                                                        title="Bestes Jahr"-->
+<!--                                                        :number="2023"-->
+<!--                                                        :navigation="false"-->
+<!--                                                        subtitle="Jahr zu Datum"-->
+<!--                                                    />-->
                                                 </div>
-                                                <div
-                                                    v-if="chartData === 'overview'"
-                                                    class="row chart bar"
-                                                >
-                                                    <BarchartItem :data="chartdata.bar" />
+                                                <div class="charts">
+                                                    <!-- Bar Chart -->
+                                                    <div v-if="chartType === 'bar'">
+                                                        <div
+                                                            v-if="chartData === 'overview'"
+                                                            class="row chart bar"
+                                                        >
+                                                            <BarchartItem :data="chartdata.bar" />
+                                                        </div>
+                                                        <div
+                                                            v-if="chartData === 'monthlyoverview'"
+                                                            class="row chart bar"
+                                                        >
+                                                            <BarchartItem :data="chartMonthsData.bar" />
+                                                        </div>
+                                                    </div>
+                                                    <!-- Line Chart -->
+                                                    <div v-if="chartType === 'line'">
+                                                        <div
+                                                            v-if="chartData === 'overview'"
+                                                            class="row chart line"
+                                                        >
+                                                            <LinechartItem :data="chartdata.line" />
+                                                        </div>
+                                                        <div
+                                                            v-if="chartData === 'monthlyoverview'"
+                                                            class="row chart line"
+                                                        >
+                                                            <LinechartItem :data="chartMonthsData.line" />
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div
-                                                    v-if="chartData === 'monthlyoverview'"
-                                                    class="row chart bar"
-                                                >
-                                                    <BarchartItem :data="chartMonthsData.bar" />
-                                                </div>
-                                                <div
-                                                    v-if="chartData === 'overview'"
-                                                    class="row chart line"
-                                                >
-                                                    <LinechartItem :data="chartdata.line" />
-                                                </div>
-                                                <div
-                                                    v-if="chartData === 'monthlyoverview'"
-                                                    class="row chart line"
-                                                >
-                                                    <LinechartItem :data="chartMonthsData.line" />
+                                                <div class="charts chart-types select">
+                                                    <button
+                                                        type="button"
+                                                        :class="['btn', chartType === 'bar' ? 'btn-primary': 'btn-secondary']"
+                                                        @click="setChartType('bar')"
+                                                    >
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="16"
+                                                            height="16"
+                                                            fill="currentColor"
+                                                            class="bi bi-bar-chart-line"
+                                                            viewBox="0 0 16 16"
+                                                        >
+                                                            <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1V2zm1 12h2V2h-2v12zm-3 0V7H7v7h2zm-5 0v-3H2v3h2z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        :class="['btn', chartType === 'line' ? 'btn-primary': 'btn-secondary']"
+                                                        @click="setChartType('line')"
+                                                    >
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="16"
+                                                            height="16"
+                                                            fill="currentColor"
+                                                            class="bi bi-graph-up"
+                                                            viewBox="0 0 16 16"
+                                                        >
+                                                            <path
+                                                                fill-rule="evenodd"
+                                                                d="M0 0h1v15h15v1H0V0Zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07Z"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                    <button @click="showChart('overview')">
+                                                        All Data
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -255,9 +326,6 @@ export default {
                                     Component Here
                                 </div>
                             </Tabs>
-                            <button @click="getWhatALocationData">
-                                Get Data
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -272,5 +340,9 @@ export default {
   width: 100%;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.charts {
+    margin: 0.5rem;
 }
 </style>

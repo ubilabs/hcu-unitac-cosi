@@ -12,8 +12,18 @@ export default {
             required: true
         },
         number: {
-            type: [Object, Number],
+            type: [Object, Number, String],
             required: true
+        },
+        filterData: {
+            type: Array,
+            required: false,
+            default: () => []
+        },
+        detail: {
+            type: String,
+            required: false,
+            default: ""
         },
         navigation: {
             type: Boolean,
@@ -28,46 +38,41 @@ export default {
     },
     methods: {
         ...mapActions("Tools/VpiDashboard", Object.keys(actions)),
-
-        previous () {
-            console.log("previous");
-        },
-        next () {
-            console.log("next");
-        },
         showChart (chartoverview) {
-            // console.log('showChart');
             this.changeChart(chartoverview);
         },
-        getPagerValue(value) {
-            console.log(value);
+        getPagerValue (index) {
+            this.$emit("pager", index);
         }
     }
 };
 </script>
 
 <template>
-
-        <div class="card statistic-card">
-            <h4>{{ title }}</h4>
-            <div v-if="navigation">
-                <Paginator @pager="getPagerValue" :subtitle="subtitle" />
-            </div>
-             <div v-else>
-                <span class="current-index sub-index">{{ subtitle }}</span>
-            </div>
-            <div>
-                <span class="statistic-value-text">{{ number }}</span>
-            </div>
-            <div class="buttons">
-                <button @click="showChart('overview')">
-                    All Data
-                </button>
-                <button @click="showChart('monthlyoverview')">
-                    Details
-                </button>
-            </div>
+    <div class="card statistic-card">
+        <h4>{{ title }}</h4>
+        <div v-if="navigation">
+            <Paginator
+                :subtitle="subtitle"
+                :paginator-data="filterData"
+                @pager="getPagerValue"
+            />
         </div>
+        <div v-else>
+            <span class="current-index sub-index">{{ subtitle }}</span>
+        </div>
+        <div>
+            <span class="statistic-value-text">{{ number }}</span>
+        </div>
+        <div class="buttons">
+            <button
+                v-if="detail !== ''"
+                @click="showChart(`${detail}overview`)"
+            >
+                Details
+            </button>
+        </div>
+    </div>
 </template>
 
 <style lang="scss">
@@ -87,7 +92,7 @@ export default {
   font-size: 0.7rem;
   text-align: center;
   margin-bottom: 0;
-  
+
 }
 .statistic-card {
     background: #f6f7f8;
