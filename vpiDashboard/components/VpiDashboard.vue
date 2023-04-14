@@ -84,6 +84,16 @@ export default {
                             label: "Label"
                         }
                     ]
+                },
+                line: {
+                    datasets: [
+                        {
+                            backgroundColor: "#FD736B",
+                            data: [1, 2, 3],
+                            hoverOffset: 4,
+                            label: "Label"
+                        }
+                    ]
                 }
             },
             TabItems: [
@@ -156,6 +166,7 @@ export default {
             this.chartMonthsData.line = this.getLineChartMonthlyData;
 
             this.chartDailyData.bar = this.getBarChartDailyData;
+            this.chartDailyData.line = this.getLineChartDailyData;
         },
         getDayPager (index) {
             this.avgBestDay = Math.round(this.getAverageVisitorsPerDay(this.filterData.bestAvgDay[index])).toLocaleString(this.currentLocale);
@@ -282,6 +293,12 @@ export default {
                                                             class="row chart line"
                                                         >
                                                             <LinechartItem :data="chartMonthsData.line" />
+                                                        </div>
+                                                        <div
+                                                            v-if="chartData === 'dailyoverview'"
+                                                            class="row chart bar"
+                                                        >
+                                                            <LinechartItem :data="chartDailyData.line" />
                                                         </div>
                                                     </div>
                                                 </div>

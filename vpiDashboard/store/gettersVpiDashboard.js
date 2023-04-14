@@ -65,6 +65,30 @@ const getters = {
 
         return data;
     },
+    getLineChartDailyData ({frequencyData}) {
+        const daily = frequencyData?.unique?.dayly,
+
+            labels = [],
+            day_data = [];
+
+        daily.forEach((element, index) => {
+            labels.push(element.weekday);
+            day_data.push(element.sum);
+        });
+
+        const data = {
+            labels: labels.reverse(),
+            datasets: [{
+                label: "Unique Visitors (Day)",
+                data: day_data.reverse(),
+                fill: false,
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1
+            }]
+        };
+
+        return data;
+    },
     getBarChartMonthlyData ({frequencyData}) {
         const monthly = frequencyData?.unique?.monthly,
             labels = [],
