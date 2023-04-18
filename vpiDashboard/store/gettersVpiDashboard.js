@@ -19,8 +19,6 @@ const getters = {
             averageVisitorsOnDay = daily.filter((element) => {
                 return element.weekday === day;
             });
-        console.log('daily: ', daily);
-        console.log('avgDay', averageVisitorsOnDay);
         return averageVisitorsOnDay[0].avg;
     },
     getAverageVisitorsPerMonth: (state) => (month) => {

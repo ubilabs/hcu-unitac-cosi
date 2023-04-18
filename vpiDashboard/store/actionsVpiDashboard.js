@@ -6,6 +6,9 @@ const actions = {
             response = await axios.get(url);
 
         commit("setFrequencyData", response.data);
+        commit("setAverageVisitorsPerMonth", response.data)
+        commit("setAverageVisitorsPerDay", response.data)
+        commit("setIndividualVisitorsPerYear", response.data)
     },
     changeChart: ({commit}, chartname) => {
         commit("setChartData", chartname);

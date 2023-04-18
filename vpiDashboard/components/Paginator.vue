@@ -12,7 +12,7 @@ export default {
             required: false,
             default: ["eins", "zwei", "drei"]
         },
-        subtitle: {
+        subtitleIndex: {
             type: String,
             required: false,
             default: ""

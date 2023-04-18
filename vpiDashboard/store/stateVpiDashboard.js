@@ -8,7 +8,10 @@ const state = {
     isVisibleInMenu: true,
     deactivateGFI: false,
     frequencyData: undefined,
-    chartData: "overview"
+    chartData: "overview",
+    averageVisitorsPerMonth: [],
+    averageVisitorsPerDay: [],
+    individualVisitorsPerYear: ""
 };
 
 export default state;
