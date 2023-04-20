@@ -379,27 +379,16 @@ export default {
                         </div>
                         <div class="my-3">
                             <label
-                                for="mietenspiegel-baualterklasse-select"
+                                for="kategorie"
                                 class="form-label mb-0 py-0"
+                            >{{ formKeys[2] }} </label>
+                            <input
+                                id="kategorie"
+                                type="text"
+                                readonly
+                                class="form-control-plaintext py-0"
+                                :value="`${residentialInformation.bezeichnung}`"
                             >
-                                {{ formKeys[0] }}
-                            </label>
-                            <select
-                                id="mietenspiegel-baualtersklasse-select"
-                                v-model="buildingAgeClass"
-                                class="select-baualtersklasse form-select select-style"
-                            >
-                                <option selected>
-                                    {{ $t('additional:modules.tools.mietenspiegelFormular.pleaseSelect') }}
-                                </option>
-                                <option
-                                    v-for="(data, key) in getUniqueValuesByAttributes('Baualtersklasse/Bezugsfertigkeit', calculationData)"
-                                    :key="key"
-                                    :value="data"
-                                >
-                                    {{ data }}
-                                </option>
-                            </select>
                         </div>
                         <div class="mb-3">
                             <label
@@ -416,16 +405,31 @@ export default {
                         </div>
                         <div class="my-3">
                             <label
-                                for="kategorie"
+                                for="mietenspiegel-baualterklasse-select"
                                 class="form-label mb-0 py-0"
-                            >{{ formKeys[2] }} </label>
-                            <input
-                                id="kategorie"
-                                type="text"
-                                readonly
-                                class="form-control-plaintext py-0"
-                                :value="`${residentialInformation.bezeichnung}`"
                             >
+                                {{ formKeys[0] }}
+                            </label>
+                            <select
+                                id="mietenspiegel-baualtersklasse-select"
+                                v-model="buildingAgeClass"
+                                class="select-baualtersklasse form-select select-style"
+                            >
+                                <option
+                                    value=""
+                                    disabled
+                                    selected
+                                >
+                                    {{ $t('additional:modules.tools.mietenspiegelFormular.pleaseSelect') }}
+                                </option>
+                                <option
+                                    v-for="(data, key) in getUniqueValuesByAttributes('Baualtersklasse/Bezugsfertigkeit', calculationData)"
+                                    :key="key"
+                                    :value="data"
+                                >
+                                    {{ data }}
+                                </option>
+                            </select>
                         </div>
                         <div class="my-3">
                             <label
@@ -439,7 +443,11 @@ export default {
                                 v-model="livingSpace"
                                 class="select-wohnflaeche form-select select-style"
                             >
-                                <option selected>
+                                <option
+                                    value=""
+                                    disabled
+                                    selected
+                                >
                                     {{ $t('additional:modules.tools.mietenspiegelFormular.pleaseSelect') }}
                                 </option>
                                 <option
