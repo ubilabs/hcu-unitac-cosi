@@ -79,7 +79,8 @@ export default {
             result.forEach(row => {
                 const obj = {
                     EPSG: epsg,
-                    Coordinates: coordinates
+                    Rechtswert: coordinates[0],
+                    Hochwert: coordinates[1]
                 };
 
                 Object.assign(row, obj);
