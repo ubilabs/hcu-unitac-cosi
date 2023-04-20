@@ -297,6 +297,21 @@ export default {
                 });
                 return filterHit;
             });
+        },
+        /**
+         * Resets the table data to original data and also reset the stored filtered parameter
+         * @returns {void}
+         */
+        resetAll () {
+            this.filterObject = {};
+            this.dropdownSelected = {};
+            if (this.sortingColumn) {
+                this.columns.forEach(col => {
+                    col.order = "origin";
+                });
+            }
+            this.rows = this.originRows;
+            this.columns = this.getColumns(this.feature.getAttributesToShow());
         }
     }
 };
@@ -389,6 +404,19 @@ export default {
                 :title="$t('modules.tools.filter.download.labelBtn')"
             />
         </div>
+        <div
+            v-if="isFilterable || isSortable"
+            class="reset-all"
+        >
+            <button
+                type="button"
+                class="btn btn-primary reset"
+                @click="resetAll"
+                @keypress="resetAll"
+            >
+                {{ $t('additional:addons.gfiThemes.dataTable.reset') }}
+            </button>
+        </div>
     </div>
 </template>
 
@@ -438,6 +466,12 @@ export default {
         }
     }
     .download {
+        position: sticky;
+        bottom: 22px;
+        float: right;
+        margin-left: 20px;
+    }
+    .reset-all {
         position: sticky;
         bottom: 22px;
         float: right;
