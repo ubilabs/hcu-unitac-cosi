@@ -21,7 +21,8 @@ describe("/src/modules/tools/gfi/components/themes/dataTable/components/DataTabl
                     "name": "DataTable",
                     "params": {
                         "enableDownload": true,
-                        "isSortable": true
+                        "isSortable": true,
+                        "showCount": "count"
                     }
                 };
             },
@@ -246,6 +247,30 @@ describe("/src/modules/tools/gfi/components/themes/dataTable/components/DataTabl
             await wrapper.setProps({feature: newFeature});
 
             expect(wrapper.find(".reset-all").exists()).to.be.false;
+        });
+
+        it("It should contains a div Element for count", () => {
+            expect(wrapper.find(".count").exists()).to.be.true;
+        });
+
+        it("It should shows right count with label", () => {
+            expect(wrapper.find(".count").text()).equals("count 2");
+        });
+
+        it("It should not contain a div Element for count", async () => {
+            const newFeature = {
+                getTheme: () => "DataTable",
+                getTitle: () => "DataTable",
+                getAttributesToShow: () => {
+                    return {};
+                },
+                getMimeType: () => "text/xml",
+                getFeatures: () => []
+            };
+
+            await wrapper.setProps({feature: newFeature});
+
+            expect(wrapper.find(".count").exists()).to.be.false;
         });
     });
 

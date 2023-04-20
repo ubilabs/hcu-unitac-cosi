@@ -42,8 +42,12 @@ export default {
             return this.feature.getFeatures().map(singleFeature => singleFeature.getMappedProperties());
         },
 
+        /**
+         * Returns whether download Button is enabled.
+         * @returns {Boolean} True if the download Buttion is enabled.
+         */
         enableDownload: function () {
-            return this.feature?.getTheme()?.params?.enableDownload;
+            return this.feature?.getTheme()?.params?.enableDownload || false;
         },
 
         /**
@@ -53,6 +57,7 @@ export default {
         isSortable: function () {
             return this.feature.getTheme()?.params?.isSortable || false;
         },
+
         /**
          * Returns whether the table is filterable.
          * @returns {Boolean} True if the table is filterable otherwise false.
@@ -60,6 +65,15 @@ export default {
         isFilterable: function () {
             return this.feature.getTheme()?.params?.isFilterable || false;
         },
+
+        /**
+         * Returns the value of parameter shownCount
+         * @returns {String|undefined} the value of parameter shownCount
+         */
+        showCount: function () {
+            return this.feature.getTheme()?.params?.showCount;
+        },
+
         /**
          * Returns the column which has an other order than 'origin'.
          * @returns {Object|undefined} The column or undefined if no column is found.
@@ -322,6 +336,12 @@ export default {
         id="table-data-container"
         :class="enableDownload ? 'enable-download' : ''"
     >
+        <div
+            v-if="typeof showCount !== 'undefined'"
+            class="count"
+        >
+            <b>{{ $t(showCount) }}</b> {{ rows.length }}
+        </div>
         <table
             class="table table-hover"
         >
@@ -330,6 +350,7 @@ export default {
                     v-for="col in columns"
                     :key="col.index"
                     class="filter-select-box-container"
+                    :class="typeof showCount !== 'undefined' ? 'more-sticky' : ''"
                 >
                     <span
                         v-if="isFilterable"
@@ -393,7 +414,7 @@ export default {
             </tbody>
         </table>
         <div
-            v-if="enableDownload === true"
+            v-if="enableDownload"
             class="download"
         >
             <ExportButtonCSV
@@ -444,6 +465,14 @@ export default {
         }
     }
 
+    .count {
+        padding-top: 25px;
+        padding-left: 6px;
+        position: sticky;
+        top: 0px;
+        background-color: #ffffff;
+    }
+
     table {
         margin: 0;
         table-layout: fixed;
@@ -453,6 +482,9 @@ export default {
             top: 0px;
             background: $white;
             vertical-align: top;
+            &.more-sticky {
+                top: 37px;
+            }
             span {
                 cursor: pointer;
                 padding: 0;
