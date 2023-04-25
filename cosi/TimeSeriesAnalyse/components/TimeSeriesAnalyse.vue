@@ -1,11 +1,9 @@
 <script>
-// Documentation in ./doc/TimeSeries.md
 import Tool from "../../../../src/modules/tools/ToolTemplate.vue";
 import {getComponent} from "../../../../src/utils/getComponent";
-import {mapGetters, mapMutations} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 import getters from "../store/gettersTimeSeriesAnalyse";
 import mutations from "../store/mutationsTimeSeriesAnalyse";
-import store from "../../../../src/app-store";
 import {Circle as CircleStyle, Fill, Stroke, Style} from "ol/style.js";
 import BarchartItem from "../../../../src/share-components/charts/components/BarchartItem.vue";
 import LinechartItem from "../../../../src/share-components/charts/components/LinechartItem.vue";
@@ -23,12 +21,12 @@ export default {
         return {
             features: [],
             isChartActive: false,
-            barChartData: false,
-            lineChartData: false,
-            pieChartData: false,
+            barChartData: null,
+            lineChartData: null,
+            pieChartData: null,
+            firstYear: undefined,
+            secondYear: undefined,
             chartGivenOptions: {},
-            firstYear: 1980,
-            secondYear: 2022,
             interval: null
         };
     },
@@ -39,9 +37,31 @@ export default {
     watch: {
         firstYear (value) {
             this.filterFeature(value, this.firstYearLayer, this.firstYearStyle, this.features, this.layerId, this.key);
+            if ((this.secondYear - value >= 0 && this.secondYear - value < this.count) || value > this.secondYear) {
+                if (this.barChartData) {
+                    this.resetChart("bar", value, this.secondYear);
+                }
+                else if (this.lineChartData) {
+                    this.resetChart("line", value, this.secondYear);
+                }
+                else if (this.pieChartData) {
+                    this.resetChart("pie", value, this.secondYear);
+                }
+            }
         },
         secondYear (value) {
             this.filterFeature(value, this.secondYearLayer, this.secondYearStyle, this.features, this.layerId, this.key);
+            if (this.firstYear - value < this.count) {
+                if (this.barChartData) {
+                    this.resetChart("bar", this.firstYear, value);
+                }
+                else if (this.lineChartData) {
+                    this.resetChart("line", this.firstYear, value);
+                }
+                else if (this.pieChartData) {
+                    this.resetChart("pie", this.firstYear, value);
+                }
+            }
         },
         active (val) {
             if (val) {
@@ -49,15 +69,14 @@ export default {
             }
         }
     },
-    mounted () {
-        this.sliderInstance = this.min;
-    },
     async created () {
         this.$on("close", this.close);
         this.min = this.yearRange[0];
         this.max = this.yearRange[1];
-        this.firstYearLayer = await store.dispatch("Maps/addNewLayerIfNotExists", {layerName: "timeSeriesyear1"}, {root: true});
-        this.secondYearLayer = await store.dispatch("Maps/addNewLayerIfNotExists", {layerName: "timeSeriesyear2"}, {root: true});
+        this.firstYear = this.yearRange[0];
+        this.secondYear = this.yearRange[1];
+        this.firstYearLayer = await this.addNewLayerIfNotExists({layerName: "timeSeriesyear1"});
+        this.secondYearLayer = await this.addNewLayerIfNotExists({layerName: "timeSeriesyear2"});
         this.firstYearStyle = new Style({
             image: new CircleStyle({
                 radius: 10,
@@ -82,18 +101,23 @@ export default {
                 })
             })
         });
+        if (typeof this.count === "undefined") {
+            this.setCount(this.secondYear - this.secondYear);
+        }
     },
     methods: {
         ...mapMutations("Tools/TimeSeriesAnalyse", Object.keys(mutations)),
+        ...mapActions("Maps", ["addNewLayerIfNotExists"]),
+
         /**
          * Closes the tool window
          * @returns {void}
          */
         close () {
             this.setActive(false);
-            this.barChartData = false;
-            this.lineChartData = false;
-            this.pieChartData = false;
+            this.barChartData = null;
+            this.lineChartData = null;
+            this.pieChartData = null;
 
             const model = getComponent(this.id);
 
@@ -146,9 +170,9 @@ export default {
             }
             else if (Array.isArray(key) && key.length) {
                 key.forEach(k => {
-                    featureData = features.filter(feature => {
+                    featureData.push(...features.filter(feature => {
                         return feature.get(k) === Number(year);
-                    });
+                    }));
                 });
             }
 
@@ -195,120 +219,121 @@ export default {
         openChart (typ) {
             if (typ === "bar") {
                 if (this.barChartData) {
-                    this.barChartData = false;
+                    this.barChartData = null;
                     return;
                 }
-                this.barChartData = this.getCountsForChart(typ, this.key, this.statisKey, this.firstYear, this.secondYear, this.count, this.features);
-                this.chartGivenOptions = this.getGivenOptions(typ, this.statiskey);
-                this.lineChartData = false;
-                this.pieChartData = false;
+                this.barChartData = this.getDataForChart(typ, this.key, this.statisKey, this.firstYear, this.secondYear, this.count, this.features);
+                this.chartGivenOptions = this.getGivenOptions(this.statisKey);
+                this.lineChartData = null;
+                this.pieChartData = null;
             }
             else if (typ === "line") {
                 if (this.lineChartData) {
-                    this.lineChartData = false;
+                    this.lineChartData = null;
                     return;
                 }
-                this.lineChartData = this.getCountsForChart(typ, this.key, this.statisKey, this.firstYear, this.secondYear, this.count, this.features);
-                this.chartGivenOptions = this.getGivenOptions(typ, this.statiskey);
-                this.barChartData = false;
-                this.pieChartData = false;
+                this.lineChartData = this.getDataForChart(typ, this.key, this.statisKey, this.firstYear, this.secondYear, this.count, this.features);
+                this.chartGivenOptions = this.getGivenOptions(this.statisKey);
+                this.barChartData = null;
+                this.pieChartData = null;
             }
             else if (typ === "pie") {
                 if (this.pieChartData) {
-                    this.pieChartData = false;
+                    this.pieChartData = null;
                     return;
                 }
-                this.pieChartData = this.getCountsForChart(typ, this.key, this.statisKey, this.firstYear, this.secondYear, this.count, this.features);
-                this.chartGivenOptions = this.getGivenOptions(typ, this.statiskey);
-                this.barChartData = false;
-                this.lineChartData = false;
+                this.pieChartData = this.getDataForChart(typ, this.key, this.statisKey, this.firstYear, this.secondYear, this.count, this.features);
+                this.chartGivenOptions = this.getGivenOptions(this.statisKey);
+                this.barChartData = null;
+                this.lineChartData = null;
             }
         },
         /**
-         * Gets the given options of chart
+         * Resets the data for chart
          * @param {String} typ - the chart typ
-         * @param {String|String[]} statiskey - the property as key for chart
+         * @param {Number} firstYear - the first year
+         * @param {Number} secondYear - the second year
+         * @param {Number} count the counts to be shown in chart
+         * @returns {void}
+         */
+        resetChart (typ, firstYear, secondYear) {
+            let newFirstYear = firstYear,
+                newSecondYear = secondYear;
+
+            if (firstYear > secondYear) {
+                newFirstYear = secondYear;
+                newSecondYear = firstYear;
+            }
+
+            if (typ === "bar") {
+                this.barChartData = this.getDataForChart(typ, this.key, this.statisKey, newFirstYear, newSecondYear, this.count, this.features);
+            }
+            else if (typ === "line") {
+                this.lineChartData = this.getDataForChart(typ, this.key, this.statisKey, newFirstYear, newSecondYear, this.count, this.features);
+            }
+            else if (typ === "pie") {
+                this.pieChartData = this.getDataForChart(typ, this.key, this.statisKey, newFirstYear, newSecondYear, this.count, this.features);
+            }
+
+            this.chartGivenOptions = this.getGivenOptions(this.statisKey);
+        },
+        /**
+         * Gets the given options of chart
+         * @param {String} statiskey - the property as key for chart
          * @returns {Object} the given option of chart
          */
-        getGivenOptions (typ, statiskey) {
-            let options = {
+        getGivenOptions (statiskey) {
+            let labelString = this.$t("additional:modules.tools.cosi.timeSeriesAnalyse.countLabel") + "features";
+
+            if (typeof statiskey === "string") {
+                labelString = this.$t("additional:modules.tools.cosi.timeSeriesAnalyse.countLabel") + statiskey;
+            }
+
+            return {
                 scales: {
                     yAxes: [{
                         scaleLabel: {
                             display: true,
-                            labelString: this.$t("additional:modules.tools.cosi.timeSeriesAnalyse.featureCount")
+                            labelString: labelString
                         }
                     }]
+                },
+                elements: {
+                    line: {
+                        fill: false
+                    }
                 }
             };
-
-            if (typeof statiskey === "undefined" || statiskey === "" || (Array.isArray(statiskey) && !statiskey.length)) {
-                if (typ === "line") {
-                    options = {
-                        scales: {
-                            yAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: this.$t("additional:modules.tools.cosi.timeSeriesAnalyse.featureCount")
-                                }
-                            }]
-                        },
-                        elements: {
-                            line: {
-                                fill: false
-                            }
-                        }
-                    };
-                }
-                else if (typ === "pie") {
-                    options = {
-                        legend: {
-                            display: false
-                        },
-                        scales: {
-                            yAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: this.$t("additional:modules.tools.cosi.timeSeriesAnalyse.featureCount")
-                                }
-                            }]
-                        }
-                    };
-                }
-            }
-
-            return options;
         },
         /**
-         * Gets the count for chart
+         * Gets the data for chart
          * @param {String} typ - the chart typ
          * @param {String|String[]} key - the year as key to be filtered
-         * @param {String|String[]} statiskey - the property as key for chart
-         * @param {String} firstYear - the first year
-         * @param {String} secondYear - the second year
-         * @param {NUmber} count the counts to be shown in chart
+         * @param {String} statiskey - the property as key for chart
+         * @param {Number} firstYear - the first year
+         * @param {Number} secondYear - the second year
+         * @param {Number} count the counts to be shown in chart
          * @param {ol/Feature[]} features the features of the layer
          * @returns {Object} the data for chart
          */
-        getCountsForChart (typ, key, statiskey, firstYear, secondYear, count, features) {
+        getDataForChart (typ, key, statiskey, firstYear, secondYear, count, features) {
             let data, finalCount;
 
             if (typeof count !== "number" || count <= 0) {
-                return undefined;
+                finalCount = Math.abs(secondYear - firstYear + 1);
             }
-
-            if (count >= Math.abs(secondYear - firstYear)) {
-                finalCount = Math.abs(secondYear - firstYear);
+            else if (count >= Math.abs(secondYear - firstYear + 1)) {
+                finalCount = Math.abs(secondYear - firstYear + 1);
             }
             else {
                 finalCount = count;
             }
 
-            if (typeof statiskey === "undefined" || statiskey === "" || (Array.isArray(statiskey) && !statiskey.length)) {
+            if (typeof statiskey === "undefined" || statiskey === "") {
                 data = this.getCountsOfFeatures(typ, Math.max(firstYear, secondYear), finalCount, key, features);
             }
             else {
-            //    data = this.getDataForChart(statiskey, Math.max(firstYear, secondYear), finalCount, key, features);
+                data = this.getCountsOfProperty(typ, statiskey, Math.max(firstYear, secondYear), finalCount, key, features);
             }
 
             return data;
@@ -316,33 +341,97 @@ export default {
         /**
          * Gets the counts of features
          * @param {String} typ - the chart typ
-         * @param {String} year - the larger year
-         * @param {NUmber} count the counts to be shown in chart
+         * @param {Number} year - the larger year
+         * @param {Number} count the counts to be shown in chart
          * @param {String|String[]} key - the year as key to be filtered
          * @param {ol/Feature[]} features the features of the layer
          * @returns {Object} the counts of features
          */
         getCountsOfFeatures (typ, year, count, key, features) {
+            if (typeof count !== "number" || typeof year !== "number" || (typeof key !== "string" && !Array.isArray(key)) || !Array.isArray(features)) {
+                return null;
+            }
+
             const totalCount = [];
 
-            for (let i = 0; i <= count; i++) {
+            for (let i = 0; i < count; i++) {
                 if (typeof key === "string") {
                     totalCount[i] = features.filter(feature => {
                         return Number(feature.get(key)) === (year - i);
                     }).length;
                 }
                 else if (Array.isArray(key) && key.length) {
+                    let length = 0;
+
                     key.forEach(k => {
-                        totalCount[i] += features.filter(feature => {
-                            return Number(feature.get(k)) === (year - i);
+                        length += features.filter(feature => {
+                            return Number(feature.get(k)) === year - i;
                         }).length;
                     });
+
+                    totalCount[i] = length;
                 }
             }
 
             return {
                 datasets: [{
-                    backgroundColor: "#57A845",
+                    backgroundColor: typ !== "pie" ? "#57A845" : this.getPieColors(count),
+                    data: totalCount.reverse(),
+                    label: this.$t("additional:modules.tools.cosi.timeSeriesAnalyse.count"),
+                    borderColor: typ === "pie" ? "#ffffff" : "#57A845"
+                }],
+                labels: this.getLabels(count, year)
+            };
+        },
+
+        /**
+         * Gets the counts of propery in feature
+         * @param {String} typ - the chart typ
+         * @param {String} statiskey - the property as key for chart
+         * @param {Number} year - the second year
+         * @param {Number} count the counts to be shown in chart
+         * @param {String|String[]} key - the year as key to be filtered
+         * @param {ol/Feature[]} features the features of the layer
+         * @returns {Object} the counts of features
+         */
+        getCountsOfProperty (typ, statiskey, year, count, key, features) {
+            if (typeof count !== "number" || typeof year !== "number" || (typeof key !== "string" && !Array.isArray(key)) || !Array.isArray(features) || typeof statiskey !== "string") {
+                return null;
+            }
+
+            const totalCount = [];
+
+            if (typeof statiskey === "string") {
+                for (let i = 0; i < count; i++) {
+                    let currentFeatures = [],
+                        currentCount = 0;
+
+                    if (typeof key === "string") {
+                        currentFeatures = features.filter(feature => {
+                            return Number(feature.get(key)) === (year - i);
+                        });
+                    }
+                    else if (Array.isArray(key) && key.length) {
+                        key.forEach(k => {
+                            currentFeatures.push(...features.filter(feature => {
+                                return Number(feature.get(k)) === (year - i);
+                            }));
+                        });
+                    }
+
+                    for (let j = 0; j < currentFeatures.length; j++) {
+                        if (typeof currentFeatures[j] !== "undefined") {
+                            currentCount += currentFeatures[j].get(statiskey);
+                        }
+                    }
+
+                    totalCount[i] = currentCount;
+                }
+            }
+
+            return {
+                datasets: [{
+                    backgroundColor: typ !== "pie" ? "#57A845" : this.getPieColors(count),
                     data: totalCount.reverse(),
                     label: this.$t("additional:modules.tools.cosi.timeSeriesAnalyse.count"),
                     borderColor: typ === "pie" ? "#ffffff" : "#57A845"
@@ -351,33 +440,37 @@ export default {
             };
         },
         /**
+         * Gets the pie colors in array
+         * @param {Number} count the counts to be shown in chart
+         * @returns {String[]} the random colors in array
+         */
+        getPieColors (count) {
+            const colors = [];
+
+            for (let i = 0; i < count; i++) {
+                colors[i] = "#" + Math.floor(Math.random() * 16777215).toString(16);
+            }
+
+            return colors;
+        },
+        /**
          * Gets the counts of features
-         * @param {NUmber} count the counts to be shown in chart
-         * @param {String} year - the larger year
+         * @param {Number} count the counts to be shown in chart
+         * @param {Number} year - the larger year
          * @returns {String[]} the labels in string
          */
         getLabels (count, year) {
+            if (typeof count !== "number" || typeof year !== "number") {
+                return [];
+            }
             const labels = [];
 
-            for (let i = count; i >= 0; i--) {
+            for (let i = count - 1; i >= 0; i--) {
                 labels.push(year - i);
             }
 
             return labels;
         },
-        /**
-         * Gets the data for chart
-         * @param {String|String[]} statiskey - the property as key for chart
-         * @param {String} year - the second year
-         * @param {Number} finalCount the counts to be shown in chart
-         * @param {String|String[]} key - the year as key to be filtered
-         * @param {ol/Feature[]} features the features of the layer
-         * @returns {Object} the counts of features
-
-        getDataForChart (statiskey, year, finalCount, key, features) {
-
-        }
-        */
 
         /**
          * Plays the slider
@@ -392,7 +485,7 @@ export default {
                     this.firstYear = this.max;
                     this.pauseSlider();
                 }
-            }, 250); // adjust the interval to control the speed of movement
+            }, this.aniInterval); // adjust the interval to control the speed of movement
         },
         /**
          * Stops the slider
@@ -515,7 +608,6 @@ export default {
                 </button>
             </div>
             <div
-                id="app"
                 class="slider-range"
             >
                 <label
@@ -559,25 +651,22 @@ export default {
             </div>
             <div class="icons-function">
                 <span>
-                    <i
-                        class="bi bi-bar-chart-fill"
+                    <v-icon
                         @click="openChart('bar')"
                         @keydown="openChart('bar')"
-                    />
+                    >mdi-chart-bar</v-icon>
                 </span>
                 <span>
-                    <i
-                        class="bi bi-line"
+                    <v-icon
                         @click="openChart('line')"
                         @keydown="openChart('line')"
-                    />
+                    >mdi-chart-areaspline</v-icon>
                 </span>
                 <span>
-                    <i
-                        class="bi bi-pie-chart"
+                    <v-icon
                         @click="openChart('pie')"
                         @keydown="openChart('pie')"
-                    />
+                    >mdi-chart-scatter-plot</v-icon>
                 </span>
             </div>
         </template>
@@ -594,10 +683,14 @@ export default {
     box-sizing: border-box;
 }
 
+.chart {
+    margin-bottom: 20px;
+}
+
 .animation-button {
     float: left;
     height: 80px;
-    margin-top: 40px;
+    margin-top: 14px;
     margin-right: 20px;
     button {
         i {
@@ -607,7 +700,7 @@ export default {
 }
 
 .slider-range {
-    width: calc(100% - 250px);
+    width: calc(100% - 260px);
     float: left;
 }
 
@@ -734,10 +827,11 @@ export default {
 .icons-function {
     float: right;
     height: 80px;
-    margin-top: 30px;
+    margin-top: 35px;
+    margin-left: 10px;
     span {
         cursor: pointer;
-        i {
+        button {
             font-size: 40px;
         }
     }

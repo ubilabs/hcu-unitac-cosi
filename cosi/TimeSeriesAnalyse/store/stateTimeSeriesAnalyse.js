@@ -8,7 +8,13 @@
  * @property {String}   name - Module name
  * @property {Boolean}  renderToWindow - if true, component is rendered in a window pane instead of sidebar
  * @property {Boolean}  resizableWindow - if true and if rendered to window pane, the pane is resizable
- * @property {String}   title - Module title
+ * @property {String}   onlyDesktop - if only used for desktop version
+ * @property {String|[String]}   layerId - the layer Id
+ * @property {String|[String]}   key - the key for recognized as year
+ * @property {String}   statisKey - the key as feature property
+ * @property {[Number, Number]}   yearRange - the year range, min and max
+ * @property {Number}   count - the counts to be shown in Chart
+ * @property {Number}   aniInterval - the time interval for animation
  */
 
 export default {
@@ -25,5 +31,6 @@ export default {
     key: "Jahr",
     statisKey: undefined,
     yearRange: [],
-    count: 10
+    count: undefined,
+    aniInterval: 1000
 };

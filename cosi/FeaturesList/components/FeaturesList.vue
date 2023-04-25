@@ -235,6 +235,7 @@ export default {
                 this.$nextTick(() => {
                     if (this.active) {
                         this.$el.style.width = "inherit";
+                        this.$el.querySelector("#basic-resize-handle-sidebar").style.display = "inherit";
                         mapCollection.getMap("2D").updateSize();
                     }
                 });
@@ -243,6 +244,7 @@ export default {
                 this.$nextTick(() => {
                     if (this.active) {
                         this.$el.style.width = "80px";
+                        this.$el.querySelector("#basic-resize-handle-sidebar").style.display = "none";
                         mapCollection.getMap("2D").updateSize();
                     }
                 });
@@ -257,6 +259,8 @@ export default {
         this.$on("close", () => {
             this.setActive(false);
         });
+
+        this.isTimeSeriesAnalyseShow = typeof this.$store.state.configJson.Portalconfig.menu.tools.children.timeSeriesAnalyse !== "undefined";
     },
     async mounted () {
         // initally set the facilities mapping based on the config.json
@@ -284,6 +288,7 @@ export default {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Tools/DistanceScoreService", ["getDistanceScore", "getFeatureValues"]),
+        ...mapActions("Tools", ["setToolActive"]),
         ...mapActions("Maps", ["removeHighlightFeature", "addNewLayerIfNotExists"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...chartMethods,
@@ -664,7 +669,7 @@ export default {
         },
         highlightVectorFeature,
         openTimeSeriesAnalyse () {
-            this.$store.dispatch("Tools/setToolActive", {id: "TimeSeriesAnalyse", active: true});
+            this.setToolActive({id: "TimeSeriesAnalyse", active: true});
             this.setShow(false);
         },
         /**
@@ -693,7 +698,7 @@ export default {
             v-if="active"
             #toolBody
         >
-            <div>
+            <div v-if="isTimeSeriesAnalyseShow">
                 <v-btn
                     class="ma-2 time-series"
                     color="success"
@@ -705,6 +710,7 @@ export default {
                 </v-btn>
             </div>
             <div
+                v-if="isTimeSeriesAnalyseShow"
                 class="toggle"
                 @click="toggleTool"
                 @keydown="toggleTool"

@@ -267,6 +267,18 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
             expect(wrapper.find("form").exists()).to.be.false;
         });
 
+        it("should display time-series button", async () => {
+            const wrapper = await mountComponent(true);
+
+            expect(wrapper.find(".time-series").exists()).to.be.true;
+        });
+
+        it("should display toggle component", async () => {
+            const wrapper = await mountComponent(true);
+
+            expect(wrapper.find(".toggle").exists()).to.be.true;
+        });
+
         it("should return false for null on isFeaturedDisabled", async () => {
             const wrapper = await mountComponent(false);
 

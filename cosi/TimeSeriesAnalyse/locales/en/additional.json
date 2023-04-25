@@ -5,7 +5,7 @@
                 "timeSeriesAnalyse": {
                     "title": "Time Series analyse",
                     "count": "Count",
-                    "featureCount": "Count of features"
+                    "countLabel": "Count of "
                 }
             }
         }
