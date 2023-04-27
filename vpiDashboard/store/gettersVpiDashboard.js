@@ -19,6 +19,7 @@ const getters = {
             averageVisitorsOnDay = daily.filter((element) => {
                 return element.weekday === day;
             });
+
         return averageVisitorsOnDay[0].avg;
     },
     getAverageVisitorsPerMonth: (state) => (month) => {
@@ -26,6 +27,7 @@ const getters = {
             averageVisitorsOnMonth = monthly.filter((element) => {
                 return element.date__month === month;
             });
+
         return averageVisitorsOnMonth[0].avg;
     },
     getBestDay ({frequencyData}) {
@@ -46,11 +48,11 @@ const getters = {
             labels = [],
             day_data = [];
 
-        daily.forEach((element, index) => {
+        daily.forEach((element) => {
             labels.push(element.weekday);
             day_data.push(element.sum);
         });
-
+        // eslint-disable-next-line
         const data = {
             labels: labels.reverse(),
             datasets: [{
@@ -69,11 +71,11 @@ const getters = {
             labels = [],
             day_data = [];
 
-        daily.forEach((element, index) => {
+        daily.forEach((element) => {
             labels.push(element.weekday);
             day_data.push(element.sum);
         });
-
+        // eslint-disable-next-line
         const data = {
             labels: labels.reverse(),
             datasets: [{
@@ -92,11 +94,11 @@ const getters = {
             labels = [],
             month_data = [];
 
-        monthly.forEach((element, index) => {
+        monthly.forEach((element) => {
             labels.push(element.date__month);
             month_data.push(element.sum);
         });
-
+        // eslint-disable-next-line
         const data = {
             labels: labels.reverse(),
             datasets: [{
@@ -115,11 +117,11 @@ const getters = {
             labels = [],
             month_data = [];
 
-        monthly.forEach((element, index) => {
+        monthly.forEach((element) => {
             labels.push(element.date__month);
             month_data.push(element.sum);
         });
-
+        // eslint-disable-next-line
         const data = {
             labels: labels.reverse(),
             datasets: [{
@@ -138,10 +140,11 @@ const getters = {
             labels = [],
             month_data = [];
 
-        best_month.forEach((element, index) => {
+        best_month.forEach((element) => {
             labels.push(element.date__month + "_" + element.date__year);
             month_data.push(element.sum);
         });
+        // eslint-disable-next-line
         const data = {
             labels: labels.reverse(),
             datasets: [{
@@ -159,10 +162,11 @@ const getters = {
             labels = [],
             month_data = [];
 
-        best_month.forEach((element, index) => {
+        best_month.forEach((element) => {
             labels.push(element.date__month + "_" + element.date__year);
             month_data.push(element.sum);
         });
+        // eslint-disable-next-line
         const data = {
             labels: labels.reverse(),
             datasets: [{

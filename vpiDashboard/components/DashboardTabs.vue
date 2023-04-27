@@ -1,8 +1,12 @@
 <script>
 export default {
-    name: "Tabs",
+    name: "DashboardTabs",
     props: {
-        TabItems: []
+        tabItems: {
+            type: Array,
+            required: false,
+            default: () => []
+        }
     },
     data () {
         return {
@@ -11,7 +15,7 @@ export default {
     },
     methods: {
         selectTab (index) {
-            this.TabItems.forEach(tab => {
+            this.tabItems.forEach(tab => {
                 if (tab.index === index) {
                     tab.selected = true;
                     this.currentTabIndex = tab.index;
@@ -26,10 +30,10 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div id="vpiDashboard-tabs">
         <ul class="nav nav-tabs">
             <li
-                v-for="(tab, index) in TabItems"
+                v-for="(tab, index) in tabItems"
                 :key="index"
                 class="nav-item"
             >
@@ -37,6 +41,7 @@ export default {
                     class="nav-link"
                     :class="{ active: tab.selected }"
                     @click="selectTab(tab.index)"
+                    @keydown="selectTab(tab.index)"
                 >{{ tab.name }}</a>
             </li>
         </ul>

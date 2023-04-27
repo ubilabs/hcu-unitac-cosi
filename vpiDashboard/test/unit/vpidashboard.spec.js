@@ -14,7 +14,7 @@ const {
     deactivateGFI
 } = getters;
 
-describe.only("ADDON: DPI Dashboard", () => {
+describe("ADDON: DPI Dashboard", () => {
     describe("Vpi Dashboard getters", () => {
         it("returns the active state from state", () => {
             expect(active(stateVpiDashboard)).to.be.false;

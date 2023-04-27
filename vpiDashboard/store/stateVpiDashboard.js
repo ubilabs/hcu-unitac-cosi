@@ -9,6 +9,7 @@ const state = {
     deactivateGFI: false,
     frequencyData: undefined,
     chartData: "overview",
+    allDataClicked: true,
     averageVisitorsPerMonth: [],
     averageVisitorsPerDay: [],
     individualVisitorsPerYear: ""

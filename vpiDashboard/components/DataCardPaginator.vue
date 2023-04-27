@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: "Paginator",
+    name: "DataCardPaginator",
     props: {
         navigationFilter: {
             type: Object,
@@ -10,7 +10,7 @@ export default {
         paginatorData: {
             type: Array,
             required: false,
-            default: ["eins", "zwei", "drei"]
+            default: () => ["eins", "zwei", "drei"]
         },
         subtitleIndex: {
             type: String,
@@ -24,19 +24,6 @@ export default {
         };
     },
     computed: {
-        weekday () {
-            const weekday = new Array(7);
-
-            weekday[0] = "Monday";
-            weekday[1] = "Tuesday";
-            weekday[2] = "Wednesday";
-            weekday[3] = "Thursday";
-            weekday[4] = "Friday";
-            weekday[5] = "Saturday";
-            weekday[6] = "Sunday";
-
-            return weekday[this.index];
-        },
         sizeOfArray () {
             return this.paginatorData.length;
         }
@@ -66,12 +53,16 @@ export default {
 </script>
 
 <template>
-    <div class="d-flex w-100 justify-content-center align-items-center">
+    <div
+        id="paginator"
+        class="d-flex w-100 justify-content-center align-items-center"
+    >
         <nav aria-label="navigation">
             <ul class="pagination">
                 <li
                     class="page-item"
                     @click="previous"
+                    @keydown="previous"
                 >
                     <a
                         class="page-link"
@@ -87,6 +78,7 @@ export default {
                 <li
                     class="page-item"
                     @click="next"
+                    @keydown="next"
                 >
                     <a
                         class="page-link"

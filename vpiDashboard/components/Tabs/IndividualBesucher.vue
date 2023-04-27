@@ -83,11 +83,16 @@ export default {
                         }
                     ]
                 }
-            }
+            },
+            allDataClicked: true
         };
     },
     computed: {
         ...mapGetters("Tools/VpiDashboard", Object.keys(getters))
+    },
+    async created () {
+        this.$on("close", this.close);
+        await this.getWhatALocationData();
     },
     methods: {
         ...mapActions("Tools/VpiDashboard", Object.keys(actions)),
@@ -112,20 +117,30 @@ export default {
             cards.forEach(card => {
                 card.classList.remove("blue-card");
             });
+            this.changeButtonSyles();
 
+        },
+        changeButtonSyles () {
+            const detailButtons = document.querySelectorAll(".detailButton"),
+                allDataButton = document.getElementById("all-data-button");
+
+            allDataButton.classList.add("btn-primary");
+            allDataButton.classList.remove("btn-secondary");
+
+            detailButtons.forEach(detailButton => {
+                detailButton.classList.remove("buttonClicked");
+                detailButton.classList.add("cardDetailButton");
+            });
         },
         close () {
             this.setActive(false);
+            // eslint-disable-next-line
             const model = getComponent(this.$store.state.Tools.VpiDashboard.id);
 
             if (model) {
                 model.set("isActive", false);
             }
         }
-    },
-    async created () {
-        this.$on("close", this.close);
-        await this.getWhatALocationData();
     }
 };
 </script>
@@ -243,7 +258,11 @@ export default {
                             />
                         </svg>
                     </button>
-                    <button @click="showChart('overview')">
+                    <button
+                        id="all-data-button"
+                        class="btn btn-secondary"
+                        @click="showChart('overview')"
+                    >
                         All Data
                     </button>
                 </div>
