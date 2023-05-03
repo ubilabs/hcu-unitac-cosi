@@ -3,7 +3,7 @@ import ToolTemplate from "../../../src/modules/tools/ToolTemplate.vue";
 import getters from "../store/gettersVpiDashboard";
 import mutations from "../store/mutationsVpiDashboard";
 import actions from "../store/actionsVpiDashboard";
-import {mapGetters, mapActions, mapMutations} from "vuex";
+import {mapState, mapGetters, mapActions, mapMutations} from "vuex";
 import {getComponent} from "../../../src/utils/getComponent";
 import Tabs from "./DashboardTabs.vue";
 import IndividualBesucher from "./Tabs/IndividualBesucher.vue";
@@ -56,11 +56,30 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/VpiDashboard", Object.keys(getters)),
-        ...mapGetters("Language", ["currentLocale"])
+        ...mapGetters("Language", ["currentLocale"]),
+        ...mapState("Tools/VpiDashboard", ["allLocationsGeoJson"])
+    },
+    watch: {
+        allLocationsGeoJson (val) {
+            const params = {
+                name: "WhatALocation Standorte",
+                id: "vpi",
+                geoJSON: val,
+                styleId: "customLayer",
+                folderName: "VPI",
+                gfiAttributes: {
+                    id: "ID",
+                    street: "Standort"
+                }
+            };
+
+            this.$store.dispatch("AddLayerRemotely/addGeoJson", params);
+        }
     },
     async created () {
         this.$on("close", this.close);
         await this.getWhatALocationData();
+        await this.getAllLocations();
     },
     methods: {
         ...mapMutations("Tools/VpiDashboard", Object.keys(mutations)),

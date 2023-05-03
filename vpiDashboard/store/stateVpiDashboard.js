@@ -12,7 +12,9 @@ const state = {
     allDataClicked: true,
     averageVisitorsPerMonth: [],
     averageVisitorsPerDay: [],
-    individualVisitorsPerYear: ""
+    individualVisitorsPerYear: "",
+    allLocationsGeoJson: undefined,
+    allLocationsArray: []
 };
 
 export default state;

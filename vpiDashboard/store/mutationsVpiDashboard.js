@@ -38,7 +38,76 @@ const mutations = {
             individualVisitorsPerYear = split_yearly.reduce((n, {avg}) => n + avg, 0);
 
         state.individualVisitorsPerYear = Math.round(individualVisitorsPerYear);
+    },
+
+    /**
+     * Generate a GeoJson for all WhatALocation Locations.
+     * @param {object} state of this component
+     * @param {Array} payload Array of all locations from WhatALocation endpoint
+     * @returns {void}
+     */
+    setAllLocationsGeoJson (state, payload) {
+        const geoJSON = {
+                type: "FeatureCollection",
+                crs: {
+                    type: "link",
+                    properties: {
+                        href: "http://spatialreference.org/ref/epsg/4326/proj4/",
+                        type: "proj4"
+                    }
+                },
+                features: []
+            },
+
+            allLocationsArray = [];
+
+        let featureJSON;
+
+        payload.forEach(feature => {
+            featureJSON = {
+                type: "Feature",
+                geometry: feature.point,
+                properties: {
+                    id: feature.id,
+                    street: feature.street
+                }
+            };
+            geoJSON.features.push(featureJSON);
+
+            allLocationsArray.push({
+                id: feature.id,
+                street: feature.street
+            });
+        });
+
+        geoJSON.styles = [
+            {
+                styleId: "customLayer",
+                rules: [
+                    {
+                        style: {
+                            circleStrokeColor: [
+                                255,
+                                0,
+                                0,
+                                1
+                            ],
+                            circleFillColor: [
+                                255,
+                                0,
+                                0,
+                                0.5
+                            ]
+                        }
+                    }
+                ]
+            }
+        ];
+
+        state.allLocationsGeoJson = geoJSON;
+        state.allLocationsArray = allLocationsArray;
     }
+
 };
 
 export default mutations;

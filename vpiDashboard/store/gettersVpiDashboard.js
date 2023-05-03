@@ -1,4 +1,5 @@
 import {generateSimpleGetters} from "../../../src/app-store/utils/generators";
+import state from "./stateVpiDashboard";
 import stateVpiDashboard from "./stateVpiDashboard";
 
 const getters = {
@@ -14,7 +15,7 @@ const getters = {
     ...generateSimpleGetters(stateVpiDashboard),
 
     // NOTE overwrite (or create additional) getters here if you need special behavior in them
-    getAverageVisitorsPerDay: (state) => (day) => {
+    getAverageVisitorsPerDay: () => (day) => {
         const daily = state.frequencyData?.unique?.dayly,
             averageVisitorsOnDay = daily.filter((element) => {
                 return element.weekday === day;
@@ -22,7 +23,7 @@ const getters = {
 
         return averageVisitorsOnDay[0].avg;
     },
-    getAverageVisitorsPerMonth: (state) => (month) => {
+    getAverageVisitorsPerMonth: () => (month) => {
         const monthly = state.frequencyData?.unique?.monthly,
             averageVisitorsOnMonth = monthly.filter((element) => {
                 return element.date__month === month;
@@ -182,6 +183,20 @@ const getters = {
     },
     getChartSwitcher ({chartData}) {
         return chartData;
+    },
+    /**
+     * Gets GeoJson containing all WhatALocation locations.
+     * @returns {Object} GeoJson of all locations
+     */
+    getAllLocationsGeoJson () {
+        return state.allLocationsGeoJson;
+    },
+    /**
+     * Gets Array containing all WhatALocation locations.
+     * @returns {Array} Array of all locations
+     */
+    getAllLocationsArray () {
+        return state.allLocationsArray;
     }
 };
 

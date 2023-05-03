@@ -17,6 +17,20 @@ const actions = {
     },
     changeChart: ({commit}, chartname) => {
         commit("setChartData", chartname);
+    },
+    /**
+     * Addresses the WhatALocation locations endpoint to get all locations
+     * @param {Object} context actions context object.
+     * @returns {void}
+    **/
+    getAllLocations: async ({commit}) => {
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/locations`,
+            options = {
+                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
+            },
+            response = await axios.get(url, {headers: options});
+
+        commit("setAllLocationsGeoJson", response.data.results);
     }
 };
 
