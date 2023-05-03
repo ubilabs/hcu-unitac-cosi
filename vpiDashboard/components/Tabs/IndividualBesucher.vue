@@ -83,8 +83,7 @@ export default {
                         }
                     ]
                 }
-            },
-            allDataClicked: true
+            }
         };
     },
     computed: {

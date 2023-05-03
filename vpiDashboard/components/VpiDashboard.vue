@@ -7,6 +7,7 @@ import {mapGetters, mapActions, mapMutations} from "vuex";
 import {getComponent} from "../../../src/utils/getComponent";
 import Tabs from "./DashboardTabs.vue";
 import IndividualBesucher from "./Tabs/IndividualBesucher.vue";
+
 export default {
     name: "VpiDashboard",
     components: {
