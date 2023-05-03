@@ -7,13 +7,14 @@ import {mapState, mapGetters, mapActions, mapMutations} from "vuex";
 import {getComponent} from "../../../src/utils/getComponent";
 import Tabs from "./DashboardTabs.vue";
 import IndividualBesucher from "./Tabs/IndividualBesucher.vue";
-
+import CompareDashboard from "./Tabs/CompareDashboard.vue";
 export default {
     name: "VpiDashboard",
     components: {
         ToolTemplate,
         Tabs,
-        IndividualBesucher
+        IndividualBesucher,
+        CompareDashboard
     },
     data () {
         return {
@@ -27,7 +28,7 @@ export default {
                 },
                 {
                     index: 1,
-                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.gender"),
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.compare"),
                     selected: false
                 },
                 {
@@ -174,8 +175,7 @@ export default {
                                     <IndividualBesucher />
                                 </div>
                                 <div slot="tab-content-1">
-                                    <h1>Tab 2 Content</h1>
-                                    Component Here
+                                    <CompareDashboard />
                                 </div>
                                 <div slot="tab-content-2">
                                     <h1>Tab 3 Content</h1>

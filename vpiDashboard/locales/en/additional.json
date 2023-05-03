@@ -9,7 +9,8 @@
                 "age": "Age",
                 "dwelltime": "Dwell Time",
                 "types": "Visitor Types",
-                "distance": "Distance"
+                "distance": "Distance",
+                "compare": "Compare"
               },
               "time": {
                 "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
@@ -59,7 +60,14 @@
                 "avgVisitorsNovember": "Ø daily visitors in November",
                 "avgVisitorsDecember": "Ø daily visitors in December",
                 "avgVisitorYear": "Ø daily visitors in "
-              }
+              },
+            "compare": {
+              "location": "Location",
+              "date": "Date",
+              "compare": "Compare",
+              "character": "Character",
+              "location_comparison": "Location Comparison"
+            }
           }
       }
   }

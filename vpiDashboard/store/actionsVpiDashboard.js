@@ -1,6 +1,5 @@
 import axios from "axios";
 import {Config} from "../config";
-
 const actions = {
     /**
      * Addresses the WhatALocation endpoint to get aggregated values for unique visitors for the complete data collection range
@@ -71,6 +70,122 @@ const actions = {
             response = await axios.get(url, {headers: options});
 
         commit("setAllLocationsGeoJson", Object.values(response.data));
+    },
+    /**
+     * Adresses the WhatALocation dwell time endpoint with 2
+     * request to compare data
+     * @param {Object} commit Commit Object
+     * @param {string} location_id String location id
+     * @returns {Promise<void>} sets the data in store
+     */
+    getDwellTimes: async ({commit}, location_id) => {
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&group_by[hour]=&location_id=${location_id}&group_by[DwellTime]&format=agg&aggregate[Sum]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=2023-01-01&hour=12-18`,
+            options = {
+                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
+            },
+            response = await axios.get(url, {headers: options});
+
+        commit("setDwellTimeData", response.data);
+    },
+    /**
+     * Adresses the WhatALocation dwell time endpoint with 2
+     * request to compare data
+     * @param {Object } commit Commit Object
+     * @param {Object } compareData Object which holds the data to compare
+     * @returns {Promise<void>} sets the data in store
+     */
+    getDwellTimesToCompare: async ({commit}, compareData) => {
+        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+            optionsA = {
+                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
+            },
+            responseA = await axios.get(urlA, {headers: optionsA});
+
+        commit("setDwellTimeLocationA", responseA.data); // return data
+
+        // eslint-disable-next-line
+        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+            optionsB = {
+                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
+            },
+            responseB = await axios.get(urlB, {headers: optionsB});
+
+        commit("setDwellTimeLocationB", responseB.data);
+    },
+    /**
+     * Adresses the WhatALocation age group endpoint with 2
+     * request to compare data
+     * @param {Object } commit Commit Object
+     * @param {Object } compareData Object which holds the data to compare
+     * @returns {Promise<void>} sets the data in store
+     */
+    getAgeGroupsToCompare: async ({commit}, compareData) => {
+        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+            optionsA = {
+                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
+            },
+            responseA = await axios.get(urlA, {headers: optionsA});
+
+        commit("setAgeGroupsLocationA", responseA.data); // return data
+
+        // eslint-disable-next-line
+        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+            optionsB = {
+                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
+            },
+            responseB = await axios.get(urlB, {headers: optionsB});
+
+        commit("setAgeGroupsLocationB", responseB.data);
+    },
+    /**
+     * Adresses the WhatALocation visitor types endpoint with 2
+     * request to compare data
+     * @param {Object } commit Commit Object
+     * @param {Object } compareData Object which holds the data to compare
+     * @returns {Promise<void>} sets the data in store
+     */
+    getVisitorTypesToCompare: async ({commit}, compareData) => {
+        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+            optionsA = {
+                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
+            },
+            responseA = await axios.get(urlA, {headers: optionsA});
+
+        commit("setVisitorTypesLocationA", responseA.data); // return data
+
+        // eslint-disable-next-line
+        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+            optionsB = {
+                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
+            },
+            responseB = await axios.get(urlB, {headers: optionsB});
+
+        commit("setVisitorTypesLocationB", responseB.data);
+    },
+    /**
+     * Adresses the WhatALocation individual visitors endpoint with 2
+     * request to compare data
+     * @param {Object } commit Commit Object
+     * @param {Object } compareData Object which holds the data to compare
+     * @returns {Promise<void>} sets the data in store
+     */
+    getIndividualVisitorsToCompare: async ({commit}, compareData) => {
+        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+            optionsA = {
+                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
+            },
+            responseA = await axios.get(urlA, {headers: optionsA});
+
+        commit("setIndividualVisitorsLocationA", responseA.data); // return data
+
+        // eslint-disable-next-line
+    const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+            optionsB = {
+                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
+            },
+            responseB = await axios.get(urlB, {headers: optionsB});
+
+        commit("setIndividualVisitorsLocationB", responseB.data);
     }
 };
 

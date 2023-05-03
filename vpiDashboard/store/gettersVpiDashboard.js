@@ -251,6 +251,222 @@ const getters = {
      */
     getAllLocationsArray (state) {
         return state.allLocationsArray;
+    },
+    /**
+     * Generates the data array for the bar chart for location a
+     * @param {Object} dwellTimeLocationA dwellTimeDataA state
+     * @return {Object} data Object for bar chart
+     */
+    getDwellTimeLocationA ({dwellTimeLocationA}) {
+        const
+            avg_num_visitors = [],
+            labels = [];
+
+        dwellTimeLocationA.data.forEach((element) => {
+            avg_num_visitors.push(Math.round(element.avg_num_visitors));
+            labels.push(element.DwellTime);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: "Dwell Times Location A",
+                data: avg_num_visitors,
+                hoverOffset: 4,
+                backgroundColor: "#FD763B"
+            }]
+        };
+
+        return data;
+    },
+    /**
+     * Generates the data array for the bar chart for location a
+     * @param {Object} dwellTimeLocationB dwellTimeDataB state
+     * @return {Object} data Object for bar chart
+     */
+    getDwellTimeLocationB ({dwellTimeLocationB}) {
+        const
+            avg_num_visitors = [],
+            labels = [];
+
+        dwellTimeLocationB.data.forEach((element) => {
+            avg_num_visitors.push(Math.round(element.avg_num_visitors));
+            labels.push(element.DwellTime);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: "Dwell Times Location B",
+                data: avg_num_visitors,
+                hoverOffset: 4,
+                backgroundColor: "#0335FC"
+            }]
+        };
+
+        return data;
+    },
+    /**
+     * Generates the data array for the bar chart for location a
+     * @param {Object} ageGroupsLocationA ageGroupsLocationA state
+     * @return {Object} data Object for bar chart
+     */
+    getAgeGroupsLocationA ({ageGroupsLocationA}) {
+        const
+            avg_num_visitors = [],
+            labels = [];
+
+        ageGroupsLocationA.data.forEach((element) => {
+            avg_num_visitors.push(Math.round(element.avg_num_visitors));
+            labels.push(element.age_group);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: "Age Groups Location A",
+                data: avg_num_visitors,
+                hoverOffset: 4,
+                backgroundColor: "#FD763B"
+            }]
+        };
+
+        return data;
+    },
+    /**
+     * Generates the data array for the bar chart for location b
+     * @param {Object} ageGroupsLocationB ageGroupsLocationA state
+     * @return {Object} data Object for bar chart
+     */
+    getAgeGroupsLocationB ({ageGroupsLocationB}) {
+        const
+            avg_num_visitors = [],
+            labels = [];
+
+        ageGroupsLocationB.data.forEach((element) => {
+            avg_num_visitors.push(Math.round(element.avg_num_visitors));
+            labels.push(element.age_group);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: "Age Groups Location B",
+                data: avg_num_visitors,
+                hoverOffset: 4,
+                backgroundColor: "#0335FC"
+            }]
+        };
+
+        return data;
+    },
+    /**
+     * Generates the data array for the bar chart for location a
+     * @param {Object} visitorTypesLocationA visitorTypesLocationA state
+     * @return {Object} data Object for bar chart
+     */
+    getVisitorTypesLocationA ({visitorTypesLocationA}) {
+        const
+            avg_num_visitors = [],
+            labels = [];
+
+        visitorTypesLocationA.data.forEach((element) => {
+            avg_num_visitors.push(Math.round(element.avg_num_visitors));
+            labels.push(element.VisitorType);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: "Visitor Types Location A",
+                data: avg_num_visitors,
+                hoverOffset: 4,
+                backgroundColor: "#FD763B"
+            }]
+        };
+
+        return data;
+    },
+    /**
+     * Generates the data array for the bar chart for location a
+     * @param {Object} visitorTypesLocationB visitorTypesLocationB state
+     * @return {Object} data Object for bar chart
+     */
+    getVisitorTypesLocationB ({visitorTypesLocationB}) {
+        const
+            avg_num_visitors = [],
+            labels = [];
+
+        visitorTypesLocationB.data.forEach((element) => {
+            avg_num_visitors.push(Math.round(element.avg_num_visitors));
+            labels.push(element.age_group);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: "Visitor Types Location B",
+                data: avg_num_visitors,
+                hoverOffset: 4,
+                backgroundColor: "#0335FC"
+            }]
+        };
+
+        return data;
+    },
+    /**
+     * Generates the data array for the bar chart for location a
+     * @param {Object} individualVisitorsLocationA visitorTypesLocationB state
+     * @return {Object} data Object for bar chart
+     */
+    getIndividualVisitorsLocationA ({individualVisitorsLocationA}) {
+        const
+            avg_num_visitors = [],
+            labels = [];
+
+        individualVisitorsLocationA.data.forEach((element) => {
+            avg_num_visitors.push(Math.round(element.avg_num_visitors));
+            labels.push(element.ReiseArt);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: "Individual Vistors Location A",
+                data: avg_num_visitors,
+                hoverOffset: 4,
+                backgroundColor: "#FD763B"
+            }]
+        };
+
+        return data;
+    },
+    /**
+     * Generates the data array for the bar chart for location a
+     * @param {Object} individualVisitorsLocationB visitorTypesLocationB state
+     * @return {Object} data Object for bar chart
+     */
+    getIndividualVisitorsLocationB ({individualVisitorsLocationB}) {
+        const
+            avg_num_visitors = [],
+            labels = [];
+
+        individualVisitorsLocationB.data.forEach((element) => {
+            avg_num_visitors.push(Math.round(element.avg_num_visitors));
+            labels.push(element.ReiseArt);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: "Individual Vistors Location B",
+                data: avg_num_visitors,
+                hoverOffset: 4,
+                backgroundColor: "#0335FC"
+            }]
+        };
+
+        return data;
     }
 };
 
