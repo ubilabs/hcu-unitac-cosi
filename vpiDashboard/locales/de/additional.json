@@ -1,0 +1,44 @@
+{
+  "modules": {
+      "tools": {
+          "vpidashboard": {
+              "name": "VPI Dashboard",
+              "tabitems": {
+                "individuals": "Individuelle Besucher",
+                "gender": "Geschlecht",
+                "age": "Altersgruppe",
+                "dwelltime": "Verweildauer",
+                "types": "Besuchertypen",
+                "distance": "Entfernung"
+              },
+              "time": {
+                "months": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+                "days": ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
+              },
+              "details": "Details",
+              "unique": {
+                "allData": "Alle Daten",
+                "uniqueVisitors": "Individuelle Besucher",
+                "dailyOverview": "tägliche individuelle Besucher",
+                "monthlyOverview": "monatliche individuelle Besucher",
+                "hourly": "Besucher eines bestimmten Tages (stündlich)",
+                "timeRange": "Besucher einer bestimmten Zeitspanne (täglich)",
+                "selectDate": "Bitte ein Datum wählen:",
+                "selectDateRange": "Bitte einen Zeitraum wählen:",
+                "noValidDate": "Kein gültiger Zeitpunkt / Zeitraum ausgewählt",
+                "numberVisitorsHour": "Anzahl Besucher pro Stunde (eingehend)",
+                "numberVisitorsDay": "Anzahl Besucher pro Tag (eingehend)",
+                "chartTitleDay": "Daten vom {{dateValue}}",
+                "chartTitleDayRange": "Daten vom {{dateValueFrom}} bis zum {{dateValueTo}}",
+                "avgVisitorsYear": "Ø Individuelle Besucher pro Jahr",
+                "avgVisitorsDay": "Ø Individuelle tägliche Besucher an einem",
+                "avgVisitorsMonth": "Ø Individuelle tägliche Besucher pro Monat",
+                "selectDataBase": "Datengrundlage für Grafik auswählen:",
+                "date": "Datum",
+                "resetDate": "anderes Datum wählen"
+              }
+
+          }
+      }
+  }
+}

@@ -4,6 +4,12 @@ import stateVpiDashboard from "./stateVpiDashboard";
 const mutations = {
     ...generateSimpleMutations(stateVpiDashboard),
 
+    /**
+     * Sets the rounded monthly data for unique visitors to the state, selected from WhatALocation data.
+     * @param {Object} state the store's state object
+     * @param {Object} payload data from WhatALocation endpoint
+     * @returns {void}
+     */
     setAverageVisitorsPerMonth (state, payload) {
         const monthly = payload.unique?.monthly,
             months = [];
@@ -18,7 +24,12 @@ const mutations = {
         months.sort((a, b) => a.index - b.index);
         state.averageVisitorsPerMonth = months;
     },
-
+    /**
+    * Sets the rounded daily data for unique visitors to the state, selected from WhatALocation data.
+    * @param {Object} state the store's state object
+    * @param {Object} payload data from WhatALocation endpoint
+    * @returns {void}
+    */
     setAverageVisitorsPerDay (state, payload) {
         const dayly = payload.unique?.dayly,
             days = [];
@@ -32,7 +43,12 @@ const mutations = {
         });
         state.averageVisitorsPerDay = days;
     },
-
+    /**
+     * Sets the rounded yearly data for unique visitors to the state, selected from WhatALocation data.
+     * @param {Object} state the store's state object
+     * @param {Object} payload data from WhatALocation endpoint
+     * @returns {void}
+     */
     setIndividualVisitorsPerYear (state, payload) {
         const split_yearly = payload?.unique?.split_yearly,
             individualVisitorsPerYear = split_yearly.reduce((n, {avg}) => n + avg, 0);

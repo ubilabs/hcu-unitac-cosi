@@ -22,32 +22,32 @@ export default {
             TabItems: [
                 {
                     index: 0,
-                    name: "Individuelle Besucher",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.individuals"),
                     selected: true
                 },
                 {
                     index: 1,
-                    name: "Geschlecht",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.gender"),
                     selected: false
                 },
                 {
                     index: 2,
-                    name: "Altersgruppe",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.age"),
                     selected: false
                 },
                 {
                     index: 3,
-                    name: "Verweildauer",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.dwelltime"),
                     selected: false
                 },
                 {
                     index: 4,
-                    name: "Besuchertypen",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.types"),
                     selected: false
                 },
                 {
                     index: 5,
-                    name: "Distanz",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.distance"),
                     selected: false
                 }
             ],
@@ -84,6 +84,10 @@ export default {
     methods: {
         ...mapMutations("Tools/VpiDashboard", Object.keys(mutations)),
         ...mapActions("Tools/VpiDashboard", Object.keys(actions)),
+        /**
+         * reacts on a close of this tool and sets the component to inactive
+         * @returns {void}
+         */
         close () {
             this.setActive(false);
             const model = getComponent(this.$store.state.Tools.VpiDashboard.id);
@@ -92,9 +96,26 @@ export default {
                 model.set("isActive", false);
             }
         },
+        /**
+         * initiates the asynchronous request for individual visitors from WhatALocation
+         * @returns {void}
+         */
         async getWhatALocationData () {
             await this.getIndividualVisitors();
             this.renderTab = true;
+        },
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate (key, options = null) {
+            if (key === "additional:" + this.$t(key)) {
+                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
+            }
+
+            return this.$t(key, options);
         }
     }
 };

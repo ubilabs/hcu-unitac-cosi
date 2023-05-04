@@ -26,6 +26,11 @@ export default {
             type: String,
             required: false,
             default: ""
+        },
+        showDetailsButton: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
     data () {
@@ -44,6 +49,10 @@ export default {
                 "averageVisitorsPerDay",
                 "individualVisitorsPerYear"
             ]),
+        /**
+         * returns the data for the selected card at the current page
+         * @returns {String} the average or yearly number of visitors for the current parameters
+         */
         statisticSet () {
             if (this.detail === "monthly") {
                 return this.averageVisitorsPerMonth[this.currentMonthIndex].avg.toLocaleString(this.currentLocale);
@@ -56,21 +65,27 @@ export default {
             }
             return null;
         },
+        /**
+         * returns a list of month names or day names with can be used together with the paginator to walk through the data
+         * @returns {Array} an array of months or days
+         */
         paginatorData () {
             if (this.detail === "monthly") {
-                return ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+                return this.translate("additional:modules.tools.vpidashboard.time.months", {returnObjects: true});
             }
             if (this.detail === "daily") {
-                return ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
+                return this.translate("additional:modules.tools.vpidashboard.time.days", {returnObjects: true});
             }
             return null;
-        },
-        showDetailsButton () {
-            return Boolean(this.detail === "monthly" || this.detail === "daily");
         }
     },
     methods: {
         ...mapActions("Tools/VpiDashboard", Object.keys(actions)),
+        /**
+         * reacts on the change of the paginator in monthly or daily data card
+         * @param {String} index selected page to be shown
+         * @returns {void}
+         */
         changeIndex (index) {
             if (this.detail === "monthly") {
                 this.currentMonthIndex = index;
@@ -79,11 +94,22 @@ export default {
                 this.currentDayIndex = index;
             }
         },
+        /**
+         * calls a store function to change the used chart data base and initiates change in chart and button style
+         * @param {String} chartoverview selected chart to be shown
+         * @param {String} title the title of the chart to identify the card and button
+         * @returns {void}
+         */
         showChart (chartoverview, title) {
             this.changeChart(chartoverview);
             this.changeChartStyle(title);
             this.changeButtonStyles(title);
         },
+        /**
+         * changes the button style if the "details" button on a card has been pressed
+         * @param {String} title the title of the chart to identify the buttonId
+         * @returns {void}
+         */
         changeButtonStyles (title) {
             const detailButtonId = "button" + title,
 
@@ -104,8 +130,11 @@ export default {
                 }
             });
         },
-
-
+        /**
+         * changes the chart style if the "details" button on a card has been pressed
+         * @param {String} title the title of the chart to identify the cardId
+         * @returns {void}
+         */
         changeChartStyle (title) {
             const cardId = "card" + title,
                 cards = document.querySelectorAll(".statistic-card");
@@ -116,6 +145,19 @@ export default {
                     card.classList.toggle("blue-card");
                 }
             });
+        },
+        /**
+         * translates the given key, checkes if the key exists and throws a console warning if not
+         * @param {String} key the key to translate
+         * @param {Object} [options=null] for interpolation, formating and plurals
+         * @returns {String} the translation or the key itself on error
+         */
+        translate (key, options = null) {
+            if (key === "additional:" + this.$t(key)) {
+                console.warn("the key " + JSON.stringify(key) + " is unknown to the additional translation");
+            }
+
+            return this.$t(key, options);
         }
     }
 };
@@ -148,7 +190,7 @@ export default {
                 class="btn-secondary detailButton"
                 @click="showChart(`${detail}overview`, title)"
             >
-                Details
+                {{ translate("additional:modules.tools.vpidashboard.details") }}
             </button>
         </div>
     </div>

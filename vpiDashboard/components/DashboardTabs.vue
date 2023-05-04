@@ -14,6 +14,11 @@ export default {
         };
     },
     methods: {
+        /**
+         * reacts on the change of tab in the dashboard
+         * @param {Integer} index number of selected tab
+         * @returns {void}
+         */
         selectTab (index) {
             this.tabItems.forEach(tab => {
                 if (tab.index === index) {

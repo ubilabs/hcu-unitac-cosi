@@ -24,11 +24,20 @@ export default {
         };
     },
     computed: {
+        /**
+         * calculates size of the array of the data to be paginated
+         * @returns {void}
+         */
         sizeOfArray () {
             return this.paginatorData.length;
         }
     },
     methods: {
+        /**
+         * switches to previous page or turns over if it is first one
+         * emits event to parent to change the content based on the selected page
+         * @returns {void}
+         */
         previous () {
             if (this.index === 0) {
                 this.index = this.sizeOfArray - 1;
@@ -39,6 +48,11 @@ export default {
 
             this.$emit("pager", this.index);
         },
+        /**
+         * switches to next page or turns over if it is last one
+         * emits event to parent to change the content based on the selected page
+         * @returns {void}
+         */
         next () {
             if (this.index === this.sizeOfArray - 1) {
                 this.index = 0;

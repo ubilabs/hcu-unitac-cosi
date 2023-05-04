@@ -1,0 +1,44 @@
+{
+  "modules": {
+      "tools": {
+          "vpidashboard": {
+              "name": "VPI Dashboard",
+              "tabitems": {
+                "individuals": "Unique Visitors",
+                "gender": "Gender",
+                "age": "Age",
+                "dwelltime": "Dwell Time",
+                "types": "Visitor Types",
+                "distance": "Distance"
+              },
+              "time": {
+                "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+                "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+              },
+              "details": "Details",
+              "unique": {
+                "allData": "All data",
+                "uniqueVisitors": "Unique visitors",
+                "dailyOverview": "daily unique visitors",
+                "monthlyOverview": "monthly unique visitors",
+                "hourly": "Visitors on a defined day (hourly)",
+                "timeRange": "Visitors on a defined day range (daily)",
+                "selectDate": "Please choose a date:",
+                "selectDateRange": "Please choose a date range:",
+                "noValidDate": "No valid date / date range chosen",
+                "numberVisitorsHour": "Number of visitors per hour (incoming)",
+                "numberVisitorsDay": "Number of visitors per day (incoming)",
+                "chartTitleDay": "Data from {{dateValue}}",
+                "chartTitleDayRange": "Data from {{dateValueFrom}} to {{dateValueTo}}",
+                "avgVisitorsYear": "Ø unique visitors per year",
+                "avgVisitorsDay": "Ø unique daily visitors on a",
+                "avgVisitorsMonth": "Ø unique daily visitors per month",
+                "selectDataBase": "Choose base data for the graphic:",
+                "date": "Date",
+                "resetDate": "choose another date"
+              }
+
+          }
+      }
+  }
+}
