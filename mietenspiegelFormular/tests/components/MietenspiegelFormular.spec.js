@@ -510,5 +510,32 @@ describe("addons/mietenspiegelFormular/components/MietenspiegelFormular.vue", ()
                 expect(wrapper.vm.getRentPrice("2011 bis 2015", "ab 131m²", calcData)).to.deep.equal(expected);
             });
         });
+        describe("getNoticeText", () => {
+            it("should return notice text from metadata", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getNoticeText(undefined, "metadata Notice")).to.equal("metadata Notice");
+                expect(wrapper.vm.getNoticeText("", "metadata Notice")).to.equal("metadata Notice");
+                expect(wrapper.vm.getNoticeText(null, "metadata Notice")).to.equal("metadata Notice");
+                expect(wrapper.vm.getNoticeText(true, "metadata Notice")).to.equal("metadata Notice");
+                expect(wrapper.vm.getNoticeText([], "metadata Notice")).to.equal("metadata Notice");
+                expect(wrapper.vm.getNoticeText(0, "metadata Notice")).to.equal("metadata Notice");
+                expect(wrapper.vm.getNoticeText({}, "metadata Notice")).to.equal("metadata Notice");
+                expect(wrapper.vm.getNoticeText({"text": ""}, "metadata Notice")).to.equal("metadata Notice");
+                expect(wrapper.vm.getNoticeText({"link": ""}, "metadata Notice")).to.equal("metadata Notice");
+            });
+
+            it("should return notice text from noticePdf in configuration", () => {
+                const wrapper = factory.getShallowMount({}, true);
+
+                expect(wrapper.vm.getNoticeText({"text": "noticePdf", "link": "link"}, "metadata Notice")).to.equal("modules.tools.mietenspiegelFormular.noticeText");
+                expect(wrapper.vm.getNoticeText({"text": "noticePdf", "link": "link"}, undefined)).to.equal("modules.tools.mietenspiegelFormular.noticeText");
+                expect(wrapper.vm.getNoticeText({"text": "noticePdf", "link": "link"}, null)).to.equal("modules.tools.mietenspiegelFormular.noticeText");
+                expect(wrapper.vm.getNoticeText({"text": "noticePdf", "link": "link"}, [])).to.equal("modules.tools.mietenspiegelFormular.noticeText");
+                expect(wrapper.vm.getNoticeText({"text": "noticePdf", "link": "link"}, {})).to.equal("modules.tools.mietenspiegelFormular.noticeText");
+                expect(wrapper.vm.getNoticeText({"text": "noticePdf", "link": "link"}, 0)).to.equal("modules.tools.mietenspiegelFormular.noticeText");
+                expect(wrapper.vm.getNoticeText({"text": "noticePdf", "link": "link"}, false)).to.equal("modules.tools.mietenspiegelFormular.noticeText");
+            });
+        });
     });
 });

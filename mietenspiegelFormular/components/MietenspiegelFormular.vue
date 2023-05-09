@@ -71,6 +71,12 @@ export default {
             this.setActive(true);
             this.residentialInformationByCoordinate(result?.coordinate, this.rentIndexLayerId, resolutions[0]);
         });
+
+        if (typeof this.collectionStatus === "undefined") {
+            this.setCollectionStatus(this.convertDateFormat(this.METADATA?.erhebungsstand));
+        }
+
+        this.noticeText = this.getNoticeText(this.noticePdf, this.METADATA?.hinweis);
     },
     methods: {
         ...mapMutations("Tools/MietenspiegelFormular", Object.keys(mutations)),
@@ -322,6 +328,19 @@ export default {
             const dateFormat = dayjs(date).format("DD.MM.YYYY");
 
             return dateFormat;
+        },
+        /**
+         * Gets the notice text
+         * @param {Object} noticePdf - The noticePdf from configuration.
+         * @param {String} metaNotice - The notice text from metadata.
+         * @return {String} - The notice text.
+         */
+        getNoticeText (noticePdf, metaNotice) {
+            if (isObject(noticePdf) && typeof noticePdf.text === "string" && typeof noticePdf.link === "string") {
+                return i18next.t("additional:modules.tools.mietenspiegelFormular.noticeText", {text: noticePdf.text, link: noticePdf.link, interpolation: {escapeValue: false}});
+            }
+
+            return metaNotice;
         }
     }
 };
@@ -512,14 +531,15 @@ export default {
                                 {{ $t('additional:modules.tools.mietenspiegelFormular.collectionStatus') }}
                             </div>
                             <div>
-                                {{ convertDateFormat(METADATA?.erhebungsstand) }}
+                                {{ collectionStatus }}
                             </div>
                             <div class="def-text">
                                 {{ $t('additional:modules.tools.mietenspiegelFormular.notice') }}
                             </div>
-                            <div class="mb-3">
-                                {{ METADATA?.hinweis }}
-                            </div>
+                            <div
+                                class="mb-3"
+                                v-html="noticeText"
+                            />
                         </div>
                     </form>
                 </div>
