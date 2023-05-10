@@ -88,17 +88,10 @@ describe("individual visitor tab component", () => {
     it("create chart data", () => {
         const responseData = [
                 {
-                    "ReiseArt": "ausgehend",
-                    "date__hour": 0,
-                    "avg_num_visitors": 100
-                },
-                {
-                    "ReiseArt": "eingehend",
                     "date__hour": 0,
                     "avg_num_visitors": 42
                 },
                 {
-                    "ReiseArt": "eingehend",
                     "date__hour": 1,
                     "avg_num_visitors": 50
                 }

@@ -8,7 +8,7 @@ const actions = {
      * @returns {void}
     **/
     getIndividualVisitors: async ({commit}) => {
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/quick-data?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=180&expands=unique`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/quick-data?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=300&expands=unique`,
             options = {
                 "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
             },
@@ -26,7 +26,7 @@ const actions = {
      * @returns {Object} response object from WhatALocation endpoint
     **/
     getIndividualVisitorsForDay: async (context, date) => {
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Avg]=num_visitors&group_by[ReiseArt]&ReiseArt__in=eingehend,ausgehend&&group_by[date__hour]&date__gte=${date} 00:00:00&date__lte=${date} 23:59:19`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Avg]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date__hour]&date__gte=${date} 00:00:00&date__lte=${date} 23:59:19`,
             options = {
                 "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
             },
@@ -41,7 +41,7 @@ const actions = {
      * @returns {Object} response object from WhatALocation endpoint
     **/
     getIndividualVisitorsForDateRange: async (context, dates) => {
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Sum]=num_visitors&group_by[ReiseArt]&ReiseArt__in=eingehend,ausgehend&&group_by[date]&date__gte=${dates.dateFrom}&date__lte=${dates.dateTo}`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Sum]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date]&date__gte=${dates.dateFrom}&date__lte=${dates.dateTo}`,
             options = {
                 "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
             },

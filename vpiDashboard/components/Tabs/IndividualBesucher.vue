@@ -257,15 +257,13 @@ export default {
             };
 
             responseData.forEach((element) => {
-                if (element.ReiseArt === "eingehend") {
-                    if (dataType === "hourly") {
-                        labels.push(element.date__hour + ":00");
-                        presentation_data.push(Math.floor(element.avg_num_visitors));
-                    }
-                    else {
-                        labels.push(dayjs(element.date).format("DD.MM.YYYY"));
-                        presentation_data.push(Math.floor(element.sum_num_visitors));
-                    }
+                if (dataType === "hourly") {
+                    labels.push(element.date__hour + ":00");
+                    presentation_data.push(Math.floor(element.avg_num_visitors));
+                }
+                else {
+                    labels.push(dayjs(element.date).format("DD.MM.YYYY"));
+                    presentation_data.push(Math.floor(element.sum_num_visitors));
                 }
             });
 
