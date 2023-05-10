@@ -16,6 +16,7 @@ import mapCanvasToImage, {exportMapView} from "../../utils/mapCanvasToImage";
 import AccessibilityAnalysisLegend from "./AccessibilityAnalysisLegend.vue";
 import AccessibilityAnalysisTrafficFlow from "./AccessibilityAnalysisTrafficFlow.vue";
 import {unpackCluster} from "../../utils/features/unpackCluster.js";
+import {getLayerSource} from "../../utils/layer/getLayerSource";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -292,9 +293,7 @@ export default {
             }
         },
         activeVectorLayerList (newValues) {
-            if (newValues.length > 0) {
-                this.setFacilityLayers(newValues);
-            }
+            this.setFacilityLayers(newValues);
         },
         routingDirections () {
             this._selectedDirections = this.routingDirections;
@@ -508,7 +507,7 @@ export default {
                     this.facilityNames.push(layer.get("name"));
                 }
                 else {
-                    layer.getSource().on("featuresloadend", () => {
+                    getLayerSource(layer).on("featuresloadend", () => {
                         if (layer.getSource().getFeatures().length > 0) {
                             this.facilityNames.push(layer.get("name"));
                         }
