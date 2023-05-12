@@ -36,7 +36,8 @@ export default {
     data () {
         return {
             currentMonthIndex: 0,
-            currentDayIndex: 0
+            currentDayIndex: 0,
+            currentYearIndex: 0
         };
     },
     computed: {
@@ -61,7 +62,11 @@ export default {
                 return this.averageVisitorsPerDay[this.currentDayIndex].avg.toLocaleString(this.currentLocale);
             }
             if (this.detail === "individualVisitors") {
-                return this.individualVisitorsPerYear.toLocaleString(this.currentLocale);
+                const selectedYearData = this.individualVisitorsPerYear.filter((element) => {
+                    return element.date__year === this.currentYearIndex + 2019;
+                });
+
+                return selectedYearData[0].avg.toLocaleString(this.currentLocale);
             }
             return null;
         },
@@ -75,6 +80,9 @@ export default {
             }
             if (this.detail === "daily") {
                 return this.translate("additional:modules.tools.vpidashboard.time.days", {returnObjects: true});
+            }
+            if (this.detail === "individualVisitors") {
+                return [2019, 2020, 2021, 2022, 2023];
             }
             return null;
         }
@@ -92,6 +100,9 @@ export default {
             }
             if (this.detail === "daily") {
                 this.currentDayIndex = index;
+            }
+            if (this.detail === "individualVisitors") {
+                this.currentYearIndex = index;
             }
         },
         /**

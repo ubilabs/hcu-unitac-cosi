@@ -53,12 +53,12 @@ export default {
                     chart: "overview"
                 },
                 {
-                    name: "additional:modules.tools.vpidashboard.unique.dailyOverview",
-                    chart: "dailyoverview"
-                },
-                {
                     name: "additional:modules.tools.vpidashboard.unique.monthlyOverview",
                     chart: "monthlyoverview"
+                },
+                {
+                    name: "additional:modules.tools.vpidashboard.unique.dailyOverview",
+                    chart: "dailyoverview"
                 },
                 {
                     name: "additional:modules.tools.vpidashboard.unique.hourly",
@@ -337,17 +337,17 @@ export default {
                     <DataCard
                         :title="translate('additional:modules.tools.vpidashboard.unique.avgVisitorsYear')"
                         detail="individualVisitors"
-                        :navigation="false"
-                    />
-                    <DataCard
-                        :title="translate('additional:modules.tools.vpidashboard.unique.avgVisitorsDay')"
                         :navigation="true"
-                        detail="daily"
                     />
                     <DataCard
                         :title="translate('additional:modules.tools.vpidashboard.unique.avgVisitorsMonth')"
                         :navigation="true"
                         detail="monthly"
+                    />
+                    <DataCard
+                        :title="translate('additional:modules.tools.vpidashboard.unique.avgVisitorsDay')"
+                        :navigation="true"
+                        detail="daily"
                     />
                 </div>
                 <div class="chartDataSelection">

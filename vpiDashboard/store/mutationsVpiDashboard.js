@@ -18,7 +18,7 @@ const mutations = {
             const newMonth = {};
 
             newMonth.index = month.date__month - 1;
-            newMonth.avg = Math.round(month.avg);
+            newMonth.avg = Math.floor(month.avg);
             months.push(newMonth);
         });
         months.sort((a, b) => a.index - b.index);
@@ -32,16 +32,18 @@ const mutations = {
     */
     setAverageVisitorsPerDay (state, payload) {
         const dayly = payload.unique?.dayly,
-            days = [];
+            days = [],
+            dayIndexTranslator = ["mo", "tu", "we", "th", "fr", "sa", "su"];
 
         dayly.forEach(day => {
             const newDay = {};
 
             newDay.index = day.weekday;
-            newDay.avg = Math.round(day.avg);
+            newDay.avg = Math.floor(day.avg);
             days.push(newDay);
         });
-        state.averageVisitorsPerDay = days;
+
+        state.averageVisitorsPerDay = days.toSorted((a, b) => dayIndexTranslator.indexOf(a.index) - dayIndexTranslator.indexOf(b.index));
     },
     /**
      * Sets the rounded yearly data for unique visitors to the state, selected from WhatALocation data.
@@ -50,10 +52,15 @@ const mutations = {
      * @returns {void}
      */
     setIndividualVisitorsPerYear (state, payload) {
-        const split_yearly = payload?.unique?.split_yearly,
-            individualVisitorsPerYear = split_yearly.reduce((n, {avg}) => n + avg, 0);
+        const yearly_average = payload?.unique?.best_year,
+            individualVisitorsPerYear = yearly_average.map((element) => {
+                element.avg = Math.floor(element.avg);
+                element.sum = Math.floor(element.sum);
 
-        state.individualVisitorsPerYear = Math.round(individualVisitorsPerYear);
+                return element;
+            });
+
+        state.individualVisitorsPerYear = individualVisitorsPerYear;
     },
 
     /**

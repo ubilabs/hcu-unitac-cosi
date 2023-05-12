@@ -58,35 +58,34 @@ const getters = {
         return frequencyData.unique?.best_hour;
     },
     /**
-     * Gets yearly splitted data about unique visitors, generated from WhatALocation data.
-     * @param {Object} frequencyData data from WhatALocation
+     * Gets data about unique visitors per year (sum per year and daily average), generated from WhatALocation data.
+     * @param {Object} state the stores state object
      * @returns {Array} array of yearly data average, rounded
      */
-    getIndividualVisitorsPerYear ({frequencyData}) {
-        const split_yearly = frequencyData?.unique?.split_yearly;
-
-        return split_yearly.reduce((n, {avg}) => n + avg, 0);
+    getIndividualVisitorsPerYear (state) {
+        return state.individualVisitorsPerYear;
     },
     /**
      * Gets data for a bar chart, generated from WhatALocation daily data.
-     * @param {Object} frequencyData data from WhatALocation
+     * @param {Object} state the stores state object
      * @returns {Object} object that can be used in chartJS to create a bar chart
      */
-    getBarChartDailyData ({frequencyData}) {
-        const daily = frequencyData?.unique?.dayly,
+    getBarChartDailyData (state) {
+        const daily = state.averageVisitorsPerDay,
             labels = [],
-            day_data = [];
+            day_data = [],
+            translatedLabelList = i18next.t("additional:modules.tools.vpidashboard.time.days", {returnObjects: true});
 
-        daily.forEach((element) => {
-            labels.push(element.weekday);
-            day_data.push(element.sum);
+        daily.forEach((element, index) => {
+            labels.push(translatedLabelList[index]);
+            day_data.push(element.avg);
         });
         // eslint-disable-next-line
         const data = {
-            labels: labels.reverse(),
+            labels: labels,
             datasets: [{
                 label: i18next.t("additional:modules.tools.vpidashboard.unique.dailyOverview"),
-                data: day_data.reverse(),
+                data: day_data,
                 hoverOffset: 4,
                 backgroundColor: "#FD763B"
             }]
@@ -96,25 +95,26 @@ const getters = {
     },
     /**
      * Gets data for a line chart, generated from WhatALocation daily data.
-     * @param {Object} frequencyData data from WhatALocation
+     * @param {Object} state the stores state object
      * @returns {Object} object that can be used in chartJS to create a line chart
      */
-    getLineChartDailyData ({frequencyData}) {
-        const daily = frequencyData?.unique?.dayly,
-
+    getLineChartDailyData (state) {
+        const daily = state.averageVisitorsPerDay,
             labels = [],
-            day_data = [];
+            day_data = [],
+            translatedLabelList = i18next.t("additional:modules.tools.vpidashboard.time.days", {returnObjects: true});
 
-        daily.forEach((element) => {
-            labels.push(element.weekday);
-            day_data.push(element.sum);
+        daily.forEach((element, index) => {
+            labels.push(translatedLabelList[index]);
+            day_data.push(element.avg);
         });
+
         // eslint-disable-next-line
         const data = {
-            labels: labels.reverse(),
+            labels: labels,
             datasets: [{
                 label: i18next.t("additional:modules.tools.vpidashboard.unique.dailyOverview"),
-                data: day_data.reverse(),
+                data: day_data,
                 fill: false,
                 borderColor: "rgb(75, 192, 192)",
                 tension: 0.1
@@ -125,24 +125,25 @@ const getters = {
     },
     /**
      * Gets data for a bar chart, generated from WhatALocation monthly data.
-     * @param {Object} frequencyData data from WhatALocation
+     * @param {Object} state the stores state object
      * @returns {Object} object that can be used in chartJS to create a bar chart
      */
-    getBarChartMonthlyData ({frequencyData}) {
-        const monthly = frequencyData?.unique?.monthly,
+    getBarChartMonthlyData (state) {
+        const monthly = state.averageVisitorsPerMonth,
             labels = [],
-            month_data = [];
+            month_data = [],
+            translatedLabelList = i18next.t("additional:modules.tools.vpidashboard.time.months", {returnObjects: true});
 
         monthly.forEach((element) => {
-            labels.push(element.date__month);
-            month_data.push(element.sum);
+            labels.push(translatedLabelList[element.index]);
+            month_data.push(element.avg);
         });
         // eslint-disable-next-line
         const data = {
-            labels: labels.reverse(),
+            labels: labels,
             datasets: [{
                 label: i18next.t("additional:modules.tools.vpidashboard.unique.monthlyOverview"),
-                data: month_data.reverse(),
+                data: month_data,
                 hoverOffset: 4,
                 backgroundColor: "#FD763B"
             }]
@@ -152,25 +153,26 @@ const getters = {
     },
     /**
      * Gets data for a line chart, generated from WhatALocation monthly data.
-     * @param {Object} frequencyData data from WhatALocation
+     * @param {Object} state the stores state object
      * @returns {Object} object that can be used in chartJS to create a line chart
      */
-    getLineChartMonthlyData ({frequencyData}) {
-        const monthly = frequencyData?.unique?.monthly,
-
+    getLineChartMonthlyData (state) {
+        const monthly = state.averageVisitorsPerMonth,
             labels = [],
-            month_data = [];
+            month_data = [],
+            translatedLabelList = i18next.t("additional:modules.tools.vpidashboard.time.months", {returnObjects: true});
 
         monthly.forEach((element) => {
-            labels.push(element.date__month);
-            month_data.push(element.sum);
+            labels.push(translatedLabelList[element.index]);
+            month_data.push(element.avg);
         });
+
         // eslint-disable-next-line
         const data = {
-            labels: labels.reverse(),
+            labels: labels,
             datasets: [{
                 label: i18next.t("additional:modules.tools.vpidashboard.unique.monthlyOverview"),
-                data: month_data.reverse(),
+                data: month_data,
                 fill: false,
                 borderColor: "rgb(75, 192, 192)",
                 tension: 0.1
