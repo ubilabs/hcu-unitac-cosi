@@ -64,13 +64,13 @@ const actions = {
      * @returns {void}
     **/
     getAllLocations: async ({commit}) => {
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/locations`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/locations/all_summary`,
             options = {
                 "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
             },
             response = await axios.get(url, {headers: options});
 
-        commit("setAllLocationsGeoJson", response.data.results);
+        commit("setAllLocationsGeoJson", Object.values(response.data));
     }
 };
 

@@ -68,10 +68,35 @@ export default {
                 styleId: "customLayer",
                 folderName: "VPI",
                 gfiAttributes: {
+                    street: this.translate("additional:modules.tools.vpidashboard.gfi.street"),
                     id: "ID",
-                    street: "Standort"
+                    avgVisitorsMonday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsMonday"),
+                    avgVisitorsTuesday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsTuesday"),
+                    avgVisitorsWednesday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsWednesday"),
+                    avgVisitorsThursday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsThursday"),
+                    avgVisitorsFriday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsFriday"),
+                    avgVisitorsSaturday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsSaturday"),
+                    avgVisitorsSunday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsSunday"),
+                    avgVisitorsJanuary: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsJanuary"),
+                    avgVisitorsFebruary: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsFebruary"),
+                    avgVisitorsMarch: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsMarch"),
+                    avgVisitorsApril: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsApril"),
+                    avgVisitorsMay: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsMay"),
+                    avgVisitorsJune: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsJune"),
+                    avgVisitorsJuly: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsJuly"),
+                    avgVisitorsAugust: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsAugust"),
+                    avgVisitorsSeptember: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsSeptember"),
+                    avgVisitorsOctober: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsOctober"),
+                    avgVisitorsNovember: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsNovember"),
+                    avgVisitorsDecember: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsDecember")
                 }
             };
+
+            Object.keys(val.features[0].properties).forEach(key => {
+                if (Number.isInteger(parseInt(key.slice(-4), 10))) {
+                    params.gfiAttributes[key] = this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorYear") + key.slice(-4);
+                }
+            });
 
             this.$store.dispatch("AddLayerRemotely/addGeoJson", params);
         }
