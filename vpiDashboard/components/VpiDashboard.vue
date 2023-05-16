@@ -9,6 +9,7 @@ import Tabs from "./DashboardTabs.vue";
 import IndividualBesucher from "./Tabs/IndividualBesucher.vue";
 import CompareDashboard from "./Tabs/CompareDashboard.vue";
 import TabDwellTime from "./Tabs/TabDwellTime.vue";
+import TabInfo from "./Tabs/TabInfo.vue";
 
 export default {
     name: "VpiDashboard",
@@ -17,7 +18,8 @@ export default {
         Tabs,
         IndividualBesucher,
         CompareDashboard,
-        TabDwellTime
+        TabDwellTime,
+        TabInfo
     },
     data () {
         return {
@@ -52,6 +54,11 @@ export default {
                 {
                     index: 5,
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.distance"),
+                    selected: false
+                },
+                {
+                    index: 6,
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.info"),
                     selected: false
                 }
             ],
@@ -194,6 +201,9 @@ export default {
                                 <div slot="tab-content-5">
                                     <h1>Tab 6 Content</h1>
                                     Component Here
+                                </div>
+                                <div slot="tab-content-6">
+                                    <TabInfo />
                                 </div>
                             </Tabs>
                         </div>
