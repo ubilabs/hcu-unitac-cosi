@@ -8,13 +8,16 @@ import {getComponent} from "../../../src/utils/getComponent";
 import Tabs from "./DashboardTabs.vue";
 import IndividualBesucher from "./Tabs/IndividualBesucher.vue";
 import CompareDashboard from "./Tabs/CompareDashboard.vue";
+import TabDwellTime from "./Tabs/TabDwellTime.vue";
+
 export default {
     name: "VpiDashboard",
     components: {
         ToolTemplate,
         Tabs,
         IndividualBesucher,
-        CompareDashboard
+        CompareDashboard,
+        TabDwellTime
     },
     data () {
         return {
@@ -182,8 +185,7 @@ export default {
                                     Component Here
                                 </div>
                                 <div slot="tab-content-3">
-                                    <h1>Tab 4 Content</h1>
-                                    Component Here
+                                    <TabDwellTime />
                                 </div>
                                 <div slot="tab-content-4">
                                     <h1>Tab 5 Content</h1>

@@ -1,11 +1,12 @@
 import axios from "axios";
 import {Config} from "../config";
+
 const actions = {
     /**
      * Addresses the WhatALocation endpoint to get aggregated values for unique visitors for the complete data collection range
      * @param {Object} commit actions commit object.
      * @returns {void}
-    **/
+     **/
     getIndividualVisitors: async ({commit}) => {
         const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/quick-data?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=300&expands=unique`,
             options = {
@@ -21,9 +22,9 @@ const actions = {
     /**
      * Addresses the WhatALocation endpoint to get hourly data for one day for unique visitors
      * @param {Object} context actions context object.
-     * @param {Strin} date contains the date to be requested
+     * @param {String} date contains the date to be requested
      * @returns {Object} response object from WhatALocation endpoint
-    **/
+     **/
     getIndividualVisitorsForDay: async (context, date) => {
         const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Avg]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date__hour]&date__gte=${date} 00:00:00&date__lte=${date} 23:59:19`,
             options = {
@@ -38,7 +39,7 @@ const actions = {
      * @param {Object} context actions context object.
      * @param {Object} dates contains dateFrom and dateTo to define daterange to be requested
      * @returns {Object} response object from WhatALocation endpoint
-    **/
+     **/
     getIndividualVisitorsForDateRange: async (context, dates) => {
         const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Sum]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date]&date__gte=${dates.dateFrom}&date__lte=${dates.dateTo}`,
             options = {
@@ -53,7 +54,7 @@ const actions = {
      * @param {Object} commit actions commit object.
      * @param {String} chartname contains dateFrom and dateTo to define daterange to be requested
      * @returns {void}
-    **/
+     **/
     changeChart: ({commit}, chartname) => {
         commit("setChartData", chartname);
     },
@@ -61,7 +62,7 @@ const actions = {
      * Addresses the WhatALocation locations endpoint to get all locations
      * @param {Object} context actions context object.
      * @returns {void}
-    **/
+     **/
     getAllLocations: async ({commit}) => {
         const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/locations/all_summary`,
             options = {
@@ -72,20 +73,19 @@ const actions = {
         commit("setAllLocationsGeoJson", Object.values(response.data));
     },
     /**
-     * Adresses the WhatALocation dwell time endpoint with 2
-     * request to compare data
-     * @param {Object} commit Commit Object
-     * @param {string} location_id String location id
-     * @returns {Promise<void>} sets the data in store
-     */
-    getDwellTimes: async ({commit}, location_id) => {
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&group_by[hour]=&location_id=${location_id}&group_by[DwellTime]&format=agg&aggregate[Sum]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=2023-01-01&hour=12-18`,
+     * Addresses the WhatALocation dwell time endpoint to get the dwell times for the complete time range
+     * @param {Object} commit actions commit object.
+     * @param {String} locationId WHATALOCATION location id.
+     * @returns {void}
+     **/
+    getDwellTimes: async ({commit}, locationId) => {
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]&location_id=${locationId}&group_by[DwellTime]&format=agg&aggregate[Sum]=num_visitors&pulse=activate&interval=300&transportation=pedestrian`,
             options = {
                 "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
             },
             response = await axios.get(url, {headers: options});
 
-        commit("setDwellTimeData", response.data);
+        commit("setDwellTimes", response.data.data);
     },
     /**
      * Adresses the WhatALocation dwell time endpoint with 2
@@ -179,7 +179,7 @@ const actions = {
         commit("setIndividualVisitorsLocationA", responseA.data); // return data
 
         // eslint-disable-next-line
-    const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
             optionsB = {
                 "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
             },

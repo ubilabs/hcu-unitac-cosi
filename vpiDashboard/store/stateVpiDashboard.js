@@ -22,7 +22,10 @@ const state = {
     visitorTypesLocationA: undefined,
     visitorTypesLocationB: undefined,
     individualVisitorsLocationA: undefined,
-    individualVisitorsLocationB: undefined
+    individualVisitorsLocationB: undefined,
+    dwellTimesComplete: [],
+    dwellTimesPerTime: {},
+    dwellTimesPerDate: {}
 };
 
 export default state;

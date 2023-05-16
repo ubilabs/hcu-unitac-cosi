@@ -25,11 +25,11 @@ const mutations = {
         state.averageVisitorsPerMonth = months;
     },
     /**
-    * Sets the rounded daily data for unique visitors to the state, selected from WhatALocation data.
-    * @param {Object} state the store's state object
-    * @param {Object} payload data from WhatALocation endpoint
-    * @returns {void}
-    */
+     * Sets the rounded daily data for unique visitors to the state, selected from WhatALocation data.
+     * @param {Object} state the store's state object
+     * @param {Object} payload data from WhatALocation endpoint
+     * @returns {void}
+     */
     setAverageVisitorsPerDay (state, payload) {
         const dayly = payload.unique?.dayly,
             days = [],
@@ -153,6 +153,37 @@ const mutations = {
 
         state.allLocationsGeoJson = geoJSON;
         state.allLocationsArray = allLocationsArray;
+    },
+    /**
+     * Sets the dwell times (grouped by "dwell time" and by date), selected from WhatALocation data.
+     * @param {Object} state the store's state object
+     * @param {Object} payload data from WhatALocation endpoint
+     * @returns {void}
+     */
+    setDwellTimes (state, payload) {
+        const dwellTimeByTime = {},
+            dwellTimeByDate = {};
+
+        payload.forEach(item => {
+            // Visitor sum as integer
+            item.sum_num_visitors = Math.floor(item.sum_num_visitors);
+
+            // Sort by dwell time range
+            if (!dwellTimeByTime[item.DwellTime]) {
+                dwellTimeByTime[item.DwellTime] = [];
+            }
+            dwellTimeByTime[item.DwellTime].push(item);
+
+            // Sort by date
+            if (!dwellTimeByDate[item.date]) {
+                dwellTimeByDate[item.date] = [];
+            }
+            dwellTimeByDate[item.date].push(item);
+        });
+
+        state.dwellTimesComplete = payload;
+        state.dwellTimesPerTime = dwellTimeByTime;
+        state.dwellTimesPerDate = dwellTimeByDate;
     }
 
 };
