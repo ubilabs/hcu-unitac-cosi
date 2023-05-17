@@ -533,7 +533,6 @@ export default {
                         step="250"
                         min="0"
                     />
-                    <v-divider />
                     <div>
                         <span class="text-subtitle-2">
                             {{ $t('additional:modules.tools.cosi.districtSelector.additionalLayer') }}
@@ -563,24 +562,24 @@ export default {
                     </v-row>
                     <v-divider />
                     <v-btn
-                        small
                         tile
+                        depressed
                         color="grey lighten-1"
                         @click="setActive(false);"
                     >
                         {{ $t('additional:modules.tools.cosi.districtSelector.buttonConfirm') }}
                     </v-btn>
                     <v-btn
-                        small
                         tile
+                        depressed
                         color="grey lighten-1"
                         @click="clearFeatures"
                     >
                         {{ $t('additional:modules.tools.cosi.districtSelector.buttonReset') }}
                     </v-btn>
                     <v-btn
-                        small
                         tile
+                        depressed
                         :color="dragBoxButtonColor"
                         @click="toggleDragBox"
                     >
@@ -596,7 +595,8 @@ export default {
     @import "~variables";
 
     #district-selector {
-        max-width: 430px;
+        font-family: $font_family_default;
+        max-width: 460px;
         .v-input {
             border-radius: $border-radius-base;
             font-size: 14px;
@@ -606,6 +606,7 @@ export default {
         }
         button {
             text-transform: inherit;
+            font-family: $font_family_accent;
         }
     }
 

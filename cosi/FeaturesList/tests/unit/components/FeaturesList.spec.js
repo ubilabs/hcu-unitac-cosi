@@ -535,7 +535,7 @@ describe("addons/cosi/FeaturesList/components/FeaturesList.vue", () => {
         });
 
         it("expect download prompt to open when table is exported", async () => {
-            const spyExportTable = sinon.spy(FeaturesList.methods, "exportTable"),
+            const spyExportTable = sinon.stub(FeaturesList.methods, "exportTable"),
                 wrapper = await mountComponent(true, [addNewLayerIfNotExists()]);
 
             await wrapper.vm.$nextTick();

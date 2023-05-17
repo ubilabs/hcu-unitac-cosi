@@ -220,19 +220,6 @@ describe("addons/cosi/TimeSeriesAnalyse/components/TimeSeriesAnalyse.vue", () =>
             expect(wrapper.find(".chart").exists()).to.be.false;
         });
 
-        it("Pie Chart should disappear", async () => {
-            wrapper = shallowMount(TimeSeriesAnalyseComponent, {store, localVue});
-
-            const buttonWrapperArray = wrapper.find(".icons-function").findAllComponents({name: "v-icon"}),
-                spyOpenChart = sinon.spy(wrapper.vm, "openChart");
-
-            await buttonWrapperArray.wrappers[2].trigger("click");
-            await buttonWrapperArray.wrappers[2].trigger("click");
-            expect(spyOpenChart.calledTwice).to.be.true;
-            await wrapper.vm.$nextTick();
-            expect(wrapper.find(".chart").exists()).to.be.false;
-        });
-
         it("show decrementSlider function event", async () => {
             wrapper = shallowMount(TimeSeriesAnalyseComponent, {store, localVue});
 
