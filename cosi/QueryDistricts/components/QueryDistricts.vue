@@ -7,7 +7,6 @@ import mutations from "../store/mutationsQueryDistricts";
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
 import compareFeatures from "./compareFeatures.js";
 import LayerFilter from "./LayerFilter.vue";
-import Info from "text-loader!./info.html";
 import {Fill, Stroke, Style} from "ol/style.js";
 import {getAllFeaturesByLayerId as _getAllFeatures} from "../../utils/features/getAllFeaturesByLayerId";
 import exportXlsx from "../../utils/exportXlsx";
@@ -544,15 +543,6 @@ export default {
         closeFilter (value) {
             this.layerFilterModels = this.layerFilterModels.filter(elem => elem.layerId !== value.layerId);
             this.updateAvailableLayerOptions();
-        },
-
-        showHelp: function () {
-            this.cleanup();
-            this.addSingleAlert({
-                category: "Info",
-                content: Info,
-                displayClass: "info"
-            });
         },
 
         close () {

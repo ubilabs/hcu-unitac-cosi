@@ -839,10 +839,8 @@ export default {
                     <ToolInfo
                         :url="readmeUrl"
                         :locale="currentLocale"
+                        :summary="$t('additional:modules.tools.cosi.calculateRatio.description')"
                     />
-                    <p class="section intro">
-                        {{ $t("additional:modules.tools.cosi.calculateRatio.description") }}
-                    </p>
                     <div
                         v-if="featuresList.length === 0 && facilityList.length === 0"
                         class="warning_wrapper section"
@@ -1223,7 +1221,6 @@ export default {
     #calculateratio {
         background:rgba(255,255,255,0.95);
         width:400px;
-        height:60vh;
 
         .info_button {
             display:block;
@@ -1234,9 +1231,6 @@ export default {
         }
 
         .section {
-            &.intro {
-                padding-top:30px;
-            }
 
             &.third {
                     border:1px solid #ddd;
@@ -1369,17 +1363,9 @@ export default {
                 flex-flow: row wrap;
                 justify-content:flex-start;
 
-                .section.intro {
-                    display:none;
-                }
-
                 .section {
                     flex:1 0 45%;
                     margin:5px 0px;
-
-                    &.grouped {
-                        margin-top:30px;
-                    }
                 }
 
                 .pagination {
