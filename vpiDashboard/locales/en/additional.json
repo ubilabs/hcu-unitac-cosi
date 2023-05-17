@@ -93,6 +93,11 @@
         "tab": {
           "dwelltime": {
             "chartTitle": "Dwell time in minutes"
+          },
+          "ageGroup": {
+            "chartTitle": "Age groups by year and by year and month",
+            "pieChartTitle": "Age groups by year",
+            "lineBarChartTitle": "Age groups by year and month"
           }
         }
       }

@@ -93,6 +93,11 @@
         "tab": {
           "dwelltime": {
             "chartTitle": "Verweildauer in Minuten"
+          },
+          "ageGroup": {
+            "chartTitle": "Altersgruppen pro Jahr und pro Jahr und Monat",
+            "pieChartTitle": "Altersgruppen pro Jahr",
+            "lineBarChartTitle": "Altersgruppen pro Jahr und Monat"
           }
         }
       }

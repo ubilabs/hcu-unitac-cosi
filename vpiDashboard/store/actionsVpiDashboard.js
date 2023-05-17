@@ -186,6 +186,21 @@ const actions = {
             responseB = await axios.get(urlB, {headers: optionsB});
 
         commit("setIndividualVisitorsLocationB", responseB.data);
+    },
+    /**
+     * Get all data by age group
+     * @param {Object } commit Commit Object
+     * @returns {Promise<void>} sets the data in store
+     */
+    getAllAgeGroupsData: async ({commit}) => {
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?format=agg&group_by[date]&aggregate[Sum]=num_visitors&group_by[age_group]&location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&interval=300&transportation=pedestrian`,
+            options = {
+                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
+            },
+            response = await axios.get(url, {headers: options});
+
+        await commit("setAllAgeGroupsData", response.data);
+        await commit("setAllAgeGroupsMonthlyData");
     }
 };
 

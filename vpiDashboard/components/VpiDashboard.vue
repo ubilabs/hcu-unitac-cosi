@@ -10,6 +10,7 @@ import IndividualBesucher from "./Tabs/IndividualBesucher.vue";
 import CompareDashboard from "./Tabs/CompareDashboard.vue";
 import TabDwellTime from "./Tabs/TabDwellTime.vue";
 import TabInfo from "./Tabs/TabInfo.vue";
+import AgeGroups from "./Tabs/AgeGroups.vue";
 
 export default {
     name: "VpiDashboard",
@@ -19,7 +20,8 @@ export default {
         IndividualBesucher,
         CompareDashboard,
         TabDwellTime,
-        TabInfo
+        TabInfo,
+        AgeGroups
     },
     data () {
         return {
@@ -188,8 +190,7 @@ export default {
                                     <CompareDashboard />
                                 </div>
                                 <div slot="tab-content-2">
-                                    <h1>Tab 3 Content</h1>
-                                    Component Here
+                                    <AgeGroups />
                                 </div>
                                 <div slot="tab-content-3">
                                     <TabDwellTime />

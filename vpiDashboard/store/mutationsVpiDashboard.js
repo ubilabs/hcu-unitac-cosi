@@ -62,7 +62,6 @@ const mutations = {
 
         state.individualVisitorsPerYear = individualVisitorsPerYear;
     },
-
     /**
      * Generate a GeoJson for all WhatALocation Locations.
      * @param {object} state of this component
@@ -184,8 +183,128 @@ const mutations = {
         state.dwellTimesComplete = payload;
         state.dwellTimesPerTime = dwellTimeByTime;
         state.dwellTimesPerDate = dwellTimeByDate;
-    }
+    },
+    /**
+     * Get all age groups data
+     * @param {Object} state of this component
+     * @param {Array} payload Array of all age groups from the selected location
+     * @returns {void}
+     */
+    setAllAgeGroupsData (state, payload) {
+        state.allAgeGroupsData = payload.data;
+    },
+    /**
+     * Get all age groups monthly data
+     * @param {Object} state of this component
+     * @returns {void}
+     */
+    setAllAgeGroupsMonthlyData (state) {
+        const dataset = [],
+            datasetLine = [],
+            tempDataset = [],
+            tempDatasetLine = [],
+            xLabels = [],
+            colors = ["#00aa55", "#007ea8", "#9784ff ", "#CC3E00", "#ffa300", "#f8e08e", "#708090"],
+            labels = state.ageGroupPieChartLabels,
+            grouped = {},
+            allYears = [];
 
+        let entryCount = 0,
+            xlabel = "",
+            ageGroupsByYear = [];
+
+        state.allAgeGroupsData.forEach(entry => {
+
+            if (entry.age_group === "u") {
+                return;
+            }
+
+            // get the age groups by year and month
+            const ageGroupIndex = tempDataset.findIndex((i) => {
+                return i.label === entry.age_group;
+            });
+
+            if (ageGroupIndex > -1) {
+
+                tempDataset[ageGroupIndex].data.push(Math.floor(entry.sum_num_visitors));
+                tempDatasetLine[ageGroupIndex].data.push(Math.floor(entry.sum_num_visitors));
+            }
+            else {
+                const dataObj = {
+                        data: [Math.floor(entry.sum_num_visitors)],
+                        hoverOffset: 4,
+                        label: entry.age_group
+                    },
+                    dataObjLine = {
+                        data: [Math.floor(entry.sum_num_visitors)],
+                        label: entry.age_group,
+                        fill: false,
+                        tension: 0.1
+                    };
+
+                tempDataset.push(dataObj);
+                tempDatasetLine.push(dataObjLine);
+            }
+
+            xlabel = entry.date.split("-")[0] + "-" + entry.date.split("-")[1];
+
+            if (!xLabels.find(l => {
+                return l === xlabel;
+            })) {
+                xLabels.push(xlabel);
+            }
+
+            // generate the sum of the age groups by year for pie chart
+            // eslint-disable-next-line
+            const ageGroup = entry.age_group,
+                [year] = entry.date.split("-"),
+                key = `${ageGroup}-${year}`;
+
+            grouped[key] = grouped[key] || {ageGroup, year, sum: 0};
+            grouped[key].sum += Math.floor(entry.sum_num_visitors);
+
+            ageGroupsByYear = Object.values(grouped);
+
+            if (allYears.indexOf(year) < 0) {
+                allYears.push(year);
+            }
+
+        });
+
+        labels.forEach(l => {
+            const ageGroupObj = tempDataset.find(ageGroup => {
+                    return ageGroup.label.replace(/[[\]']+/g, "") === l;
+                }),
+                ageGroupObjLine = tempDatasetLine.find(ageGroup => {
+                    return ageGroup.label.replace(/[[\]']+/g, "") === l;
+                });
+
+            ageGroupObj.backgroundColor = colors[entryCount];
+            ageGroupObj.label = l;
+
+            ageGroupObjLine.borderColor = colors[entryCount];
+            ageGroupObjLine.label = l;
+
+            dataset.push(ageGroupObj);
+            datasetLine.push(ageGroupObjLine);
+
+            ageGroupsByYear.forEach(year => {
+                if (year.ageGroup.replace(/[[\]']+/g, "") === l) {
+                    year.backgroundColor = colors[entryCount];
+                    year.label = l;
+                }
+            });
+
+            entryCount += 1;
+        });
+
+        state.allAgeGroupsMonthlyData = dataset;
+        state.allAgeGroupsMonthlyDataLine = datasetLine;
+        state.ageGroupxLabels = xLabels;
+        state.ageGroupsYearlyData = ageGroupsByYear;
+        state.allAgeGroupsYears = allYears;
+    }
 };
 
 export default mutations;
+
