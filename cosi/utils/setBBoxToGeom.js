@@ -1,8 +1,9 @@
 import {getLayerSource} from "./layer/getLayerSource";
 import Vue from "vue";
 import {getItemsByAttributes, getCollection} from "../utils/radioBridge.js";
-import webgl from "@masterportal/masterportalapi/src/renderer/webgl";
+import * as webgl from "@masterportal/masterportalapi/src/renderer/webgl";
 import {getCenter} from "ol/extent";
+import LoaderOverlay from "../../../src/utils/loaderOverlay.js";
 
 /**
  * filters all features by a given geometry
@@ -55,7 +56,7 @@ function updateSource (model, bboxGeometry, url, item, app) {
             source.on("featuresloadend", function (evt) {
                 if (item.renderer === "webgl") {
                     // run afterloading functions for webGL layer
-                    webgl.afterLoading(evt.target.getFeatures(), model.attributes);
+                    webgl.afterLoading(evt.target.getFeatures(), model.attributes.styleId, model.attributes.excludeTypesFromParsing);
                 }
                 filterLayerSourceByBbox(evt.target, bboxGeometry);
                 if (app) {
