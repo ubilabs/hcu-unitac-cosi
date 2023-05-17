@@ -3,7 +3,6 @@ import Vue from "vue";
 import {getItemsByAttributes, getCollection} from "../utils/radioBridge.js";
 import * as webgl from "@masterportal/masterportalapi/src/renderer/webgl";
 import {getCenter} from "ol/extent";
-import LoaderOverlay from "../../../src/utils/loaderOverlay.js";
 
 /**
  * filters all features by a given geometry
