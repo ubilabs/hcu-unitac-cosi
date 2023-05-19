@@ -58,15 +58,6 @@ const BauforumGUIModeler = Backbone.Model.extend(/** @lends BauforumGUIModeler.p
     },
 
     /**
-     * Handler to stop flight
-     * @fires FlightPlayer#RadioRequestFlightPlayerStop
-     * @returns {void}
-     */
-    triggerStopFlight: function () {
-        Radio.request("FlightPlayer", "stop");
-    },
-
-    /**
      * Toggles the Stadtmodell according to value
      * @param   {boolean} value layer visibility to set
      * @returns {void}
