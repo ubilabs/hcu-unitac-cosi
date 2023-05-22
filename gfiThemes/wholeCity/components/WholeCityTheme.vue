@@ -5,9 +5,13 @@ import {translateKeyWithPlausibilityCheck} from "../../../../src/utils/translate
 import {isPhoneNumber, getPhoneNumberAsWebLink} from "../../../../src/utils/isPhoneNumber.js";
 import {isEmailAddress} from "../../../../src/utils/isEmailAddress.js";
 import {getPropertiesWithFullKeys} from "../../../../src/modules/tools/gfi/utils/getPropertiesWithFullKeys.js";
+import ModalItem from "../../../../src/share-components/modals/components/ModalItem.vue";
 
 export default {
     name: "WholeCityTheme",
+    components: {
+        ModalItem
+    },
     props: {
         feature: {
             type: Object,
@@ -17,7 +21,10 @@ export default {
     data () {
         return {
             beautifyKeysParam: true,
-            showObjectKeysParam: false
+            showObjectKeysParam: false,
+            showModal: false,
+            pdfURL: "",
+            pdfTitle: ""
         };
     },
     computed: {
@@ -115,87 +122,133 @@ export default {
                 return linkPrefix + linkProperties.split("|")[index];
             }
 
+            this.showModal = !this.showModal;
             return "";
+        },
+        /**
+         * Decides if to open or close modal and sets the attributes for modal and iframe
+         * @param {Boolean} showModel to decide if to open or close modal
+         * @param {string} linkPrefix the prefix for the url
+         * @param {string} linkHrefKey the link href key
+         * @param {Number} index the index after diving with pipe
+         * @param {string} title the title of the modal and iframe
+         * @returns {void}
+         */
+        openModel (showModel, linkPrefix, linkHrefKey, index, title) {
+            this.showModal = showModel;
+            this.setIframeAttributes(linkPrefix, linkHrefKey, index, title);
+        },
+        /**
+         * Sets the attributes for modal and iframe
+         * @param {string} linkPrefix the prefix for the url
+         * @param {string} linkHrefKey the link href key
+         * @param {Number} index the index after diving with pipe
+         * @param {string} title the title of the modal and iframe
+         * @returns {void}
+         */
+        setIframeAttributes (linkPrefix, linkHrefKey, index, title) {
+            this.pdfURL = this.getLink(linkPrefix, linkHrefKey, index);
+            this.pdfTitle = title;
         }
     }
 };
 </script>
 
 <template>
-    <table
-        v-if="feature"
-        class="table table-condensed table-hover outerTable"
-    >
-        <tbody v-if="mappedPropertiesExists(feature)">
-            <tr v-if="!hasMappedProperties(feature)">
-                <td class="bold">
-                    {{ $t("modules.tools.gfi.themes.default.noAttributeAvailable") }}
-                </td>
-            </tr>
-            <tr
-                v-for="(value, key) in getMappedGfiPropertiesOfFeature"
-                v-else
-                :key="key"
-            >
-                <td
-                    class="bold firstCol"
+    <div>
+        <table
+            v-if="feature"
+            class="table table-condensed table-hover outerTable"
+        >
+            <tbody v-if="mappedPropertiesExists(feature)">
+                <tr v-if="!hasMappedProperties(feature)">
+                    <td class="bold">
+                        {{ $t("modules.tools.gfi.themes.default.noAttributeAvailable") }}
+                    </td>
+                </tr>
+                <tr
+                    v-for="(value, key) in getMappedGfiPropertiesOfFeature"
+                    v-else
+                    :key="key"
                 >
-                    <span v-if="beautifyKeysParam">
-                        {{ beautifyKey(translateKeyWithPlausibilityCheck(key, v => $t(v))) }}
-                    </span>
-                    <span v-else>
-                        {{ key }}
-                    </span>
-                </td>
-                <td v-if="isWebLink(value)">
-                    <a
-                        :href="value"
-                        target="_blank"
-                    >Link</a>
-                </td>
-                <td v-else-if="isPhoneNumber(value)">
-                    <a :href="getPhoneNumberAsWebLink(value)">{{ value }}</a>
-                </td>
-                <td v-else-if="isEmailAddress(value)">
-                    <a :href="`mailto:${value}`">{{ value }}</a>
-                </td>
-                <td
-                    v-else-if="Array.isArray(value)"
-                    v-html="value.join('<br>')"
-                />
-                <td v-else-if="hasPipe(value) && key !== linkTextKey">
-                    <p
-                        v-for="(splitValue, splitKey) in value.split('|')"
-                        :key="splitKey"
+                    <td
+                        class="bold firstCol"
                     >
-                        {{ splitValue }}
-                    </p>
-                </td>
-                <td v-else-if="hasPipe(value) && key === linkTextKey">
-                    <ul>
-                        <li
+                        <span v-if="beautifyKeysParam">
+                            {{ beautifyKey(translateKeyWithPlausibilityCheck(key, v => $t(v))) }}
+                        </span>
+                        <span v-else>
+                            {{ key }}
+                        </span>
+                    </td>
+                    <td v-if="isWebLink(value)">
+                        <a
+                            :href="value"
+                            target="_blank"
+                        >Link</a>
+                    </td>
+                    <td v-else-if="isPhoneNumber(value)">
+                        <a :href="getPhoneNumberAsWebLink(value)">{{ value }}</a>
+                    </td>
+                    <td v-else-if="isEmailAddress(value)">
+                        <a :href="`mailto:${value}`">{{ value }}</a>
+                    </td>
+                    <td
+                        v-else-if="Array.isArray(value)"
+                        v-html="value.join('<br>')"
+                    />
+                    <td v-else-if="hasPipe(value) && key !== linkTextKey">
+                        <p
                             v-for="(splitValue, splitKey) in value.split('|')"
                             :key="splitKey"
                         >
-                            <a
-                                :href="getLink(linkPrefix, linkHrefKey, splitKey)"
-                                target="_blank"
+                            {{ splitValue }}
+                        </p>
+                    </td>
+                    <td v-else-if="hasPipe(value) && key === linkTextKey">
+                        <ul>
+                            <li
+                                v-for="(splitValue, splitKey) in value.split('|')"
+                                :key="splitKey"
                             >
-                                {{ splitValue }}
-                            </a>
-                        </li>
-                    </ul>
-                </td>
-                <td
-                    v-else-if="typeof value === 'string' && value.includes('<br>')"
-                    v-html="value"
+                                <span
+                                    @click="openModel(true, linkPrefix, linkHrefKey, splitKey, splitValue)"
+                                    @keydown="openModel(true, linkPrefix, linkHrefKey, splitKey, splitValue)"
+                                >
+                                    {{ splitValue }}
+                                </span>
+                            </li>
+                        </ul>
+                    </td>
+                    <td
+                        v-else-if="typeof value === 'string' && value.includes('<br>')"
+                        v-html="value"
+                    />
+                    <td v-else>
+                        {{ value }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <ModalItem
+            :show-modal="showModal"
+            modal-inner-wrapper-style="width: 90%; height: 90%"
+            modal-content-container-style="padding: 20px"
+            @modalHid="openModel(false)"
+        >
+            <template #header>
+                <h5 class="px-2 mt-2">
+                    {{ pdfTitle }}
+                </h5>
+            </template>
+            <template #default>
+                <iframe
+                    :src="pdfURL"
+                    :title="pdfTitle"
                 />
-                <td v-else>
-                    {{ value }}
-                </td>
-            </tr>
-        </tbody>
-    </table>
+            </template>
+        </ModalItem>
+    </div>
 </template>
 
 <style lang="scss" scoped>
@@ -227,9 +280,23 @@ export default {
         ul {
             margin-bottom: 0;
             padding-left: 14px;
-            li::marker {
+            li {
                 color: $link-color;
+                cursor: pointer;
+                span {
+                    width: 100%;
+                    display: block;
+                    &:hover {
+                        color: #296292
+                    }
+                }
             }
         }
+    }
+
+    iframe {
+        position: absolute;
+        width: calc(100% - 50px);
+        height:calc(100% - 80px)
     }
 </style>

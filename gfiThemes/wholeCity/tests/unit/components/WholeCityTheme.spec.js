@@ -1,5 +1,5 @@
 import Vuex from "vuex";
-import {config, mount, createLocalVue} from "@vue/test-utils";
+import {config, mount, createLocalVue, shallowMount} from "@vue/test-utils";
 import {expect} from "chai";
 import sinon from "sinon";
 import WholeCityTemplate from "../../../components/WholeCityTheme.vue";
@@ -95,6 +95,67 @@ describe("src/addons/gfiThemes/components/WholeCityTheme.vue", () => {
 
         it("should have td with class firstCol", () => {
             expect(wrapper.find("td").classes()).to.includes("firstCol");
+        });
+
+        it("should have ul and li", () => {
+            expect(wrapper.find("ul").exists()).to.be.true;
+            expect(wrapper.find("li").exists()).to.be.true;
+            expect(wrapper.findAll("li").at(0).find("span").exists()).to.be.true;
+        });
+    });
+
+    describe("Interaction", () => {
+        const openModalTrigger = sinon.spy(WholeCityTemplate.methods, "openModel"),
+            setIframeAttributesTrigger = sinon.spy(WholeCityTemplate.methods, "setIframeAttributes"),
+            getLinkTrigger = sinon.spy(WholeCityTemplate.methods, "getLink"),
+            interWrapper = shallowMount(WholeCityTemplate, {propsData: {
+                feature: {
+                    getTheme: () => {
+                        return {
+                            "name": "WholeCity",
+                            "params": {
+                                "linkPrefix": "//geoportal-hamburg/",
+                                "linkHrefKey": "hrefKey",
+                                "linkTextKey": "textKey"
+                            }
+                        };
+                    },
+                    getMappedProperties: () => {
+                        return {
+                            "key1": "text1",
+                            "key2": "text2",
+                            "hrefKey": "hrefText1|hrefText2|hrefText3",
+                            "textKey": "textText1|textText2|textText3"
+                        };
+                    },
+                    getTitle: () => "Hallo",
+                    getMimeType: () => "text/xml",
+                    getGfiUrl: () => "",
+                    getLayerId: () => sinon.stub(),
+                    getOlFeature: () => olFeature
+                }
+            },
+            store, localVue});
+
+        it("should call some functions", async () => {
+            await interWrapper.findAll("li > span").at(0).trigger("click");
+            expect(openModalTrigger.calledOnce).to.be.true;
+            expect(setIframeAttributesTrigger.calledOnce).to.be.true;
+            expect(getLinkTrigger.calledOnce).to.be.true;
+            openModalTrigger.restore();
+            setIframeAttributesTrigger.restore();
+        });
+
+        it("should show Modal", async () => {
+            await interWrapper.findAll("li > span").at(0).trigger("click");
+            expect(interWrapper.vm.showModal).to.be.true;
+            expect(interWrapper.findComponent({name: "ModalItem"}).exists()).to.be.true;
+        });
+
+        it("should set Iframe Attributes", async () => {
+            await interWrapper.findAll("li > span").at(0).trigger("click");
+            expect(interWrapper.vm.pdfURL).to.be.equal("//geoportal-hamburg/hrefText1");
+            expect(interWrapper.vm.pdfTitle).to.be.equal("textText1");
         });
     });
 
