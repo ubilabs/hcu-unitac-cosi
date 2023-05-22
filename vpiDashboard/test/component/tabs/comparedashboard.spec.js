@@ -7,7 +7,7 @@ const localVue = createLocalVue();
 
 localVue.use(Vuex);
 
-describe.only("compare dashboard tab component", () => {
+describe("compare dashboard tab component", () => {
     let wrapper = null;
 
     before(() => {
