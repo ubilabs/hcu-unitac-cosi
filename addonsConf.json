@@ -210,5 +210,8 @@
   "TimeSeriesAnalyse": {
     "path": "cosi/TimeSeriesAnalyse",
     "type": "tool"
+  },
+  "wholeCityList": {
+    "type": "tool"
   }
 }
