@@ -94,6 +94,20 @@
           "dwelltime": {
             "chartTitle": "Verweildauer in Minuten"
           },
+          "visitorTypes": {
+            "chartTitle": "Besuchertypen",
+            "chartLabels": {
+              "residents": "Einwohner",
+              "commuters": "Pendler",
+              "tourists_day": "Tagestouristen",
+              "tourists_overnight": "Übernachtungstouristen"
+            },
+            "cardLabels": {
+              "commutersPerDay": "Ø Pendler pro Tag",
+              "residentsPerDay": "Ø Einwohner pro Tag",
+              "touristsPerDay": "Ø Touristen pro Tag"
+            }
+          },
           "ageGroup": {
             "chartTitle": "Altersgruppen pro Jahr und pro Jahr und Monat",
             "pieChartTitle": "Altersgruppen pro Jahr",

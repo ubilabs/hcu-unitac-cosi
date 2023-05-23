@@ -1,8 +1,11 @@
 import {generateSimpleMutations} from "../../../src/app-store/utils/generators";
 import stateVpiDashboard from "./stateVpiDashboard";
+import tabVisitorTypesMutations from "./tab/visitor-types/mutations";
 
 const mutations = {
     ...generateSimpleMutations(stateVpiDashboard),
+
+    ...tabVisitorTypesMutations,
 
     /**
      * Sets the rounded monthly data for unique visitors to the state, selected from WhatALocation data.
@@ -167,13 +170,13 @@ const mutations = {
             // Visitor sum as integer
             item.sum_num_visitors = Math.floor(item.sum_num_visitors);
 
-            // Sort by dwell time range
+            // Grouped by dwell time
             if (!dwellTimeByTime[item.DwellTime]) {
                 dwellTimeByTime[item.DwellTime] = [];
             }
             dwellTimeByTime[item.DwellTime].push(item);
 
-            // Sort by date
+            // Grouped by date
             if (!dwellTimeByDate[item.date]) {
                 dwellTimeByDate[item.date] = [];
             }

@@ -67,7 +67,8 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/VpiDashboard", Object.keys(getters)),
-        ...mapState("Tools/VpiDashboard", ["allAgeGroupsMonthlyData"])
+        ...mapState("Tools/VpiDashboard", ["allAgeGroupsMonthlyData"]),
+        ...mapGetters("Language", ["currentLocale"])
     },
     async created () {
         await this.getAllAgeGroupsData();
@@ -186,7 +187,12 @@ export default {
                                             stacked: true
                                         }],
                                         yAxes: [{
-                                            stacked: true
+                                            stacked: true,
+                                            ticks: {
+                                                callback: function(value, index, values) {
+                                                    return value.toLocaleString(currentLocale);
+                                                }
+                                            }
                                         }]
                                     }"
                                 />

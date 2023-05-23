@@ -1,7 +1,11 @@
 import axios from "axios";
 import {Config} from "../config";
+import tabVisitorTypesActions from "./tab/visitor-types/actions";
 
 const actions = {
+
+    ...tabVisitorTypesActions,
+
     /**
      * Addresses the WhatALocation endpoint to get aggregated values for unique visitors for the complete data collection range
      * @param {Object} param.commit actions commit object.

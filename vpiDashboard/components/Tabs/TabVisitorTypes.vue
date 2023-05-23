@@ -4,10 +4,12 @@ import getters from "../../store/gettersVpiDashboard";
 import actions from "../../store/actionsVpiDashboard";
 import LinechartItem from "../../../../src/share-components/charts/components/LinechartItem.vue";
 import BarchartItem from "../../utils/BarchartItem.vue";
+import DataCard from "../DataCard.vue";
 
 export default {
-    name: "TabDwellTime",
+    name: "TabVisitorTypes",
     components: {
+        DataCard,
         LinechartItem,
         BarchartItem
     },
@@ -23,7 +25,13 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/VpiDashboard", Object.keys(getters)),
-        ...mapGetters("Language", ["currentLocale"])
+        ...mapGetters("Language", ["currentLocale"]),
+        hasEntry () {
+            if (Object.keys(this.chartdata.bar).length !== 0) {
+                return true;
+            }
+            return false;
+        }
     },
     async created () {
         await this.updateChartData();
@@ -35,7 +43,7 @@ export default {
          * @returns {void}
          */
         async updateChartData () {
-            await this.getDwellTimes(this.locationId);
+            await this.getVisitorTypes(this.locationId);
             this.getCurrentChartData();
         },
         /**
@@ -51,8 +59,8 @@ export default {
          * @returns {void}
          */
         getCurrentChartData () {
-            this.chartdata.bar = this.getDwellTimeChartJsData("bar");
-            this.chartdata.line = this.getDwellTimeChartJsData("line");
+            this.chartdata.bar = this.getVisitorTypesChartJsData("bar");
+            this.chartdata.line = this.getVisitorTypesChartJsData("line");
         }
     }
 };
@@ -72,11 +80,31 @@ export default {
                         </h3>
                     </div>
                 </div>
+                <div
+                    v-if="hasEntry"
+                    class="row cards"
+                >
+                    <DataCard
+                        :title="$t('additional:modules.tools.vpidashboard.tab.visitorTypes.cardLabels.residentsPerDay')"
+                        detail="visitorTypeResidentsPerDay"
+                        :navigation="true"
+                    />
+                    <DataCard
+                        :title="$t('additional:modules.tools.vpidashboard.tab.visitorTypes.cardLabels.commutersPerDay')"
+                        detail="visitorTypeCommutersPerDay"
+                        :navigation="true"
+                    />
+                    <DataCard
+                        :title="$t('additional:modules.tools.vpidashboard.tab.visitorTypes.cardLabels.touristsPerDay')"
+                        detail="visitorTypeTouristsPerDay"
+                        :navigation="true"
+                    />
+                </div>
                 <h2>
-                    {{ $t("additional:modules.tools.vpidashboard.tab.dwelltime.chartTitle") }}
+                    {{ $t("additional:modules.tools.vpidashboard.tab.visitorTypes.chartTitle") }}
                 </h2>
                 <div class="charts">
-                    <!-- Bar Chart -->
+                    <!-- Bar Chart-->
                     <div v-if="chartType === 'bar'">
                         <div class="row">
                             <BarchartItem
@@ -154,5 +182,13 @@ h3 {
 }
 .charts {
     margin: 0 0 1rem 0;
+}
+.cards {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0 auto 1rem auto;
 }
 </style>

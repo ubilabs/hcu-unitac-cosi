@@ -10,9 +10,9 @@ import IndividualBesucher from "./Tabs/IndividualBesucher.vue";
 import CompareDashboard from "./Tabs/CompareDashboard.vue";
 import TabDwellTime from "./Tabs/TabDwellTime.vue";
 import TabInfo from "./Tabs/TabInfo.vue";
+import TabVisitorTypes from "./Tabs/TabVisitorTypes.vue";
 import LoaderOverlay from "../utils/loaderOverlay.js";
 import VpiLoader from "./VpiLoader.vue";
-
 import AgeGroups from "./Tabs/AgeGroups.vue";
 
 export default {
@@ -25,7 +25,8 @@ export default {
         TabDwellTime,
         TabInfo,
         VpiLoader,
-        AgeGroups
+        AgeGroups,
+        TabVisitorTypes
     },
     data () {
         return {
@@ -215,8 +216,7 @@ export default {
                                         <TabDwellTime />
                                     </div>
                                     <div slot="tab-content-4">
-                                        <h1>Tab 5 Content</h1>
-                                        Component Here
+                                        <TabVisitorTypes />
                                     </div>
                                     <div slot="tab-content-5">
                                         <h1>Tab 6 Content</h1>

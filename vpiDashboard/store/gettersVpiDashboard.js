@@ -1,5 +1,6 @@
 import {generateSimpleGetters} from "../../../src/app-store/utils/generators";
 import stateVpiDashboard from "./stateVpiDashboard";
+import tabVisitorTypesGetters from "./tab/visitor-types/getters";
 
 const getters = {
     /**
@@ -10,6 +11,8 @@ const getters = {
      * This is useful to avoid writing basic operations.
      */
     ...generateSimpleGetters(stateVpiDashboard),
+
+    ...tabVisitorTypesGetters,
 
     /**
      * Gets average data about unique visitors per weekday over all years, selected from WhatALocation data.
@@ -363,7 +366,7 @@ const getters = {
                             label: "60-120",
                             data: data_60_120,
                             fill: false,
-                            borderColor: "#007EA8",
+                            borderColor: "#063970",
                             tension: 0.1
                         },
                         {
@@ -377,7 +380,7 @@ const getters = {
                             label: "240+",
                             data: data_240,
                             fill: false,
-                            borderColor: "#F22613",
+                            borderColor: "#CC3E00",
                             tension: 0.1
                         }]
                 };
@@ -397,7 +400,7 @@ const getters = {
                             label: "60-120",
                             data: data_60_120,
                             hoverOffset: 4,
-                            backgroundColor: "#007EA8"
+                            backgroundColor: "#063970"
                         },
                         {
                             label: "120-240",
@@ -409,7 +412,7 @@ const getters = {
                             label: "240+",
                             data: data_240,
                             hoverOffset: 4,
-                            backgroundColor: "#F22613"
+                            backgroundColor: "#CC3E00"
                         }]
                 };
                 break;

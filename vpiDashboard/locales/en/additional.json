@@ -94,6 +94,20 @@
           "dwelltime": {
             "chartTitle": "Dwell time in minutes"
           },
+          "visitorTypes": {
+            "chartTitle": "Visitor Types",
+            "chartLabels": {
+              "residents": "Residents",
+              "commuters": "Commuters",
+              "tourists_day": "Day tourists",
+              "tourists_overnight": "Overnight tourists"
+            },
+            "cardLabels": {
+              "residentsPerDay": "Ø Residents per Tag",
+              "commutersPerDay": "Ø Commuters per Tag",
+              "touristsPerDay": "Ø Tourists per Tag"
+            }
+          },
           "ageGroup": {
             "chartTitle": "Age groups by year and by year and month",
             "pieChartTitle": "Age groups by year",
