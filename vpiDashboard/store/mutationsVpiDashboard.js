@@ -64,7 +64,7 @@ const mutations = {
     },
     /**
      * Generate a GeoJson for all WhatALocation Locations.
-     * @param {object} state of this component
+     * @param {Object} state of this component
      * @param {Array} payload Array of all locations from WhatALocation endpoint
      * @returns {void}
      */
@@ -183,6 +183,197 @@ const mutations = {
         state.dwellTimesComplete = payload;
         state.dwellTimesPerTime = dwellTimeByTime;
         state.dwellTimesPerDate = dwellTimeByDate;
+    },
+    /**
+     * Generates Bar Chart Daily Data and saves it to state.
+     * @param {Object} state the store's state object
+     * @param {Object} payload data from WhatALocation endpoint
+     * @returns {void}
+     */
+    setBarChartDailyData (state, payload) {
+        const daily = payload?.unique?.dayly,
+            labels = [],
+            day_data = [];
+
+        daily.forEach((element) => {
+            labels.push(element.weekday);
+            day_data.push(element.sum);
+        });
+        // eslint-disable-next-line one-var
+        const data = {
+            labels: labels.reverse(),
+            datasets: [{
+                label: i18next.t("additional:modules.tools.vpidashboard.unique.dailyOverview"),
+                data: day_data.reverse(),
+                hoverOffset: 4,
+                backgroundColor: "#FD763B"
+            }]
+        };
+
+        state.barChartDailyData = data;
+
+    },
+
+    /**
+     * Generates Bar Chart Daily Data and saves it to state.
+     * @param {Object} state the store's state object
+     * @param {Object} payload data from WhatALocation endpoint
+     * @returns {void}
+     */
+    setLineChartDailyData (state, payload) {
+        const daily = payload?.unique?.dayly,
+
+            labels = [],
+            day_data = [];
+
+        daily.forEach((element) => {
+            labels.push(element.weekday);
+            day_data.push(element.sum);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels.reverse(),
+            datasets: [{
+                label: i18next.t("additional:modules.tools.vpidashboard.unique.dailyOverview"),
+                data: day_data.reverse(),
+                fill: false,
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1
+            }]
+        };
+
+        state.lineChartDailyData = data;
+    },
+
+
+    /**
+     * Generates Bar Chart Monthly Data and saves it to state.
+     * @param {Object} state the store's state object
+     * @param {Object} payload data from WhatALocation endpoint
+     * @returns {void}
+     */
+    setBarChartMonthlyData (state, payload) {
+        const monthly = payload?.unique?.monthly,
+            labels = [],
+            month_data = [];
+
+        monthly.forEach((element) => {
+            labels.push(element.date__month);
+            month_data.push(element.sum);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels.reverse(),
+            datasets: [{
+                label: i18next.t("additional:modules.tools.vpidashboard.unique.monthlyOverview"),
+                data: month_data.reverse(),
+                hoverOffset: 4,
+                backgroundColor: "#FD763B"
+            }]
+        };
+
+        state.barChartMonthlyData = data;
+    },
+
+    /**
+     * Generates Line Chart Monthly Data and saves it to state.
+     * @param {Object} state the store's state object
+     * @param {Object} payload data from WhatALocation endpoint
+     * @returns {void}
+     */
+    setLineChartMonthlyData (state, payload) {
+        const monthly = payload?.unique?.monthly,
+
+            labels = [],
+            month_data = [];
+
+        monthly.forEach((element) => {
+            labels.push(element.date__month);
+            month_data.push(element.sum);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels.reverse(),
+            datasets: [{
+                label: i18next.t("additional:modules.tools.vpidashboard.unique.monthlyOverview"),
+                data: month_data.reverse(),
+                fill: false,
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1
+            }]
+        };
+
+        state.lineChartMonthlyData = data;
+    },
+
+    /**
+     * Generates Bar Chart Data and saves it to state.
+     * @param {Object} state the store's state object
+     * @param {Object} payload data from WhatALocation endpoint
+     * @returns {void}
+     */
+    setBarChartData (state, payload) {
+        const best_month = payload?.unique?.best_month,
+            labels = [],
+            month_data = [];
+
+        best_month.forEach((element) => {
+            labels.push(element.date__month + "_" + element.date__year);
+            month_data.push(element.sum);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels.reverse(),
+            datasets: [{
+                label: i18next.t("additional:modules.tools.vpidashboard.unique.uniqueVisitors"),
+                data: month_data.reverse(),
+                hoverOffset: 4,
+                backgroundColor: "#FD763B"
+            }]
+        };
+
+        state.barChartData = data;
+    },
+
+    /**
+     * Generates Line Chart Data and saves it to state.
+     * @param {Object} state the store's state object
+     * @param {Object} payload data from WhatALocation endpoint
+     * @returns {void}
+     */
+    setLineChartData (state, payload) {
+        const best_month = payload?.unique?.best_month,
+            labels = [],
+            month_data = [];
+
+        best_month.forEach((element) => {
+            labels.push(element.date__month + "_" + element.date__year);
+            month_data.push(element.sum);
+        });
+        // eslint-disable-next-line
+        const data = {
+            labels: labels.reverse(),
+            datasets: [{
+                label: i18next.t("additional:modules.tools.vpidashboard.unique.uniqueVisitors"),
+                data: month_data.reverse(),
+                fill: false,
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1
+            }]
+        };
+
+        state.lineChartData = data;
+    },
+
+    /**
+     * Sets showLoader value in state.
+     * Set it true to show loader and set it false to hide loader.
+     * @param {Object} state the store's state object
+     * @param {Boolean} isLoaderShown variable to set as showLoader
+     * @returns {void}
+     */
+    setLoader (state, isLoaderShown) {
+        state.showLoader = isLoaderShown;
     },
     /**
      * Get all age groups data

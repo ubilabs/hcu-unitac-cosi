@@ -4,20 +4,29 @@ import {Config} from "../config";
 const actions = {
     /**
      * Addresses the WhatALocation endpoint to get aggregated values for unique visitors for the complete data collection range
-     * @param {Object} commit actions commit object.
+     * @param {Object} param.commit actions commit object.
+     * @param {String} locationId id of the location which data will be loaded
      * @returns {void}
      **/
-    getIndividualVisitors: async ({commit}) => {
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/quick-data?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=300&expands=unique`,
+    getIndividualVisitors: async ({commit}, locationId) => {
+        commit("setLoader", true);
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/quick-data?location_id=${locationId}&transport=pedestrian&interval=300&expands=unique`,
             options = {
                 "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
             },
             response = await axios.get(url, {headers: options});
 
+        commit("setLoader", false);
         commit("setFrequencyData", response.data);
         commit("setAverageVisitorsPerMonth", response.data);
         commit("setAverageVisitorsPerDay", response.data);
         commit("setIndividualVisitorsPerYear", response.data);
+        commit("setBarChartDailyData", response.data);
+        commit("setLineChartDailyData", response.data);
+        commit("setBarChartMonthlyData", response.data);
+        commit("setLineChartMonthlyData", response.data);
+        commit("setBarChartData", response.data);
+        commit("setLineChartData", response.data);
     },
     /**
      * Addresses the WhatALocation endpoint to get hourly data for one day for unique visitors

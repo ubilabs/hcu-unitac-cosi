@@ -10,6 +10,9 @@ import IndividualBesucher from "./Tabs/IndividualBesucher.vue";
 import CompareDashboard from "./Tabs/CompareDashboard.vue";
 import TabDwellTime from "./Tabs/TabDwellTime.vue";
 import TabInfo from "./Tabs/TabInfo.vue";
+import LoaderOverlay from "../utils/loaderOverlay.js";
+import VpiLoader from "./VpiLoader.vue";
+
 import AgeGroups from "./Tabs/AgeGroups.vue";
 
 export default {
@@ -21,6 +24,7 @@ export default {
         CompareDashboard,
         TabDwellTime,
         TabInfo,
+        VpiLoader,
         AgeGroups
     },
     data () {
@@ -70,7 +74,7 @@ export default {
     computed: {
         ...mapGetters("Tools/VpiDashboard", Object.keys(getters)),
         ...mapGetters("Language", ["currentLocale"]),
-        ...mapState("Tools/VpiDashboard", ["allLocationsGeoJson"])
+        ...mapState("Tools/VpiDashboard", ["allLocationsGeoJson", "allLocationsArray", "showLoader"])
     },
     watch: {
         allLocationsGeoJson (val) {
@@ -112,12 +116,24 @@ export default {
             });
 
             this.$store.dispatch("AddLayerRemotely/addGeoJson", params);
+        },
+        /**
+         * Shows loader.
+         * When the showLoader value in state set to true, it shows the laoder.
+         * Otherwise hides to loader.
+         * @param {boolean} val showLoader
+         * @returns {void}
+         */
+        showLoader (val) {
+            // eslint-disable-next-line chai-friendly/no-unused-expressions
+            val ? LoaderOverlay.show() : LoaderOverlay.hide();
         }
+
     },
     async created () {
         this.$on("close", this.close);
-        await this.getWhatALocationData();
         await this.getAllLocations();
+        await this.getWhatALocationData(this.allLocationsArray[0].id);
     },
     methods: {
         ...mapMutations("Tools/VpiDashboard", Object.keys(mutations)),
@@ -136,10 +152,11 @@ export default {
         },
         /**
          * initiates the asynchronous request for individual visitors from WhatALocation
+         * @param {String} locationId id of the location that its data going to be downloaded.
          * @returns {void}
          */
-        async getWhatALocationData () {
-            await this.getIndividualVisitors();
+        async getWhatALocationData (locationId) {
+            await this.getIndividualVisitors(locationId);
             this.renderTab = true;
         },
         /**
@@ -160,59 +177,62 @@ export default {
 </script>
 
 <template lang="html">
-    <ToolTemplate
-        :title="$t(name)"
-        :icon="icon"
-        :active="active"
-        :render-to-window="renderToWindow"
-        :resizable-window="resizableWindow"
-        :initial-width="700"
-        :deactivate-g-f-i="deactivateGFI"
-    >
-        <template #toolBody>
-            <div class="row h-100">
-                <div class="col-12 col-md-12 col-lg-12 h-100">
-                    <div class="h-100">
-                        <!-- Tabs Component (START) -->
-                        <div
-                            class="tabs horizontal"
-                            disabled="false"
-                        >
-                            <!-- <Tabs /> -->
-                            <Tabs :tab-items="TabItems">
-                                <div
-                                    v-if="renderTab"
-                                    slot="tab-content-0"
-                                >
-                                    <IndividualBesucher />
-                                </div>
-                                <div slot="tab-content-1">
-                                    <CompareDashboard />
-                                </div>
-                                <div slot="tab-content-2">
-                                    <AgeGroups />
-                                </div>
-                                <div slot="tab-content-3">
-                                    <TabDwellTime />
-                                </div>
-                                <div slot="tab-content-4">
-                                    <h1>Tab 5 Content</h1>
-                                    Component Here
-                                </div>
-                                <div slot="tab-content-5">
-                                    <h1>Tab 6 Content</h1>
-                                    Component Here
-                                </div>
-                                <div slot="tab-content-6">
-                                    <TabInfo />
-                                </div>
-                            </Tabs>
+    <div>
+        <VpiLoader />
+        <ToolTemplate
+            :title="$t(name)"
+            :icon="icon"
+            :active="active"
+            :render-to-window="renderToWindow"
+            :resizable-window="resizableWindow"
+            :initial-width="700"
+            :deactivate-g-f-i="deactivateGFI"
+        >
+            <template #toolBody>
+                <div class="row h-100">
+                    <div class="col-12 col-md-12 col-lg-12 h-100">
+                        <div class="h-100">
+                            <!-- Tabs Component (START) -->
+                            <div
+                                class="tabs horizontal"
+                                disabled="false"
+                            >
+                                <!-- <Tabs /> -->
+                                <Tabs :tab-items="TabItems">
+                                    <div
+                                        v-if="renderTab"
+                                        slot="tab-content-0"
+                                    >
+                                        <IndividualBesucher />
+                                    </div>
+                                    <div slot="tab-content-1">
+                                        <CompareDashboard />
+                                    </div>
+                                    <div slot="tab-content-2">
+                                        <AgeGroups />
+                                    </div>
+                                    <div slot="tab-content-3">
+                                        <TabDwellTime />
+                                    </div>
+                                    <div slot="tab-content-4">
+                                        <h1>Tab 5 Content</h1>
+                                        Component Here
+                                    </div>
+                                    <div slot="tab-content-5">
+                                        <h1>Tab 6 Content</h1>
+                                        Component Here
+                                    </div>
+                                    <div slot="tab-content-6">
+                                        <TabInfo />
+                                    </div>
+                                </Tabs>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </template>
-    </ToolTemplate>
+            </template>
+        </ToolTemplate>
+    </div>
 </template>
 
 <style scoped>
