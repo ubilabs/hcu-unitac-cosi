@@ -1,10 +1,12 @@
 import axios from "axios";
 import {Config} from "../config";
 import tabVisitorTypesActions from "./tab/visitor-types/actions";
+import tabCompareDatesActions from "./tab/compare/dates/actions";
 
 const actions = {
 
     ...tabVisitorTypesActions,
+    ...tabCompareDatesActions,
 
     /**
      * Addresses the WhatALocation endpoint to get aggregated values for unique visitors for the complete data collection range

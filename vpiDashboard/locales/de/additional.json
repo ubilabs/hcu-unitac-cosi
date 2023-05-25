@@ -10,8 +10,9 @@
           "dwelltime": "Verweildauer",
           "types": "Besuchertypen",
           "distance": "Entfernung",
-          "compare": "Vergleich",
-          "info": "Informationen"
+          "compare": "Vergleich Standorte",
+          "info": "Informationen",
+          "compare_dates": "Vergleich Daten"
         },
         "time": {
           "months": [
@@ -88,7 +89,10 @@
           "date": "Datum",
           "compare": "Vergleiche",
           "character": "Merkmal",
-          "location_comparison": "Standortvergleich"
+          "location_comparison": "Standortvergleich",
+          "date_a": "Basisdatum",
+          "date_b": "Vergleichsdatum",
+          "date_comparison": "Vergleich Datumswerte"
         },
         "tab": {
           "dwelltime": {

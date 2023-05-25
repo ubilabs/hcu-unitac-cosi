@@ -14,6 +14,7 @@ import TabVisitorTypes from "./Tabs/TabVisitorTypes.vue";
 import LoaderOverlay from "../utils/loaderOverlay.js";
 import VpiLoader from "./VpiLoader.vue";
 import AgeGroups from "./Tabs/AgeGroups.vue";
+import CompareDatesDashboard from "./Tabs/CompareDatesDashboard.vue";
 
 export default {
     name: "VpiDashboard",
@@ -26,7 +27,8 @@ export default {
         TabInfo,
         VpiLoader,
         AgeGroups,
-        TabVisitorTypes
+        TabVisitorTypes,
+        CompareDatesDashboard
     },
     data () {
         return {
@@ -66,6 +68,11 @@ export default {
                 {
                     index: 6,
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.info"),
+                    selected: false
+                },
+                {
+                    index: 7,
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.compare_dates"),
                     selected: false
                 }
             ],
@@ -224,6 +231,9 @@ export default {
                                     </div>
                                     <div slot="tab-content-6">
                                         <TabInfo />
+                                    </div>
+                                    <div slot="tab-content-7">
+                                        <CompareDatesDashboard />
                                     </div>
                                 </Tabs>
                             </div>

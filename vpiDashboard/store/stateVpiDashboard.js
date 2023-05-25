@@ -1,4 +1,5 @@
 import tabVisitorTypesState from "./tab/visitor-types/state";
+import tabCompareDatesState from "./tab/compare/dates/state";
 
 const state = {
     id: "vpiDashboard",
@@ -42,7 +43,8 @@ const state = {
     ageGroupxLabels: [],
     allAgeGroupsYears: [],
     ageGroupPieChartLabels: ["20-29", "30-39", "40-49", "50-59", "60-69", ">69"],
-    ...tabVisitorTypesState
+    ...tabVisitorTypesState,
+    ...tabCompareDatesState
 };
 
 export default state;

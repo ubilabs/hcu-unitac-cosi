@@ -1,6 +1,7 @@
 import {generateSimpleGetters} from "../../../src/app-store/utils/generators";
 import stateVpiDashboard from "./stateVpiDashboard";
 import tabVisitorTypesGetters from "./tab/visitor-types/getters";
+import tabCompareDatesGetters from "./tab/compare/dates/getters";
 
 const getters = {
     /**
@@ -13,6 +14,7 @@ const getters = {
     ...generateSimpleGetters(stateVpiDashboard),
 
     ...tabVisitorTypesGetters,
+    ...tabCompareDatesGetters,
 
     /**
      * Gets average data about unique visitors per weekday over all years, selected from WhatALocation data.
