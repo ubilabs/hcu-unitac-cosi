@@ -497,8 +497,16 @@ const mutations = {
         state.ageGroupxLabels = xLabels;
         state.ageGroupsYearlyData = ageGroupsByYear;
         state.allAgeGroupsYears = allYears;
+    },
+    /**
+     * Sets the id of the selected location.
+     * @param {Object} state the store's state object
+     * @param {Integer} selectedLocationId the id of the selected location
+     * @returns {void}
+     */
+    setSelectedLocationId (state, selectedLocationId) {
+        state.selectedLocationId = selectedLocationId;
     }
 };
 
 export default mutations;
-

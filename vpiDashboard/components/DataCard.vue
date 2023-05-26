@@ -56,13 +56,13 @@ export default {
          * @returns {String} the average or yearly number of visitors for the current parameters
          */
         statisticSet () {
-            if (this.detail === "monthly") {
+            if (this.detail === "monthly" && this.averageVisitorsPerMonth.length > 0) {
                 return this.averageVisitorsPerMonth[this.currentMonthIndex].avg.toLocaleString(this.currentLocale);
             }
-            if (this.detail === "daily") {
+            if (this.detail === "daily" && this.averageVisitorsPerDay.length > 0) {
                 return this.averageVisitorsPerDay[this.currentDayIndex].avg.toLocaleString(this.currentLocale);
             }
-            if (this.detail === "individualVisitors") {
+            if (this.detail === "individualVisitors" && this.individualVisitorsPerYear !== "") {
                 const selectedYearData = this.individualVisitorsPerYear.filter((element) => {
                     return element.date__year === this.currentYearIndex + 2019;
                 });

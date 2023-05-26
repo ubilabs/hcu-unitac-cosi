@@ -14,6 +14,7 @@ import TabVisitorTypes from "./Tabs/TabVisitorTypes.vue";
 import LoaderOverlay from "../utils/loaderOverlay.js";
 import VpiLoader from "./VpiLoader.vue";
 import AgeGroups from "./Tabs/AgeGroups.vue";
+import LocationSelectMenuVue from "./LocationSelectMenu.vue";
 import CompareDatesDashboard from "./Tabs/CompareDatesDashboard.vue";
 
 export default {
@@ -28,6 +29,7 @@ export default {
         VpiLoader,
         AgeGroups,
         TabVisitorTypes,
+        LocationSelectMenuVue,
         CompareDatesDashboard
     },
     data () {
@@ -38,51 +40,59 @@ export default {
                 {
                     index: 0,
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.individuals"),
-                    selected: true
+                    selected: true,
+                    showLocationSelectMenu: true
                 },
                 {
                     index: 1,
-                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.compare"),
-                    selected: false
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.age"),
+                    selected: false,
+                    showLocationSelectMenu: true
                 },
                 {
                     index: 2,
-                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.age"),
-                    selected: false
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.dwelltime"),
+                    selected: false,
+                    showLocationSelectMenu: true
                 },
                 {
                     index: 3,
-                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.dwelltime"),
-                    selected: false
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.types"),
+                    selected: false,
+                    showLocationSelectMenu: true
                 },
                 {
                     index: 4,
-                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.types"),
-                    selected: false
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.compare"),
+                    selected: false,
+                    showLocationSelectMenu: false
                 },
                 {
                     index: 5,
-                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.distance"),
-                    selected: false
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.compare_dates"),
+                    selected: false,
+                    showLocationSelectMenu: false
                 },
                 {
                     index: 6,
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.info"),
-                    selected: false
-                },
-                {
-                    index: 7,
-                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.compare_dates"),
-                    selected: false
+                    selected: false,
+                    showLocationSelectMenu: false
                 }
             ],
-            renderTab: false
+            renderTab: false,
+            finishedLoading: false
         };
     },
     computed: {
         ...mapGetters("Tools/VpiDashboard", Object.keys(getters)),
         ...mapGetters("Language", ["currentLocale"]),
-        ...mapState("Tools/VpiDashboard", ["allLocationsGeoJson", "allLocationsArray", "showLoader"])
+        ...mapState("Tools/VpiDashboard", ["allLocationsGeoJson", "allLocationsArray", "showLoader"]),
+        showLocationSelectMenu () {
+            const selectedTab = this.TabItems.find(tab => tab.selected === true);
+
+            return selectedTab.showLocationSelectMenu;
+        }
     },
     watch: {
         allLocationsGeoJson (val) {
@@ -142,6 +152,7 @@ export default {
         this.$on("close", this.close);
         await this.getAllLocations();
         await this.getWhatALocationData(this.allLocationsArray[0].id);
+        this.finishedLoading = true;
     },
     methods: {
         ...mapMutations("Tools/VpiDashboard", Object.keys(mutations)),
@@ -210,6 +221,12 @@ export default {
                 <div class="row h-100">
                     <div class="col-12 col-md-12 col-lg-12 h-100">
                         <div class="h-100">
+                            <div>
+                                <LocationSelectMenuVue
+                                    v-if="finishedLoading"
+                                    v-show="showLocationSelectMenu"
+                                />
+                            </div>
                             <!-- Tabs Component (START) -->
                             <div
                                 class="tabs horizontal"
@@ -224,26 +241,22 @@ export default {
                                         <IndividualBesucher />
                                     </div>
                                     <div slot="tab-content-1">
-                                        <CompareDashboard />
-                                    </div>
-                                    <div slot="tab-content-2">
                                         <AgeGroups />
                                     </div>
-                                    <div slot="tab-content-3">
+                                    <div slot="tab-content-2">
                                         <TabDwellTime />
                                     </div>
-                                    <div slot="tab-content-4">
+                                    <div slot="tab-content-3">
                                         <TabVisitorTypes />
                                     </div>
+                                    <div slot="tab-content-4">
+                                        <CompareDashboard />
+                                    </div>
                                     <div slot="tab-content-5">
-                                        <h1>Tab 6 Content</h1>
-                                        Component Here
+                                        <CompareDatesDashboard />
                                     </div>
                                     <div slot="tab-content-6">
                                         <TabInfo />
-                                    </div>
-                                    <div slot="tab-content-7">
-                                        <CompareDatesDashboard />
                                     </div>
                                 </Tabs>
                             </div>

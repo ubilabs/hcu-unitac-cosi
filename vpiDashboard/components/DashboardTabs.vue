@@ -13,6 +13,11 @@ export default {
             currentTabIndex: 0
         };
     },
+    computed: {
+        tabItemsComputed () {
+            return this.tabItems;
+        }
+    },
     methods: {
         /**
          * reacts on the change of tab in the dashboard
@@ -20,7 +25,7 @@ export default {
          * @returns {void}
          */
         selectTab (index) {
-            this.tabItems.forEach(tab => {
+            this.tabItemsComputed.forEach(tab => {
                 if (tab.index === index) {
                     tab.selected = true;
                     this.currentTabIndex = tab.index;
@@ -38,7 +43,7 @@ export default {
     <div id="vpiDashboard-tabs">
         <ul class="nav nav-tabs">
             <li
-                v-for="(tab, index) in tabItems"
+                v-for="(tab, index) in tabItemsComputed"
                 :key="index"
                 class="nav-item"
             >

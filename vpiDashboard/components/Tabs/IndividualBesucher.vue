@@ -3,7 +3,6 @@ import {mapGetters, mapActions, mapState} from "vuex";
 import getters from "../../store/gettersVpiDashboard";
 import actions from "../../store/actionsVpiDashboard";
 import dayjs from "dayjs";
-import Multiselect from "vue-multiselect";
 
 // Components Import
 import LinechartItem from "../../../../src/share-components/charts/components/LinechartItem.vue";
@@ -18,9 +17,7 @@ export default {
         DataCard,
         LinechartItem,
         BarchartItem,
-        DatePicker,
-        Multiselect
-
+        DatePicker
     },
     data () {
         return {
@@ -74,7 +71,7 @@ export default {
             ],
             selectedChartData: "overview",
             chartSubTitle: "",
-            selectedLocation: ""
+            renderKey: 0
         };
     },
     computed: {
@@ -86,9 +83,9 @@ export default {
             "barChartMonthlyData",
             "lineChartMonthlyData",
             "barChartData",
-            "lineChartData"
+            "lineChartData",
+            "selectedLocationId"
         ]),
-
         selectedChartDataComputed: {
             /**
              * define, which data shall be the base of the chart
@@ -139,14 +136,15 @@ export default {
                 this.dayDatepickerValueChanged(value);
             }
         },
-        selectedLocation (location) {
-            this.selectedLocationChange(location);
+        async selectedLocationId () {
+            await this.getIndividualVisitors();
+            await this.fillInitialChartData();
         }
     },
     async created () {
         this.$on("close", this.close);
+        await this.getIndividualVisitors();
         await this.fillInitialChartData();
-        this.selectedLocation = this.allLocationsArray[0];
     },
     methods: {
         ...mapActions("Tools/VpiDashboard", Object.keys(actions)),
@@ -314,11 +312,6 @@ export default {
             this.chartdata.bar = {};
             this.chartdata.line = {};
             this.dates = "";
-        },
-        selectedLocationChange (location) {
-            this.getIndividualVisitors(location.id);
-            this.chartdata.bar = this.barChartData;
-            this.chartdata.line = this.lineChartData;
         }
 
     }
@@ -332,18 +325,6 @@ export default {
             role="tabpanel"
         >
             <div class="tab-content h100">
-                <div class="row">
-                    <div class="headline">
-                        <Multiselect
-                            v-model="selectedLocation"
-                            tag-placeholder="Add this as new tag"
-                            placeholder="Suche ein Lokation"
-                            label="street"
-                            track-by="street"
-                            :options="allLocationsArray"
-                        />
-                    </div>
-                </div>
                 <div class="row cards">
                     <DataCard
                         :title="translate('additional:modules.tools.vpidashboard.unique.avgVisitorsYear')"

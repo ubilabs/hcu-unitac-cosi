@@ -117,6 +117,9 @@
             "pieChartTitle": "Age groups by year",
             "lineBarChartTitle": "Age groups by year and month"
           }
+        },
+        "locationSelectMenu": {
+            "menuPlaceholder": "Choose a location"
         }
       }
     }

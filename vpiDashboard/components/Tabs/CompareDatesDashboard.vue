@@ -229,7 +229,7 @@ export default {
                             <Multiselect
                                 v-model="location_a"
                                 tag-placeholder="Add this as new tag"
-                                placeholder="Suche ein Lokation"
+                                :placeholder="translate('additional:modules.tools.vpidashboard.locationSelectMenu.menuPlaceholder')"
                                 label="street"
                                 track-by="street"
                                 :options="locations_a"

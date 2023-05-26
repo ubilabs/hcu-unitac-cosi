@@ -70,6 +70,14 @@ export default {
         ...mapState("Tools/VpiDashboard", ["allAgeGroupsMonthlyData"]),
         ...mapGetters("Language", ["currentLocale"])
     },
+    watch: {
+        async selectedLocationId () {
+            this.showChart = false;
+            await this.getAllAgeGroupsData();
+            await this.fillInitialChartData();
+            this.showChart = true;
+        }
+    },
     async created () {
         await this.getAllAgeGroupsData();
         await this.fillInitialChartData();

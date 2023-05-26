@@ -15,7 +15,6 @@ export default {
     },
     data () {
         return {
-            locationId: "550a360a-171b-46d2-81bb-a5d116523261", // Mönckebergstrasse 3, 20095 Hamburg
             chartType: "bar",
             chartdata: {
                 bar: {},
@@ -33,6 +32,11 @@ export default {
             return false;
         }
     },
+    watch: {
+        async selectedLocationId () {
+            await this.updateChartData();
+        }
+    },
     async created () {
         await this.updateChartData();
     },
@@ -43,7 +47,7 @@ export default {
          * @returns {void}
          */
         async updateChartData () {
-            await this.getVisitorTypes(this.locationId);
+            await this.getVisitorTypes();
             this.getCurrentChartData();
         },
         /**
@@ -73,13 +77,6 @@ export default {
             role="tabpanel"
         >
             <div class="tab-content h100">
-                <div class="row">
-                    <div class="headline">
-                        <h3>
-                            Mönckebergstrasse 3, 20095 Hamburg
-                        </h3>
-                    </div>
-                </div>
                 <div
                     v-if="hasEntry"
                     class="row cards"
