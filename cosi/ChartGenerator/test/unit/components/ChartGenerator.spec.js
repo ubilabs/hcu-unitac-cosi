@@ -33,7 +33,7 @@ function getGraphData () {
     return JSON.parse(JSON.stringify(chartdata01));
 }
 
-describe.only("CharGenerator.vue", () => {
+describe("CharGenerator.vue", () => {
     // eslint-disable-next-line no-unused-vars
     let store, sandbox, addSingleAlertStub, cleanupStub, vuetify;
 
