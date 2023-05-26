@@ -154,6 +154,16 @@ export default {
             this.setActive(false);
             const model = getComponent(this.$store.state.Tools.VpiDashboard.id);
 
+            // ensures that the individual visitors tabs is active after reopening
+            // the tool
+            this.TabItems.forEach((tabItem) => {
+                if (tabItem.index === 0) {
+                    tabItem.selected = true;
+                }
+                else {
+                    tabItem.selected = false;
+                }
+            });
             if (model) {
                 model.set("isActive", false);
             }
