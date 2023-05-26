@@ -1,16 +1,18 @@
 <script>
 import BarchartItem from "../../utils/BarchartItem.vue";
 import DatePicker from "vue2-datepicker";
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters, mapState} from "vuex";
 import actions from "../../store/actionsVpiDashboard";
 import getters from "../../store/gettersVpiDashboard";
 import dayjs from "dayjs";
+import Multiselect from "vue-multiselect";
 
 export default {
     name: "CompareDatesDashboard",
     components: {
         BarchartItem,
-        DatePicker
+        DatePicker,
+        Multiselect
     },
     data () {
         return {
@@ -37,6 +39,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/VpiDashboard", Object.keys(getters)),
+        ...mapState("Tools/VpiDashboard", ["showLoader"]),
         showCompareButton () {
             if (this.date_a !== null && this.date_b !== null) {
                 return true;
@@ -77,24 +80,29 @@ export default {
         }
     },
     watch: {
-        date_a (oldValue, newValue) {
+        date_a (newValue, oldValue) {
             if (oldValue !== newValue) {
                 this.showCompareChart = false;
             }
         },
-        date_b (oldValue, newValue) {
+        date_b (newValue, oldValue) {
             if (oldValue !== newValue) {
                 this.showCompareChart = false;
             }
         },
-        character (oldValue, newValue) {
+        character (newValue, oldValue) {
+            if (oldValue !== newValue) {
+                this.showCompareChart = false;
+            }
+        },
+        location_a (newValue, oldValue) {
             if (oldValue !== newValue) {
                 this.showCompareChart = false;
             }
         }
     },
     async created () {
-        this.all_locations = this.getAllLocationsArray;
+        this.all_locations = await this.getAllLocationsArray;
         this.all_locations.forEach((location) => {
             this.locations_a.push({location_id: location.id, street: location.street});
         });
@@ -218,19 +226,14 @@ export default {
                             {{ translate('additional:modules.tools.vpidashboard.compare.location') }}
                         </label>
                         <div class="col">
-                            <select
-                                id="vpi-dashboard-select-location-a-select"
+                            <Multiselect
                                 v-model="location_a"
-                                class="font-arial form-select form-select-sm float-start"
-                            >
-                                <option
-                                    v-for="(location, i) in locations_a"
-                                    :key="i"
-                                    :value="location"
-                                >
-                                    {{ location.street }}
-                                </option>
-                            </select>
+                                tag-placeholder="Add this as new tag"
+                                placeholder="Suche ein Lokation"
+                                label="street"
+                                track-by="street"
+                                :options="locations_a"
+                            />
                         </div>
                     </div>
                     <div
@@ -316,6 +319,7 @@ export default {
                             {{ translate('additional:modules.tools.vpidashboard.compare.compare') }}
                         </Button>
                     </div>
+
                     <div
                         v-if="showCompareChart"
                         class="row d-flex justify-content-center mt-3"
