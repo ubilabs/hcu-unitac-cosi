@@ -2,6 +2,7 @@ import axios from "axios";
 import {Config} from "../config";
 import tabVisitorTypesActions from "./tab/visitor-types/actions";
 import tabCompareDatesActions from "./tab/compare/dates/actions";
+import defineAuthorisationHeader from "./util";
 
 const actions = {
 
@@ -17,10 +18,7 @@ const actions = {
     getIndividualVisitors: async ({commit}, locationId) => {
         commit("setLoader", true);
         const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/quick-data?location_id=${locationId}&transport=pedestrian&interval=300&expands=unique`,
-            options = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            response = await axios.get(url, {headers: options});
+            response = await axios.get(url, {headers: defineAuthorisationHeader()});
 
         commit("setLoader", false);
         commit("setFrequencyData", response.data);
@@ -41,11 +39,8 @@ const actions = {
      * @returns {Object} response object from WhatALocation endpoint
      **/
     getIndividualVisitorsForDay: async (context, date) => {
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Avg]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date__hour]&date__gte=${date} 00:00:00&date__lte=${date} 23:59:19`,
-            options = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            response = await axios.get(url, {headers: options});
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily?location_id=550a360a-171b-46d2-81bb-a5d116523261&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Avg]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date__hour]&date__gte=${date} 00:00:00&date__lte=${date} 23:59:19`,
+            response = await axios.get(url, {headers: defineAuthorisationHeader()});
 
         return response.data;
     },
@@ -56,11 +51,8 @@ const actions = {
      * @returns {Object} response object from WhatALocation endpoint
      **/
     getIndividualVisitorsForDateRange: async (context, dates) => {
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated?location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Sum]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date]&date__gte=${dates.dateFrom}&date__lte=${dates.dateTo}`,
-            options = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            response = await axios.get(url, {headers: options});
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated?location_id=550a360a-171b-46d2-81bb-a5d116523261&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Sum]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date]&date__gte=${dates.dateFrom}&date__lte=${dates.dateTo}`,
+            response = await axios.get(url, {headers: defineAuthorisationHeader()});
 
         return response.data;
     },
@@ -80,10 +72,7 @@ const actions = {
      **/
     getAllLocations: async ({commit}) => {
         const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/locations/all_summary`,
-            options = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            response = await axios.get(url, {headers: options});
+            response = await axios.get(url, {headers: defineAuthorisationHeader()});
 
         commit("setAllLocationsGeoJson", Object.values(response.data));
     },
@@ -95,10 +84,7 @@ const actions = {
      **/
     getDwellTimes: async ({commit}, locationId) => {
         const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]&location_id=${locationId}&group_by[DwellTime]&format=agg&aggregate[Sum]=num_visitors&pulse=activate&interval=300&transportation=pedestrian`,
-            options = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            response = await axios.get(url, {headers: options});
+            response = await axios.get(url, {headers: defineAuthorisationHeader()});
 
         commit("setDwellTimes", response.data.data);
     },
@@ -111,19 +97,13 @@ const actions = {
      */
     getDwellTimesToCompare: async ({commit}, compareData) => {
         const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
-            optionsA = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            responseA = await axios.get(urlA, {headers: optionsA});
+            responseA = await axios.get(urlA, {headers: defineAuthorisationHeader()});
 
         commit("setDwellTimeLocationA", responseA.data); // return data
 
         // eslint-disable-next-line
         const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
-            optionsB = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            responseB = await axios.get(urlB, {headers: optionsB});
+            responseB = await axios.get(urlB, {headers: defineAuthorisationHeader()});
 
         commit("setDwellTimeLocationB", responseB.data);
     },
@@ -136,19 +116,13 @@ const actions = {
      */
     getAgeGroupsToCompare: async ({commit}, compareData) => {
         const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
-            optionsA = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            responseA = await axios.get(urlA, {headers: optionsA});
+            responseA = await axios.get(urlA, {headers: defineAuthorisationHeader()});
 
         commit("setAgeGroupsLocationA", responseA.data); // return data
 
         // eslint-disable-next-line
         const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
-            optionsB = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            responseB = await axios.get(urlB, {headers: optionsB});
+            responseB = await axios.get(urlB, {headers: defineAuthorisationHeader()});
 
         commit("setAgeGroupsLocationB", responseB.data);
     },
@@ -161,19 +135,13 @@ const actions = {
      */
     getVisitorTypesToCompare: async ({commit}, compareData) => {
         const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
-            optionsA = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            responseA = await axios.get(urlA, {headers: optionsA});
+            responseA = await axios.get(urlA, {headers: defineAuthorisationHeader()});
 
         commit("setVisitorTypesLocationA", responseA.data); // return data
 
         // eslint-disable-next-line
         const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
-            optionsB = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            responseB = await axios.get(urlB, {headers: optionsB});
+            responseB = await axios.get(urlB, {headers: defineAuthorisationHeader()});
 
         commit("setVisitorTypesLocationB", responseB.data);
     },
@@ -186,19 +154,13 @@ const actions = {
      */
     getIndividualVisitorsToCompare: async ({commit}, compareData) => {
         const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
-            optionsA = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            responseA = await axios.get(urlA, {headers: optionsA});
+            responseA = await axios.get(urlA, {headers: defineAuthorisationHeader()});
 
         commit("setIndividualVisitorsLocationA", responseA.data); // return data
 
         // eslint-disable-next-line
         const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
-            optionsB = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            responseB = await axios.get(urlB, {headers: optionsB});
+            responseB = await axios.get(urlB, {headers: defineAuthorisationHeader()});
 
         commit("setIndividualVisitorsLocationB", responseB.data);
     },
@@ -208,11 +170,8 @@ const actions = {
      * @returns {Promise<void>} sets the data in store
      */
     getAllAgeGroupsData: async ({commit}) => {
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?format=agg&group_by[date]&aggregate[Sum]=num_visitors&group_by[age_group]&location_id=d5a5e897-a98a-4cb8-bbcd-cc45738d1a08&interval=300&transportation=pedestrian`,
-            options = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            response = await axios.get(url, {headers: options});
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?format=agg&group_by[date]&aggregate[Sum]=num_visitors&group_by[age_group]&location_id=550a360a-171b-46d2-81bb-a5d116523261&interval=300&transportation=pedestrian`,
+            response = await axios.get(url, {headers: defineAuthorisationHeader()});
 
         await commit("setAllAgeGroupsData", response.data);
         await commit("setAllAgeGroupsMonthlyData");

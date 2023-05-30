@@ -24,9 +24,9 @@ const sortArrays = {
 
             return (Number(min) + Number(max)) / 2;
         };
-        // eslint-disable-next-line
 
         arr.sort((a, b) => numericalOrder(a) - numericalOrder(b));
+        // eslint-disable-next-line
         arr = arr.map((range) => range.replace(/[[\]]/g, "")); // Remove brackets
 
         return arr;

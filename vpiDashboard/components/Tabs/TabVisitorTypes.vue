@@ -15,7 +15,7 @@ export default {
     },
     data () {
         return {
-            locationId: "d5a5e897-a98a-4cb8-bbcd-cc45738d1a08", // Mönckebergstrasse 3, 20095 Hamburg
+            locationId: "550a360a-171b-46d2-81bb-a5d116523261", // Mönckebergstrasse 3, 20095 Hamburg
             chartType: "bar",
             chartdata: {
                 bar: {},
