@@ -1,5 +1,6 @@
 import tabVisitorTypesState from "./tab/visitor-types/state";
 import tabCompareDatesState from "./tab/compare/dates/state";
+import tabCompareLocationsState from "./tab/compare/locations/state";
 
 const state = {
     id: "vpiDashboard",
@@ -25,14 +26,6 @@ const state = {
     barChartData: {},
     lineChartData: {},
     showLoader: false,
-    dwellTimeLocationA: undefined,
-    dwellTimeLocationB: undefined,
-    ageGroupsLocationA: undefined,
-    ageGroupsLocationB: undefined,
-    visitorTypesLocationA: undefined,
-    visitorTypesLocationB: undefined,
-    individualVisitorsLocationA: undefined,
-    individualVisitorsLocationB: undefined,
     dwellTimesComplete: [],
     dwellTimesPerTime: {},
     dwellTimesPerDate: {},
@@ -45,7 +38,8 @@ const state = {
     ageGroupPieChartLabels: ["20-29", "30-39", "40-49", "50-59", "60-69", ">69"],
     selectedLocationId: "",
     ...tabVisitorTypesState,
-    ...tabCompareDatesState
+    ...tabCompareDatesState,
+    ...tabCompareLocationsState
 };
 
 export default state;
