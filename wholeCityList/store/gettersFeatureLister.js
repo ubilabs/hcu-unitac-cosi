@@ -47,13 +47,14 @@ const getters = {
     headers: (state, _, __, rootGetters) => {
         const headers = Object.entries(state.gfiFeaturesOfLayer
             .reduce((acc, it) => {
+                const ignoredKey = it.getTheme()?.params?.linkHrefKey;
                 let keys = it.getAttributesToShow();
 
                 keys = keys === "showAll"
                     ? Object.keys(it.getProperties()).map(prop => [prop, prop])
                     : Object.entries(keys);
                 keys.forEach(([key, value]) => {
-                    if (!rootGetters.ignoredKeys.includes(key.toUpperCase())) {
+                    if (!rootGetters.ignoredKeys.includes(key.toUpperCase()) && key !== ignoredKey) {
                         if (typeof value === "object" && Object.prototype.hasOwnProperty.call(value, "name")) {
                             acc[key] = value.name;
                         }
