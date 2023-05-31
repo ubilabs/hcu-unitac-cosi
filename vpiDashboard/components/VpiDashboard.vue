@@ -195,7 +195,7 @@ export default {
 </script>
 
 <template lang="html">
-    <div>
+    <div class="vpidashboardbasic">
         <VpiLoader />
         <ToolTemplate
             :title="$t(name)"
@@ -256,5 +256,8 @@ export default {
 </template>
 
 <style scoped>
+    .vpidashboardbasic {
+        height: 100%;
+    }
 
 </style>
