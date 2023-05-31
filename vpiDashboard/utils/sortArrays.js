@@ -1,4 +1,9 @@
 const sortArrays = {
+    /**
+     * Sorts the dwell time data array
+     * @param {Array} arr dwell time data
+     * @return {Array} the sorted array
+     */
     sortDwellTimeArray: (arr) => {
         // eslint-disable-next-line
         const numericalOrder = (range) => {
@@ -14,6 +19,11 @@ const sortArrays = {
 
         return arr;
     },
+    /**
+     * Sorts the age groups data array
+     * @param {Array} arr age groups data
+     * @return {Array} the sorted array
+     */
     sortAgeGroupsArray: (arr) => {
         // eslint-disable-next-line
         const numericalOrder = (range) => {

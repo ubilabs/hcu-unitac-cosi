@@ -350,7 +350,7 @@ export default {
                                     v-for="(columndata, index) in chartdata.bar.datasets[0].data"
                                     :key="index"
                                 >
-                                    {{ columndata }}
+                                    {{ columndata.toLocaleString("de-DE") }}
                                 </td>
                             </tr>
                             <tr>
@@ -361,7 +361,7 @@ export default {
                                     v-for="(columndata, index) in chartdata.bar.datasets[1].data"
                                     :key="index"
                                 >
-                                    {{ columndata }}
+                                    {{ columndata.toLocaleString("de-DE") }}
                                 </td>
                             </tr>
                         </tbody>

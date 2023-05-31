@@ -104,6 +104,7 @@ const actions = {
      * @returns {Promise<void>} sets the data in store
      */
     getDwellTimesToCompare: async ({commit}, compareData) => {
+        commit("setLoader", true);
         const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
             responseA = await axios.get(urlA, {headers: defineAuthorisationHeader()});
 
@@ -113,6 +114,7 @@ const actions = {
         const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
             responseB = await axios.get(urlB, {headers: defineAuthorisationHeader()});
 
+        commit("setLoader", false);
         commit("setDwellTimeLocationB", responseB.data);
     },
     /**
@@ -123,6 +125,7 @@ const actions = {
      * @returns {Promise<void>} sets the data in store
      */
     getAgeGroupsToCompare: async ({commit}, compareData) => {
+        commit("setLoader", true);
         const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
             responseA = await axios.get(urlA, {headers: defineAuthorisationHeader()});
 
@@ -132,6 +135,7 @@ const actions = {
         const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
             responseB = await axios.get(urlB, {headers: defineAuthorisationHeader()});
 
+        commit("setLoader", false);
         commit("setAgeGroupsLocationB", responseB.data);
     },
     /**
@@ -142,6 +146,7 @@ const actions = {
      * @returns {Promise<void>} sets the data in store
      */
     getVisitorTypesToCompare: async ({commit}, compareData) => {
+        commit("setLoader", true);
         const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
             responseA = await axios.get(urlA, {headers: defineAuthorisationHeader()});
 
@@ -151,6 +156,7 @@ const actions = {
         const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
             responseB = await axios.get(urlB, {headers: defineAuthorisationHeader()});
 
+        commit("setLoader", false);
         commit("setVisitorTypesLocationB", responseB.data);
     },
     /**
@@ -161,6 +167,7 @@ const actions = {
      * @returns {Promise<void>} sets the data in store
      */
     getIndividualVisitorsToCompare: async ({commit}, compareData) => {
+        commit("setLoader", true);
         const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
             responseA = await axios.get(urlA, {headers: defineAuthorisationHeader()});
 
@@ -170,6 +177,7 @@ const actions = {
         const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
             responseB = await axios.get(urlB, {headers: defineAuthorisationHeader()});
 
+        commit("setLoader", false);
         commit("setIndividualVisitorsLocationB", responseB.data);
     },
     /**

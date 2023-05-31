@@ -32,7 +32,7 @@ const generateDataArray = {
         let labels = [];
 
         dataFromEndpoint?.data.forEach((element) => {
-            avg_num_visitors.push(Math.round(element.avg_num_visitors).toLocaleString("de-DE"));
+            avg_num_visitors.push(Math.round(element.avg_num_visitors));
             labels.push(element[groupByProperty]);
         });
 
