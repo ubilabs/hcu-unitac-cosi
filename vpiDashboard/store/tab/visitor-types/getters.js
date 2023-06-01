@@ -1,3 +1,4 @@
+import {changeDateFormat} from "../../../utils/changeDateFormat";
 const getters = {
     /**
      * Get a "visitor types" ChartJS data object.
@@ -18,7 +19,7 @@ const getters = {
                 month = theDate.getMonth() + 1;
 
             // Set label from date, e.g. 2023-01-01 becomes 2023-01
-            labels.push(`${year}-${month.toString().padStart(2, "0")}`);
+            labels.push(changeDateFormat(month, year));
 
             data_residents.push(
                 items.find(i => i.VisitorType === "Einwohner")?.sum_num_visitors || 0

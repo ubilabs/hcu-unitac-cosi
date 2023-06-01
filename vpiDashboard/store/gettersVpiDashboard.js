@@ -2,6 +2,7 @@ import {generateSimpleGetters} from "../../../src/app-store/utils/generators";
 import stateVpiDashboard from "./stateVpiDashboard";
 import tabVisitorTypesGetters from "./tab/visitor-types/getters";
 import tabCompareDatesGetters from "./tab/compare/dates/getters";
+import {changeDateFormat} from "../utils/changeDateFormat";
 import tabCompareLocationsGetters from "./tab/compare/locations/getters";
 
 const getters = {
@@ -120,7 +121,7 @@ const getters = {
                 month = theDate.getMonth() + 1;
 
             // Set label from date, e.g. 2023-01-01 becomes 2023-01
-            labels.push(`${year}-${month.toString().padStart(2, "0")}`);
+            labels.push(changeDateFormat(month, year));
 
             data_30_60.push(
                 items.find(i => i.DwellTime === "30-60")?.sum_num_visitors || 0
