@@ -90,7 +90,6 @@ export default {
          * @returns {void}  -
          */
         resetChart (data) {
-            data.labels = this.changeDateFormat(data.labels);
             // getChartJsOptions does not allow to overwrite scales
             // this workaround allows to overwrite the scales completely
             if (this.givenScales) {
@@ -122,28 +121,6 @@ export default {
                 return typeof givenOptions === "object" && givenOptions !== null ? givenOptions : {};
             }
             return deepAssign(defaultOptions, givenOptions);
-        },
-        /**
-         * Check if a date value is in yearMonthFormat
-         * @param {String} date The given date
-         * @returns {Boolean} flag if the given format is YYYY-MM
-         */
-        isYearMonthFormat (date) {
-            const regex = /^\d{4}-\d{2}$/;
-
-            return regex.test(date);
-        },
-        changeDateFormat (dates) {
-            return dates.map(date => {
-                if (this.isYearMonthFormat(date)) {
-                    const [year, month] = date.split("-");
-                    // eslint-disable-next-line
-                    const formattedMonth = month.length === 1 ? `0${month}` : month;
-
-                    return `${month}-${year}`;
-                }
-                return date;
-            });
         }
     }
 };
