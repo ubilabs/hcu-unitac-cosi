@@ -115,13 +115,10 @@ const getters = {
             data_240 = [];
 
         Object.keys(state.dwellTimesPerDate).forEach(date => {
-            const items = state.dwellTimesPerDate[date],
-                theDate = new Date(date),
-                year = theDate.getFullYear(),
-                month = theDate.getMonth() + 1;
+            const items = state.dwellTimesPerDate[date];
 
             // Set label from date, e.g. 2023-01-01 becomes 2023-01
-            labels.push(changeDateFormat(month, year));
+            labels.push(changeDateFormat(date));
 
             data_30_60.push(
                 items.find(i => i.DwellTime === "30-60")?.sum_num_visitors || 0

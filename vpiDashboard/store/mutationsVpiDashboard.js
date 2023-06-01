@@ -1,6 +1,7 @@
 import {generateSimpleMutations} from "../../../src/app-store/utils/generators";
 import stateVpiDashboard from "./stateVpiDashboard";
 import tabVisitorTypesMutations from "./tab/visitor-types/mutations";
+import {changeDateFormat} from "../utils/changeDateFormat";
 
 const mutations = {
     ...generateSimpleMutations(stateVpiDashboard),
@@ -321,7 +322,12 @@ const mutations = {
             month_data = [];
 
         best_month.forEach((element) => {
-            labels.push(element.date__month + "_" + element.date__year);
+            if (element.date__month < 10) {
+                labels.push(`0${element.date__month}-${element.date__year}`);
+            }
+            else {
+                labels.push(`${element.date__month}-${element.date__year}`);
+            }
             month_data.push(element.sum);
         });
         // eslint-disable-next-line
@@ -350,7 +356,12 @@ const mutations = {
             month_data = [];
 
         best_month.forEach((element) => {
-            labels.push(element.date__month + "_" + element.date__year);
+            if (element.date__month < 10) {
+                labels.push(`0${element.date__month}-${element.date__year}`);
+            }
+            else {
+                labels.push(`${element.date__month}-${element.date__year}`);
+            }
             month_data.push(element.sum);
         });
         // eslint-disable-next-line
@@ -440,7 +451,7 @@ const mutations = {
                 tempDatasetLine.push(dataObjLine);
             }
 
-            xlabel = entry.date.split("-")[0] + "-" + entry.date.split("-")[1];
+            xlabel = changeDateFormat(entry.date);
 
             if (!xLabels.find(l => {
                 return l === xlabel;

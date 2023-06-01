@@ -13,13 +13,10 @@ const getters = {
             data_tourists_overnight = [];
 
         Object.keys(state.visitorTypesByDate).forEach(date => {
-            const items = state.visitorTypesByDate[date],
-                theDate = new Date(date),
-                year = theDate.getFullYear(),
-                month = theDate.getMonth() + 1;
+            const items = state.visitorTypesByDate[date];
 
             // Set label from date, e.g. 2023-01-01 becomes 2023-01
-            labels.push(changeDateFormat(month, year));
+            labels.push(changeDateFormat(date));
 
             data_residents.push(
                 items.find(i => i.VisitorType === "Einwohner")?.sum_num_visitors || 0
