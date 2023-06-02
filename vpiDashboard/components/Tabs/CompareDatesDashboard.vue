@@ -6,6 +6,7 @@ import actions from "../../store/actionsVpiDashboard";
 import getters from "../../store/gettersVpiDashboard";
 import dayjs from "dayjs";
 import Multiselect from "vue-multiselect";
+import {highlightSelectedLocationOnMap} from "../../utils/highlightSelectedLocationOnMap";
 
 export default {
     name: "CompareDatesDashboard",
@@ -98,6 +99,7 @@ export default {
         location_a (newValue, oldValue) {
             if (oldValue !== newValue) {
                 this.showCompareChart = false;
+                highlightSelectedLocationOnMap(newValue.location_id, oldValue.location_id);
             }
         }
     },

@@ -1,6 +1,7 @@
 <script>
-import {mapState, mapActions} from "vuex";
+import {mapState, mapActions, mapGetters} from "vuex";
 import Multiselect from "vue-multiselect";
+import {highlightSelectedLocationOnMap} from "../utils/highlightSelectedLocationOnMap";
 
 export default {
     name: "LocationSelectMenu",
@@ -15,12 +16,16 @@ export default {
     computed: {
         ...mapState("Tools/VpiDashboard", [
             "allLocationsArray",
-            "selectedLocationId"
-        ])
+            "selectedLocationId",
+            "allLocationsGeoJson"
+        ]),
+        ...mapGetters("Maps", ["projectionCode"])
     },
     watch: {
-        selectedLocation (location) {
+        selectedLocation (location, prevLocation) {
             this.$store.commit("Tools/VpiDashboard/setSelectedLocationId", location.id);
+
+            highlightSelectedLocationOnMap(location.id, prevLocation.id);
         }
     },
     async created () {

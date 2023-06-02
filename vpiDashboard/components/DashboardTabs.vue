@@ -1,4 +1,7 @@
 <script>
+import {mapState} from "vuex";
+import {highlightSelectedLocationOnMap} from "../utils/highlightSelectedLocationOnMap";
+
 export default {
     name: "DashboardTabs",
     props: {
@@ -14,8 +17,25 @@ export default {
         };
     },
     computed: {
+        ...mapState("Tools/VpiDashboard", ["selectedLocationId"]),
         tabItemsComputed () {
             return this.tabItems;
+        }
+    },
+    watch: {
+        currentTabIndex (newVal, oldVal) {
+
+            if (!this.tabItemsComputed[newVal].showLocationSelectMenu && this.tabItemsComputed[oldVal].showLocationSelectMenu) {
+                highlightSelectedLocationOnMap(undefined, this.selectedLocationId);
+            }
+
+            if (this.tabItemsComputed[newVal].showLocationSelectMenu && !this.tabItemsComputed[oldVal].showLocationSelectMenu) {
+                highlightSelectedLocationOnMap(this.selectedLocationId, "clear");
+            }
+
+            if (!this.tabItemsComputed[newVal].showLocationSelectMenu && !this.tabItemsComputed[oldVal].showLocationSelectMenu) {
+                highlightSelectedLocationOnMap(undefined, "clear");
+            }
         }
     },
     methods: {

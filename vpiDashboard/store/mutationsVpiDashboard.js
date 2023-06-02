@@ -92,6 +92,7 @@ const mutations = {
         payload.forEach(feature => {
             featureJSON = {
                 type: "Feature",
+                id: feature.location.id,
                 geometry: feature.location.point,
                 properties: {
                     street: feature.location.street,

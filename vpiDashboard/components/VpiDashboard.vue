@@ -16,6 +16,7 @@ import VpiLoader from "./VpiLoader.vue";
 import AgeGroups from "./Tabs/AgeGroups.vue";
 import LocationSelectMenuVue from "./LocationSelectMenu.vue";
 import CompareDatesDashboard from "./Tabs/CompareDatesDashboard.vue";
+import {highlightSelectedLocationOnMap} from "../utils/highlightSelectedLocationOnMap";
 
 export default {
     name: "VpiDashboard",
@@ -150,6 +151,8 @@ export default {
     },
     async created () {
         this.$on("close", this.close);
+    },
+    async mounted () {
         await this.getAllLocations();
         await this.getWhatALocationData(this.allLocationsArray[0].id);
         this.finishedLoading = true;
@@ -178,6 +181,8 @@ export default {
             if (model) {
                 model.set("isActive", false);
             }
+
+            highlightSelectedLocationOnMap(undefined, "clear");
         },
         /**
          * initiates the asynchronous request for individual visitors from WhatALocation
