@@ -34,29 +34,29 @@ const state = {
     referenceDistrictCharts: [
         {
             id: "gender",
-            name: "Demographie nach Gender",
-            scaleLabels: ["Anteil", "Gender"],
+            name: "additional:modules.tools.cosi.residentialSimulation.visualizeDemographicsByGender",
+            scaleLabels: ["additional:modules.tools.cosi.residentialSimulation.rate", "additional:modules.tools.cosi.residentialSimulation.gender"],
             labels: [
-                "Bevölkerung weiblich",
-                "Bevölkerung männlich",
-                "Sozialversicherungspflichtig Beschäftigte insgesamt",
-                "Sozialversicherungspflichtig beschäftigte Frauen",
-                "Sozialversicherungspflichtig beschäftigte Männer"
+                "additional:modules.tools.cosi.residentialSimulation.populationFemale",
+                "additional:modules.tools.cosi.residentialSimulation.populationMale",
+                "additional:modules.tools.cosi.residentialSimulation.peopleWithSocialInsuranceTotal",
+                "additional:modules.tools.cosi.residentialSimulation.peopleWithSocialInsuranceFemale",
+                "additional:modules.tools.cosi.residentialSimulation.peopleWithSocialInsuranceMale"
             ],
             type: "BarChart"
         },
         {
             id: "age",
-            name: "Demographie nach Altersgruppen",
-            scaleLabels: ["Anteil", "Alterskohorten"],
+            name: "additional:modules.tools.cosi.residentialSimulation.visualizeDemographicsByAge",
+            scaleLabels: ["additional:modules.tools.cosi.residentialSimulation.rate", "additional:modules.tools.cosi.residentialSimulation.ageCohort"],
             labels: [
-                "Bevölkerung unter 6 Jahren",
-                "Bevölkerung 6 bis unter 10 Jahren",
-                "Bevölkerung 10 bis unter 15 Jahren",
-                "Bevölkerung 15 bis unter 21 Jahren",
-                "Bevölkerung 21 bis unter 45 Jahren",
-                "Bevölkerung 45 bis unter 65 Jahren",
-                "Bevölkerung ab 65 Jahren"
+                "additional:modules.tools.cosi.residentialSimulation.populationBelow6",
+                "additional:modules.tools.cosi.residentialSimulation.population6to10",
+                "additional:modules.tools.cosi.residentialSimulation.population10to15",
+                "additional:modules.tools.cosi.residentialSimulation.population15to21",
+                "additional:modules.tools.cosi.residentialSimulation.population21to45",
+                "additional:modules.tools.cosi.residentialSimulation.population45to65",
+                "additional:modules.tools.cosi.residentialSimulation.populationAbove65"
             ],
             type: "BarChart"
         }

@@ -246,7 +246,7 @@ export default {
                     district.getName(),
                     this.selectedDistrictLevel.label,
                     stats,
-                    "Bevölkerung insgesamt",
+                    this.$t("additional:modules.tools.cosi.residentialSimulation.populationTotal"),
                     this.timelinePrefix,
                     this.groupsList
                 );
@@ -328,11 +328,11 @@ export default {
 
                 return new ChartDataset({
                     id: id + "-" + baseStats.reference.districtName,
-                    name,
-                    scaleLabels,
+                    name: this.$t(name),
+                    scaleLabels: scaleLabels.map(scaleLabel => this.$t(scaleLabel)),
                     data: {
                         datasets: [this.getChartDataset(labels, baseStats.reference.districtName)],
-                        labels
+                        labels: labels.map(label => this.$t(label))
                     },
                     type,
                     options: this.baseStatsChartData.options,
