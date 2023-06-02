@@ -25,7 +25,10 @@
                         "statisticalAreas": "TODO en: Statistische Gebiete",
                         "districts": "TODO en: Bezirke",
                         "cityDistricts": "TODO en: Stadtteile",
-                        "wholeCity": "Hamburg"
+                        "wholeCity": "Hamburg",
+                        "socialAreas": "TODO en: Sozialräume",
+                        "administrations": "TODO en: FHH",
+                        "basicMapsColored": "TODO en: Geobasiskarten (farbig)"
                     }
                 }
             }

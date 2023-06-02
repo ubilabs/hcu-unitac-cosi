@@ -15,21 +15,14 @@ const state = {
     icon: "bi-house",
     id: "residentialSimulation",
     isVisibleInMenu: true,
-    name: "$t('additional:modules.tools.cosi.residentialSimulation.createResidentialQuarters')",
+    name: "translate#additional:modules.tools.cosi.residentialSimulation.title",
     renderToWindow: false,
     resizableWindow: false,
     width: 0.45,
     // ResidentialSimulation specific state
-    timelinePrefix: "$t('additional:modules.tools.cosi.residentialSimulation.timelinePrefix')",
-    groupsList: [
-        "$t('additional:modules.tools.cosi.residentialSimulation.population')",
-        "$t('additional:modules.tools.cosi.residentialSimulation.populationPrognosis')",
-        "$t('additional:modules.tools.cosi.residentialSimulation.unemployed')",
-        "$t('additional:modules.tools.cosi.residentialSimulation.peopleWithSocialInsurance')",
-        "$t('additional:modules.tools.cosi.residentialSimulation.SGB_II_benefits')",
-        "$t('additional:modules.tools.cosi.residentialSimulation.traffic')"
-    ],
-    basePopulationProp: "$t('additional:modules.tools.cosi.residentialSimulation.populationTotal')",
+    timelinePrefix: "jahr_",
+    groupsList: ["Bevölkerung", "Bevölkerung Prognose", "Arbeitslose", "Sozialversicherungspflichtige", "SGB II Leistungen", "Verkehr"],
+    basePopulationProp: "Bevölkerung insgesamt",
     drawingLayer: null,
     defaults: {
         name: "$t('additional:modules.tools.cosi.residentialSimulation.myQuarter')",
