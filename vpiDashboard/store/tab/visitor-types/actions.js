@@ -11,10 +11,7 @@ const actions = {
     getVisitorTypes: async ({state, commit}) => {
         commit("setLoader", true);
         const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${state.selectedLocationId}&group_by[VisitorType]&format=agg&aggregate[Sum]=num_visitors&pulse=activate&interval=300&transportation=pedestrian`,
-            options = {
-                "Authorization": `Bearer ${Config.whatalocationApi.auth_token}`
-            },
-            response = await axios.get(url, {headers: options});
+            response = await axios.get(url);
 
         commit("setVisitorTypes", response.data.data);
         commit("setLoader", false);
