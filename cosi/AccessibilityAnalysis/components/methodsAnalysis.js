@@ -227,7 +227,7 @@ export default {
     showError: function () {
         this.addSingleAlert({
             content: "<strong>" + this.$t("additional:modules.tools.cosi.accessibilityAnalysis.showError") + "</strong>",
-            category: "Fehler",
+            category: this.$t("additional:modules.tools.cosi.accessibilityAnalysis.error"),
             displayClass: "error"
         });
     },

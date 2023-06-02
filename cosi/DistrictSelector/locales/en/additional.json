@@ -20,7 +20,13 @@
                     "errors": {
                         "dataNotLoaded": "Not all datasets could be loaded entirely! Please try again later. If the issue persists please use the contact form."
                     },
-                    "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)",
+                    "districtLevels": {
+                        "statisticalAreas": "TODO en: Statistische Gebiete",
+                        "districts": "TODO en: Bezirke",
+                        "cityDistricts": "TODO en: Stadtteile",
+                        "wholeCity": "Hamburg"
+                    }
                 }
             }
         }

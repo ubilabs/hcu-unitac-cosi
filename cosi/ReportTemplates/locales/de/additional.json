@@ -5,7 +5,7 @@
                 "reportTemplates": {
                     "title": "Report Template",
                     "selectFile": "Datei wählen..",
-                    "titleHeader": "Titel bla foo",
+                    "titleHeader": "Titel",
                     "description": "Beschreibung",
                     "chooseTool": "Tool wählen",
                     "dataSelection": "Datenauswahl",

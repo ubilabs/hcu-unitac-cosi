@@ -4,6 +4,7 @@
             "cosi": {
                 "scenarioBuilder": {
                     "title": "Simulate Facilities",
+                    "description": "TODO en: Für die ausgewählten Fachdaten Themen können neue fiktive Einrichtungen angelegt werden. Diese können für alle CoSI Analysefunktionen verwendet werden. Sie werden außerhalb CoSI's nicht gespeichert.",
                     "configureFeature": "Configure facility",
                     "toolMenu": "Tools",
                     "help": "TODO en: Lorem Ipsum dolor sit amet",
