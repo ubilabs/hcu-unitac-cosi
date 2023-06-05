@@ -1,4 +1,3 @@
-
 <script>
 import {mapGetters, mapActions, mapState} from "vuex";
 import getters from "../../store/gettersVpiDashboard";
@@ -58,7 +57,21 @@ export default {
                     display: false
                 },
                 aspectRatio: 3,
-                animation: false
+                animation: false,
+                tooltips: {
+                    callbacks: {
+                        // Creates a PieChart Tooltip like "30-90: 30.9%"
+                        label: (tooltipItem, data) => {
+
+                            const
+                                label = data.labels[tooltipItem.index],
+                                value = parseFloat(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index])
+                                    .toLocaleString(this.currentLocale);
+
+                            return `${label}: ${value}%`;
+                        }
+                    }
+                }
             },
             timestamp: null,
             showChart: false,
@@ -100,7 +113,7 @@ export default {
          * define, which charttype shall be displayed
          * @param {String} chartType an be one of "bar" or "line"
          * @returns {void}
-        */
+         */
         setChartType (chartType) {
             this.chartType = chartType;
         },
@@ -125,13 +138,24 @@ export default {
                     data: [],
                     hoverOffset: 4
                 },
-                reorderedLabels = [...this.ageGroupPieChartLabels];
+                reorderedLabels = [...this.ageGroupPieChartLabels],
+                yearTotal = this.ageGroupsYearlyData.reduce((total, value) => {
+                    if (value.year === year && reorderedLabels.includes(value.label)) {
+                        return total + value.sum;
+                    }
+                    return total;
+                }, 0);
 
             this.ageGroupsYearlyData.forEach(ageGroups => {
                 if (ageGroups.year === year && reorderedLabels.includes(ageGroups.label)) {
                     chartObj.backgroundColor.push(ageGroups.backgroundColor);
                     chartObj.label = ageGroups.ageGroup;
-                    chartObj.data.push(ageGroups.sum);
+
+                    // Round and also show trailing zeros, e.g. 18 becomes 18,0
+                    const percentValue = (Math.round(ageGroups.sum * 100 / yearTotal * 10) / 10)
+                        .toFixed(1);
+
+                    chartObj.data.push(percentValue);
                 }
 
             });
