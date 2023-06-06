@@ -17,7 +17,7 @@ const actions = {
     getIndividualVisitors: async ({state, commit}) => {
         if (state.selectedLocationId !== "") {
             commit("setLoader", true);
-            const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/quick-data/?location_id=${state.selectedLocationId}&transport=pedestrian&interval=300&expands=unique`,
+            const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/quick-data/?location_id=${state.selectedLocationId}&transport=pedestrian&interval=180&expands=unique&use_pulse=activate`,
                 response = await axios.get(url);
 
             commit("setLoader", false);
@@ -41,7 +41,7 @@ const actions = {
      **/
     getIndividualVisitorsForDay: async ({state, commit}, date) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily/?location_id=${state.selectedLocationId}&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Avg]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date__hour]&date__gte=${date} 00:00:00&date__lte=${date} 23:59:19`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily/?location_id=${state.selectedLocationId}&transport=pedestrian&interval=180&use_pulse=activate&&aggregate[Avg]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date__hour]&date__gte=${date} 00:00:00&date__lte=${date} 23:59:19`,
             response = await axios.get(url);
 
         commit("setLoader", false);
@@ -55,7 +55,7 @@ const actions = {
      **/
     getIndividualVisitorsForDateRange: async ({state, commit}, dates) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?location_id=${state.selectedLocationId}&transport=pedestrian&interval=300&use_pulse=activate&&aggregate[Sum]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date]&date__gte=${dates.dateFrom}&date__lte=${dates.dateTo}`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?location_id=${state.selectedLocationId}&transport=pedestrian&interval=180&use_pulse=activate&&aggregate[Sum]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date]&date__gte=${dates.dateFrom}&date__lte=${dates.dateTo}`,
             response = await axios.get(url);
 
         commit("setLoader", false);
@@ -89,7 +89,7 @@ const actions = {
      **/
     getDwellTimes: async ({state, commit}) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]&location_id=${state.selectedLocationId}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]&location_id=${state.selectedLocationId}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian`,
             response = await axios.get(url);
 
         commit("setDwellTimes", response.data.data);
@@ -104,13 +104,13 @@ const actions = {
      */
     getDwellTimesToCompare: async ({commit}, compareData) => {
         commit("setLoader", true);
-        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
             responseA = await axios.get(urlA);
 
         commit("setDwellTimeLocationA", responseA.data); // return data
 
         // eslint-disable-next-line
-        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
             responseB = await axios.get(urlB);
 
         commit("setLoader", false);
@@ -125,13 +125,13 @@ const actions = {
      */
     getAgeGroupsToCompare: async ({commit}, compareData) => {
         commit("setLoader", true);
-        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
             responseA = await axios.get(urlA);
 
         commit("setAgeGroupsLocationA", responseA.data); // return data
 
         // eslint-disable-next-line
-        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
             responseB = await axios.get(urlB);
 
         commit("setLoader", false);
@@ -146,13 +146,13 @@ const actions = {
      */
     getVisitorTypesToCompare: async ({commit}, compareData) => {
         commit("setLoader", true);
-        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
             responseA = await axios.get(urlA);
 
         commit("setVisitorTypesLocationA", responseA.data); // return data
 
         // eslint-disable-next-line
-        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
             responseB = await axios.get(urlB);
 
         commit("setLoader", false);
@@ -167,13 +167,13 @@ const actions = {
      */
     getIndividualVisitorsToCompare: async ({commit}, compareData) => {
         commit("setLoader", true);
-        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
             responseA = await axios.get(urlA);
 
         commit("setIndividualVisitorsLocationA", responseA.data); // return data
 
         // eslint-disable-next-line
-        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${compareData.date}`,
+        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[ReiseArt]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
             responseB = await axios.get(urlB);
 
         commit("setLoader", false);
@@ -187,7 +187,7 @@ const actions = {
      */
     getAllAgeGroupsData: async ({state, commit}) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?format=agg&group_by[date]&aggregate[Avg]=num_visitors&group_by[age_group]&location_id=${state.selectedLocationId}&interval=300&transportation=pedestrian`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?format=agg&group_by[date]&aggregate[Avg]=num_visitors&group_by[age_group]&location_id=${state.selectedLocationId}&interval=180&transportation=pedestrian&pulse=activate`,
             response = await axios.get(url);
 
         await commit("setAllAgeGroupsData", response.data);
