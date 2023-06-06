@@ -121,16 +121,16 @@ const getters = {
             labels.push(changeDateFormat(date));
 
             data_30_60.push(
-                items.find(i => i.DwellTime === "30-60")?.sum_num_visitors || 0
+                items.find(i => i.DwellTime === "30-60")?.avg_num_visitors || 0
             );
             data_60_120.push(
-                items.find(i => i.DwellTime === "60-120")?.sum_num_visitors || 0
+                items.find(i => i.DwellTime === "60-120")?.avg_num_visitors || 0
             );
             data_120_240.push(
-                items.find(i => i.DwellTime === "120-240")?.sum_num_visitors || 0
+                items.find(i => i.DwellTime === "120-240")?.avg_num_visitors || 0
             );
             data_240.push(
-                items.find(i => i.DwellTime === "240+")?.sum_num_visitors || 0
+                items.find(i => i.DwellTime === "240+")?.avg_num_visitors || 0
             );
         });
 

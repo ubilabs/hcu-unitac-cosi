@@ -170,7 +170,7 @@ const mutations = {
 
         payload.forEach(item => {
             // Visitor sum as integer
-            item.sum_num_visitors = Math.floor(item.sum_num_visitors);
+            item.avg_num_visitors = Math.floor(item.avg_num_visitors);
 
             // Grouped by dwell time
             if (!dwellTimeByTime[item.DwellTime]) {
@@ -432,17 +432,17 @@ const mutations = {
 
             if (ageGroupIndex > -1) {
 
-                tempDataset[ageGroupIndex].data.push(Math.floor(entry.sum_num_visitors));
-                tempDatasetLine[ageGroupIndex].data.push(Math.floor(entry.sum_num_visitors));
+                tempDataset[ageGroupIndex].data.push(Math.floor(entry.avg_num_visitors));
+                tempDatasetLine[ageGroupIndex].data.push(Math.floor(entry.avg_num_visitors));
             }
             else {
                 const dataObj = {
-                        data: [Math.floor(entry.sum_num_visitors)],
+                        data: [Math.floor(entry.avg_num_visitors)],
                         hoverOffset: 4,
                         label: entry.age_group
                     },
                     dataObjLine = {
-                        data: [Math.floor(entry.sum_num_visitors)],
+                        data: [Math.floor(entry.avg_num_visitors)],
                         label: entry.age_group,
                         fill: false,
                         tension: 0.1
@@ -467,7 +467,7 @@ const mutations = {
                 key = `${ageGroup}-${year}`;
 
             grouped[key] = grouped[key] || {ageGroup, year, sum: 0};
-            grouped[key].sum += Math.floor(entry.sum_num_visitors);
+            grouped[key].sum += Math.floor(entry.avg_num_visitors);
 
             ageGroupsByYear = Object.values(grouped);
 

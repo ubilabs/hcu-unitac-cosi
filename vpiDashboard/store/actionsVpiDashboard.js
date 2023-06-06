@@ -89,7 +89,7 @@ const actions = {
      **/
     getDwellTimes: async ({state, commit}) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]&location_id=${state.selectedLocationId}&group_by[DwellTime]&format=agg&aggregate[Sum]=num_visitors&pulse=activate&interval=300&transportation=pedestrian`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]&location_id=${state.selectedLocationId}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian`,
             response = await axios.get(url);
 
         commit("setDwellTimes", response.data.data);
@@ -187,7 +187,7 @@ const actions = {
      */
     getAllAgeGroupsData: async ({state, commit}) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?format=agg&group_by[date]&aggregate[Sum]=num_visitors&group_by[age_group]&location_id=${state.selectedLocationId}&interval=300&transportation=pedestrian`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?format=agg&group_by[date]&aggregate[Avg]=num_visitors&group_by[age_group]&location_id=${state.selectedLocationId}&interval=300&transportation=pedestrian`,
             response = await axios.get(url);
 
         await commit("setAllAgeGroupsData", response.data);
