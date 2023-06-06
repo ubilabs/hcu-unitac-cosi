@@ -25,6 +25,8 @@
                     "distanceScoreChartTooltip": "Standortbewertung für ausgewählte visualisieren",
                     "distanceScoreHistogramTooltip": "Verteilung der Standortbewertungen visualisieren",
                     "distanceScore": "Anbindung (Ø in m)",
+                    "distanceScoreDescription": "Die Entfernung (Fußweg) zur nächstgelegenen ausgewählten Einrichtung wird berechnet. Werden mehrere Einrichtungen ausgewählt, wird die Entfernung gemittelt.",
+                    "distanceScoreStartCalculation": "Berechnung starten",
                     "connection": "Anbindung",
                     "distanceScoreLayerLabel": "Einrichtungen für die Standortbewertung",
                     "distanceScoreChartYLabel": "Anbindung in m",

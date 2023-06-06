@@ -24,6 +24,8 @@
                     "distanceScoreChartTooltip": "TODO en: Standortbewertung für ausgewählte visualisieren",
                     "distanceScoreHistogramTooltip": "TODO en: Verteilung der Standortbewertungen visualisieren",
                     "distanceScore": "Anbindung (Ø in m)",
+                    "distanceScoreDescription": "TODO en: Die Entfernung (Fußweg) zur nächstgelegenen ausgewählten Einrichtung wird berechnet. Werden mehrere Einrichtungen ausgewählt, wird die Entfernung gemittelt.",
+                    "distanceScoreStartCalculation": "TODO en: Berechnung starten",
                     "connection": "Anbindung",
                     "weighting": "Weighting of the layer",
                     "distanceScoreLayerLabel": "Layers for distance scoreing (SB)",

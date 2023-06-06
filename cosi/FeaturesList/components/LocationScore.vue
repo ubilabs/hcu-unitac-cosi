@@ -182,7 +182,7 @@ export default {
         </v-card-title>
         <v-card-text>
             <ToolInfo
-                :summary="'Die Entfernung (Fußweg) zur nächstgelegenen ausgewählten Einrichtung wird berechnet. Werden mehrere Einrichtungen ausgewählt, wird die Entfernung gemittelt.'"
+                :summary="$t('additional:modules.tools.cosi.featuresList.distanceScoreDescription')"
             />
             <v-row
                 dense
@@ -217,7 +217,7 @@ export default {
                 color="grey lighten-1"
                 @click.native="updateDistanceScores"
             >
-                Berechnung starten
+                {{ $t('additional:modules.tools.cosi.featuresList.distanceScoreStartCalculation') }}
             </v-btn>
             <v-btn
                 depressed
