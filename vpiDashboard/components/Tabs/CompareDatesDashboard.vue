@@ -208,6 +208,18 @@ export default {
             this.chartdata.bar.datasets[0].label = dayjs(this.date_a).format("DD.MM.YYYY");
             this.chartdata.bar.datasets[1].label = dayjs(this.date_b).format("DD.MM.YYYY");
             this.chartdata.bar.labels = this.visitorTypes.visitorTypesDateA.labels;
+        },
+        /**
+         * sets the disabled dates for the datepicker
+         * for every endpoint except of "Individuelle Besucher" only the first day in month may be selected
+         * @param {Object} val date that shall be checked if it is disabled in the datepicker
+         * @return {Boolean} tells if the date shall be disabled or not
+         */
+        disabledDates (val) {
+            if (this.character !== "Individuelle Besucher") {
+                return new Date(val).getDate() !== 1;
+            }
+            return false;
         }
     }
 };
@@ -239,6 +251,32 @@ export default {
                         </div>
                     </div>
                     <div
+                        id="vpi-dashboard-select-characteristic"
+                        class="mt-3"
+                    >
+                        <label
+                            for="vpi-dashboard-select-characteristic-select"
+                        >
+                            {{ translate('additional:modules.tools.vpidashboard.compare.character') }}
+                        </label>
+                        <div class="col">
+                            <select
+                                id="vpi-dashboard-select-characteristic-select"
+                                v-model="character"
+                                class="font-arial form-select form-select-sm float-start"
+                            >
+                                >
+                                <option
+                                    v-for="(characterx, i) in characteristic"
+                                    :key="i"
+                                    :value="characterx"
+                                >
+                                    {{ characterx }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div
                         id="vpi-dashboard-select-date-a"
                         class="mt-3"
                     >
@@ -253,6 +291,7 @@ export default {
                                 v-model="date_a"
                                 aria-label="Datum"
                                 placeholder="Datum"
+                                :disabled-date="disabledDates"
                                 type="date"
                                 format="DD.MM.YYYY"
                                 :multiple="false"
@@ -277,6 +316,7 @@ export default {
                                 v-model="date_b"
                                 aria-label="Datum"
                                 placeholder="Datum"
+                                :disabled-date="disabledDates"
                                 type="date"
                                 format="DD.MM.YYYY"
                                 :multiple="false"
@@ -284,32 +324,6 @@ export default {
                                 title-format="DD.MM.YYYY"
                                 :lang="$t('common:libraries.vue2-datepicker.lang', {returnObjects: true})"
                             />
-                        </div>
-                    </div>
-                    <div
-                        id="vpi-dashboard-select-characteristic"
-                        class="mt-3"
-                    >
-                        <label
-                            for="vpi-dashboard-select-characteristic-select"
-                        >
-                            {{ translate('additional:modules.tools.vpidashboard.compare.character') }}
-                        </label>
-                        <div class="col">
-                            <select
-                                id="vpi-dashboard-select-characteristic-select"
-                                v-model="character"
-                                class="font-arial form-select form-select-sm float-start"
-                            >
-                                >
-                                <option
-                                    v-for="(characterx, i) in characteristic"
-                                    :key="i"
-                                    :value="characterx"
-                                >
-                                    {{ characterx }}
-                                </option>
-                            </select>
                         </div>
                     </div>
                     <div class="row d-flex justify-content-center mt-3">
