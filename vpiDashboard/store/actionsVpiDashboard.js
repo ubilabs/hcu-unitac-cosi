@@ -55,7 +55,7 @@ const actions = {
      **/
     getIndividualVisitorsForDateRange: async ({state, commit}, dates) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?location_id=${state.selectedLocationId}&transport=pedestrian&interval=180&use_pulse=activate&&aggregate[Sum]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date]&date__gte=${dates.dateFrom}&date__lte=${dates.dateTo}`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?location_id=${state.selectedLocationId}&transport=pedestrian&interval=180&use_pulse=activate&&aggregate[Avg]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date]&date__gte=${dates.dateFrom}&date__lte=${dates.dateTo}`,
             response = await axios.get(url);
 
         commit("setLoader", false);
