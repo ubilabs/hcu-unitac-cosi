@@ -54,7 +54,7 @@
           "numberVisitorsDay": "Anzahl Besucher pro Tag",
           "chartTitleDay": "Daten vom {{dateValue}}",
           "chartTitleDayRange": "Daten vom {{dateValueFrom}} bis zum {{dateValueTo}}",
-          "avgVisitorsYear": "Ø Individuelle tägliche Besucher im Jahr",
+          "avgVisitorsYear": "Ø Individuelle wöchentliche Besucher im Jahr",
           "avgVisitorsDay": "Ø Individuelle tägliche Besucher an einem",
           "avgVisitorsMonth": "Ø Individuelle tägliche Besucher pro Monat",
           "selectDataBase": "Datengrundlage für Grafik auswählen:",
