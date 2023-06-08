@@ -336,7 +336,7 @@ const mutations = {
             else {
                 labels.push(`${element.date__month}-${element.date__year}`);
             }
-            month_data.push(element.sum);
+            month_data.push(Math.floor(element.sum));
         });
         // eslint-disable-next-line
         const data = {
@@ -370,7 +370,7 @@ const mutations = {
             else {
                 labels.push(`${element.date__month}-${element.date__year}`);
             }
-            month_data.push(element.sum);
+            month_data.push(Math.floor(element.sum));
         });
         // eslint-disable-next-line
         const data = {
