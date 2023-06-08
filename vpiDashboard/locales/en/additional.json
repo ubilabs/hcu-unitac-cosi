@@ -41,7 +41,7 @@
         },
         "details": "Details",
         "unique": {
-          "allData": "All data",
+          "allData": "Unique visitors",
           "uniqueVisitors": "Unique visitors",
           "dailyOverview": "Average of daily unique visitors",
           "monthlyOverview": "Average of monthly unique visitors",
