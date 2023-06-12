@@ -7,15 +7,15 @@ import {mapState, mapGetters, mapActions, mapMutations} from "vuex";
 import {getComponent} from "../../../src/utils/getComponent";
 import Tabs from "./DashboardTabs.vue";
 import IndividualBesucher from "./Tabs/IndividualBesucher.vue";
-// import CompareDashboard from "./Tabs/CompareDashboard.vue";
-// import TabDwellTime from "./Tabs/TabDwellTime.vue";
-// import TabInfo from "./Tabs/TabInfo.vue";
-// import TabVisitorTypes from "./Tabs/TabVisitorTypes.vue";
+import CompareDashboard from "./Tabs/CompareDashboard.vue";
+import TabDwellTime from "./Tabs/TabDwellTime.vue";
+import TabInfo from "./Tabs/TabInfo.vue";
+import TabVisitorTypes from "./Tabs/TabVisitorTypes.vue";
 import LoaderOverlay from "../utils/loaderOverlay.js";
 import VpiLoader from "./VpiLoader.vue";
-// import AgeGroups from "./Tabs/AgeGroups.vue";
+import AgeGroups from "./Tabs/AgeGroups.vue";
 import LocationSelectMenuVue from "./LocationSelectMenu.vue";
-// import CompareDatesDashboard from "./Tabs/CompareDatesDashboard.vue";
+import CompareDatesDashboard from "./Tabs/CompareDatesDashboard.vue";
 import {highlightSelectedLocationOnMap} from "../utils/highlightSelectedLocationOnMap";
 
 export default {
@@ -24,17 +24,14 @@ export default {
         ToolTemplate,
         Tabs,
         IndividualBesucher,
-        VpiLoader,
-        /* temporaryly disabled for VPI-Workshop at 9.6.2023 - data consistency needs to be checked with WhatALocation
-                        also disabled in data and template
         CompareDashboard,
         TabDwellTime,
         TabInfo,
+        VpiLoader,
         AgeGroups,
-        TabVisitorTypes,*/
-        LocationSelectMenuVue
-        //  CompareDatesDashboard
-
+        TabVisitorTypes,
+        LocationSelectMenuVue,
+        CompareDatesDashboard
     },
     data () {
         return {
@@ -46,9 +43,7 @@ export default {
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.individuals"),
                     selected: true,
                     showLocationSelectMenu: true
-                }
-                /* temporaryly disabled for VPI-Workshop at 9.6.2023 - data consistency needs to be checked with WhatALocation
-                        also disabled in data and template
+                },
                 {
                     index: 1,
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.age"),
@@ -84,7 +79,7 @@ export default {
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.info"),
                     selected: false,
                     showLocationSelectMenu: false
-                }*/
+                }
             ],
             renderTab: false,
             finishedLoading: false
@@ -107,9 +102,7 @@ export default {
                 id: "vpi",
                 geoJSON: val,
                 styleId: "customLayer",
-                folderName: "VPI"
-                /* temporaryly disabled for VPI-Workshop at 9.6.2023 - data consistency needs to be checked with WhatALocation
-                        also disabled in mutationsVpiDashboard.vue
+                folderName: "VPI",
                 gfiAttributes: {
                     street: this.translate("additional:modules.tools.vpidashboard.gfi.street"),
                     id: "ID",
@@ -132,16 +125,14 @@ export default {
                     avgVisitorsOctober: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsOctober"),
                     avgVisitorsNovember: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsNovember"),
                     avgVisitorsDecember: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsDecember")
-                }*/
+                }
             };
-            /* temporaryly disabled for VPI-Workshop at 9.6.2023 - data consistency needs to be checked with WhatALocation
-                        also disabled in mutationsVpiDashboard.vue
+
             Object.keys(val.features[0].properties).forEach(key => {
                 if (Number.isInteger(parseInt(key.slice(-4), 10))) {
                     params.gfiAttributes[key] = this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorYear") + key.slice(-4);
                 }
             });
-            */
 
             this.$store.dispatch("AddLayerRemotely/addGeoJson", params);
             // eslint-disable-next-line
@@ -266,8 +257,6 @@ export default {
                                     >
                                         <IndividualBesucher />
                                     </div>
-                                    <!--
-                                     temporaryly disabled for VPI-Workshop at 9.6.2023 - data consistency needs to be checked with WhatALocation
                                     <div slot="tab-content-1">
                                         <AgeGroups />
                                     </div>
@@ -286,7 +275,6 @@ export default {
                                     <div slot="tab-content-6">
                                         <TabInfo />
                                     </div>
-                                    -->
                                 </Tabs>
                             </div>
                         </div>

@@ -6,8 +6,7 @@ import dayjs from "dayjs";
 
 // Components Import
 import LinechartItem from "../../../../src/share-components/charts/components/LinechartItem.vue";
-// temporaryly disabled for VPI-Workshop at 9.6.2023 - data consistency needs to be checked with WhatALocation
-// import DataCard from "../DataCard.vue";
+import DataCard from "../DataCard.vue";
 import BarchartItem from "../../../../src/share-components/charts/components/BarchartItem.vue";
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
@@ -15,8 +14,7 @@ import "vue2-datepicker/index.css";
 export default {
     name: "IndividualBesucher",
     components: {
-        // temporaryly disabled for VPI-Workshop at 9.6.2023 - data consistency needs to be checked with WhatALocation
-        // DataCard,
+        DataCard,
         LinechartItem,
         BarchartItem,
         DatePicker
@@ -327,8 +325,6 @@ export default {
             role="tabpanel"
         >
             <div class="tab-content h100">
-                <!--
-                // temporaryly disabled for VPI-Workshop at 9.6.2023 - data consistency needs to be checked with WhatALocation
                 <div class="row cards">
                     <DataCard
                         :title="translate('additional:modules.tools.vpidashboard.unique.avgVisitorsYear')"
@@ -345,7 +341,7 @@ export default {
                         :navigation="true"
                         detail="daily"
                     />
-                </div-->
+                </div>
                 <div class="chartDataSelection">
                     <h2> {{ translate('additional:modules.tools.vpidashboard.unique.selectDataBase') }}</h2>
                     <select

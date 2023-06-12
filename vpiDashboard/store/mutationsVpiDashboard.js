@@ -96,9 +96,7 @@ const mutations = {
                 geometry: feature.location.point,
                 properties: {
                     street: feature.location.street,
-                    id: feature.location.id
-                    /* temporaryly disabled for VPI-Workshop at 9.6.2023 - data consistency needs to be checked with WhatALocation
-                        also disabled in VpiDashboard.vue
+                    id: feature.location.id,
                     avgVisitorsMonday: Math.floor(feature.avg_daily_visitors_isoweekday[1]),
                     avgVisitorsTuesday: Math.floor(feature.avg_daily_visitors_isoweekday[2]),
                     avgVisitorsWednesday: Math.floor(feature.avg_daily_visitors_isoweekday[3]),
@@ -118,15 +116,12 @@ const mutations = {
                     avgVisitorsOctober: Math.floor(feature.avg_daily_visitors_per_month[10]),
                     avgVisitorsNovember: Math.floor(feature.avg_daily_visitors_per_month[11]),
                     avgVisitorsDecember: Math.floor(feature.avg_daily_visitors_per_month[12])
-                    */
                 }
             };
-            /* temporaryly disabled for VPI-Workshop at 9.6.2023 - data consistency needs to be checked with WhatALocation
-                        also disabled in VpiDashboard.vue
+
             Object.keys(feature.avg_daily_visitors_per_year).forEach(year => {
                 featureJSON.properties["avgVisitors" + year] = Math.floor(feature.avg_daily_visitors_per_year[year]);
             });
-            */
 
             geoJSON.features.push(featureJSON);
 
