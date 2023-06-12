@@ -96,8 +96,8 @@ const mutations = {
                 geometry: feature.location.point,
                 properties: {
                     street: feature.location.street,
-                    id: feature.location.id,
-                    avgVisitorsMonday: Math.floor(feature.avg_daily_visitors_isoweekday[1]),
+                    id: feature.location.id
+                    /* avgVisitorsMonday: Math.floor(feature.avg_daily_visitors_isoweekday[1]),
                     avgVisitorsTuesday: Math.floor(feature.avg_daily_visitors_isoweekday[2]),
                     avgVisitorsWednesday: Math.floor(feature.avg_daily_visitors_isoweekday[3]),
                     avgVisitorsThursday: Math.floor(feature.avg_daily_visitors_isoweekday[4]),
@@ -115,13 +115,13 @@ const mutations = {
                     avgVisitorsSeptember: Math.floor(feature.avg_daily_visitors_per_month[9]),
                     avgVisitorsOctober: Math.floor(feature.avg_daily_visitors_per_month[10]),
                     avgVisitorsNovember: Math.floor(feature.avg_daily_visitors_per_month[11]),
-                    avgVisitorsDecember: Math.floor(feature.avg_daily_visitors_per_month[12])
+                    avgVisitorsDecember: Math.floor(feature.avg_daily_visitors_per_month[12]) */
                 }
             };
 
-            Object.keys(feature.avg_daily_visitors_per_year).forEach(year => {
+            /* Object.keys(feature.avg_daily_visitors_per_year).forEach(year => {
                 featureJSON.properties["avgVisitors" + year] = Math.floor(feature.avg_daily_visitors_per_year[year]);
-            });
+            }); */
 
             geoJSON.features.push(featureJSON);
 
@@ -512,12 +512,27 @@ const mutations = {
     },
     /**
      * Sets the id of the selected location.
+     * If location B on the compare locations tab is activated the Id will be set for location B.
      * @param {Object} state the store's state object
-     * @param {Integer} selectedLocationId the id of the selected location
+     * @param {Object} payload containing the locationID and the source where the location was selected from
      * @returns {void}
      */
-    setSelectedLocationId (state, selectedLocationId) {
-        state.selectedLocationId = selectedLocationId;
+    setSelectedLocationId (state, payload) {
+        if (!state.selectLocationBInMap || payload.source === "dropdown") {
+            state.selectedLocationId = payload.locationID;
+        }
+        else {
+            state.selectedLocationB = payload.locationID;
+        }
+    },
+    /**
+     * Sets the indicator that location B on the compare location tab is activated.
+     * @param {Object} state the store's state object
+     * @param {Boolean} value indicates if location B is activated or not
+     * @returns {void}
+     */
+    setSelectLocationBInMap (state, value) {
+        state.selectLocationBInMap = value;
     }
 };
 

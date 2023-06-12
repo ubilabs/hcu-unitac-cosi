@@ -6,7 +6,9 @@ const state = {
     visitorTypesLocationA: undefined,
     visitorTypesLocationB: undefined,
     individualVisitorsLocationA: undefined,
-    individualVisitorsLocationB: undefined
+    individualVisitorsLocationB: undefined,
+    selectLocationBInMap: false,
+    selectedLocationB: undefined
 };
 
 export default state;

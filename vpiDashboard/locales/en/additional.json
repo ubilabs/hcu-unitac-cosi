@@ -92,7 +92,9 @@
           "location_comparison": "Location Comparison",
           "date_a": "Base date",
           "date_b": "Compare date",
-          "date_comparison": "Date comparison"
+          "date_comparison": "Date comparison",
+          "selectLocationBinMap": "Activate in order to select location B on map",
+          "deselectLocationBinMap": "Deactivate in order to select location A on map"
         },
         "tab": {
           "dwelltime": {

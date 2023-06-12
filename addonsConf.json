@@ -158,6 +158,10 @@
     "path":"gfiThemes/wholeCity",
     "type": "gfiTheme"
   },
+  "vpi": {
+       "path": "gfiThemes/vpi",
+       "type": "gfiTheme"
+  },
   "AccessibilityAnalysis": {
     "path": "cosi/AccessibilityAnalysis",
     "type": "tool"

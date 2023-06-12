@@ -92,7 +92,9 @@
           "location_comparison": "Standortvergleich",
           "date_a": "Basisdatum",
           "date_b": "Vergleichsdatum",
-          "date_comparison": "Vergleich Datumswerte"
+          "date_comparison": "Vergleich Datumswerte",
+          "selectLocationBinMap": "Anklicken um Standort B aus der Karte auszuwählen",
+          "deselectLocationBinMap": "Deaktivieren um Standort A aus der Karte auszuwählen"
         },
         "tab": {
           "dwelltime": {

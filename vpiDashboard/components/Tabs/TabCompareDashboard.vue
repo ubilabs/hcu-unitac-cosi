@@ -1,17 +1,19 @@
 <script>
 import BarchartItem from "../../../../src/share-components/charts/components/BarchartItem.vue";
 import DatePicker from "vue2-datepicker";
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters, mapState} from "vuex";
 import actions from "../../store/actionsVpiDashboard";
 import getters from "../../store/gettersVpiDashboard";
 import dayjs from "dayjs";
+import Multiselect from "vue-multiselect";
 import {highlightSelectedLocationOnMap} from "../../utils/highlightSelectedLocationOnMap";
 
 export default {
     name: "TabCompareDashboard",
     components: {
         BarchartItem,
-        DatePicker
+        DatePicker,
+        Multiselect
     },
     data () {
         return {
@@ -30,10 +32,13 @@ export default {
             character: "",
             compare: false,
             location_a_data: null,
-            showCompareChart: false
+            showCompareChart: false,
+            selectBInMap: true,
+            locationCheckboxLabel: this.$t("additional:modules.tools.vpidashboard.compare.deselectLocationBinMap")
         };
     },
     computed: {
+        ...mapState("Tools/VpiDashboard", ["selectedLocationId", "selectedLocationB"]),
         ...mapGetters("Tools/VpiDashboard", Object.keys(getters)),
         locations_b () {
             return this.locations_a.filter(location => location.location_id !== this.location_a.location_id);
@@ -105,14 +110,42 @@ export default {
                 this.showCompareChart = false;
 
                 highlightSelectedLocationOnMap(newValue.location_id, oldValue.location_id);
+
+                const locationID = newValue.location_id,
+                    source = "dropdown";
+
+                if (newValue !== this.selectedLocationId) {
+                    this.$store.commit("Tools/VpiDashboard/setSelectedLocationId", {locationID, source});
+                }
             }
         },
         location_b (newValue, oldValue) {
             if (oldValue !== newValue) {
                 this.showCompareChart = false;
 
-                highlightSelectedLocationOnMap(newValue.location_id, oldValue.location_id);
+                if (newValue) {
+                    highlightSelectedLocationOnMap(newValue.location_id, oldValue?.location_id);
+                }
             }
+        },
+        selectedLocationId (newValue) {
+            this.location_a = this.locations_a.find(l => {
+                return l.location_id === newValue;
+            });
+        },
+        selectedLocationB (newValue) {
+            if (newValue !== this.selectedLocationId) {
+                this.location_b = this.locations_b.find(l => {
+                    return l.location_id === newValue;
+                });
+            }
+        },
+        selectBInMap (newVal) {
+            this.$store.commit("Tools/VpiDashboard/setSelectLocationBInMap", newVal);
+
+            this.locationCheckboxLabel = !newVal
+                ? this.$t("additional:modules.tools.vpidashboard.compare.selectLocationBinMap")
+                : this.$t("additional:modules.tools.vpidashboard.compare.deselectLocationBinMap");
         }
     },
     async created () {
@@ -120,6 +153,12 @@ export default {
         this.all_locations.forEach((location) => {
             this.locations_a.push({location_id: location.id, street: location.street});
         });
+
+        this.location_a = this.locations_a.find(l => {
+            return l.location_id === this.selectedLocationId;
+        });
+
+        this.$store.commit("Tools/VpiDashboard/setSelectLocationBInMap", true);
     },
     methods: {
         ...mapActions("Tools/VpiDashboard", Object.keys(actions)),
@@ -245,19 +284,15 @@ export default {
                             {{ translate('additional:modules.tools.vpidashboard.compare.location') }} A
                         </label>
                         <div class="col">
-                            <select
-                                id="vpi-dashboard-select-location-a-select"
+                            <Multiselect
                                 v-model="location_a"
-                                class="font-arial form-select form-select-sm float-start"
-                            >
-                                <option
-                                    v-for="(location, i) in locations_a"
-                                    :key="i"
-                                    :value="location"
-                                >
-                                    {{ location.street }}
-                                </option>
-                            </select>
+                                tag-placeholder="Add this as new tag"
+                                :placeholder="translate('additional:modules.tools.vpidashboard.locationSelectMenu.menuPlaceholder')"
+                                label="street"
+                                track-by="street"
+                                :options="locations_a"
+                                :allow-empty="false"
+                            />
                         </div>
                     </div>
                     <div id="vpi-dashboard-select-location-b">
@@ -267,20 +302,27 @@ export default {
                             {{ translate('additional:modules.tools.vpidashboard.compare.location') }} B
                         </label>
                         <div class="col">
-                            <select
-                                id="vpi-dashboard-select-location-b-select"
+                            <Multiselect
                                 v-model="location_b"
-                                class="font-arial form-select form-select-sm float-start"
-                                :disabled="disabled"
+                                tag-placeholder="Add this as new tag"
+                                :placeholder="translate('additional:modules.tools.vpidashboard.locationSelectMenu.menuPlaceholder')"
+                                label="street"
+                                track-by="street"
+                                :options="locations_b"
+                                :allow-empty="false"
+                            />
+                        </div>
+                        <div>
+                            <input
+                                id="selectBInMap"
+                                v-model="selectBInMap"
+                                type="checkbox"
                             >
-                                <option
-                                    v-for="(location, i) in locations_b"
-                                    :key="i"
-                                    :value="location"
-                                >
-                                    {{ location.street }}
-                                </option>
-                            </select>
+                            <label
+                                for="selectBInMap"
+                            >
+                                {{ locationCheckboxLabel }}
+                            </label>
                         </div>
                     </div>
                     <div id="vpi-dashboard-select-characteristic">
@@ -392,5 +434,9 @@ export default {
 </template>
 
 <style scoped>
-
+    input[type="checkbox"] {
+        height: 1.2em;
+        width: 1.2em;
+        margin: 10px 5px;
+    }
 </style>

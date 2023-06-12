@@ -23,14 +23,25 @@ export default {
     },
     watch: {
         selectedLocation (location, prevLocation) {
-            this.$store.commit("Tools/VpiDashboard/setSelectedLocationId", location.id);
+            const locationID = location.id,
+                source = "dropdown";
 
+            this.$store.commit("Tools/VpiDashboard/setSelectedLocationId", {locationID, source});
             highlightSelectedLocationOnMap(location.id, prevLocation.id);
+        },
+        selectedLocationId (location) {
+            this.selectedLocation = this.allLocationsArray.find(l => {
+                return l.id === location;
+            });
         }
     },
     async created () {
         this.selectedLocation = this.allLocationsArray[0];
-        this.$store.commit("Tools/VpiDashboard/setSelectedLocationId", this.selectedLocation.id);
+
+        const locationID = this.selectedLocation.id,
+            source = "dropdown";
+
+        this.$store.commit("Tools/VpiDashboard/setSelectedLocationId", {locationID, source});
     },
     methods: {
         ...mapActions("Tools/VpiDashboard", ["getIndividualVisitors"]),

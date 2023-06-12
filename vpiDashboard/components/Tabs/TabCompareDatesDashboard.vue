@@ -40,7 +40,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/VpiDashboard", Object.keys(getters)),
-        ...mapState("Tools/VpiDashboard", ["showLoader"]),
+        ...mapState("Tools/VpiDashboard", ["showLoader", "selectedLocationId"]),
         showCompareButton () {
             if (this.date_a !== null && this.date_b !== null) {
                 return true;
@@ -101,12 +101,28 @@ export default {
                 this.showCompareChart = false;
                 highlightSelectedLocationOnMap(newValue.location_id, oldValue.location_id);
             }
+
+            const locationID = newValue.location_id,
+                source = "dropdown";
+
+            if (newValue !== this.selectedLocationId) {
+                this.$store.commit("Tools/VpiDashboard/setSelectedLocationId", {locationID, source});
+            }
+        },
+        selectedLocationId (newValue) {
+            this.location_a = this.locations_a.find(l => {
+                return l.location_id === newValue;
+            });
         }
     },
     async created () {
         this.all_locations = await this.getAllLocationsArray;
         this.all_locations.forEach((location) => {
             this.locations_a.push({location_id: location.id, street: location.street});
+        });
+
+        this.location_a = this.locations_a.find(l => {
+            return l.location_id === this.selectedLocationId;
         });
     },
     methods: {
@@ -247,6 +263,7 @@ export default {
                                 label="street"
                                 track-by="street"
                                 :options="locations_a"
+                                :allow-empty="false"
                             />
                         </div>
                     </div>

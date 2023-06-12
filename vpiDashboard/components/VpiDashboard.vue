@@ -105,8 +105,8 @@ export default {
                 folderName: "VPI",
                 gfiAttributes: {
                     street: this.translate("additional:modules.tools.vpidashboard.gfi.street"),
-                    id: "ID",
-                    avgVisitorsMonday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsMonday"),
+                    id: "ID"
+                    /* avgVisitorsMonday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsMonday"),
                     avgVisitorsTuesday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsTuesday"),
                     avgVisitorsWednesday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsWednesday"),
                     avgVisitorsThursday: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsThursday"),
@@ -124,15 +124,16 @@ export default {
                     avgVisitorsSeptember: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsSeptember"),
                     avgVisitorsOctober: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsOctober"),
                     avgVisitorsNovember: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsNovember"),
-                    avgVisitorsDecember: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsDecember")
-                }
+                    avgVisitorsDecember: this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorsDecember") */
+                },
+                gfiTheme: "vpi"
             };
 
-            Object.keys(val.features[0].properties).forEach(key => {
+            /* Object.keys(val.features[0].properties).forEach(key => {
                 if (Number.isInteger(parseInt(key.slice(-4), 10))) {
                     params.gfiAttributes[key] = this.translate("additional:modules.tools.vpidashboard.gfi.avgVisitorYear") + key.slice(-4);
                 }
-            });
+            }); */
 
             this.$store.dispatch("AddLayerRemotely/addGeoJson", params);
             // eslint-disable-next-line
@@ -168,6 +169,11 @@ export default {
         await this.getAllLocations();
         await this.getWhatALocationData(this.allLocationsArray[0].id);
         this.finishedLoading = true;
+
+        if (this.$store.getters["Tools/VpiDashboard/active"]) {
+            // eslint-disable-next-line
+            this.$store.getters["Maps/getLayerById"]({layerId: "vpi"}).setVisible(true);
+        }
     },
     methods: {
         ...mapMutations("Tools/VpiDashboard", Object.keys(mutations)),
