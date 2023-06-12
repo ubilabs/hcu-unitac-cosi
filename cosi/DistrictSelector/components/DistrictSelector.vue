@@ -169,6 +169,7 @@ export default {
 
     methods: {
         ...mapMutations("Tools/DistrictSelector", Object.keys(mutations)),
+        ...mapMutations("Tools/Filter", ["setFilterGeometry"]),
         ...mapActions("Alerting", ["addSingleAlert", "cleanup"]),
         ...mapActions("Tools/DistrictSelector", ["loadStatFeatures", "loadMapping"]),
         ...mapActions("Maps", ["addInteraction", "removeInteraction", "zoomToExtent", "resetView"]),
@@ -372,6 +373,7 @@ export default {
                 this.setExtent(extent);
                 this.setBoundingGeometry(bboxGeom);
                 setBBoxToGeom.call(this, this.areaSelectorGeom || bboxGeom);
+                this.setFilterGeometry(this.areaSelectorGeom || bboxGeom);
 
                 if (zoomToExtent) {
                     this.zoomToExtent({extent, options: {}});
@@ -388,6 +390,7 @@ export default {
                 this.resetView();
                 this.setBoundingGeometry(undefined);
                 setBBoxToGeom.call(this, this.areaSelectorGeom || undefined);
+                this.setFilterGeometry(this.areaSelectorGeom || false);
                 this.showAlert(this.$t("additional:modules.tools.cosi.districtSelector.warning"), "Warnung", "warning");
             }
         },
