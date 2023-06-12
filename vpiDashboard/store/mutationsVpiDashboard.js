@@ -170,7 +170,7 @@ const mutations = {
 
         payload.forEach(item => {
             // Visitor sum as integer
-            item.sum_num_visitors = Math.floor(item.sum_num_visitors);
+            item.avg_num_visitors = Math.floor(item.avg_num_visitors);
 
             // Grouped by dwell time
             if (!dwellTimeByTime[item.DwellTime]) {
@@ -192,24 +192,25 @@ const mutations = {
     /**
      * Generates Bar Chart Daily Data and saves it to state.
      * @param {Object} state the store's state object
-     * @param {Object} payload data from WhatALocation endpoint
      * @returns {void}
      */
-    setBarChartDailyData (state, payload) {
-        const daily = payload?.unique?.dayly,
+    setBarChartDailyData (state) {
+        const daily = state.averageVisitorsPerDay,
             labels = [],
-            day_data = [];
+            day_data = [],
+            translatedLabelList = i18next.t("additional:modules.tools.vpidashboard.time.days", {returnObjects: true});
 
-        daily.forEach((element) => {
-            labels.push(element.weekday);
-            day_data.push(element.sum);
+        daily.forEach((element, index) => {
+            labels.push(translatedLabelList[index]);
+            day_data.push(element.avg);
         });
+
         // eslint-disable-next-line one-var
         const data = {
-            labels: labels.reverse(),
+            labels: labels,
             datasets: [{
                 label: i18next.t("additional:modules.tools.vpidashboard.unique.dailyOverview"),
-                data: day_data.reverse(),
+                data: day_data,
                 hoverOffset: 4,
                 backgroundColor: "#FD763B"
             }]
@@ -222,25 +223,24 @@ const mutations = {
     /**
      * Generates Bar Chart Daily Data and saves it to state.
      * @param {Object} state the store's state object
-     * @param {Object} payload data from WhatALocation endpoint
      * @returns {void}
      */
-    setLineChartDailyData (state, payload) {
-        const daily = payload?.unique?.dayly,
-
+    setLineChartDailyData (state) {
+        const daily = state.averageVisitorsPerDay,
             labels = [],
-            day_data = [];
+            day_data = [],
+            translatedLabelList = i18next.t("additional:modules.tools.vpidashboard.time.days", {returnObjects: true});
 
-        daily.forEach((element) => {
-            labels.push(element.weekday);
-            day_data.push(element.sum);
+        daily.forEach((element, index) => {
+            labels.push(translatedLabelList[index]);
+            day_data.push(element.avg);
         });
         // eslint-disable-next-line
         const data = {
-            labels: labels.reverse(),
+            labels: labels,
             datasets: [{
                 label: i18next.t("additional:modules.tools.vpidashboard.unique.dailyOverview"),
-                data: day_data.reverse(),
+                data: day_data,
                 fill: false,
                 borderColor: "rgb(75, 192, 192)",
                 tension: 0.1
@@ -254,27 +254,29 @@ const mutations = {
     /**
      * Generates Bar Chart Monthly Data and saves it to state.
      * @param {Object} state the store's state object
-     * @param {Object} payload data from WhatALocation endpoint
      * @returns {void}
      */
-    setBarChartMonthlyData (state, payload) {
-        const monthly = payload?.unique?.monthly,
+    setBarChartMonthlyData (state) {
+        const monthly = state.averageVisitorsPerMonth,
             labels = [],
-            month_data = [];
+            month_data = [],
+            translatedLabelList = i18next.t("additional:modules.tools.vpidashboard.time.months", {returnObjects: true});
 
         monthly.forEach((element) => {
-            labels.push(element.date__month);
-            month_data.push(element.sum);
+            labels.push(translatedLabelList[element.index]);
+            month_data.push(element.avg);
         });
+
         // eslint-disable-next-line
         const data = {
-            labels: labels.reverse(),
+            labels: labels,
             datasets: [{
                 label: i18next.t("additional:modules.tools.vpidashboard.unique.monthlyOverview"),
-                data: month_data.reverse(),
+                data: month_data,
                 hoverOffset: 4,
                 backgroundColor: "#FD763B"
             }]
+
         };
 
         state.barChartMonthlyData = data;
@@ -283,25 +285,25 @@ const mutations = {
     /**
      * Generates Line Chart Monthly Data and saves it to state.
      * @param {Object} state the store's state object
-     * @param {Object} payload data from WhatALocation endpoint
      * @returns {void}
      */
-    setLineChartMonthlyData (state, payload) {
-        const monthly = payload?.unique?.monthly,
-
+    setLineChartMonthlyData (state) {
+        const monthly = state.averageVisitorsPerMonth,
             labels = [],
-            month_data = [];
+            month_data = [],
+            translatedLabelList = i18next.t("additional:modules.tools.vpidashboard.time.months", {returnObjects: true});
 
         monthly.forEach((element) => {
-            labels.push(element.date__month);
-            month_data.push(element.sum);
+            labels.push(translatedLabelList[element.index]);
+            month_data.push(element.avg);
         });
+
         // eslint-disable-next-line
         const data = {
-            labels: labels.reverse(),
+            labels: labels,
             datasets: [{
                 label: i18next.t("additional:modules.tools.vpidashboard.unique.monthlyOverview"),
-                data: month_data.reverse(),
+                data: month_data,
                 fill: false,
                 borderColor: "rgb(75, 192, 192)",
                 tension: 0.1
@@ -329,7 +331,7 @@ const mutations = {
             else {
                 labels.push(`${element.date__month}-${element.date__year}`);
             }
-            month_data.push(element.sum);
+            month_data.push(Math.floor(element.sum));
         });
         // eslint-disable-next-line
         const data = {
@@ -363,7 +365,7 @@ const mutations = {
             else {
                 labels.push(`${element.date__month}-${element.date__year}`);
             }
-            month_data.push(element.sum);
+            month_data.push(Math.floor(element.sum));
         });
         // eslint-disable-next-line
         const data = {
@@ -432,17 +434,17 @@ const mutations = {
 
             if (ageGroupIndex > -1) {
 
-                tempDataset[ageGroupIndex].data.push(Math.floor(entry.sum_num_visitors));
-                tempDatasetLine[ageGroupIndex].data.push(Math.floor(entry.sum_num_visitors));
+                tempDataset[ageGroupIndex].data.push(Math.floor(entry.avg_num_visitors));
+                tempDatasetLine[ageGroupIndex].data.push(Math.floor(entry.avg_num_visitors));
             }
             else {
                 const dataObj = {
-                        data: [Math.floor(entry.sum_num_visitors)],
+                        data: [Math.floor(entry.avg_num_visitors)],
                         hoverOffset: 4,
                         label: entry.age_group
                     },
                     dataObjLine = {
-                        data: [Math.floor(entry.sum_num_visitors)],
+                        data: [Math.floor(entry.avg_num_visitors)],
                         label: entry.age_group,
                         fill: false,
                         tension: 0.1
@@ -467,7 +469,7 @@ const mutations = {
                 key = `${ageGroup}-${year}`;
 
             grouped[key] = grouped[key] || {ageGroup, year, sum: 0};
-            grouped[key].sum += Math.floor(entry.sum_num_visitors);
+            grouped[key].sum += Math.floor(entry.avg_num_visitors);
 
             ageGroupsByYear = Object.values(grouped);
 

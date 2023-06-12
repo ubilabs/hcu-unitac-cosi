@@ -135,6 +135,8 @@ export default {
             });
 
             this.$store.dispatch("AddLayerRemotely/addGeoJson", params);
+            // eslint-disable-next-line
+            this.$store.getters["Maps/getLayerById"]({layerId: "vpi"}).setVisible(false);
         },
         /**
          * Shows loader.
@@ -146,6 +148,16 @@ export default {
         showLoader (val) {
             // eslint-disable-next-line chai-friendly/no-unused-expressions
             val ? LoaderOverlay.show() : LoaderOverlay.hide();
+        },
+        /**
+         * activates the WhatALocation-Locations when the tool is activated
+         * and deactivates the layer when the tool is deactivated.
+         * @param {boolean} val isToolActive
+         * @returns {void}
+         */
+        active (val) {
+            // eslint-disable-next-line
+            this.$store.getters["Maps/getLayerById"]({layerId: "vpi"}).setVisible(val);
         }
 
     },

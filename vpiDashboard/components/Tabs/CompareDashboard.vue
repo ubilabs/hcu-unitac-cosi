@@ -213,6 +213,18 @@ export default {
             this.chartdata.bar.datasets[0].label = this.location_a.street;
             this.chartdata.bar.datasets[1].label = this.location_b.street;
             this.chartdata.bar.labels = this.invidualVisitors.individualVisitorsLocationA.labels;
+        },
+        /**
+         * sets the disabled dates for the datepicker
+         * for every endpoint except of "Individuelle Besucher" only the first day in month may be selected
+         * @param {Object} val date that shall be checked if it is disabled in the datepicker
+         * @return {Boolean} tells if the date shall be disabled or not
+         */
+        disabledDates (val) {
+            if (this.character !== "Individuelle Besucher") {
+                return new Date(val).getDate() !== 1;
+            }
+            return false;
         }
     }
 };
@@ -306,6 +318,7 @@ export default {
                                 v-model="date"
                                 aria-label="Datum"
                                 placeholder="Datum"
+                                :disabled-date="disabledDates"
                                 type="date"
                                 format="DD.MM.YYYY"
                                 :multiple="false"

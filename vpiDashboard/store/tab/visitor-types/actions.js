@@ -10,7 +10,7 @@ const actions = {
      **/
     getVisitorTypes: async ({state, commit}) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${state.selectedLocationId}&group_by[VisitorType]&format=agg&aggregate[Sum]=num_visitors&pulse=activate&interval=300&transportation=pedestrian`,
+        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${state.selectedLocationId}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian`,
             response = await axios.get(url);
 
         commit("setVisitorTypes", response.data.data);

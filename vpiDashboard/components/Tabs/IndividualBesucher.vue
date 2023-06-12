@@ -261,7 +261,7 @@ export default {
                 }
                 else {
                     labels.push(dayjs(element.date).format("DD.MM.YYYY"));
-                    presentation_data.push(Math.floor(element.sum_num_visitors));
+                    presentation_data.push(Math.floor(element.avg_num_visitors));
                 }
             });
 
