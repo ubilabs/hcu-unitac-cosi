@@ -1,4 +1,4 @@
-import IndividualBesucherComponent from "../../../components/Tabs/IndividualBesucher.vue";
+import TabIndividualBesucherComponent from "../../../components/Tabs/TabIndividualBesucher.vue";
 import {shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import Vuex from "vuex";
@@ -21,7 +21,7 @@ describe("individual visitor tab component", () => {
         });
 
         wrapper = shallowMount(
-            IndividualBesucherComponent, {
+            TabIndividualBesucherComponent, {
                 localVue,
                 store}
         );

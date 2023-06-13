@@ -6,16 +6,16 @@ import actions from "../store/actionsVpiDashboard";
 import {mapState, mapGetters, mapActions, mapMutations} from "vuex";
 import {getComponent} from "../../../src/utils/getComponent";
 import Tabs from "./DashboardTabs.vue";
-import IndividualBesucher from "./Tabs/IndividualBesucher.vue";
-import CompareDashboard from "./Tabs/CompareDashboard.vue";
+import TabIndividualBesucher from "./Tabs/TabIndividualBesucher.vue";
+import TabCompareDashboard from "./Tabs/TabCompareDashboard.vue";
 import TabDwellTime from "./Tabs/TabDwellTime.vue";
 import TabInfo from "./Tabs/TabInfo.vue";
 import TabVisitorTypes from "./Tabs/TabVisitorTypes.vue";
 import LoaderOverlay from "../utils/loaderOverlay.js";
 import VpiLoader from "./VpiLoader.vue";
-import AgeGroups from "./Tabs/AgeGroups.vue";
+import TabAgeGroups from "./Tabs/TabAgeGroups.vue";
 import LocationSelectMenuVue from "./LocationSelectMenu.vue";
-import CompareDatesDashboard from "./Tabs/CompareDatesDashboard.vue";
+import TabCompareDatesDashboard from "./Tabs/TabCompareDatesDashboard.vue";
 import {highlightSelectedLocationOnMap} from "../utils/highlightSelectedLocationOnMap";
 
 export default {
@@ -23,15 +23,15 @@ export default {
     components: {
         ToolTemplate,
         Tabs,
-        IndividualBesucher,
-        CompareDashboard,
+        TabIndividualBesucher,
+        TabCompareDashboard,
         TabDwellTime,
         TabInfo,
         VpiLoader,
-        AgeGroups,
+        TabAgeGroups,
         TabVisitorTypes,
         LocationSelectMenuVue,
-        CompareDatesDashboard
+        TabCompareDatesDashboard
     },
     data () {
         return {
@@ -255,10 +255,10 @@ export default {
                                         v-if="renderTab"
                                         slot="tab-content-0"
                                     >
-                                        <IndividualBesucher />
+                                        <TabIndividualBesucher />
                                     </div>
                                     <div slot="tab-content-1">
-                                        <AgeGroups />
+                                        <TabAgeGroups />
                                     </div>
                                     <div slot="tab-content-2">
                                         <TabDwellTime />
@@ -267,10 +267,10 @@ export default {
                                         <TabVisitorTypes />
                                     </div>
                                     <div slot="tab-content-4">
-                                        <CompareDashboard />
+                                        <TabCompareDashboard />
                                     </div>
                                     <div slot="tab-content-5">
-                                        <CompareDatesDashboard />
+                                        <TabCompareDatesDashboard />
                                     </div>
                                     <div slot="tab-content-6">
                                         <TabInfo />

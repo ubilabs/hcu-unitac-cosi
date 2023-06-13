@@ -9,7 +9,7 @@ import Multiselect from "vue-multiselect";
 import {highlightSelectedLocationOnMap} from "../../utils/highlightSelectedLocationOnMap";
 
 export default {
-    name: "CompareDatesDashboard",
+    name: "TabCompareDatesDashboard",
     components: {
         BarchartItem,
         DatePicker,

@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 import {highlightSelectedLocationOnMap} from "../../utils/highlightSelectedLocationOnMap";
 
 export default {
-    name: "CompareDashboard",
+    name: "TabCompareDashboard",
     components: {
         BarchartItem,
         DatePicker
