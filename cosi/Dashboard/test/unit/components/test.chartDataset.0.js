@@ -49,7 +49,7 @@ export default {
                 ]
             },
             {
-                "label": "additional:modules.tools.cosi.dashboard.totalCol",
+                "label": "totalCol",
                 "data": [
                     3166,
                     3196,
@@ -63,7 +63,7 @@ export default {
                 ]
             },
             {
-                "label": "additional:modules.tools.cosi.dashboard.avgCol",
+                "label": "avgCol",
                 "data": [
                     3166,
                     3196,
@@ -80,7 +80,7 @@ export default {
     },
     "scaleLabels": [
         "Bevölkerung insgesamt",
-        "Jahre"
+        "$t('additional:modules.tools.cosi.dashboard.years')"
     ],
     "source": "Dashboard",
     "beginAtZero": false,

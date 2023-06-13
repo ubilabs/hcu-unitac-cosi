@@ -66,7 +66,7 @@ export default [
         },
         "scaleLabels": [
             "",
-            "Jahre"
+            "$t('additional:modules.tools.cosi.dashboard.years')"
         ],
         "source": "Dashboard",
         "beginAtZero": false,
@@ -145,7 +145,7 @@ export default [
         },
         "scaleLabels": [
             "",
-            "Jahre"
+            "$t('additional:modules.tools.cosi.dashboard.years')"
         ],
         "source": "Dashboard",
         "beginAtZero": false,
@@ -163,7 +163,7 @@ export default [
             "BarChart"
         ],
         "id": "ccm-Bevölkerung insgesamt,Arbeitslose insgesamt,Anteil der Arbeitslosen",
-        "name": "Statistische Gebiete - additional:modules.tools.cosi.dashboard.totalCol",
+        "name": "Statistische Gebiete - totalCol",
         "color": "rainbow",
         "data": {
             "labels": [
@@ -224,7 +224,7 @@ export default [
         },
         "scaleLabels": [
             "",
-            "Jahre"
+            "$t('additional:modules.tools.cosi.dashboard.years')"
         ],
         "source": "Dashboard",
         "beginAtZero": false,
@@ -234,7 +234,7 @@ export default [
         "sub_index": undefined,
         "sub_length": undefined,
         "options": undefined,
-        "cgid": "ccm-Bevölkerung insgesamt,Arbeitslose insgesamt,Anteil der Arbeitslosen-Statistische Gebiete - additional:modules.tools.cosi.dashboard.totalCol"
+        "cgid": "ccm-Bevölkerung insgesamt,Arbeitslose insgesamt,Anteil der Arbeitslosen-Statistische Gebiete - totalCol"
     },
     {
         "type": [
@@ -242,7 +242,7 @@ export default [
             "BarChart"
         ],
         "id": "ccm-Bevölkerung insgesamt,Arbeitslose insgesamt,Anteil der Arbeitslosen",
-        "name": "Statistische Gebiete - additional:modules.tools.cosi.dashboard.avgCol",
+        "name": "Statistische Gebiete - avgCol",
         "color": "rainbow",
         "data": {
             "labels": [
@@ -303,7 +303,7 @@ export default [
         },
         "scaleLabels": [
             "",
-            "Jahre"
+            "$t('additional:modules.tools.cosi.dashboard.years')"
         ],
         "source": "Dashboard",
         "beginAtZero": false,
@@ -313,6 +313,6 @@ export default [
         "sub_index": undefined,
         "sub_length": undefined,
         "options": undefined,
-        "cgid": "ccm-Bevölkerung insgesamt,Arbeitslose insgesamt,Anteil der Arbeitslosen-Statistische Gebiete - additional:modules.tools.cosi.dashboard.avgCol"
+        "cgid": "ccm-Bevölkerung insgesamt,Arbeitslose insgesamt,Anteil der Arbeitslosen-Statistische Gebiete - avgCol"
     }
 ];

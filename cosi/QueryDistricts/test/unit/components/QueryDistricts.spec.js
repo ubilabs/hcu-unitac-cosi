@@ -626,7 +626,7 @@ describe("addons/cosi/QueryDistricts/", () => {
         expect(wrapper.vm.allLayerOptions).to.deep.equal([
             {
                 "facilityLayerName": "Ã–ffentliche Bibliotheken",
-                "group": "additional:modules.tools.cosi.queryDistricts.funcData",
+                "group": "funcData",
                 "id": "bib_layer",
                 "name": "Ã–ffentliche Bibliotheken",
                 "valueType": "absolute"

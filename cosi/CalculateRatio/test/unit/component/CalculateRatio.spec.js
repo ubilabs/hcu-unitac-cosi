@@ -446,7 +446,7 @@ describe("CalculateRatio.vue", () => {
 
             sinon.assert.callCount(addSingleAlertStub, 1);
             expect(addSingleAlertStub.firstCall.args[1]).to.include({
-                category: "Warnung",
+                category: "additional:modules.tools.cosi.calculateRatio.warning",
                 content: "additional:modules.tools.cosi.calculateRatio.noFacilitiesWarning"
             });
         });

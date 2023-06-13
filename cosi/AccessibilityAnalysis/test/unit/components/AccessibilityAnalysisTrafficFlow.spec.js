@@ -39,6 +39,7 @@ describe("AccessibilityAnalysisTrafficFlow.vue", () => {
     };
 
     before(() => {
+        global.ShadowRoot = () => "";
         addElemWithDataAppToBody();
     });
 
