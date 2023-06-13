@@ -23,7 +23,10 @@
                     "polling": {
                         "label": "Automatic Update",
                         "help": "Load new contributions automatically."
-                    }
+                    },
+                    "toolinfo": {
+                        "title": "TODO en: Werkzeuginformationen (Link öffnen)"
+                    }    
                 }
             }
         }

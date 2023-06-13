@@ -84,7 +84,7 @@
     },
     "scaleLabels": [
         "Bevölkerung insgesamt",
-        "Jahre"
+        "years"
     ],
     "source": "Kartenvisualisierungswerkzeug",
     "beginAtZero": true,

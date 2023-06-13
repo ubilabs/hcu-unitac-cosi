@@ -5,17 +5,56 @@
                 "calculateRatio": {
                     "title": "Versorgungsanalyse",
                     "description": "Mit der Versorgungsanalyse können Sie die Abdeckung eines Gebietes mit einem bestimmten Einrichtungstyp / Infrastruktur ermitteln (s. 'Themen'). Sie können durch einen Klick auf 'Einrichtungen' auch mehrere statistische Werte verrechnen.",
+                    "availableColumns": {
+                        "ratio": "Verhältnis",
+                        "coverage": "Bedarfsdeckung (%)",
+                        "coverageOld": "Bedarfsdeckung (1,0 ~ 100%)",
+                        "capacity": "Kapazität",
+                        "need": "Bedarf"
+                    },
+                    "results": {
+                        "all": "Gesamt",
+                        "mean": "Durchschnitt",
+                        "count": "Anzahl"
+                    },
+                    "features": {
+                        "summable": "Aufsummierbar"
+                    },
                     "dataA": "Einrichtungen",
                     "dataB": "Statistische Daten",
+
+                    "warning": "Warnung",
+                    "warningForThisArea": "Warnung für das Gebiet",
                     "warningNoData": "Es sind weder statistische Daten, noch Themendaten geladen. Bitte wählen Sie mit der Gebietsauswahl zuerst einige Gebiete aus oder Laden Sie Themen aus dem Hauptmenü.",
                     "noFeaturesWarning": "Sie haben keine Gebiete als Grundlage für statistische Daten ausgewählt. Bitte laden Sie zuerst einige Gebiete über die Gebietsauswahl.",
                     "noFacilitiesWarning": "Sie haben keine Themengebiete als Grundlage für Einrichtungsdaten ausgewählt. Bitte wählen Sie zuerst die gewünschten Themengebiete über das Hauptmenü aus.",
+                    "noDataInSearch": "Im Suchradius wurden leider keine Daten für den ausgewählten Einrichtungsparameter gefunden. Bitte wechseln Sie den Parameter oder erweitern Sie Ihre Gebietsauswahl.",
+                    "noData": "Keine Daten vorhanden",
+
                     "placeholderA": "Paramenter (Zähler) auswählen",
                     "placeholderB": "Referenzwert (Nenner) auswählen",
-                    "noData": "Im Suchradius wurden leider keine Daten für den ausgewählten Einrichtungsparameter gefunden. Bitte wechseln Sie den Parameter oder erweitern Sie Ihre Gebietsauswahl.",
                     "addedSelection": "Aufsummierte Auswahl",
+                    "visualization": "Visualisierung",
                     "visualizeMap": "Ausgewählten Datensatz auf Karte visualisieren",
                     "visualizeChart": "Graph aus Datensatz erzeugen",
+                    "chart": {
+                        "labels": {
+                            "years": "Jahre"
+                        }
+                    },
+                    "tableHeaders": {
+                        "scopeText": "Gebiet",
+                        "scopeHelp": "In dieser Spalte werden die Identifikatoren für die jeweiligen Datensätze aufgelistet. In den meisten Fällen handelt es sich dabei um die ausgewählten Gebiete.",
+                        "paramA_valHelp": "Dies ist das Ergebnis der Datenabfrage des ersten Feldes (1) (links).",
+                        "paramB_valHelp": "Dies ist das Ergebnis der Datenabfrage des zweiten Feldes (2) (rechts).",
+                        "relationHelp": "In diesem Feld werden die Werte des Feldes (1) und des Feldes (2) durcheinander geteilt. Das Ergebnis wird auf zwei Stellen hinter dem Komma gerundet.",
+                        "capacityText": "Kapazität",
+                        "capacityHelp": "Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F bestimmt wurde. Es gibt an, für wieviele Einheiten der Referenzgruppe die Einrichtungen bereitgestellt werden können.",
+                        "needText": "Bedarf",
+                        "needHelp": "Diese Tabellenspalte wird angezeigt, wenn für eines der beiden Auswahlfelder ein Faktor F ({{faktorF}}) bestimmt wurde. Es gibt an, für wieviele Einrichtungen für die Gesamtzahl der Einheiten der Referenzgruppe benötigt werden würden.",
+                        "coverageText": "Bedarfsdeckung",
+                        "coverageHelp": "Dieses Feld gibt an, zu wieviel % der Bedarf gedeckt ist. Es wird durch den einstellbaren Faktor F ({{faktorF}}) und den einstellbaren Wert 'für X der Referenzgruppe berechnen' beeinflusst."
+                    },
                     "downloadGeoJson": "Download GeoJSON",
                     "downloadGeoJsonTooltip": "Ergebnisse als Geodaten (GeoJSON) herunterladen",
                     "downloadXlsx": "Download XLS",
@@ -27,6 +66,8 @@
                     "paginationRemoveAll": "Alle Versorgungsanalysen im Werkzeug löschen",
                     "calculate": "Berechnen",
                     "calculateTooltip": "Datensätze berechnen",
+                    "incompleteDataset": "Datensätze unvollständig",
+                    "incompleteDatasetExplanation": "Mit einem * gekennzeichnete Datensätze enthalten Einrichtungen, für die das ausgewählte Parameter (wie bspw. bei Schulen \"Schülerzahl\") nicht hinterlegt ist. In diesem Fall wird für diesen Datensatz mit dem Medianwert der vorhandenen vollständigen Datensätze kalkuliert.",
                     "reset": "Zurücksetzen",
                     "resetTooltip": "Alle Eingaben zurücksetzen",
                     "swapFields": "Datenfelder A und B tauschen",
@@ -35,6 +76,7 @@
                     "switchFieldType": "Statistische Daten / Einrichtungsdaten wechseln",
                     "calcPer": "berechnen pro",
                     "ofData": "der Datengrundlage",
+                    "filenameBase": "versorgungsanalyse",
                     "infoTooltip": "Werkzeuginformationen"
                 }
             }

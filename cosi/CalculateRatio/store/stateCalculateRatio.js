@@ -24,7 +24,7 @@ const state = {
     active: false,
     id: "CalculateRatio",
     // defaults for config.json parameters
-    name: "Versorgungsanalyse",
+    name: i18next.t("additional:modules.tools.cosi.calculateRatio.title"),
     icon: "bi-sliders2",
     renderToWindow: true,
     resizableWindow: false,

@@ -381,6 +381,7 @@ export default {
             >
                 <ToolInfo
                     :url="readmeUrl"
+                    :title="$t('additional:modules.tools.cosiFileImport.infoTooltip')"
                     :locale="currentLocale"
                 />
                 <p

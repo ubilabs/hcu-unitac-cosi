@@ -9,7 +9,7 @@ const eventKeys = {};
  * Prepares the district level objects for the district selector.
  * Each district level is assigned its layer, the districts, the reference level (the next higher) and a list of all district names.
  * Will no longer be executed once all district levels have their layer.
- * @param {Object[]} districtLevels - All avaiable district level objects.
+ * @param {Object[]} districtLevels - All available district level objects.
  * @param {module:ol/layer[]} layerList - An array of layers.
  * @returns {void}
  */

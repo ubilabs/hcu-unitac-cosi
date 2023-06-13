@@ -29,7 +29,8 @@
                     "yes": "Ja",
                     "no": "Nein",
                     "success": "Sitzung erfolgreich gespeichert!",
-                    "settingsChanged": "Ihre Einstellungen wurden geändert"
+                    "settingsChanged": "Ihre Einstellungen wurden geändert",
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

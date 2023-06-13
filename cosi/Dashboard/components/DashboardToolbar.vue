@@ -13,6 +13,9 @@ export default {
     data: () => ({
         exportTimeline: false
     }),
+    i18nOptions: {
+        keyPrefix: "additional:modules.tools.cosi"
+    },
     computed: {
         ...mapGetters("Tools/DistrictSelector", [
             "mapping",
@@ -54,7 +57,7 @@ export default {
                 v-model="_statsFeatureFilter"
                 :items="statsMapping"
                 item-text="value"
-                :label="$t('additional:modules.tools.cosi.featuresList.layerFilter')"
+                :label="$t('featuresList.layerFilter')"
                 outlined
                 dense
                 multiple
@@ -72,12 +75,12 @@ export default {
                         v-if="index === 1"
                         class="grey--text text-caption"
                     >
-                        (+{{ statsFeatureFilter.length - 1 }} weitere)
+                        (+{{ statsFeatureFilter.length - 1 }} {{ $t('dashboard.more') }} )
                     </span>
                 </template>
                 <template #append-outer>
                     <v-icon
-                        title="Anmerkungen öffnen"
+                        :title="$t('dashboard.help.open')"
                         @click="openMetadata"
                     >
                         mdi-information
@@ -91,8 +94,8 @@ export default {
                 v-model="exportTimeline"
                 dense
                 hide-details
-                :label="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
-                :title="$t('additional:modules.tools.cosi.dashboard.exportTableTimeline')"
+                :label="$t('dashboard.exportTableTimeline')"
+                :title="$t('dashboard.exportTableTimeline')"
             />
         </v-col>
         <v-col cols="auto">
@@ -101,10 +104,10 @@ export default {
                 small
                 tile
                 color="grey lighten-1"
-                :title="$t('additional:modules.tools.cosi.dashboard.exportTable')"
+                :title="$t('dashboard.exportTable')"
                 @click="exportTable"
             >
-                {{ $t('additional:modules.tools.cosi.dashboard.exportTable') }}
+                {{ $t('dashboard.exportTable') }}
             </v-btn>
         </v-col>
     </v-row>

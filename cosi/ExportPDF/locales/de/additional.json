@@ -3,12 +3,12 @@
         "tools": {
             "cosi": {
                 "exportPDF": {
-                    "captions": {
-                    "title": "Als PDF exportieren"
+                    "title": "Als PDF exportieren",
+                    "action": {
+                        "convertFile": "Datei konvertieren"
                     }
                 }
             }
-
         }
     }
 }

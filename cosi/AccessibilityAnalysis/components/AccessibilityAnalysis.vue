@@ -636,6 +636,7 @@ export default {
                 <v-app>
                     <ToolInfo
                         :url="readmeUrl"
+                        :title="$t('additional:modules.tools.cosi.accessibilityAnalysis.infoTooltip')"
                         :locale="currentLocale"
                     />
                     <div
@@ -685,7 +686,7 @@ export default {
                                 v-if="mode === 'region'"
                                 v-model="_selectedFacilityNames"
                                 class="mb-4"
-                                placeholder="Keine Auswahl"
+                                :placeholder="$t('additional:modules.tools.cosi.accessibilityAnalysis.noChoicePlaceholder')"
                                 :items="facilityNames"
                                 :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.topic')"
                                 multiple
@@ -706,7 +707,7 @@ export default {
                                 v-if="mode === 'path'"
                                 v-model="_selectedDirections"
                                 class="mb-4"
-                                placeholder="Keine Auswahl"
+                                :placeholder="$t('additional:modules.tools.cosi.accessibilityAnalysis.noChoicePlaceholder')"
                                 :item-text="getDirectionsText"
                                 return-object
                                 :items="[routingDirections || {distance: '-', duration: '-'}]"

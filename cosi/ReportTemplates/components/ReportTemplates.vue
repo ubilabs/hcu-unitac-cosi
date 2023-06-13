@@ -12,14 +12,22 @@ export default {
     components: {
         Tool
     },
+    i18nOptions: {
+        keyPrefix: "additional:modules.tools.cosi.reportTemplates"
+    },
     data () {
         return {
             uploadedTemplate: null, // file input field for report templates. This variable is watched and used to replace `templateItems` store variable
-            supportedExportFormats: ["HTML", "PDF", "Importierbares Template (json)"],
+            supportedExportFormats: ["HTML", "PDF", this.$t("importableTemplateJson")],
             selectedExportFormat: "HTML",
             ui_currentTab: 0, // vuetify tab content based on v-model
             ui_tab: null,
-            ui_items: ["Importieren", "Bearbeiten", "Anwenden", "Exportieren"]
+            ui_items: [
+                this.$t("import"),
+                this.$t("edit"), 
+                this.$t("apply"), 
+                this.$t("export")
+            ]
         };
     },
     computed: {
@@ -55,7 +63,7 @@ export default {
                     return (newItems) => {
                         // alert and exit if json is not in reportTemplate format
                         if (!this.templateItemJsonValid(newItems)) {
-                            this.addSingleAlert("Datei ist kein valides Report Template.");
+                            this.addSingleAlert(this.$t("noValidReportTemplate"));
                             this.uploadedTemplate = null;
                             return;
                         }
@@ -77,8 +85,8 @@ export default {
                         // on error, clear file input
                         this.uploadedTemplate = null;
                         this.addSingleAlert({
-                            content: "Datei nicht lesbar oder kein valides JSON",
-                            category: "Fehler",
+                            content: this.$t("notReadableOrNoValidJson"),
+                            category: this.$t("error"),
                             displayClass: "error"
                         });
                         throw new Error(e); // error in the above string (in this case, yes)!
@@ -124,8 +132,8 @@ export default {
             // check if tool settings are stored
             if (!this.templateItems[templateItemsIndex].hasSettings) {
                 this.addSingleAlert({
-                    content: "Keine Tool Einstellungen verfügbar",
-                    category: "Fehler",
+                    content: this.$t("noToolSettingsAvailable"),
+                    category: this.$t("error"),
                     displayClass: "error"
                 });
                 return null; // if no tool settings, stop here
@@ -147,7 +155,7 @@ export default {
         },
 
         exportTemplate () {
-            if (this.selectedExportFormat === "Importierbares Template (json)") {
+            if (this.selectedExportFormat === this.$t("importableTemplateJson")) {
                 this.downloadObjectAsJson(this.templateItems, "template");
             }
             if (this.selectedExportFormat === "HTML") {
@@ -186,8 +194,8 @@ export default {
                     // for each chapter...
                     // set defaults
                     let resulthtml = "",
-                        sourceInfo = "Quelleninformation fehlt.";// defaults
-                    const tips = "<span style='color:orange;'>Weiterverarbeitung in Word: <ul><li>Neues Word Dokument öffnen</li><li>In Word Querformat einstellen</li><li>Inhalt dieser seite markieren (Strg+A) und in Word kopieren</li><li>Alles markieren und Schriftgröße verkleinern</li><li>Zeilenumbrüche in Kopfzeilen von Tabellen einfügen</li><li>Sollten Tabellen nach wie vor zu breit sein, Anzahl der Spalten bzw. ausgewählten Gebiete begrenzen</li><li>Spaltenbreite anpassen</li></ul></span>";
+                        sourceInfo = this.$t("sourceInfoMissing");// defaults
+                    const tips = this.$t("tips")
 
                     // make table or image html..
                     if (item.output.type === "table") {
@@ -279,8 +287,8 @@ export default {
         setCurrentDataSelection (dataSelection) {
             if (Object.keys(dataSelection).length === 0) {
                 this.addSingleAlert({
-                    content: "Gespeicherte Datenauswahl ist leer",
-                    category: "Fehler",
+                    content: this.$t("savedDataSelectionEmpty"),
+                    category: this.$t("error"),
                     displayClass: "error"
                 });
                 return null;
@@ -405,7 +413,7 @@ export default {
 <template lang="html">
     <Tool
         :id="id"
-        :title="$t('additional:modules.tools.cosi.reportTemplates.title')"
+        :title="$t('title')"
         :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
@@ -440,7 +448,7 @@ export default {
                                 <v-file-input
                                     v-model="uploadedTemplate"
                                     accept="application/JSON"
-                                    label="Datei wählen.."
+                                    :label="$t('selectFile')"
                                     dense
                                 />
                             </v-container>
@@ -482,7 +490,7 @@ export default {
                                                         <v-text-field
                                                             v-model="templateItem.title"
                                                             class="text-xl-h4 textfieldtitle"
-                                                            label="Titel"
+                                                            :label="$t('titleHeader')"
                                                             filled
                                                         />
                                                     </v-col>
@@ -493,7 +501,7 @@ export default {
                                                         <br><br>
                                                         <v-textarea
                                                             v-model="templateItem.description"
-                                                            label="Beschreibung"
+                                                            :label="$t('description')"
                                                             class=""
                                                         />
                                                         <br><br>
@@ -504,7 +512,7 @@ export default {
                                                     <v-col cols="12">
                                                         <v-select
                                                             v-model="templateItem.tool"
-                                                            label="Tool wählen"
+                                                            :label="$t('chooseTool')"
                                                             :items="supportedTools"
                                                             @change="getSelectionAndSettings(index)"
                                                         />
@@ -515,12 +523,12 @@ export default {
                                                 <v-row class="mb-2">
                                                     <v-switch
                                                         v-model="templateItem.hasDataSelection"
-                                                        label="Datenauswahl"
+                                                        :label="$t('dataSelection')"
                                                         @change="hasDataToggle(index)"
                                                     />
                                                     <v-switch
                                                         v-model="templateItem.hasSettings"
-                                                        label="Tool Einstellungen"
+                                                        :label="$t('toolSettings')"
                                                         @change="hasSettingsToggle(index)"
                                                     />
                                                 </v-row>
@@ -576,7 +584,7 @@ export default {
                                                         <!-- <v-icon>
                                                             mdi-map-marker-right
                                                         </v-icon> -->
-                                                        Datenauswahl anwenden
+                                                        {{ $t('adoptDataSelection') }}
                                                     </v-btn><br><br>
                                                 </v-row>
                                             </v-col>
@@ -587,7 +595,7 @@ export default {
                                                 <v-switch
                                                     v-model="templateItem.hasOutput"
                                                     :disabled="!templateItem.hasSettings"
-                                                    label="Ergebnisse"
+                                                    :label="$t('results')"
                                                     @change="hasOutputToggle(index)"
                                                 /><br><br>
                                             </v-row>
@@ -630,7 +638,7 @@ export default {
                                 <v-row>
                                     <v-select
                                         v-model="selectedExportFormat"
-                                        label="Export Format"
+                                        :label="$t('exportFormat')"
                                         :items="supportedExportFormats"
                                     />
                                 </v-row>
@@ -639,7 +647,7 @@ export default {
                                         color="grey lighten-1"
                                         @click="exportTemplate()"
                                     >
-                                        Exportieren
+                                    {{ $t('export') }}
                                     </v-btn>
                                 </v-row>
                                 <br>

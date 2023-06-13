@@ -1,11 +1,28 @@
 {
     "modules": {
         "tools": {
-            "selectionManager": {
-                "title": "Selection Manager",
-                "infoTooltip": "Tool Info",
-                "noData": "No data available",
-                "mergedSelections": "Merged Selections"
+            "cosi": {
+                "selectionManager": {
+                    "title": "Selection Manager",
+                    "noData": "No data available",
+                    "mergedSelections": "Merged Selections",
+                    "allSelections": "TODO en: Alle aktiven ausgewählt",
+                    "connectedSelections": "TODO en: Auswahl verbunden",
+                    "buffer": "TODO en: Veränderte Auswahl",
+                    "title_view": "TODO en: Auswahl ein/aus",
+                    "title_add": "TODO en: Auswahl zum Zwischenspeicher hinzufügen",
+                    "title_merge": "TODO en: Zwischenauswahl zusammenführen",
+                    "title_stored": "TODO en: Aktuelle Themendaten speichern",
+                    "title_extended_options": "TODO en: Erweiterte Optionen anzeigen",
+                    "title_remove": "TODO en: Auswahl entfernen",
+                    "title_remove_all": "TODO en: Auswahlverwaltung zurücksetzen",
+                    "title_all_selections": "TODO en: Alle aktiven Auswahlen auswählen",
+                    "title_connect_selections": "TODO en: Alle aktiven Auswahlen mit Polygon verbinden",
+                    "title_slider": "TODO en: Buffer (m) einstellen",
+                    "title_toggle_buffer": "TODO en: Bufferauswahl aktivieren",
+                    "title_buffer_selection": "TODO en: Buffer als Auswahl festlegen",
+                    "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)"
+                }
             }
         }
     }

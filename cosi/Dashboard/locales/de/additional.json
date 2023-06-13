@@ -38,8 +38,15 @@
                         "charts": "Diagramme",
                         "standardCharts": "Balken- / Linien- / Tortendiagramme erstellen",
                         "chartForMultipleRows": "Diagramm für ausgewählte Zeilen",
-                        "correlationChart": "Korrelation / Streuungsdiagramm erstellen"
-                    }
+                        "correlationChart": "Korrelation / Streuungsdiagramm erstellen",
+                        "visualizationMustBeActive": "Visualisierung in der Karte muss aktiv sein."
+                    },
+                    "more": "weitere",
+                    "years": "Jahre",
+                    "help": {
+                        "open": "Anmerkungen öffnen"
+                    },
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

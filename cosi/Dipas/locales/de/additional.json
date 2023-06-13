@@ -23,7 +23,8 @@
                     "polling": {
                         "label": "Automatisches Update",
                         "help": "Neue Beiträge automatisch nachladen."
-                    }
+                    },
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

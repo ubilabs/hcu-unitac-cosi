@@ -83,7 +83,7 @@ async function createIsochronesPoint (transportType, coordinate, scaleUnit, dist
 
         // reverse JSON object sequence to render the isochrones in the correct order
         reversedFeatures = json.reverse(),
-        featureType = "Erreichbarkeit ab einem Referenzpunkt";
+        featureType = i18next.t("additional:modules.tools.cosi.accessibilityAnalysis.mode.point");
 
     let newFeatures = reversedFeatures;
 
@@ -211,7 +211,7 @@ async function createIsochronesPoints (args) {
             // TODO: get projections via arguments and/or store
             layerUnionFeatures = transformFeatures(layerUnionFeatures, "EPSG:4326", args.projectionCode);
 
-            const featureType = "Erreichbarkeit im Gebiet";
+            const featureType = i18next.t("additional:modules.tools.cosi.accessibilityAnalysis.mode.area");
 
             // TODO: add props to layers, like type of facility, unit of measured distance
             layerUnionFeatures.forEach(feature => {

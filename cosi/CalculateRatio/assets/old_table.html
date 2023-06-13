@@ -7,32 +7,32 @@
         </th>
         <th>
             <div class="styling_helper">
-                {{ Array.isArray(selectedFieldA.id) ? "Aufsummierte Auswahl" : selectedFieldA.id }}
+                {{ Array.isArray(selectedFieldA.id) ? $t("additional:modules.tools.cosi.calculateRatio.availableColumns.addedSelection") : selectedFieldA.id }}
             </div>
         </th>
         <th>
             <div class="styling_helper">
-                {{ Array.isArray(selectedFieldB.id) ? "Aufsummierte Auswahl" : selectedFieldB.id }}
+                {{ Array.isArray(selectedFieldB.id) ? $t("additional:modules.tools.cosi.calculateRatio.availableColumns.addedSelection") : selectedFieldB.id }}
             </div>
         </th>
         <th v-if="fActive_A || fActive_B">
             <div class="styling_helper">
-                Kapazität
+                {{ $t("additional:modules.tools.cosi.calculateRatio.availableColumns.capacity") }}
             </div>
         </th>
         <th v-if="fActive_A || fActive_B">
             <div class="styling_helper">
-                Bedarf
+                {{ $t("additional:modules.tools.cosi.calculateRatio.availableColumns.need") }}
             </div>
         </th>
         <th>
             <div class="styling_helper">
-                {{ Array.isArray(selectedFieldA.id) ? "Aufsummierte Auswahl" : selectedFieldA.id }} / {{ Array.isArray(selectedFieldB.id) ? "Aufsummierte Auswahl" : selectedFieldB.id }}
+                {{ Array.isArray(selectedFieldA.id) ? $t("additional:modules.tools.cosi.calculateRatio.availableColumns.addedSelection") : selectedFieldA.id }} / {{ Array.isArray(selectedFieldB.id) ? $t("additional:modules.tools.cosi.calculateRatio.availableColumns.addedSelection") : selectedFieldB.id }}
             </div>
         </th>
         <th>
             <div class="styling_helper">
-                Bedarfsdeckung (1,0 ~ 100%)
+                {{ $t("additional:modules.tools.cosi.calculateRatio.availableColumns.coverageOld") }}
             </div>
         </th>
     </tr>
@@ -49,10 +49,10 @@
             <div
                 class="styling_helper"
             >
-                {{ result.paramA_val.toLocaleString('de-DE') }}
+                {{ result.paramA_val.toLocaleString(currentLocale) }}
                 <span v-if="result.data.incompleteDataSets_A > 0">*</span>
                 <div class="hover_helper" v-if="result.data.incompleteDataSets_A > 0">
-                    {{ result.data.incompleteDataSets_A.toLocaleString('de-DE') }} / {{ result.data.dataSets_A.toLocaleString('de-DE') }}
+                    {{ result.data.incompleteDataSets_A.toLocaleString(currentLocale) }} / {{ result.data.dataSets_A.toLocaleString(currentLocale) }}
                 </div>
             </div>
         </td>
@@ -60,31 +60,31 @@
             <div
                 class="styling_helper"
             >
-                {{ result.paramB_val.toLocaleString('de-DE') }}
+                {{ result.paramB_val.toLocaleString(currentLocale) }}
                 <span v-if="result.data.incompleteDataSets_B > 0">*</span>
                 <div class="hover_helper" v-if="result.data.incompleteDataSets_B > 0">
-                    {{ result.data.incompleteDataSets_B.toLocaleString('de-DE') }} / {{ result.data.dataSets_B.toLocaleString('de-DE') }}
+                    {{ result.data.incompleteDataSets_B.toLocaleString(currentLocale) }} / {{ result.data.dataSets_B.toLocaleString(currentLocale) }}
                 </div>
             </div>
         </td>
         <td v-if="fActive_A || fActive_B">
             <div class="styling_helper">
-                {{ result.capacity.toLocaleString('de-DE') }}
+                {{ result.capacity.toLocaleString(currentLocale) }}
             </div>
         </td>
         <td v-if="fActive_A || fActive_B">
             <div class="styling_helper">
-                {{ result.need.toLocaleString('de-DE') }}
+                {{ result.need.toLocaleString(currentLocale) }}
             </div>
         </td>
         <td>
             <div class="styling_helper">
-                {{ result.relation.toLocaleString('de-DE') }}
+                {{ result.relation.toLocaleString(currentLocale) }}
             </div>
         </td>
         <td>
             <div class="styling_helper">
-                {{ result.coverage.toLocaleString('de-DE') }}
+                {{ result.coverage.toLocaleString(currentLocale) }}
             </div>
         </td>
     </tr>
