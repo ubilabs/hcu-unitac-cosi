@@ -68,8 +68,7 @@ export default {
             if (this.feature) {
                 this.drawingLayer.getSource().addFeature(this.feature);
             }
-console.log(geom);
-console.log(this.boundingGeometry);
+
             this.addNewSelection({selection: [new Feature(geom)], source: this.$t("additional:modules.tools.cosi.areaSelector.title"), id: this.$t("additional:modules.tools.cosi.areaSelector.title") + " #" + new Feature(geom).ol_uid});
             setBBoxToGeom.call(this, geom || this.boundingGeometry);
             this.setFilterGeometry(this, geom || this.boundingGeometry);
