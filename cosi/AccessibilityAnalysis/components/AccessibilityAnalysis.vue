@@ -601,7 +601,7 @@ export default {
             await this.createIsochrones();
 
             this.dataSets[this.activeSet].results = this._isochroneFeatures;
-            this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.activeVectorLayerList, this.mapLayer);
+            this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
 
             this.renderIsochrones(this._isochroneFeatures);
         },
