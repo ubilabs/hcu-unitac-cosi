@@ -1,28 +1,27 @@
 # CoSI - Funktionshandbuch
 ----
 
+Hier finden sie Beschreibungen zu allen CoSI nach Funktionen (alphabetisch).
 
-## Graphenvisualisierung
-___
-Das Graphenvisualisierungswerkzeug erstellt Graphen aus Datensätzen und verwaltet diese. Darüberhinaus ermöglicht es Ihnen den Export dieser Graphen als PNG.
 
-   > Nach dem Sie Ihre gewünschten Gebiete und Fachdaten ausgewählt haben, können Sie unter Analyse - Graphenvisualisierung, Ihre Ergebnisse visuell darstellen lassen. 
+### Manuelle Flächenauswahl für Fachdaten
+Mit Hilfe dieses Werkzeuges können Sie ein Polygon auf der Karte zeichnen, innerhalb dessen Fachdaten angezeigt werden. Einrichtungen oder andere Fachdatenmarker, die außerhalb dieses Polygons liegen, werden ausgeblendet. 
+> Um die Manuelle Flächenauswahl nutzen zu können, wählen Sie hier zunächst *Analyse* und infolge dessen *Manuelle Flächenauswahl*.
 
-![Abbildung 1: Graphenvisualisierung](https://github.com/AlexandraKanapki/cosi/blob/1d7ef29eef00e5d0d71b87d51e15aea80eab5810/cosi/manuals/graphenvisualisierung.png)  
-*Abbildung 1: Graphenvisualisierung*
+![Abbildung 4: Manuelle Flächenauswahl](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/manuelle%20flaechenauswahl.png?raw=true)
 
-1. **Diagrammtyp auswählen**
-   > Häufig werden gleich unterschiedliche Graphen erstellt. Hier können Sie zwischen den verfügbaren Diagrammen für den ausgewählten Datensatz umschalten.
-2. **Graph & Legende**
-   > Das augewählte Diagramm. Sie finden hier den Titel des ausgewählten Datensatzes, die Legende und den erzeugten Graphen.
-3. **Y-Achse skalieren**
-   > Hier wählen Sie aus, ob die Y-Achse des Graphen von 0 an beginnt oder relativ zum kleinsten verfügbaren Wert.  
-   *Diese Funktion ist nur beim Liniendiagramm verfügbar.*
-4. **Y-Achse stapeln**
-    > Die Werte der Datensätze werden aufsummiert und farblich abgetrennt dargestellt.
-5. **Ergebnisverzeichnis**
-   > Das [Ergebnisverzeichnis](./pagination.md) verwaltet die unterschiedlichen erstellten Graphen und bietet einige standardisierte Funktionen, zu denen Sie [hier](./pagination.md) mehr erfahren können.
-### DIPAS
+*Abbildung 4: Manuelle Flächenauswahl*
+
+1. **Polygon zeichnen**
+   > Klicken Sie auf diesesn Button, um ein neues Polygon auf der Karte zu zeichnen.
+2. **Eingabe löschen**
+   > Löschte die bestehende Flächenauswahl und zeigt alle Fachdaten wieder an.
+3. **Einwohnerabfrage**
+   > Für die aktuelle Flächenauswahl eine [Einwohnerabfrage](./einwohnerabfrage.md) durchführen.  
+4. **Ergebnisdarstellung auf der Karte**
+## Auswahlmanager
+
+...### DIPAS
 Mit dem DIPAS Werkzeug können alle Beiträge aus laufenden DIPAS Verfahren in der Karte visualisiert, nach verschiedenen Kriterien dargestellt und für alle CoSI-Werkzeuge verfügbar gemacht werden. D.h. alle Beiträge können in der [Einrichtungsübersicht](./einrichtungsuebersicht.md) angezeigt, für [Versorgungsanalyse](./versorgungsanalyse.md), [Erreichbarkeitsanalyse](./erreichbarkeitsanalyse.md) und [Vergleichbare Gebiete Ermitteln](./vergleichbaregebieteermitteln.md) verwendet und mit dem [Filter](./filter.md) gefiltert werden. Über "Analyse" erreichen Sie "Dipas".
 
 
@@ -371,6 +370,9 @@ Um Ihre gewünschten Fachdaten zu filtern, gehen Sie zunächst auf "Analyse" und
    > Einzelne Auswahl durch Anklicken des roten "X" oder gesamte Auswahl löschen durch Anklicken des Buttons "Alle löschen”.
 
 
+## Flächen Stylen
+
+...
 ## Gebietsauswahl
 ___
 Beim Starten von CoSI wird zunächst ein Bezugsrahmen festgelegt sowie ein Planungsgebiet zusammengestellt und bestätigt.
@@ -476,6 +478,26 @@ Sobald Ihre Datei hier hochgeladen wurde, erscheint ein neues Fenster, in welche
    - **9.1** Für die bessere Visualisierung in einer späteren Tabelle, können Sie hier dem numerischen Wert einen sinnvollen Namen geben, sollte das Attribut nicht sinnvoll benannt sein. So könnten Sie beispielsweise "budget_21" in "Verfügbare Mittel 2021" umbenennen.
    - **9.2** Hier sehen Sie die ID des Attributs und dahinter in Klammern einen Beispielwert aus dem ersten Eintrag.
    - **9.3** Mit dieser Checkbox fügen Sie das Attribut zu den numerischen Werten hinzu. 
+## Graphenvisualisierung
+___
+Das Graphenvisualisierungswerkzeug erstellt Graphen aus Datensätzen und verwaltet diese. Darüberhinaus ermöglicht es Ihnen den Export dieser Graphen als PNG.
+
+   > Nach dem Sie Ihre gewünschten Gebiete und Fachdaten ausgewählt haben, können Sie unter Analyse - Graphenvisualisierung, Ihre Ergebnisse visuell darstellen lassen. 
+
+![Abbildung 1: Graphenvisualisierung](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/graphenvisualisierung.png?raw=true)  
+*Abbildung 1: Graphenvisualisierung*
+
+1. **Diagrammtyp auswählen**
+   > Häufig werden gleich unterschiedliche Graphen erstellt. Hier können Sie zwischen den verfügbaren Diagrammen für den ausgewählten Datensatz umschalten.
+2. **Graph & Legende**
+   > Das augewählte Diagramm. Sie finden hier den Titel des ausgewählten Datensatzes, die Legende und den erzeugten Graphen.
+3. **Y-Achse skalieren**
+   > Hier wählen Sie aus, ob die Y-Achse des Graphen von 0 an beginnt oder relativ zum kleinsten verfügbaren Wert.  
+   *Diese Funktion ist nur beim Liniendiagramm verfügbar.*
+4. **Y-Achse stapeln**
+    > Die Werte der Datensätze werden aufsummiert und farblich abgetrennt dargestellt.
+5. **Ergebnisverzeichnis**
+   > Das [Ergebnisverzeichnis](./pagination.md) verwaltet die unterschiedlichen erstellten Graphen und bietet einige standardisierte Funktionen, zu denen Sie [hier](./pagination.md) mehr erfahren können.
 ## Kartenanalyse regionalstatistischer Daten
 ___
 Grundlage aller CoSI-Analysefunktionen sind neben den Fachdaten-Layern die Datensätze der StaNord-Datenbank, welche für die verschiedenen Verwaltungseinheiten als Zeitreihen vorliegen. Diese können für das ausgewählte Planungsgebiet direkt und dynamisch in der Karte visualisiert werden. Die *Farbskalierung und Legende* werden hierbei *dynamisch* aus der Auswahl generiert. Es wird immer der *aktuellste Datensatz* dargestellt.
@@ -514,7 +536,7 @@ Das Werkzeug kann die ausgewählten Datensätze auf der Karte visualisieren und 
 Mit Hilfe dieses Werkzeuges können Sie ein Polygon auf der Karte zeichnen, innerhalb dessen Fachdaten angezeigt werden. Einrichtungen oder andere Fachdatenmarker, die außerhalb dieses Polygons liegen, werden ausgeblendet. 
 > Um die Manuelle Flächenauswahl nutzen zu können, wählen Sie hier zunächst *Analyse* und infolge dessen *Manuelle Flächenauswahl*.
 
-![Abbildung 4: Manuelle Flächenauswahl](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/manuelle%20flaechenauswahl.png)
+![Abbildung 4: Manuelle Flächenauswahl](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/manuelle%20flaechenauswahl.png?raw=true)
 
 *Abbildung 4: Manuelle Flächenauswahl*
 
@@ -560,10 +582,10 @@ In der statistischen Datenübersicht können tabellarisch Informationen zu den s
 
   > Um zur statistischen Datenübersicht zu gelangenn, wählen Sie im Dashboard den Punkt "statistische Datenübersicht" aus. 
   
-![Abbildung 27: Statistische Datenübersicht](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/statistische%20datenu%CC%88bersciht1.png)
+![Abbildung 27: Statistische Datenübersicht](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/statistische%20datenu%CC%88bersciht1.png?raw=true)
 *Abbildung 27: Statistische Datenübersichtm 1*
 
-![Abbildung 29: Statistische Datenübersicht](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/statistischedatenu%CC%88bersicht2.png)
+![Abbildung 29: Statistische Datenübersicht](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/statistischedatenu%CC%88bersicht2.png?raw=true)
 *Abbildung 29: Statistische Datenübersicht 2*
 
 
@@ -714,7 +736,7 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
       
          Wenn in Ihrer Ergebnistabelle mehr als 10 Ergebnisse angezeigt werden, können Sie hier entsprechend die Daten durchschalten.
 ### Vorlagen
-![Abbildung 1: Vorlagen](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/Vorlagen1.png)
+![Abbildung 1: Vorlagen](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/Vorlagen1.png?raw=true)
 
 *Abbildung 1: Vorlagen*
 
@@ -740,14 +762,14 @@ Mit diesem Werkzeug kann das Verhältnis zweier Datensätze zueinander berechnet
 4. **Vorlage laden**
    > Die ausgewählte Vorlage laden.
 
-![Abbildung 1: Vorlagen](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/Vorlagen2.png)
+![Abbildung 1: Vorlagen](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/Vorlagen2.png?raw=true)
 ## Wohnungsbauquartiere anlegen 
 
 Durch das Erstellen eines Wohnbauquartiers können sie Wohnungsbauszenarien durchspielen. Die erstellten Wohnungsbauquartiere stehen Ihnen für weitere Analysefunktionen zur Verfügung. Die Szenarien können exportiert und gespeichert werden.
 
 Sobald sie über "Simulation" "Wohnungsquartiere anlegen" auswählen, öffnet sich ein Fenster, in dessen oberem Bereich Sie den Szenario Manager finden (s. Abbidlung "Szenario Manager").
 
-![Abbildung: 2: Wohnungsbauquartiere anlegen](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/wohnquatier1.png)
+![Abbildung: 2: Wohnungsbauquartiere anlegen](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/wohnquatier1.png?raw=true)
 ![Abbildung: 1: Wohnungsbauquartiere anlegen](https://user-images.githubusercontent.com/43250699/143025884-f86a5897-3757-4b35-9d6d-1e4969d8175d.png)  
 *Abbildung 1: Wohnungsbauquartiere anlegen*
 
