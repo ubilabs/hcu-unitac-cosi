@@ -2,8 +2,11 @@ import PaginatorComponent from "../../components/DataCardPaginator.vue";
 import {shallowMount} from "@vue/test-utils";
 import {expect} from "chai";
 
-
-describe("paginator component", () => {
+/**
+ * Run only these tests via command:
+ * npm run test:vue:watch -- --grep="addons/vpiDashboard/test/ paginator component"
+ */
+describe("addons/vpiDashboard/test/ paginator component", () => {
     let wrapper = null;
 
     beforeEach(() => {

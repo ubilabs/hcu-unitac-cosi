@@ -2,7 +2,11 @@ import DataCardComponent from "../../components/DataCard.vue";
 import {shallowMount} from "@vue/test-utils";
 import {expect} from "chai";
 
-describe("data card component", () => {
+/**
+ * Run only these tests via command:
+ * npm run test:vue:watch -- --grep="addons/vpiDashboard/test/ data card component"
+ */
+describe("addons/vpiDashboard/test/ data card component", () => {
     let wrapper = null;
 
     beforeEach(() => {

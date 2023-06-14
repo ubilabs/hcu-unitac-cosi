@@ -170,7 +170,7 @@ const mutations = {
 
         payload.forEach(item => {
             // Visitor sum as integer
-            item.avg_num_visitors = Math.floor(item.avg_num_visitors);
+            item.sum_num_visitors = Math.ceil(item.sum_num_visitors / 100) * 100;
 
             // Grouped by dwell time
             if (!dwellTimeByTime[item.DwellTime]) {
@@ -249,7 +249,6 @@ const mutations = {
 
         state.lineChartDailyData = data;
     },
-
 
     /**
      * Generates Bar Chart Monthly Data and saves it to state.
@@ -331,7 +330,7 @@ const mutations = {
             else {
                 labels.push(`${element.date__month}-${element.date__year}`);
             }
-            month_data.push(Math.floor(element.sum));
+            month_data.push(Math.ceil(element.sum / 100) * 100);
         });
         // eslint-disable-next-line
         const data = {
@@ -365,7 +364,7 @@ const mutations = {
             else {
                 labels.push(`${element.date__month}-${element.date__year}`);
             }
-            month_data.push(Math.floor(element.sum));
+            month_data.push(Math.ceil(element.sum / 100) * 100);
         });
         // eslint-disable-next-line
         const data = {
@@ -434,17 +433,17 @@ const mutations = {
 
             if (ageGroupIndex > -1) {
 
-                tempDataset[ageGroupIndex].data.push(Math.floor(entry.avg_num_visitors));
-                tempDatasetLine[ageGroupIndex].data.push(Math.floor(entry.avg_num_visitors));
+                tempDataset[ageGroupIndex].data.push(Math.ceil(entry.sum_num_visitors / 100) * 100);
+                tempDatasetLine[ageGroupIndex].data.push(Math.ceil(entry.sum_num_visitors / 100) * 100);
             }
             else {
                 const dataObj = {
-                        data: [Math.floor(entry.avg_num_visitors)],
+                        data: [Math.ceil(entry.sum_num_visitors / 100) * 100],
                         hoverOffset: 4,
                         label: entry.age_group
                     },
                     dataObjLine = {
-                        data: [Math.floor(entry.avg_num_visitors)],
+                        data: [Math.ceil(entry.sum_num_visitors / 100) * 100],
                         label: entry.age_group,
                         fill: false,
                         tension: 0.1
@@ -469,14 +468,13 @@ const mutations = {
                 key = `${ageGroup}-${year}`;
 
             grouped[key] = grouped[key] || {ageGroup, year, sum: 0};
-            grouped[key].sum += Math.floor(entry.avg_num_visitors);
+            grouped[key].sum += Math.ceil(entry.sum_num_visitors / 100) * 100;
 
             ageGroupsByYear = Object.values(grouped);
 
             if (allYears.indexOf(year) < 0) {
                 allYears.push(year);
             }
-
         });
 
         labels.forEach(l => {

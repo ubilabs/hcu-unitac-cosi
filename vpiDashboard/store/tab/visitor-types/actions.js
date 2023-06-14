@@ -1,5 +1,6 @@
 import axios from "axios";
 import {Config} from "../../../config";
+import {buildEndpointUrl} from "../../../utils/buildEndpointUrl";
 
 const actions = {
     /**
@@ -10,8 +11,23 @@ const actions = {
      **/
     getVisitorTypes: async ({state, commit}) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${state.selectedLocationId}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian`,
-            response = await axios.get(url);
+
+        const
+            url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/`,
+            locationId = state.selectedLocationId,
+            query = {
+                "location_id": locationId,
+                "group_by[date]": null,
+                "group_by[VisitorType]": null,
+                "aggregate[Sum]": "num_visitors",
+                "format": "agg",
+                "pulse": false,
+                "use_zone": true,
+                "transportation": "pedestrian"
+            },
+            response = await axios.get(
+                buildEndpointUrl(url, query)
+            );
 
         commit("setVisitorTypes", response.data.data);
         commit("setLoader", false);

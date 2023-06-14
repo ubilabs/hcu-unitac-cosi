@@ -19,16 +19,16 @@ const getters = {
             labels.push(changeDateFormat(date));
 
             data_residents.push(
-                items.find(i => i.VisitorType === "Einwohner")?.avg_num_visitors || 0
+                Math.ceil(items.find(i => i.VisitorType === "Einwohner")?.sum_num_visitors / 100) * 100 || 0
             );
             data_commuter.push(
-                items.find(i => i.VisitorType === "Pendler")?.avg_num_visitors || 0
+                Math.ceil(items.find(i => i.VisitorType === "Pendler")?.sum_num_visitors / 100) * 100 || 0
             );
             data_tourists_day.push(
-                items.find(i => i.VisitorType === "Tagestouristen")?.avg_num_visitors || 0
+                Math.ceil(items.find(i => i.VisitorType === "Tagestouristen")?.sum_num_visitors / 100) * 100 || 0
             );
             data_tourists_overnight.push(
-                items.find(i => i.VisitorType === "Übernachtungstouristen")?.avg_num_visitors || 0
+                Math.ceil(items.find(i => i.VisitorType === "Übernachtungstouristen")?.sum_num_visitors / 100) * 100 || 0
             );
         });
 

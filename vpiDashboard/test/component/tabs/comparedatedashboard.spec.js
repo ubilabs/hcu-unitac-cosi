@@ -6,7 +6,12 @@ import Vuex from "vuex";
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
-describe("compare date dashboard tab component", () => {
+
+/**
+ * Run only these tests via command:
+ * npm run test:vue:watch -- --grep="addons/vpiDashboard/test/ compare date dashboard tab component"
+ */
+describe("addons/vpiDashboard/test/ compare date dashboard tab component", () => {
     let wrapper = null;
 
     before(() => {
@@ -82,7 +87,11 @@ describe("compare date dashboard tab component", () => {
     });
 });
 
-describe("sortAgeGroupArray", () => {
+/**
+ * Run only these tests via command:
+ * npm run test:vue:watch -- --grep="addons/vpiDashboard/test/ sortAgeGroupArray"
+ */
+describe("addons/vpiDashboard/test/ sortAgeGroupArray", () => {
     // const sortArray = sortArrays.sortAgeGroupsArray(); // Replace with the correct path to your sortArray file
 
     it("should sort the array with numerical order and eliminate brackets", () => {
@@ -95,7 +104,11 @@ describe("sortAgeGroupArray", () => {
     });
 });
 
-describe("sortDwellTimeArray", () => {
+/**
+ * Run only these tests via command:
+ * npm run test:vue:watch -- --grep="addons/vpiDashboard/test/ sortDwellTimeArray"
+ */
+describe("addons/vpiDashboard/test/ sortDwellTimeArray", () => {
     // const sortArray = sortArrays.sortAgeGroupsArray(); // Replace with the correct path to your sortArray file
 
     it("should sort the array with numerical order and eliminate brackets", () => {

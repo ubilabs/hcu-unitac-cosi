@@ -7,7 +7,11 @@ const localVue = createLocalVue();
 
 localVue.use(Vuex);
 
-describe("compare dashboard tab component", () => {
+/**
+ * Run only these tests via command:
+ * npm run test:vue:watch -- --grep="addons/vpiDashboard/test/ compare dashboard tab component"
+ */
+describe("addons/vpiDashboard/test/ compare dashboard tab component", () => {
     let wrapper = null;
 
     before(() => {

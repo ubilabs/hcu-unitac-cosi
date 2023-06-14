@@ -16,8 +16,8 @@ const mutations = {
         // Group by date
         payload.forEach(item => {
 
-            // Visitor sum as integer
-            item.avg_num_visitors = Math.floor(item.avg_num_visitors);
+            item.sum_num_visitors_origin = item.sum_num_visitors;
+            item.sum_num_visitors = Math.ceil(item.sum_num_visitors / 100) * 100;
 
             // Grouped by date
             if (!visitorTypesByDate[item.date]) {
@@ -31,9 +31,6 @@ const mutations = {
 
             const year = dayjs(item.date).format("YYYY");
             let type = item.VisitorType;
-
-            // Visitor sum as integer
-            item.avg_num_visitors = Math.floor(item.avg_num_visitors);
 
             // These types are both consolidated as tourists
             if (["Tagestouristen", "Übernachtungstouristen"].includes(type)) {
@@ -64,10 +61,10 @@ const mutations = {
                     visitorTypesByTypeAndYear[type][year] = 0;
                 }
                 const sum = visitorTypesByTypeAndYearComplete[type][year].reduce((acc, value) => {
-                    return acc + value.avg_num_visitors;
+                    return acc + value.sum_num_visitors_origin;
                 }, 0);
 
-                visitorTypesByTypeAndYear[type][year] = Math.round(sum / 12);
+                visitorTypesByTypeAndYear[type][year] = Math.ceil(sum / 7);
             });
         });
 

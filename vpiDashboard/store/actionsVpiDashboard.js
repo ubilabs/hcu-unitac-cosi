@@ -2,6 +2,7 @@ import axios from "axios";
 import {Config} from "../config";
 import tabVisitorTypesActions from "./tab/visitor-types/actions";
 import tabCompareDatesActions from "./tab/compare/dates/actions";
+import {buildEndpointUrl} from "../utils/buildEndpointUrl";
 
 const actions = {
 
@@ -17,8 +18,20 @@ const actions = {
     getIndividualVisitors: async ({state, commit}) => {
         if (state.selectedLocationId !== "") {
             commit("setLoader", true);
-            const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/quick-data/?location_id=${state.selectedLocationId}&transport=pedestrian&interval=180&expands=unique&use_pulse=activate`,
-                response = await axios.get(url);
+
+            const
+                url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/quick-data/`,
+                locationId = state.selectedLocationId,
+                query = {
+                    "location_id": locationId,
+                    "transportation": "pedestrian",
+                    "expands": "unique",
+                    "pulse": false,
+                    "use_zone": true
+                },
+                response = await axios.get(
+                    buildEndpointUrl(url, query)
+                );
 
             commit("setLoader", false);
             commit("setFrequencyData", response.data);
@@ -41,8 +54,24 @@ const actions = {
      **/
     getIndividualVisitorsForDay: async ({state, commit}, date) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily/?location_id=${state.selectedLocationId}&transport=pedestrian&interval=180&use_pulse=activate&&aggregate[Avg]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date__hour]&date__gte=${date} 00:00:00&date__lte=${date} 23:59:19`,
-            response = await axios.get(url);
+
+        const
+            url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily/`,
+            locationId = state.selectedLocationId,
+            query = {
+                "location_id": locationId,
+                "group_by[date__hour]": null,
+                "aggregate[Sum]": "num_visitors",
+                "ReiseArt__in": "eingehend,ausgehend",
+                "pulse": false,
+                "use_zone": true,
+                "transportation": "pedestrian",
+                "date__gte": `${date} 00:00:00`,
+                "date__lte": `${date} 23:59:59`
+            },
+            response = await axios.get(
+                buildEndpointUrl(url, query)
+            );
 
         commit("setLoader", false);
         return response.data;
@@ -55,8 +84,24 @@ const actions = {
      **/
     getIndividualVisitorsForDateRange: async ({state, commit}, dates) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/?location_id=${state.selectedLocationId}&transport=pedestrian&interval=180&use_pulse=activate&&aggregate[Avg]=num_visitors&ReiseArt__in=eingehend,ausgehend&&group_by[date]&date__gte=${dates.dateFrom}&date__lte=${dates.dateTo}`,
-            response = await axios.get(url);
+
+        const
+            url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/daily-aggregated/`,
+            locationId = state.selectedLocationId,
+            query = {
+                "location_id": locationId,
+                "group_by[date]": null,
+                "aggregate[Sum]": "num_visitors",
+                "ReiseArt__in": "eingehend,ausgehend",
+                "pulse": false,
+                "use_zone": true,
+                "transportation": "pedestrian",
+                "date__gte": dates.dateFrom,
+                "date__lte": dates.dateTo
+            },
+            response = await axios.get(
+                buildEndpointUrl(url, query)
+            );
 
         commit("setLoader", false);
         return response.data;
@@ -89,8 +134,23 @@ const actions = {
      **/
     getDwellTimes: async ({state, commit}) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]&location_id=${state.selectedLocationId}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian`,
-            response = await axios.get(url);
+
+        const
+            url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/`,
+            locationId = state.selectedLocationId,
+            query = {
+                "location_id": locationId,
+                "group_by[date]": null,
+                "group_by[DwellTime]": null,
+                "aggregate[Sum]": "num_visitors",
+                "format": "agg",
+                "pulse": false,
+                "use_zone": true,
+                "transportation": "pedestrian"
+            },
+            response = await axios.get(
+                buildEndpointUrl(url, query)
+            );
 
         commit("setDwellTimes", response.data.data);
         commit("setLoader", false);
@@ -187,8 +247,23 @@ const actions = {
      */
     getAllAgeGroupsData: async ({state, commit}) => {
         commit("setLoader", true);
-        const url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?format=agg&group_by[date]&aggregate[Avg]=num_visitors&group_by[age_group]&location_id=${state.selectedLocationId}&interval=180&transportation=pedestrian&pulse=activate`,
-            response = await axios.get(url);
+
+        const
+            url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/`,
+            locationId = state.selectedLocationId,
+            query = {
+                "location_id": locationId,
+                "group_by[date]": null,
+                "group_by[age_group]": null,
+                "aggregate[Sum]": "num_visitors",
+                "format": "agg",
+                "pulse": false,
+                "use_zone": true,
+                "transportation": "pedestrian"
+            },
+            response = await axios.get(
+                buildEndpointUrl(url, query)
+            );
 
         await commit("setAllAgeGroupsData", response.data);
         await commit("setAllAgeGroupsMonthlyData");

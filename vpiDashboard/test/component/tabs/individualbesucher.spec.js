@@ -7,7 +7,11 @@ const localVue = createLocalVue();
 
 localVue.use(Vuex);
 
-describe("individual visitor tab component", () => {
+/**
+ * Run only these tests via command:
+ * npm run test:vue:watch -- --grep="addons/vpiDashboard/test/ individual visitor tab component"
+ */
+describe("addons/vpiDashboard/test/ individual visitor tab component", () => {
     let wrapper = null;
 
     before(() => {
@@ -81,11 +85,11 @@ describe("individual visitor tab component", () => {
         const responseData = [
                 {
                     "date__hour": 0,
-                    "avg_num_visitors": 42
+                    "sum_num_visitors": 42
                 },
                 {
                     "date__hour": 1,
-                    "avg_num_visitors": 50
+                    "sum_num_visitors": 50
                 }
             ],
             testvalue = wrapper.vm.createChartData(responseData, "bar", "hourly");
