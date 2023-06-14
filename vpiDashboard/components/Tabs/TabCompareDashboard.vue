@@ -383,7 +383,7 @@ export default {
                                 :multiple="false"
                                 :show-week-number="true"
                                 title-format="DD.MM.YYYY"
-                                :lang="$t('common:libraries.vue2-datepicker.lang', {returnObjects: true})"
+                                :lang="translate('common:libraries.vue2-datepicker.lang', {returnObjects: true})"
                             />
                         </div>
                     </div>

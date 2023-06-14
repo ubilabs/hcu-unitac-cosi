@@ -232,7 +232,7 @@ export default {
     <div class="vpidashboardbasic">
         <VpiLoader />
         <ToolTemplate
-            :title="$t(name)"
+            :title="translate(name)"
             :icon="icon"
             :active="active"
             :render-to-window="renderToWindow"

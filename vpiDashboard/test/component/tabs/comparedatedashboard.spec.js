@@ -1,11 +1,13 @@
 import TabCompareDatesDashboard from "../../../components/Tabs/TabCompareDatesDashboard.vue";
 import sortArrays from "../../../utils/sortArrays";
-import {shallowMount, createLocalVue} from "@vue/test-utils";
+import {config, shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import Vuex from "vuex";
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
+
+config.mocks.$t = key => key;
 
 /**
  * Run only these tests via command:

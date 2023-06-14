@@ -56,7 +56,7 @@ export default {
          * requests the data from the store for those chart data that are static
          * @returns {void}
          */
-        getCurrentChartData () {
+        async getCurrentChartData () {
             this.chartdata.bar = this.getDwellTimeChartJsData("bar");
             this.chartdata.line = this.getDwellTimeChartJsData("line");
         }
@@ -65,7 +65,7 @@ export default {
 </script>
 
 <template>
-    <div class="tab">
+    <div class="tab tab-dwell-time">
         <div
             class="tab-panel h-100"
             role="tabpanel"
@@ -77,7 +77,7 @@ export default {
                 <div class="charts">
                     <!-- Bar Chart -->
                     <div v-if="chartType === 'bar'">
-                        <div class="row">
+                        <div class="row bar">
                             <BarchartItem
                                 :data="chartdata.bar"
                                 :given-scales="{
@@ -98,7 +98,7 @@ export default {
                     </div>
                     <!-- Line Chart -->
                     <div v-if="chartType === 'line'">
-                        <div class="row">
+                        <div class="row line">
                             <LinechartItem :data="chartdata.line" />
                         </div>
                     </div>

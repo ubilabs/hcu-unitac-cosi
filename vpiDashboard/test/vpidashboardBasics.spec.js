@@ -1,6 +1,6 @@
 import {expect} from "chai";
-import getters from "../../store/gettersVpiDashboard";
-import stateVpiDashboard from "../../store/stateVpiDashboard";
+import getters from "../store/gettersVpiDashboard";
+import stateVpiDashboard from "../store/stateVpiDashboard";
 
 const {
     active,
@@ -15,9 +15,9 @@ const {
 
 /**
  * Run only these tests via command:
- * npm run test:vue:watch -- --grep="addons/vpiDashboard/test/ ADDON: DPI Dashboard"
+ * npm run test:vue:watch -- --grep="addons/vpiDashboard/test/ ADDON: VPI Dashboard"
  */
-describe("addons/vpiDashboard/test/ ADDON: DPI Dashboard", () => {
+describe("addons/vpiDashboard/test/ ADDON: VPI Dashboard", () => {
     describe("Vpi Dashboard getters", () => {
         it("returns the active state from state", () => {
             expect(active(stateVpiDashboard)).to.be.false;
