@@ -1,5 +1,5 @@
 ### Vorlagen
-![Abbildung 1: Vorlagen](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/Vorlagen1.png)
+![Abbildung 1: Vorlagen](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/Vorlagen1.png?raw=true)
 
 *Abbildung 1: Vorlagen*
 
@@ -25,4 +25,4 @@
 4. **Vorlage laden**
    > Die ausgewählte Vorlage laden.
 
-![Abbildung 1: Vorlagen](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/Vorlagen2.png)
+![Abbildung 1: Vorlagen](https://github.com/AlexandraKanapki/cosi/blob/COSI-handbuch/cosi/manuals/Vorlagen2.png?raw=true)
