@@ -150,6 +150,8 @@ export default {
             catch (error) {
                 console.error(error);
             }
+
+            tableHeaders[0].click();
         },
         /**
          * Listens to updated selectedLayerList
