@@ -38,7 +38,7 @@
                     "resetFeatureLocations": "Reset moved facilities"
                 },
                 "scenarioManager": {
-                    "title": "Szenario manager",
+                    "title": "Scenario manager",
                     "description": "TODO en: Anlegen und Verwalten der Szenarien für fiktive Daten. In einem Szenario können Einrichtungen und Wohnquartiere simuliert, sowie bestehende Einrichtungen verändert werden.",
                     "createNewTitle": "Create new szenario",
                     "createNewSubmit": "Create",
