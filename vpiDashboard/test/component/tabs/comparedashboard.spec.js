@@ -1,4 +1,4 @@
-import CompareDashboard from "../../../components/Tabs/CompareDashboard.vue";
+import TabCompareDashboard from "../../../components/Tabs/TabCompareDashboard.vue";
 import {shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
 import Vuex from "vuex";
@@ -73,7 +73,7 @@ describe("compare dashboard tab component", () => {
         });
 
         wrapper = shallowMount(
-            CompareDashboard, {
+            TabCompareDashboard, {
                 localVue,
                 store}
         );

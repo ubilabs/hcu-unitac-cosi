@@ -1,4 +1,4 @@
-import CompareDatesDashboard from "../../../components/Tabs/CompareDatesDashboard.vue";
+import TabCompareDatesDashboard from "../../../components/Tabs/TabCompareDatesDashboard.vue";
 import sortArrays from "../../../utils/sortArrays";
 import {shallowMount, createLocalVue} from "@vue/test-utils";
 import {expect} from "chai";
@@ -63,7 +63,7 @@ describe("compare date dashboard tab component", () => {
         });
 
         wrapper = shallowMount(
-            CompareDatesDashboard, {
+            TabCompareDatesDashboard, {
                 localVue,
                 store}
         );
