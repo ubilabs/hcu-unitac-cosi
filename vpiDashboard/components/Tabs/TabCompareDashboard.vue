@@ -28,7 +28,24 @@ export default {
                     labels: []
                 }
             },
-            characteristic: ["Altersgruppen", "Verweildauer", "Besuchergruppen", "Individuelle Besucher"],
+            characteristic: [
+                {
+                    id: "ageGroup",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.age")
+                },
+                {
+                    id: "dwellTime",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.dwelltime")
+                },
+                {
+                    id: "visitorTypes",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.types")
+                },
+                {
+                    id: "activities",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.activities")
+                }
+            ],
             character: "",
             compare: false,
             location_a_data: null,
@@ -191,19 +208,19 @@ export default {
                     date: date
                 };
 
-            if (this.character === "Verweildauer") {
+            if (this.character === "dwellTime") {
                 await this.getDwellTimesToCompare(compareData);
                 this.setBarChartDataForDwellTime();
             }
-            if (this.character === "Altersgruppen") {
+            if (this.character === "ageGroup") {
                 await this.getAgeGroupsToCompare(compareData);
                 this.setBarCharDataForAgeGroups();
             }
-            if (this.character === "Besuchergruppen") {
+            if (this.character === "visitorTypes") {
                 await this.getVisitorTypesToCompare(compareData);
                 this.setBarCharDataForVisitorTypes();
             }
-            if (this.character === "Individuelle Besucher") {
+            if (this.character === "activities") {
                 await this.getIndividualVisitorsToCompare(compareData);
                 this.setBarCharDataForIndividualVisitors();
             }
@@ -260,7 +277,7 @@ export default {
          * @return {Boolean} tells if the date shall be disabled or not
          */
         disabledDates (val) {
-            if (this.character !== "Individuelle Besucher") {
+            if (this.character !== "Aktivitäten") {
                 return new Date(val).getDate() !== 1;
             }
             return false;
@@ -341,9 +358,9 @@ export default {
                                 <option
                                     v-for="(characterx, i) in characteristic"
                                     :key="i"
-                                    :value="characterx"
+                                    :value="characterx.id"
                                 >
-                                    {{ characterx }}
+                                    {{ characterx.name }}
                                 </option>
                             </select>
                         </div>

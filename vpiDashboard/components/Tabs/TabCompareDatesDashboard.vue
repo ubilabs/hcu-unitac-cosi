@@ -20,12 +20,25 @@ export default {
             date_a: null,
             date_b: null,
             characteristic: [
-                "Altersgruppen",
-                "Verweildauer",
-                "Besuchergruppen",
-                "Individuelle Besucher"
+                {
+                    id: "ageGroup",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.age")
+                },
+                {
+                    id: "dwellTime",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.dwelltime")
+                },
+                {
+                    id: "visitorTypes",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.types")
+                },
+                {
+                    id: "activities",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.activities")
+                }
             ],
             character: "",
+            characterName: "",
             showCompareChart: false,
             chartdata: {
                 bar: {
@@ -145,6 +158,7 @@ export default {
          * @returns {void}
          */
         async compareData () {
+
             const
                 date_a = dayjs(this.date_a).format("YYYY-MM-DD"),
                 date_b = dayjs(this.date_b).format("YYYY-MM-DD"),
@@ -157,23 +171,27 @@ export default {
                     ]
                 };
 
-            if (this.character === "Individuelle Besucher") {
-                compareData.character = this.character;
+            if (this.character === "activities") {
+                compareData.character = "Individuelle Besucher";
+                this.characterName = "Individuelle Besucher";
                 await this.getDataToCompare(compareData);
                 this.setBarChartDataForInvidiualVisitors();
             }
-            if (this.character === "Altersgruppen") {
-                compareData.character = this.character;
+            if (this.character === "ageGroup") {
+                compareData.character = "Altersgruppen";
+                this.characterName = "Altersgruppen";
                 await this.getDataToCompare(compareData);
                 this.setBarChartDataForAgeGroups();
             }
-            if (this.character === "Verweildauer") {
-                compareData.character = this.character;
+            if (this.character === "dwellTime") {
+                compareData.character = "Verweildauer";
+                this.characterName = "Verweildauer";
                 await this.getDataToCompare(compareData);
                 this.setBarChartDataForDwellTime();
             }
-            if (this.character === "Besuchergruppen") {
-                compareData.character = this.character;
+            if (this.character === "visitorTypes") {
+                compareData.character = "Besuchergruppen";
+                this.characterName = "Besuchergruppen";
                 await this.getDataToCompare(compareData);
                 this.setBarChartDataForVistorTypes();
             }
@@ -232,7 +250,7 @@ export default {
          * @return {Boolean} tells if the date shall be disabled or not
          */
         disabledDates (val) {
-            if (this.character !== "Individuelle Besucher") {
+            if (this.character !== "Aktivitäten") {
                 return new Date(val).getDate() !== 1;
             }
             return false;
@@ -286,9 +304,9 @@ export default {
                                 <option
                                     v-for="(characterx, i) in characteristic"
                                     :key="i"
-                                    :value="characterx"
+                                    :value="characterx.id"
                                 >
-                                    {{ characterx }}
+                                    {{ characterx.name }}
                                 </option>
                             </select>
                         </div>
@@ -357,7 +375,7 @@ export default {
                         v-if="showCompareChart"
                         class="row d-flex justify-content-center mt-3"
                     >
-                        <h4>{{ translate('additional:modules.tools.vpidashboard.compare.date_comparison') }} {{ character }}</h4>
+                        <h4>{{ translate('additional:modules.tools.vpidashboard.compare.date_comparison') }} {{ characterName }}</h4>
                         <BarchartItem :data="chartdata.bar" />
                     </div>
                     <div v-if="showCompareChart">

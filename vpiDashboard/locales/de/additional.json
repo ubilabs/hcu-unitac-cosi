@@ -10,9 +10,9 @@
           "dwelltime": "Verweildauer",
           "types": "Besuchertypen",
           "distance": "Entfernung",
-          "compare": "Vergleich Standorte",
+          "compare": "Standorte Vergleichen",
           "info": "Informationen",
-          "compare_dates": "Vergleich Daten"
+          "compare_dates": "Zeitraum Vergleichen"
         },
         "time": {
           "months": [

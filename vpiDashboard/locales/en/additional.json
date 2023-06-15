@@ -10,9 +10,9 @@
           "dwelltime": "Dwell Time",
           "types": "Visitor Types",
           "distance": "Distance",
-          "compare": "Compare Locations",
+          "compare": "Locations Comparison",
           "info": "Informations",
-          "compare_dates": "Compare Dates"
+          "compare_dates": "Time Period Comparison"
         },
         "time": {
           "months": [
