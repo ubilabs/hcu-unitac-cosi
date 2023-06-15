@@ -72,7 +72,7 @@ export default {
                     index: 5,
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.compare_dates"),
                     selected: false,
-                    showLocationSelectMenu: false
+                    showLocationSelectMenu: true
                 },
                 {
                     index: 6,

@@ -5,15 +5,13 @@ import {mapActions, mapGetters, mapState} from "vuex";
 import actions from "../../store/actionsVpiDashboard";
 import getters from "../../store/gettersVpiDashboard";
 import dayjs from "dayjs";
-import Multiselect from "vue-multiselect";
 import {highlightSelectedLocationOnMap} from "../../utils/highlightSelectedLocationOnMap";
 
 export default {
     name: "TabCompareDatesDashboard",
     components: {
         BarchartItem,
-        DatePicker,
-        Multiselect
+        DatePicker
     },
     data () {
         return {
@@ -47,8 +45,7 @@ export default {
                 }
             },
             all_locations: [],
-            locations_a: [],
-            location_a: ""
+            locations_a: []
         };
     },
     computed: {
@@ -109,7 +106,7 @@ export default {
                 this.showCompareChart = false;
             }
         },
-        location_a (newValue, oldValue) {
+        selectedLocationId (newValue, oldValue) {
             if (oldValue !== newValue) {
                 this.showCompareChart = false;
                 highlightSelectedLocationOnMap(newValue.location_id, oldValue.location_id);
@@ -121,21 +118,12 @@ export default {
             if (newValue !== this.selectedLocationId) {
                 this.$store.commit("Tools/VpiDashboard/setSelectedLocationId", {locationID, source});
             }
-        },
-        selectedLocationId (newValue) {
-            this.location_a = this.locations_a.find(l => {
-                return l.location_id === newValue;
-            });
         }
     },
     async created () {
         this.all_locations = await this.getAllLocationsArray;
         this.all_locations.forEach((location) => {
             this.locations_a.push({location_id: location.id, street: location.street});
-        });
-
-        this.location_a = this.locations_a.find(l => {
-            return l.location_id === this.selectedLocationId;
         });
     },
     methods: {
@@ -162,9 +150,8 @@ export default {
             const
                 date_a = dayjs(this.date_a).format("YYYY-MM-DD"),
                 date_b = dayjs(this.date_b).format("YYYY-MM-DD"),
-                location_id = this.location_a.location_id,
                 compareData = {
-                    location_id: location_id,
+                    location_id: this.selectedLocationId,
                     dates: [
                         {date: date_a, dateName: "DateA"},
                         {date: date_b, dateName: "DateB"}
@@ -267,24 +254,6 @@ export default {
         >
             <div class="tab-content h100">
                 <div class="row d-flex justify-content-center vpi-dashboard-compare-dashboard">
-                    <div id="vpi-dashboard-select-location-a">
-                        <label
-                            for="vpi-dashboard-select-location-a-select"
-                        >
-                            {{ translate('additional:modules.tools.vpidashboard.compare.location') }}
-                        </label>
-                        <div class="col">
-                            <Multiselect
-                                v-model="location_a"
-                                tag-placeholder="Add this as new tag"
-                                :placeholder="translate('additional:modules.tools.vpidashboard.locationSelectMenu.menuPlaceholder')"
-                                label="street"
-                                track-by="street"
-                                :options="locations_a"
-                                :allow-empty="false"
-                            />
-                        </div>
-                    </div>
                     <div
                         id="vpi-dashboard-select-characteristic"
                         class="mt-3"
@@ -424,8 +393,3 @@ export default {
         </div>
     </div>
 </template>
-
-
-<style scoped>
-
-</style>
