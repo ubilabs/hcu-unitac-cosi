@@ -27,7 +27,7 @@ export default {
             <h2>Beschreibung der Tabs</h2>
 
             <div>
-                <h3>Tab "{{ $t("additional:modules.tools.vpidashboard.tabitems.individuals") }}"</h3>
+                <h3>Tab "{{ $t("additional:modules.tools.vpidashboard.tabitems.activities") }}"</h3>
                 <div>
                     <p>
                         Dieser Tab beinhaltet Infokarten für eine Schnellübersicht sowie eine filterbare Grafik.

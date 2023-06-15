@@ -4,7 +4,7 @@
       "vpidashboard": {
         "name": "VPI Dashboard",
         "tabitems": {
-          "individuals": "Individuelle Besucher",
+          "activities": "Aktivitäten",
           "gender": "Geschlecht",
           "age": "Altersgruppe",
           "dwelltime": "Verweildauer",
@@ -41,10 +41,10 @@
         },
         "details": "Details",
         "unique": {
-          "allData": "Individuelle Besucher",
-          "uniqueVisitors": "Individuelle Besucher",
-          "dailyOverview": "Durchschnittliche tägliche individuelle Besucher",
-          "monthlyOverview": "Durchschnittliche monatliche individuelle Besucher",
+          "allData": "Aktivitäten",
+          "uniqueVisitors": "Aktivitäten",
+          "dailyOverview": "Durchschnittliche tägliche aktivitäten",
+          "monthlyOverview": "Durchschnittliche monatliche aktivitäten",
           "hourly": "Besucher eines bestimmten Tages (stündlich)",
           "timeRange": "Besucher einer bestimmten Zeitspanne (täglich)",
           "selectDate": "Bitte ein Datum wählen:",

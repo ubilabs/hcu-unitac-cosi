@@ -40,7 +40,7 @@ export default {
             TabItems: [
                 {
                     index: 0,
-                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.individuals"),
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.activities"),
                     selected: true,
                     showLocationSelectMenu: true
                 },
