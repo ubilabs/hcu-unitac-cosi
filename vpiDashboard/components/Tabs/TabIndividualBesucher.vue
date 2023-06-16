@@ -155,8 +155,13 @@ export default {
          * @returns {void}
         */
         async fillInitialChartData () {
-            this.chartdata.bar = this.barChartData;
-            this.chartdata.line = this.lineChartData;
+            if (this.dates.length !== 0) {
+                this.dayDatepickerValueChanged(this.dates);
+            }
+            else {
+                this.chartdata.bar = this.barChartData;
+                this.chartdata.line = this.lineChartData;
+            }
         },
         /**
          * define, which charttype shall be displayed
