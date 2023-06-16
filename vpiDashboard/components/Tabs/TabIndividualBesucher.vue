@@ -158,10 +158,7 @@ export default {
             if (this.dates.length !== 0) {
                 this.dayDatepickerValueChanged(this.dates);
             }
-            else {
-                this.chartdata.bar = this.barChartData;
-                this.chartdata.line = this.lineChartData;
-            }
+            this.getCurrentBarChartData();
         },
         /**
          * define, which charttype shall be displayed
