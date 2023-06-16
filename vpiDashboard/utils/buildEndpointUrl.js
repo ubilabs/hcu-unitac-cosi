@@ -15,7 +15,7 @@ export function buildEndpointUrl (url, queryParameters) {
     }
 
     // In order to debug the generated endpoint URL and query parameters, use this line.
-    // console.log("%c" + JSON.stringify([url, queryParameters, endpointUrl], null, 2), "color:green;font-size:xx-small;"); // dumpDebug
+    // console.log("%c" + JSON.stringify([endpointUrl, queryParameters], null, 2), "color:green;font-size:xx-small;"); // dumpDebug
 
     return endpointUrl;
 }

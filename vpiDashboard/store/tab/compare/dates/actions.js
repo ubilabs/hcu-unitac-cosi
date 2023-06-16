@@ -1,5 +1,6 @@
 import axios from "axios";
 import {Config} from "../../../../config";
+import apiEndpointService from "../../../apiEndpointService";
 
 const actions = {
     /* Adresses the WhatALocation API and compares to data points
@@ -14,23 +15,15 @@ const actions = {
             };
 
         if (compareData.character === "Verweildauer") {
-            let date = compareData.dates[0];
-
             commit("setLoader", true);
-            const
-                urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${date.date}`,
-                responseA = await axios.get(urlA, {headers: options});
 
-            commit(`setDwellTime${date.dateName}`, responseA.data);
-            date = compareData.dates[1];
-            // eslint-disable-next-line
             const
-                urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${date.date}`,
-                responseB = await axios.get(urlB, {headers: options});
+                responseA = await apiEndpointService.receiveDwellTimes(compareData.location_id, compareData.dates[0].date),
+                responseB = await apiEndpointService.receiveDwellTimes(compareData.location_id, compareData.dates[1].date);
 
+            commit(`setDwellTime${compareData.dates[0].dateName}`, responseA.data);
+            commit(`setDwellTime${compareData.dates[1].dateName}`, responseB.data);
             commit("setLoader", false);
-            commit(`setDwellTime${date.dateName}`, responseB.data);
-
         }
 
         if (compareData.character === "Individuelle Besucher") {
@@ -52,45 +45,29 @@ const actions = {
             commit("setLoader", false);
             commit(`setIndividualVisitors${date.dateName}`, responseB.data);
         }
+
         if (compareData.character === "Altersgruppen") {
-            let date = compareData.dates[0];
-
             commit("setLoader", true);
+
             const
-                urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?&group_by[date]=&location_id=${compareData.location_id}&group_by[age_group]$format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${date.date}`,
-                responseA = await axios.get(urlA, {headers: options});
+                responseA = await apiEndpointService.receiveAgeGroups(compareData.location_id, compareData.dates[0].date),
+                responseB = await apiEndpointService.receiveAgeGroups(compareData.location_id, compareData.dates[1].date);
 
-            commit(`setAgeGroups${date.dateName}`, responseA.data);
-
-            date = compareData.dates[1];
-            // eslint-disable-next-line
-            const
-                urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?&group_by[date]=&location_id=${compareData.location_id}&group_by[age_group]$format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${date.date}`,
-                responseB = await axios.get(urlB, {headers: options});
-
+            commit(`setAgeGroups${compareData.dates[0].dateName}`, responseA.data);
+            commit(`setAgeGroups${compareData.dates[1].dateName}`, responseB.data);
             commit("setLoader", false);
-            commit(`setAgeGroups${date.dateName}`, responseB.data);
         }
 
-
         if (compareData.character === "Besuchergruppen") {
-            let date = compareData.dates[0];
+            commit("setLoader", true);
 
-            commit("setLoader", false);
             const
-                urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${date.date}`,
-                responseA = await axios.get(urlA, {headers: options});
+                responseA = await apiEndpointService.receiveVisitorTypes(compareData.location_id, compareData.dates[0].date),
+                responseB = await apiEndpointService.receiveVisitorTypes(compareData.location_id, compareData.dates[1].date);
 
-            commit(`setVisitorTypes${date.dateName}`, responseA.data);
-
-            date = compareData.dates[1];
-            // eslint-disable-next-line
-            const
-                urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=300&transportation=pedestrian&date=${date.date}`,
-                responseB = await axios.get(urlB, {headers: options});
-
+            commit(`setVisitorTypes${compareData.dates[0].dateName}`, responseA.data);
+            commit(`setVisitorTypes${compareData.dates[1].dateName}`, responseB.data);
             commit("setLoader", false);
-            commit(`setVisitorTypes${date.dateName}`, responseB.data);
         }
     }
 

@@ -1,4 +1,5 @@
 import sortArrays from "./sortArrays";
+
 const generateDataArray = {
     /**
      * Generates an array that the chartjs library can consume
@@ -10,29 +11,37 @@ const generateDataArray = {
      * be consumed by the chart.js library
      */
     generateDataArray (dataFromEndpoint, label, backgroundColor, endpoint) {
-        let groupByProperty = "";
+        let
+            groupByProperty = "",
+            dataKey = "";
 
         // Here we set the specific WhatALocationAPI
         // groupBy property
         if (endpoint === "Individuelle Besucher") {
             groupByProperty = "ReiseArt";
+            dataKey = "avg_num_visitors";
         }
         if (endpoint === "Altersgruppen") {
             groupByProperty = "age_group";
+            dataKey = "sum_num_visitors";
         }
         if (endpoint === "Besuchergruppen") {
             groupByProperty = "VisitorType";
+            dataKey = "sum_num_visitors";
         }
         if (endpoint === "Verweildauer") {
             groupByProperty = "DwellTime";
+            dataKey = "sum_num_visitors";
         }
+
         // eslint-disable-next-line
-        const avg_num_visitors = [];
+        const sum_num_visitors = [];
+
         // eslint-disable-next-line
         let labels = [];
 
         dataFromEndpoint?.data.forEach((element) => {
-            avg_num_visitors.push(Math.round(element.avg_num_visitors));
+            sum_num_visitors.push(Math.ceil(element[dataKey] / 100) * 100);
             labels.push(element[groupByProperty]);
         });
 
@@ -43,7 +52,8 @@ const generateDataArray = {
             labels = sortArrays.sortAgeGroupsArray(labels);
             // since we do not want the u data
             // and it is the last item in the array
-            avg_num_visitors.splice(-1);
+            sum_num_visitors.splice(-1);
+
             labels.splice(-1);
         }
         // eslint-disable-next-line
@@ -51,7 +61,8 @@ const generateDataArray = {
             labels: labels,
             datasets: [{
                 label: label,
-                data: avg_num_visitors,
+                data: sum_num_visitors,
+
                 hoverOffset: 4,
                 backgroundColor: backgroundColor
             }]

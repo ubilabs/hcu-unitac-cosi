@@ -3,6 +3,7 @@ import {Config} from "../config";
 import tabVisitorTypesActions from "./tab/visitor-types/actions";
 import tabCompareDatesActions from "./tab/compare/dates/actions";
 import {buildEndpointUrl} from "../utils/buildEndpointUrl";
+import apiEndpointService from "./apiEndpointService";
 
 const actions = {
 
@@ -136,21 +137,7 @@ const actions = {
         commit("setLoader", true);
 
         const
-            url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/`,
-            locationId = state.selectedLocationId,
-            query = {
-                "location_id": locationId,
-                "group_by[date]": null,
-                "group_by[DwellTime]": null,
-                "aggregate[Sum]": "num_visitors",
-                "format": "agg",
-                "pulse": false,
-                "use_zone": true,
-                "transportation": "pedestrian"
-            },
-            response = await axios.get(
-                buildEndpointUrl(url, query)
-            );
+            response = await apiEndpointService.receiveDwellTimes(state.selectedLocationId);
 
         commit("setDwellTimes", response.data.data);
         commit("setLoader", false);
@@ -164,17 +151,15 @@ const actions = {
      */
     getDwellTimesToCompare: async ({commit}, compareData) => {
         commit("setLoader", true);
-        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
-            responseA = await axios.get(urlA);
 
-        commit("setDwellTimeLocationA", responseA.data); // return data
+        const
+            responseA = await apiEndpointService.receiveDwellTimes(compareData.location_id_a, compareData.date),
+            responseB = await apiEndpointService.receiveDwellTimes(compareData.location_id_b, compareData.date);
 
-        // eslint-disable-next-line
-        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/dwell-times/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[DwellTime]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
-            responseB = await axios.get(urlB);
+        commit("setDwellTimeLocationA", responseA.data);
+        commit("setDwellTimeLocationB", responseB.data);
 
         commit("setLoader", false);
-        commit("setDwellTimeLocationB", responseB.data);
     },
     /**
      * Adresses the WhatALocation age group endpoint with 2
@@ -185,17 +170,15 @@ const actions = {
      */
     getAgeGroupsToCompare: async ({commit}, compareData) => {
         commit("setLoader", true);
-        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
-            responseA = await axios.get(urlA);
 
-        commit("setAgeGroupsLocationA", responseA.data); // return data
+        const
+            responseA = await apiEndpointService.receiveAgeGroups(compareData.location_id_a, compareData.date),
+            responseB = await apiEndpointService.receiveAgeGroups(compareData.location_id_b, compareData.date);
 
-        // eslint-disable-next-line
-        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[age_group]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
-            responseB = await axios.get(urlB);
+        commit("setAgeGroupsLocationA", responseA.data);
+        commit("setAgeGroupsLocationB", responseB.data);
 
         commit("setLoader", false);
-        commit("setAgeGroupsLocationB", responseB.data);
     },
     /**
      * Adresses the WhatALocation visitor types endpoint with 2
@@ -206,17 +189,14 @@ const actions = {
      */
     getVisitorTypesToCompare: async ({commit}, compareData) => {
         commit("setLoader", true);
-        const urlA = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_a}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
-            responseA = await axios.get(urlA);
 
-        commit("setVisitorTypesLocationA", responseA.data); // return data
+        const
+            responseA = await apiEndpointService.receiveVisitorTypes(compareData.location_id_a, compareData.date),
+            responseB = await apiEndpointService.receiveVisitorTypes(compareData.location_id_b, compareData.date);
 
-        // eslint-disable-next-line
-        const urlB = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/visitor-types/?group_by[date]=&location_id=${compareData.location_id_b}&group_by[VisitorType]&format=agg&aggregate[Avg]=num_visitors&pulse=activate&interval=180&transportation=pedestrian&date=${compareData.date}`,
-            responseB = await axios.get(urlB);
-
-        commit("setLoader", false);
+        commit("setVisitorTypesLocationA", responseA.data);
         commit("setVisitorTypesLocationB", responseB.data);
+        commit("setLoader", false);
     },
     /**
      * Adresses the WhatALocation individual visitors endpoint with 2
@@ -249,21 +229,7 @@ const actions = {
         commit("setLoader", true);
 
         const
-            url = `${Config.whatalocationApi.host}${Config.whatalocationApi.basepath}/ages/`,
-            locationId = state.selectedLocationId,
-            query = {
-                "location_id": locationId,
-                "group_by[date]": null,
-                "group_by[age_group]": null,
-                "aggregate[Sum]": "num_visitors",
-                "format": "agg",
-                "pulse": false,
-                "use_zone": true,
-                "transportation": "pedestrian"
-            },
-            response = await axios.get(
-                buildEndpointUrl(url, query)
-            );
+            response = await apiEndpointService.receiveAgeGroups(state.selectedLocationId);
 
         await commit("setAllAgeGroupsData", response.data);
         await commit("setAllAgeGroupsMonthlyData");
