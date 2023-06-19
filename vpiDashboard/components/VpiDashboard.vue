@@ -87,6 +87,7 @@ export default {
     },
     computed: {
         ...mapGetters("Tools/VpiDashboard", Object.keys(getters)),
+        ...mapGetters("Maps", ["getVisibleLayerList"]),
         ...mapGetters("Language", ["currentLocale"]),
         ...mapState("Tools/VpiDashboard", ["allLocationsGeoJson", "allLocationsArray", "showLoader"]),
         showLocationSelectMenu () {
@@ -128,6 +129,7 @@ export default {
                 },
                 gfiTheme: "vpi"
             };
+            let model = null;
 
             /* Object.keys(val.features[0].properties).forEach(key => {
                 if (Number.isInteger(parseInt(key.slice(-4), 10))) {
@@ -136,8 +138,11 @@ export default {
             }); */
 
             this.$store.dispatch("AddLayerRemotely/addGeoJson", params);
-            // eslint-disable-next-line
-            this.$store.getters["Maps/getLayerById"]({layerId: "vpi"}).setVisible(false);
+
+            model = Radio.request("ModelList", "getModelByAttributes", {id: "vpi"});
+            model.toggleIsVisibleInMap();
+            model.setIsSettingVisible(false);
+            model.setIsSelected(false);
         },
         /**
          * Shows loader.
@@ -157,8 +162,19 @@ export default {
          * @returns {void}
          */
         active (val) {
-            // eslint-disable-next-line
-            this.$store.getters["Maps/getLayerById"]({layerId: "vpi"}).setVisible(val);
+            const visibleLayers = this.getVisibleLayerList,
+                // eslint-disable-next-line
+                vpiLayer = this.$store.getters["Maps/getLayerById"]({layerId: "vpi"}),
+                model = Radio.request("ModelList", "getModelByAttributes", {id: "vpi"});
+
+            if (!visibleLayers.includes(vpiLayer)) {
+                model.toggleIsVisibleInMap();
+            }
+
+            if (!val) {
+                model.setIsSettingVisible(false);
+                model.setIsSelected(false);
+            }
         }
 
     },
@@ -170,9 +186,10 @@ export default {
         await this.getWhatALocationData(this.allLocationsArray[0].id);
         this.finishedLoading = true;
 
+        const model = Radio.request("ModelList", "getModelByAttributes", {id: "vpi"});
+
         if (this.$store.getters["Tools/VpiDashboard/active"]) {
-            // eslint-disable-next-line
-            this.$store.getters["Maps/getLayerById"]({layerId: "vpi"}).setVisible(true);
+            model.toggleIsVisibleInMap();
         }
     },
     methods: {
@@ -201,6 +218,8 @@ export default {
             }
 
             highlightSelectedLocationOnMap(undefined, "clear");
+
+            this.$store.state.Tools.Gfi.gfiFeatures = [];
         },
         /**
          * initiates the asynchronous request for individual visitors from WhatALocation
