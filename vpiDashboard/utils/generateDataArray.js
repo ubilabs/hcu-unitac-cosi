@@ -40,10 +40,9 @@ const generateDataArray = {
         let labels = [];
 
         dataFromEndpoint?.data.forEach((element) => {
-            sum_num_visitors.push(Math.ceil(element[dataKey] / 100) * 100);
-
             if (endpoint === "activities") {
                 labels.push(i18next.t("additional:modules.tools.vpidashboard.tab.compareDates.dropdown.activities"));
+                sum_num_visitors.push(Math.ceil(element[dataKey] / 100) * 100);
             }
             else {
                 labels.push(element[groupByProperty]);
@@ -61,6 +60,17 @@ const generateDataArray = {
 
             labels.splice(-1);
         }
+
+        if (endpoint !== "activities") {
+            labels.forEach(l => {
+                const data = dataFromEndpoint?.data.find(el => {
+                    return el[groupByProperty] === l || el[groupByProperty] === "[" + l + "]";
+                });
+
+                sum_num_visitors.push(Math.ceil(data[dataKey] / 100) * 100);
+            });
+        }
+
         // eslint-disable-next-line
         const data = {
             labels: labels,
