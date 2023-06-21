@@ -55,7 +55,7 @@ const getters = {
      * @return {Object} data Object for bar chart
      */
     getIndividualVisitorsLocationA: ({individualVisitorsLocationA}) => {
-        return getCompareData.getCompareData(individualVisitorsLocationA, "Visitor Types Location A", "#FD763B", "Individuelle Besucher");
+        return getCompareData.getCompareData(individualVisitorsLocationA, "Visitor Types Location A", "#FD763B", "activities");
     },
     /**
      * Generates the data array for the bar chart for location a and date a
@@ -63,7 +63,7 @@ const getters = {
      * @return {Object} data Object for bar chart
      */
     getIndividualVisitorsLocationB: ({individualVisitorsLocationB}) => {
-        return getCompareData.getCompareData(individualVisitorsLocationB, "Visitor Types Location B", "#0335FC", "Individuelle Besucher");
+        return getCompareData.getCompareData(individualVisitorsLocationB, "Visitor Types Location B", "#0335FC", "activities");
     }
 };
 

@@ -19,6 +19,10 @@ export default {
             date_b: null,
             characteristic: [
                 {
+                    id: "activities",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.activities")
+                },
+                {
                     id: "ageGroup",
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.age")
                 },
@@ -29,10 +33,6 @@ export default {
                 {
                     id: "visitorTypes",
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.types")
-                },
-                {
-                    id: "activities",
-                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.activities")
                 }
             ],
             character: "",
@@ -158,27 +158,25 @@ export default {
                     ]
                 };
 
+            compareData.character = this.character;
+
             if (this.character === "activities") {
-                compareData.character = "Individuelle Besucher";
-                this.characterName = "Individuelle Besucher";
+                this.characterName = this.translate("additional:modules.tools.vpidashboard.tab.compareDates.dropdown.activities");
                 await this.getDataToCompare(compareData);
                 this.setBarChartDataForInvidiualVisitors();
             }
             if (this.character === "ageGroup") {
-                compareData.character = "Altersgruppen";
-                this.characterName = "Altersgruppen";
+                this.characterName = this.translate("additional:modules.tools.vpidashboard.tab.compareDates.dropdown.ageGroup");
                 await this.getDataToCompare(compareData);
                 this.setBarChartDataForAgeGroups();
             }
             if (this.character === "dwellTime") {
-                compareData.character = "Verweildauer";
-                this.characterName = "Verweildauer";
+                this.characterName = this.translate("additional:modules.tools.vpidashboard.tab.compareDates.dropdown.dwellTime");
                 await this.getDataToCompare(compareData);
                 this.setBarChartDataForDwellTime();
             }
             if (this.character === "visitorTypes") {
-                compareData.character = "Besuchergruppen";
-                this.characterName = "Besuchergruppen";
+                this.characterName = this.translate("additional:modules.tools.vpidashboard.tab.compareDates.dropdown.visitorTypes");
                 await this.getDataToCompare(compareData);
                 this.setBarChartDataForVistorTypes();
             }
@@ -232,12 +230,12 @@ export default {
         },
         /**
          * sets the disabled dates for the datepicker
-         * for every endpoint except of "Individuelle Besucher" only the first day in month may be selected
+         * for every endpoint except of "Activities" only the first day in month may be selected
          * @param {Object} val date that shall be checked if it is disabled in the datepicker
          * @return {Boolean} tells if the date shall be disabled or not
          */
         disabledDates (val) {
-            if (this.character !== "Aktivitäten") {
+            if (this.character !== "activities") {
                 return new Date(val).getDate() !== 1;
             }
             return false;

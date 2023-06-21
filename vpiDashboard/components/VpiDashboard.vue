@@ -227,7 +227,7 @@ export default {
          * @returns {void}
          */
         async getWhatALocationData (locationId) {
-            await this.getIndividualVisitors(locationId);
+            await this.getActivities(locationId);
             this.renderTab = true;
         },
         /**

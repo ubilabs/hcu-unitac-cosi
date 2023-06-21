@@ -15,11 +15,10 @@ const generateDataArray = {
             groupByProperty = "",
             dataKey = "";
 
-        // Here we set the specific WhatALocationAPI
-        // groupBy property
-        if (endpoint === "Individuelle Besucher") {
-            groupByProperty = "ReiseArt";
-            dataKey = "avg_num_visitors";
+        // Here we set the specific WhatALocationAPI, groupBy property
+        if (endpoint === "activities") {
+            groupByProperty = "date";
+            dataKey = "sum_num_visitors";
         }
         if (endpoint === "Altersgruppen") {
             groupByProperty = "age_group";
@@ -42,7 +41,13 @@ const generateDataArray = {
 
         dataFromEndpoint?.data.forEach((element) => {
             sum_num_visitors.push(Math.ceil(element[dataKey] / 100) * 100);
-            labels.push(element[groupByProperty]);
+
+            if (endpoint === "activities") {
+                labels.push(i18next.t("additional:modules.tools.vpidashboard.tab.compareDates.dropdown.activities"));
+            }
+            else {
+                labels.push(element[groupByProperty]);
+            }
         });
 
         if (endpoint === "Verweildauer") {

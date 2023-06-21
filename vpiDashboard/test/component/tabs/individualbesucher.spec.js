@@ -27,7 +27,7 @@ describe("addons/vpiDashboard/test/ individual visitor tab component", () => {
                         lineChartData: {}
                     },
                     actions: {
-                        getIndividualVisitors () {
+                        getActivities () {
                             return {};
                         }
                     }

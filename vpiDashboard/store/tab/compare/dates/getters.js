@@ -6,7 +6,7 @@ const getters = {
      * @return {Object} data Object for bar chart
      */
     getInvididualVisitorsDateA: ({individualVisitorsDateA}) => {
-        return getCompareData.getCompareData(individualVisitorsDateA, "Individual Vistors Date A", "#FD763B", "Individuelle Besucher");
+        return getCompareData.getCompareData(individualVisitorsDateA, "Individual Vistors Date A", "#FD763B", "activities");
     },
     /**
      * Generates the data array for the bar chart for lcoation a and date b
@@ -14,7 +14,7 @@ const getters = {
      * @return {Object} data Object for bar chart
      */
     getInvididualVisitorsDateB: ({individualVisitorsDateB}) => {
-        return getCompareData.getCompareData(individualVisitorsDateB, "Individual Vistors Date B", "#0335FC", "Individuelle Besucher");
+        return getCompareData.getCompareData(individualVisitorsDateB, "Individual Vistors Date B", "#0335FC", "activities");
     },
     /**
      * Generates the data array for the bar chart for lcoation a and date a

@@ -44,7 +44,7 @@ export default {
         this.$store.commit("Tools/VpiDashboard/setSelectedLocationId", {locationID, source});
     },
     methods: {
-        ...mapActions("Tools/VpiDashboard", ["getIndividualVisitors"]),
+        ...mapActions("Tools/VpiDashboard", ["getActivities"]),
         /**
          * translates the given key, checkes if the key exists and throws a console warning if not
          * @param {String} key the key to translate

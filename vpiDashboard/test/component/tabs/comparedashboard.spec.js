@@ -70,7 +70,7 @@ describe("addons/vpiDashboard/test/ compare dashboard tab component", () => {
                         getVisitorTypesToCompare () {
                             return {};
                         },
-                        getIndividualVisitorsToCompare () {
+                        getActivitiesToCompare () {
                             return {};
                         }
                     }

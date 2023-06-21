@@ -64,7 +64,7 @@ export default {
             }
             if (this.detail === "individualVisitors" && this.individualVisitorsPerYear !== "") {
                 const selectedYearData = this.individualVisitorsPerYear.filter((element) => {
-                    return element.date__year === this.currentYearIndex + 2019;
+                    return Number(element.date__year) === this.currentYearIndex + 2019;
                 });
 
                 return selectedYearData[0].avg.toLocaleString(this.currentLocale);

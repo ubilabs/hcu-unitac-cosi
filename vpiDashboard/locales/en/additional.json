@@ -4,7 +4,7 @@
       "vpidashboard": {
         "name": "VPI Dashboard",
         "tabitems": {
-          "activities": "Aktivities",
+          "activities": "Activities",
           "gender": "Gender",
           "age": "Age",
           "dwelltime": "Dwell Time",
@@ -41,10 +41,10 @@
         },
         "details": "Details",
         "unique": {
-          "allData": "Aktivities",
-          "uniqueVisitors": "Aktivities",
-          "dailyOverview": "Average of daily aktivities",
-          "monthlyOverview": "Average of monthly aktivities",
+          "allData": "Activities",
+          "uniqueVisitors": "Activities",
+          "dailyOverview": "Average of daily activities",
+          "monthlyOverview": "Average of monthly activities",
           "hourly": "Visitors on a defined day (hourly)",
           "timeRange": "Visitors on a defined day range (daily)",
           "selectDate": "Please choose a date:",
@@ -54,9 +54,9 @@
           "numberVisitorsDay": "Number of visitors per day",
           "chartTitleDay": "Data from {{dateValue}}",
           "chartTitleDayRange": "Data from {{dateValueFrom}} to {{dateValueTo}}",
-          "avgVisitorsYear": "Ø unique weekly visitors in the year",
-          "avgVisitorsDay": "Ø unique daily visitors on a",
-          "avgVisitorsMonth": "Ø unique daily visitors per month",
+          "avgVisitorsYear": "Total visits per year",
+          "avgVisitorsDay": "Ø daily visitors on a",
+          "avgVisitorsMonth": "Ø daily visitors per month",
           "selectDataBase": "Choose base data for the graphic:",
           "date": "Date",
           "resetDate": "choose another date"
@@ -118,6 +118,14 @@
             "chartTitle": "Age groups by year and by year and month",
             "pieChartTitle": "Age groups by year",
             "lineBarChartTitle": "Age groups by year and month"
+          },
+          "compareDates": {
+            "dropdown": {
+              "activities": "Activities",
+              "ageGroup": "Age groups",
+              "dwellTime": "Dwell Time",
+              "visitorTypes": "Visitor Types"
+            }
           }
         },
         "locationSelectMenu": {

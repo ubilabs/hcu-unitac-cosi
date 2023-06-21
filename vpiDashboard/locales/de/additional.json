@@ -43,8 +43,8 @@
         "unique": {
           "allData": "Aktivitäten",
           "uniqueVisitors": "Aktivitäten",
-          "dailyOverview": "Durchschnittliche tägliche aktivitäten",
-          "monthlyOverview": "Durchschnittliche monatliche aktivitäten",
+          "dailyOverview": "Durchschnittliche tägliche Aktivitäten",
+          "monthlyOverview": "Durchschnittliche monatliche Aktivitäten",
           "hourly": "Besucher eines bestimmten Tages (stündlich)",
           "timeRange": "Besucher einer bestimmten Zeitspanne (täglich)",
           "selectDate": "Bitte ein Datum wählen:",
@@ -54,9 +54,9 @@
           "numberVisitorsDay": "Anzahl Besucher pro Tag",
           "chartTitleDay": "Daten vom {{dateValue}}",
           "chartTitleDayRange": "Daten vom {{dateValueFrom}} bis zum {{dateValueTo}}",
-          "avgVisitorsYear": "Ø Individuelle wöchentliche Besucher im Jahr",
-          "avgVisitorsDay": "Ø Individuelle tägliche Besucher an einem",
-          "avgVisitorsMonth": "Ø Individuelle tägliche Besucher pro Monat",
+          "avgVisitorsYear": "Besucher pro Jahr",
+          "avgVisitorsDay": "Ø tägliche Besucher an einem",
+          "avgVisitorsMonth": "Ø tägliche Besucher pro Monat",
           "selectDataBase": "Datengrundlage für Grafik auswählen:",
           "date": "Datum",
           "resetDate": "anderes Datum wählen"
@@ -87,7 +87,7 @@
         "compare": {
           "location": "Ort",
           "date": "Datum",
-          "compare": "Vergleiche",
+          "compare": "Vergleichen",
           "character": "Merkmal",
           "location_comparison": "Standortvergleich",
           "date_a": "Basisdatum",
@@ -118,6 +118,14 @@
             "chartTitle": "Altersgruppen pro Jahr und pro Jahr und Monat",
             "pieChartTitle": "Altersgruppen pro Jahr",
             "lineBarChartTitle": "Altersgruppen pro Jahr und Monat"
+          },
+          "compareDates": {
+            "dropdown": {
+              "activities": "Aktivitäten",
+              "ageGroup": "Altersgruppen",
+              "dwellTime": "Verweildauer",
+              "visitorTypes": "Besuchergruppen"
+            }
           }
         },
         "locationSelectMenu": {

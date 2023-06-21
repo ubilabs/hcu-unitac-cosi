@@ -11,6 +11,7 @@ import BarchartItem from "../../../../src/share-components/charts/components/Bar
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
 import ChangeChartTypeButtons from "../ChangeChartTypeButtons.vue";
+import apiEndpointService from "../../store/apiEndpointService";
 
 export default {
     name: "TabIndividualBesucher",
@@ -139,13 +140,13 @@ export default {
             }
         },
         async selectedLocationId () {
-            await this.getIndividualVisitors();
+            await this.getActivities();
             await this.fillInitialChartData();
         }
     },
     async created () {
         this.$on("close", this.close);
-        await this.getIndividualVisitors();
+        await this.getActivities();
         await this.fillInitialChartData();
     },
     methods: {
@@ -225,6 +226,7 @@ export default {
                     this.chartSubTitle = this.translate("additional:modules.tools.vpidashboard.unique.chartTitleDay", {
                         dateValue: dayjs(values).format("DD.MM.YYYY")
                     });
+
                     await this.getIndividualVisitorsForDay(dayjs(values).format("YYYY-MM-DD")).then((data) => {
                         this.chartdata.bar = this.createChartData(data.data, "bar", "hourly");
                         this.chartdata.line = this.createChartData(data.data, "line", "hourly");
@@ -237,9 +239,14 @@ export default {
                     dateValueFrom: dayjs(values[0]).format("DD.MM.YYYY"),
                     dateValueTo: dayjs(values[1]).format("DD.MM.YYYY")
                 });
-                await this.getIndividualVisitorsForDateRange({dateFrom: dayjs(values[0]).format("YYYY-MM-DD"), dateTo: dayjs(values[1]).format("YYYY-MM-DD")}).then((data) => {
-                    this.chartdata.bar = this.createChartData(data.data, "bar", "daily");
-                    this.chartdata.line = this.createChartData(data.data, "line", "daily");
+
+                await apiEndpointService.receiveActivities(
+                    this.selectedLocationId,
+                    dayjs(values[0]).format("YYYY-MM-DD"),
+                    dayjs(values[1]).format("YYYY-MM-DD")
+                ).then((data) => {
+                    this.chartdata.bar = this.createChartData(data.data.data, "bar", "daily");
+                    this.chartdata.line = this.createChartData(data.data.data, "line", "daily");
                 });
             }
 
@@ -265,7 +272,7 @@ export default {
                 }
                 else {
                     labels.push(dayjs(element.date).format("DD.MM.YYYY"));
-                    presentation_data.push(Math.floor(element.sum_num_visitors));
+                    presentation_data.push(Math.ceil(element.sum_num_visitors / 100) * 100);
                 }
             });
 

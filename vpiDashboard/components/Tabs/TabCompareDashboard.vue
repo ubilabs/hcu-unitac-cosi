@@ -30,6 +30,10 @@ export default {
             },
             characteristic: [
                 {
+                    id: "activities",
+                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.activities")
+                },
+                {
                     id: "ageGroup",
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.age")
                 },
@@ -40,10 +44,6 @@ export default {
                 {
                     id: "visitorTypes",
                     name: this.translate("additional:modules.tools.vpidashboard.tabitems.types")
-                },
-                {
-                    id: "activities",
-                    name: this.translate("additional:modules.tools.vpidashboard.tabitems.activities")
                 }
             ],
             character: "",
@@ -221,7 +221,7 @@ export default {
                 this.setBarCharDataForVisitorTypes();
             }
             if (this.character === "activities") {
-                await this.getIndividualVisitorsToCompare(compareData);
+                await this.getActivitiesToCompare(compareData);
                 this.setBarCharDataForIndividualVisitors();
             }
             this.showCompareChart = true;
@@ -272,15 +272,26 @@ export default {
         },
         /**
          * sets the disabled dates for the datepicker
-         * for every endpoint except of "Individuelle Besucher" only the first day in month may be selected
+         * for every endpoint except of "activities" only the first day in month may be selected
          * @param {Object} val date that shall be checked if it is disabled in the datepicker
          * @return {Boolean} tells if the date shall be disabled or not
          */
         disabledDates (val) {
-            if (this.character !== "Aktivitäten") {
+            if (this.character !== "activities") {
                 return new Date(val).getDate() !== 1;
             }
             return false;
+        },
+        /**
+         * Return the translated label for the selected comparison.
+         * @param {String} id current selected comparison id from dropdown
+         * @return {string} the label for the selected comparison type
+         */
+        getComparisonChartLabel (id) {
+            const
+                selectedItem = this.characteristic.find(item => item.id === id);
+
+            return selectedItem.name;
         }
     }
 };
@@ -401,7 +412,10 @@ export default {
                     v-if="showCompareChart"
                     class="row d-flex justify-content-center mt-3"
                 >
-                    <h4>{{ translate('additional:modules.tools.vpidashboard.compare.location_comparison') }} {{ character }}</h4>
+                    <h4>
+                        {{ translate('additional:modules.tools.vpidashboard.compare.location_comparison') }}
+                        {{ getComparisonChartLabel(character) }}
+                    </h4>
                     <BarchartItem :data="chartdata.bar" />
                 </div>
                 <div v-if="showCompareChart">

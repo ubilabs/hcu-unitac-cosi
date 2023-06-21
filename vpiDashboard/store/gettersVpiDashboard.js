@@ -20,48 +20,6 @@ const getters = {
     ...tabCompareLocationsGetters,
 
     /**
-     * Gets average data about unique visitors per weekday over all years, selected from WhatALocation data.
-     * @param {Object} state the store's state object
-     * @returns {Array} array of unique visitors for the day "day" over all years
-     */
-    getAverageVisitorsPerDay: (state) => (day) => {
-        const daily = state.frequencyData?.unique?.dayly,
-            averageVisitorsOnDay = daily.filter((element) => {
-                return element.weekday === day;
-            });
-
-        return averageVisitorsOnDay[0].avg;
-    },
-    /**
-     * Gets average data about unique visitors per month in each year, selected from WhatALocation data.
-     * @param {Object} state the store's state object
-     * @returns {Array} array of unique visitors for the month "month" in each year
-     */
-    getAverageVisitorsPerMonth: (state) => (month) => {
-        const monthly = state.frequencyData?.unique?.monthly,
-            averageVisitorsOnMonth = monthly.filter((element) => {
-                return element.date__month === month;
-            });
-
-        return averageVisitorsOnMonth[0].avg;
-    },
-    /**
-     * Gets data about unique visitors per year and weekday, selected from WhatALocation data.
-     * @param {Object} frequencyData data from WhatALocation
-     * @returns {Array} array of unique visitors per year and weekday
-     */
-    getBestDay ({frequencyData}) {
-        return frequencyData.unique?.best_day;
-    },
-    /**
-     * Gets data about unique visitors per time range (0-6, 6-12, 12-18, 18-24), selected from WhatALocation data.
-     * @param {Object} frequencyData data from WhatALocation
-     * @returns {Array} array of unique visitors per time range
-     */
-    getBestHour ({frequencyData}) {
-        return frequencyData.unique?.best_hour;
-    },
-    /**
      * Gets data about unique visitors per year (sum per year and daily average), generated from WhatALocation data.
      * @param {Object} state the stores state object
      * @returns {Array} array of yearly data average, rounded

@@ -15,18 +15,36 @@ const mutations = {
      * @returns {void}
      */
     setAverageVisitorsPerMonth (state, payload) {
-        const monthly = payload.unique?.monthly,
-            months = [];
+        const
+            data = payload.data,
+            aggregated = {},
+            result = [];
 
-        monthly.forEach(month => {
-            const newMonth = {};
+        Object.keys(data).forEach(key => {
+            const
+                item = data[key],
+                date = new Date(item.date),
+                label = date.getMonth();
 
-            newMonth.index = month.date__month - 1;
-            newMonth.avg = Math.floor(month.avg);
-            months.push(newMonth);
+            if (!aggregated[label]) {
+                aggregated[label] = {
+                    sum: 0,
+                    totalNumberOfDaysInMonthsOverYears: 0
+                };
+            }
+            aggregated[label].sum = item.sum_num_visitors + aggregated[label].sum;
+            aggregated[label].totalNumberOfDaysInMonthsOverYears++;
         });
-        months.sort((a, b) => a.index - b.index);
-        state.averageVisitorsPerMonth = months;
+
+        // Ceil up to 100, e.g. 18318 becomes 18400
+        Object.keys(aggregated).forEach(key => {
+            result.push({
+                index: key,
+                avg: Math.ceil(aggregated[key].sum / 100 / aggregated[key].totalNumberOfDaysInMonthsOverYears) * 100
+            });
+        });
+
+        state.averageVisitorsPerMonth = result;
     },
     /**
      * Sets the rounded daily data for unique visitors to the state, selected from WhatALocation data.
@@ -35,19 +53,37 @@ const mutations = {
      * @returns {void}
      */
     setAverageVisitorsPerDay (state, payload) {
-        const dayly = payload.unique?.dayly,
-            days = [],
-            dayIndexTranslator = ["mo", "tu", "we", "th", "fr", "sa", "su"];
+        const
+            data = payload.data,
+            aggregated = {},
+            result = [];
 
-        dayly.forEach(day => {
-            const newDay = {};
+        Object.keys(data).forEach(key => {
+            const
+                item = data[key],
+                date = new Date(item.date),
+                label = date.getDay() - 1;
 
-            newDay.index = day.weekday;
-            newDay.avg = Math.floor(day.avg);
-            days.push(newDay);
+            if (!aggregated[label]) {
+                aggregated[label] = {
+                    sum: 0,
+                    totalNumberOfWeekdaysInMonthsOverYears: 0
+                };
+            }
+            aggregated[label].sum = item.sum_num_visitors + aggregated[label].sum;
+            aggregated[label].totalNumberOfWeekdaysInMonthsOverYears++;
+
         });
 
-        state.averageVisitorsPerDay = days.toSorted((a, b) => dayIndexTranslator.indexOf(a.index) - dayIndexTranslator.indexOf(b.index));
+        // Ceil up to 100, e.g. 18318 becomes 18400
+        Object.keys(aggregated).forEach(key => {
+            result.push({
+                index: key,
+                avg: Math.ceil(aggregated[key].sum / 100 / aggregated[key].totalNumberOfWeekdaysInMonthsOverYears) * 100
+            });
+        });
+
+        state.averageVisitorsPerDay = result;
     },
     /**
      * Sets the rounded yearly data for unique visitors to the state, selected from WhatALocation data.
@@ -56,15 +92,32 @@ const mutations = {
      * @returns {void}
      */
     setIndividualVisitorsPerYear (state, payload) {
-        const yearly_average = payload?.unique?.best_year,
-            individualVisitorsPerYear = yearly_average.map((element) => {
-                element.avg = Math.floor(element.avg);
-                element.sum = Math.floor(element.sum);
+        const
+            data = payload.data,
+            aggregated = {},
+            result = [];
 
-                return element;
+        Object.keys(data).forEach(key => {
+            const
+                item = data[key],
+                date = new Date(item.date),
+                label = date.getFullYear();
+
+            if (!aggregated[label]) {
+                aggregated[label] = 0;
+            }
+            aggregated[label] += item.sum_num_visitors;
+        });
+
+        // Ceil up to 100, e.g. 18318 becomes 18400
+        Object.keys(aggregated).forEach(key => {
+            result.push({
+                date__year: key,
+                avg: Math.ceil(aggregated[key] / 100) * 100
             });
+        });
 
-        state.individualVisitorsPerYear = individualVisitorsPerYear;
+        state.individualVisitorsPerYear = result;
     },
     /**
      * Generate a GeoJson for all WhatALocation Locations.
@@ -311,7 +364,6 @@ const mutations = {
 
         state.lineChartMonthlyData = data;
     },
-
     /**
      * Generates Bar Chart Data and saves it to state.
      * @param {Object} state the store's state object
@@ -319,33 +371,37 @@ const mutations = {
      * @returns {void}
      */
     setBarChartData (state, payload) {
-        const best_month = payload?.unique?.best_month,
-            labels = [],
-            month_data = [];
+        const
+            data = payload.data,
+            aggregated = {};
 
-        best_month.forEach((element) => {
-            if (element.date__month < 10) {
-                labels.push(`0${element.date__month}-${element.date__year}`);
+        Object.keys(data).forEach(key => {
+            const
+                item = data[key],
+                label = changeDateFormat(new Date(item.date));
+
+            if (!aggregated[label]) {
+                aggregated[label] = 0;
             }
-            else {
-                labels.push(`${element.date__month}-${element.date__year}`);
-            }
-            month_data.push(Math.ceil(element.sum / 100) * 100);
+            aggregated[label] += item.sum_num_visitors;
         });
-        // eslint-disable-next-line
-        const data = {
-            labels: labels.reverse(),
+
+        // Ceil up to 100, e.g. 18318 becomes 18400
+        Object.keys(aggregated).forEach(key => {
+            aggregated[key] = Math.ceil(aggregated[key] / 100) * 100;
+        });
+
+        // Bar chart configuration
+        state.barChartData = {
+            labels: Object.keys(aggregated),
             datasets: [{
                 label: i18next.t("additional:modules.tools.vpidashboard.unique.uniqueVisitors"),
-                data: month_data.reverse(),
+                data: Object.values(aggregated),
                 hoverOffset: 4,
                 backgroundColor: "#FD763B"
             }]
         };
-
-        state.barChartData = data;
     },
-
     /**
      * Generates Line Chart Data and saves it to state.
      * @param {Object} state the store's state object
@@ -353,34 +409,38 @@ const mutations = {
      * @returns {void}
      */
     setLineChartData (state, payload) {
-        const best_month = payload?.unique?.best_month,
-            labels = [],
-            month_data = [];
+        const
+            data = payload.data,
+            aggregated = {};
 
-        best_month.forEach((element) => {
-            if (element.date__month < 10) {
-                labels.push(`0${element.date__month}-${element.date__year}`);
+        Object.keys(data).forEach(key => {
+            const
+                item = data[key],
+                label = changeDateFormat(new Date(item.date));
+
+            if (!aggregated[label]) {
+                aggregated[label] = 0;
             }
-            else {
-                labels.push(`${element.date__month}-${element.date__year}`);
-            }
-            month_data.push(Math.ceil(element.sum / 100) * 100);
+            aggregated[label] += item.sum_num_visitors;
         });
-        // eslint-disable-next-line
-        const data = {
-            labels: labels.reverse(),
+
+        // Ceil up to 100, e.g. 18318 becomes 18400
+        Object.keys(aggregated).forEach(key => {
+            aggregated[key] = Math.ceil(aggregated[key] / 100) * 100;
+        });
+
+        // Line chart configuration
+        state.lineChartData = {
+            labels: Object.keys(aggregated),
             datasets: [{
                 label: i18next.t("additional:modules.tools.vpidashboard.unique.uniqueVisitors"),
-                data: month_data.reverse(),
+                data: Object.values(aggregated),
                 fill: false,
                 borderColor: "rgb(75, 192, 192)",
                 tension: 0.1
             }]
         };
-
-        state.lineChartData = data;
     },
-
     /**
      * Sets showLoader value in state.
      * Set it true to show loader and set it false to hide loader.

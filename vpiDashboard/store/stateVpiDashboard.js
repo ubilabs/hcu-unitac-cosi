@@ -11,7 +11,6 @@ const state = {
     resizableWindow: true,
     isVisibleInMenu: true,
     deactivateGFI: false,
-    frequencyData: undefined,
     chartData: "overview",
     allDataClicked: true,
     averageVisitorsPerMonth: [],
@@ -37,6 +36,7 @@ const state = {
     allAgeGroupsYears: [],
     ageGroupPieChartLabels: ["20-29", "30-39", "40-49", "50-59", "60-69", ">69"],
     selectedLocationId: "",
+    activityData: {},
     ...tabVisitorTypesState,
     ...tabCompareDatesState,
     ...tabCompareLocationsState
