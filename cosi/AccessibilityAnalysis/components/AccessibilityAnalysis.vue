@@ -16,6 +16,7 @@ import mapCanvasToImage, {exportMapView} from "../../utils/mapCanvasToImage";
 import AccessibilityAnalysisLegend from "./AccessibilityAnalysisLegend.vue";
 import AccessibilityAnalysisTrafficFlow from "./AccessibilityAnalysisTrafficFlow.vue";
 import {unpackCluster} from "../../utils/features/unpackCluster.js";
+import {getLayerSource} from "../../utils/layer/getLayerSource";
 
 export default {
     name: "AccessibilityAnalysis",
@@ -193,6 +194,21 @@ export default {
             set (v) {
                 this.setIsochroneFeatures(v);
             }
+        },
+        selectedFacilityLayer () {
+            const selectedLayerNames = {},
+                selectedLayer = [];
+
+            this.selectedFacilityNames.forEach(name => {
+                selectedLayerNames[name] = true;
+            });
+
+            this.activeVectorLayerList.forEach(layer => {
+                if (Object.prototype.hasOwnProperty.call(selectedLayerNames, layer.get("name"))) {
+                    selectedLayer.push(layer);
+                }
+            });
+            return selectedLayer;
         }
     },
     watch: {
@@ -208,7 +224,6 @@ export default {
                 offSearchbar(this.setSearchResultToOrigin);
                 this.removePointMarker();
                 this.select.getFeatures().clear();
-                this.removeLayerFromMap(this.directionsLayer);
             }
         },
         activeSet (newValue) {
@@ -486,7 +501,19 @@ export default {
         * @returns {void}
         */
         setFacilityLayers: function (vectorLayers) {
-            this.facilityNames = vectorLayers.map(v => v.get("name"));
+            this.facilityNames = [];
+            vectorLayers.forEach(layer => {
+                if (layer.getSource().getFeatures().length > 0) {
+                    this.facilityNames.push(layer.get("name"));
+                }
+                else {
+                    getLayerSource(layer).on("featuresloadend", () => {
+                        if (layer.getSource().getFeatures().length > 0) {
+                            this.facilityNames.push(layer.get("name"));
+                        }
+                    });
+                }
+            });
         },
 
         getDirectionsText: function (routingDirections) {
@@ -569,22 +596,12 @@ export default {
                 downloadGeoJson(set.geojson);
             });
         },
-        /**
-         * @description Selects the next or the previous supply analysis in the Tool Window.
-         * @param {Integer} value +1 or -1.
-         * @returns {Void} Function returns nothing.
-         */
-        setPrevNext (value) {
-            const l = this.dataSets.length;
-
-            this.setActiveSet((((this.activeSet + value) % l) + l) % l); // modulo with negative handling
-        },
 
         async updateAnalysisSet () {
             await this.createIsochrones();
 
             this.dataSets[this.activeSet].results = this._isochroneFeatures;
-            this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.activeVectorLayerList, this.mapLayer);
+            this.dataSets[this.activeSet].geojson = this.exportAsGeoJson(this.mapLayer);
 
             this.renderIsochrones(this._isochroneFeatures);
         },
@@ -633,18 +650,17 @@ export default {
             :deactivate-gfi="deactivateGFI"
         >
             <template #toolBody>
-                <v-app>
+                <v-app id="accessibilityanalysis">
                     <ToolInfo
                         :url="readmeUrl"
                         :locale="currentLocale"
+                        :summary="$t('additional:modules.tools.cosi.accessibilityAnalysis.description')"
                     />
                     <div
                         v-if="active"
-                        id="accessibilityanalysis"
                     >
                         <v-form>
                             <v-select
-                                ref="mode"
                                 v-model="_mode"
                                 class="mb-4"
                                 :items="availableModes"
@@ -654,7 +670,6 @@ export default {
                                 outlined
                                 dense
                                 hide-details
-                                @click:append="$refs.mode.blur()"
                             />
                             <v-text-field
                                 v-if="mode === 'point'"
@@ -729,21 +744,44 @@ export default {
                                 hide-details
                                 :disabled="mode === 'path'"
                             />
-                            <v-select
-                                v-model="_scaleUnit"
-                                class="mb-4"
-                                title="Maßeinheit der Entfernung"
-                                :items="scaleUnits"
-                                :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.scaleUnit')"
-                                item-text="name"
-                                item-value="type"
-                                outlined
-                                dense
-                                hide-details
-                                :disabled="mode === 'path'"
-                            />
-                            <template
+                            <v-row dense>
+                                <v-col class="mb-2">
+                                    <v-select
+                                        v-model="_scaleUnit"
+                                        title="Maßeinheit der Entfernung"
+                                        :items="scaleUnits"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.scaleUnit')"
+                                        item-text="name"
+                                        item-value="type"
+                                        outlined
+                                        dense
+                                        hide-details
+                                        :disabled="mode === 'path'"
+                                    />
+                                </v-col>
+                                <v-col class="mb-2">
+                                    <v-text-field
+                                        id="range"
+                                        v-model="_distance"
+                                        :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.distance')"
+                                        type="number"
+                                        min="0"
+                                        outlined
+                                        dense
+                                        hide-details
+                                    />
+                                </v-col>
+                            </v-row>
+                            <v-row dense>
+                                <AccessibilityAnalysisLegend
+                                    v-if="dataSets.length > 0"
+                                    :steps="steps"
+                                    :colors="legendColors"
+                                />
+                            </v-row>
+                            <v-row
                                 v-if="_transportType === 'driving-car' && scaleUnit === 'time'"
+                                dense
                             >
                                 <AccessibilityAnalysisTrafficFlow
                                     :use-travel-time-index="useTravelTimeIndex"
@@ -751,43 +789,27 @@ export default {
                                     @update:useTravelTimeIndex="updateUseTravelTimeIndex"
                                     @update:time="updateTime"
                                 />
-                            </template>
-                            <v-text-field
-                                id="range"
-                                v-model="_distance"
-                                class="mb-4"
-                                :label="$t('additional:modules.tools.cosi.accessibilityAnalysis.distance')"
-                                type="number"
-                                min="0"
-                                outlined
-                                dense
-                                hide-details
-                            />
+                            </v-row>
                             <v-row dense>
                                 <v-col cols="4">
                                     <v-btn
                                         id="create-isochrones"
-                                        dense
-                                        small
                                         tile
+                                        depressed
                                         color="grey lighten-1"
                                         @click.native="createAnalysisSet()"
                                     >
                                         {{ $t("additional:modules.tools.cosi.accessibilityAnalysis.calculate") }}
                                     </v-btn>
                                 </v-col>
-                                <AccessibilityAnalysisLegend
-                                    v-if="dataSets.length > 0"
-                                    :steps="steps"
-                                    :colors="legendColors"
-                                />
                             </v-row>
-                            <v-progress-linear
-                                v-if="progress > 0"
-                                v-model="progress"
-                                background-color="white"
-                            />
                         </v-form>
+                        <v-progress-linear
+                            v-if="progress > 0"
+                            v-model="progress"
+                            background-color="white"
+                            height="10"
+                        />
                         <template v-if="dataSets.length > 0">
                             <v-divider />
                             <v-row
@@ -796,9 +818,8 @@ export default {
                                 <v-col cols="12">
                                     <v-btn
                                         id="clear"
-                                        dense
-                                        small
                                         tile
+                                        depressed
                                         :color="hide ? 'warning' : 'grey lighten-1'"
                                         @click.native="hide = !hide"
                                     >
@@ -806,9 +827,8 @@ export default {
                                     </v-btn>
                                     <v-btn
                                         v-if="mode === 'point' || mode === 'facility'"
-                                        dense
-                                        small
                                         tile
+                                        depressed
                                         color="grey lighten-1"
                                         @click="requestInhabitants"
                                     >
@@ -817,29 +837,22 @@ export default {
                                 </v-col>
                             </v-row>
                             <v-divider />
-                            <v-row>
-                                <v-col>
-                                    <AnalysisPagination
-                                        :sets="dataSets"
-                                        :active-set="activeSet"
-                                        :downloads="['GEOJSON']"
-                                        :titles="{
-                                            downloads: [$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')],
-                                            downloadAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationDownloadAll'),
-                                            remove: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemove'),
-                                            removeAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemoveAll'),
-                                            next: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationNext'),
-                                            prev: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationPrev'),
-                                        }"
-                                        @setActiveSet="(n) => setActiveSet(n)"
-                                        @setPrevNext="(n) => setPrevNext(n)"
-                                        @removeSingle="(n) => removeSet(n)"
-                                        @removeAll="removeAll"
-                                        @downloadGEOJSON="(n) => downloadSet(n)"
-                                        @downloadAll="downloadAll"
-                                    />
-                                </v-col>
-                            </v-row>
+                            <AnalysisPagination
+                                :sets="dataSets"
+                                :active-set="activeSet"
+                                :downloads="['GEOJSON']"
+                                :titles="{
+                                    downloads: [$t('additional:modules.tools.cosi.accessibilityAnalysis.download.title')],
+                                    downloadAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationDownloadAll'),
+                                    remove: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemove'),
+                                    removeAll: $t('additional:modules.tools.cosi.accessibilityAnalysis.paginationRemoveAll')
+                                }"
+                                @setActiveSet="(n) => setActiveSet(n)"
+                                @removeSingle="(n) => removeSet(n)"
+                                @removeAll="removeAll"
+                                @downloadGEOJSON="(n) => downloadSet(n)"
+                                @downloadAll="downloadAll"
+                            />
                         </template>
                     </div>
                 </v-app>
@@ -881,17 +894,8 @@ export default {
     @import "~variables";
 
     #accessibilityanalysis {
-        width: 400px;
-        min-height: 100px;
-
-        .inline-switch {
-            margin-top: 0px;
-            height: 40px;
-        }
-
-        #download {
-            margin-top: 8px;
-        }
+        font-family: $font_family_default;
+        width: 430px;
 
         .v-input {
             border-radius: $border-radius-base;
@@ -907,6 +911,7 @@ export default {
 
         button {
             text-transform: inherit;
+            font-family: $font_family_accent;
         }
     }
 

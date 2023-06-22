@@ -104,7 +104,8 @@ export default {
         ...mapActions("Maps", ["addNewLayerIfNotExists"]),
 
         /**
-         * todo
+         * Creates a drawing layer that only holds one feature at a time.
+         * By default the layer is shared amongst all instances of the geom picker
          * @returns {void}
          */
         async createDrawingLayer () {
@@ -117,7 +118,7 @@ export default {
         },
 
         /**
-         * todo
+         * Switches the geom picker on/off
          * @param {String} type - the geom type as GML (e.g. gmlPointGeometryType)
          * @returns {void}
          */

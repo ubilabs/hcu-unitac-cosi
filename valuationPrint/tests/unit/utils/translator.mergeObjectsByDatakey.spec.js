@@ -152,5 +152,38 @@ describe("addons/valuationPrint/utils/translator.mergeObjectsByDatakey.js", () =
 
             expect(mergeObjectsByDatakey(datakey, knowledgeBase, "n.v.")).to.be.an("array").that.is.empty;
         });
+
+        it("should convert the value with the options", () => {
+            const datakey = ["first", "second"],
+                knowledgeBase = {
+                    first: [{
+                        a: 10001,
+                        b: undefined,
+                        c: undefined
+
+                    }]
+                },
+                expectArray = [
+                    {
+                        a: "10.001,00 m²",
+                        b: "n.v.",
+                        c: "n.v."
+
+                    }
+                ],
+                options = {
+                    "first.a": {
+                        "type": "Number",
+                        "postfix": " m²",
+                        "decimals": 2,
+                        "thousandsSeparator": {
+                            "delimAbs": ".",
+                            "delimDec": ","
+                        }
+                    }
+                };
+
+            expect(mergeObjectsByDatakey(datakey, knowledgeBase, "n.v.", options)).to.deep.equal(expectArray);
+        });
     });
 });

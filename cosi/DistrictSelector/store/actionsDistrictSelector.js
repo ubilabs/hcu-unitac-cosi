@@ -21,7 +21,7 @@ const actions = {
      * @param {Boolean} [payload.recursive=true] - Should reference districts be loaded automatically?.
      * @returns {void}
      */
-    async loadStatFeatures ({dispatch, rootGetters}, {districtLevel, districts, getStatFeatures, recursive = true}) {
+    async loadStatFeatures ({dispatch, rootGetters}, {districtLevel, districts, getStatFeatures = wfsGetFeature, recursive = true}) {
         dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
         LoaderOverlay.show();
 
@@ -37,8 +37,7 @@ const actions = {
                             featureTypes: [districtLevel.stats.layers[j].featureType],
                             srsName: rootGetters["Maps/projectionCode"],
                             propertyNames: districtLevel.propertyNameList[j],
-                            // a little temporary hack. will be removed once the attribute "text" has been renamed to "verwaltungseinheit"
-                            filter: districtLevel.stats.layers[j].featureType === "bevoelkerungsprognosen_gesamt_hh" ? equalTo("text", districtName) : equalTo(districtLevel.stats.keyOfAttrName, districtName)
+                            filter: equalTo(districtLevel.stats.keyOfAttrName, districtName)
                         }),
                         olFeatures = wfsFormat.readFeatures(statFeatures);
 
@@ -72,7 +71,7 @@ const actions = {
             dispatch("loadStatFeatures", {
                 districts: referenceLevel.label === "Hamburg" ? referenceLevel.districts : refDistricts,
                 districtLevel: referenceLevel,
-                getStatFeatures: wfsGetFeature
+                getStatFeatures
             });
             LoaderOverlay.hide();
         }

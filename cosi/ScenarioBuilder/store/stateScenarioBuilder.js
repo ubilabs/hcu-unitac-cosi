@@ -18,10 +18,16 @@ const state = {
     scenarios: [],
     activeScenario: null,
     guideLayer: null,
-    areaAttributes: [
-        {key: "flaeche_qm", factorToSqm: 1},
-        {key: "flaeche_ha", factorToSqm: 0.0001}
-    ],
+    geomAttributes: {
+        area: [
+            {key: "flaeche_qm", factorToSqm: 1},
+            {key: "flaeche_ha", factorToSqm: 0.0001}
+        ],
+        lineString: [
+            {key: "laenge_m", factorToM: 1},
+            {key: "laenge_km", factorToM: 0.001}
+        ]
+    },
     readmeUrl: {
         "en-US": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/dev/cosi/manuals/scenariobuilder.md",
         "de-DE": "https://bitbucket.org/geowerkstatt-hamburg/addons/src/dev/cosi/manuals/einrichtungenanlegen.md"

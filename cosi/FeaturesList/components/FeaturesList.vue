@@ -11,14 +11,16 @@ import {getLayerSource} from "../../utils/layer/getLayerSource";
 import highlightVectorFeature from "../../utils/highlightVectorFeature";
 import DetailView from "./DetailView.vue";
 import FeatureIcon from "./FeatureIcon.vue";
+import FeaturesListToolbar from "./FeaturesListToolbar.vue";
 import {prepareTableExport, prepareDetailsExport, composeFilename} from "../utils/prepareExport";
 import exportXlsx from "../../utils/exportXlsx";
 import {isEqual} from "../../utils/array/isEqual";
 import rawLayerList from "@masterportal/masterportalapi/src/rawLayerList";
-import deepEqual from "deep-equal";
 import getColorFromNumber from "../../utils/getColorFromNumber";
 import chartMethods from "../utils/charts";
-import LocationScore from "./LocationScore.vue";
+import FeaturesScore from "./FeaturesListScore.vue";
+import setGeomAttributes from "../../utils/features/setGeomAttributes";
+import getFeatureStyle from "../../utils/features/getFeatureStyle";
 
 import
 {
@@ -39,15 +41,11 @@ export default {
         ToolInfo,
         DetailView,
         FeatureIcon,
-        LocationScore
+        FeaturesScore,
+        FeaturesListToolbar
     },
     data () {
         return {
-            distanceScoreQueue: [],
-            weight: 0,
-            showWeightsDialog: false,
-            showScoresDialog: false,
-            currentScores: {},
             search: "",
             layerFilter: [],
             expanded: [],
@@ -126,7 +124,7 @@ export default {
     computed: {
         ...mapGetters("Language", ["currentLocale"]),
         ...mapGetters("Tools/FeaturesList", Object.keys(getters)),
-        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated"]),
+        ...mapGetters("Tools/ScenarioBuilder", ["activeSimulatedFeatures", "scenarioUpdated", "geomAttributes"]),
         ...mapGetters("Tools/DistrictSelector", {selectedDistrictLevel: "selectedDistrictLevel", selectedDistrictFeatures: "selectedFeatures", districtLayer: "layer", bufferValue: "bufferValue", extent: "extent"}),
         ...mapGetters("Tools/DistanceScoreService", ["wmsLayersInfo"]),
         ...mapState(["configJson"]),
@@ -169,6 +167,7 @@ export default {
                 }
 
                 this.removeHighlightFeature();
+                this.setShow(true);
             }
         },
 
@@ -219,10 +218,7 @@ export default {
             this.numericalColumns = this.getNumericalColumns();
         },
 
-        items (newItems, oldItems) {
-            if (!deepEqual(newItems.map(i=>i.key), oldItems.map(i=>i.key))) {
-                // this.updateDistanceScores();
-            }
+        items (newItems) {
             if (newItems.length > 0 && newItems.some(item => item.group === "DIPAS")) {
                 this.dipasInFeaturesList = true;
             }
@@ -234,6 +230,27 @@ export default {
 
         layerFilter () {
             this.numericalColumns = this.getNumericalColumns();
+        },
+
+        show (val) {
+            if (val) {
+                this.$nextTick(() => {
+                    if (this.active) {
+                        this.$el.style.width = "inherit";
+                        this.$el.querySelector("#basic-resize-handle-sidebar").style.display = "inherit";
+                        mapCollection.getMap("2D").updateSize();
+                    }
+                });
+            }
+            else {
+                this.$nextTick(() => {
+                    if (this.active) {
+                        this.$el.style.width = "80px";
+                        this.$el.querySelector("#basic-resize-handle-sidebar").style.display = "none";
+                        mapCollection.getMap("2D").updateSize();
+                    }
+                });
+            }
         }
     },
     created () {
@@ -244,6 +261,8 @@ export default {
         this.$on("close", () => {
             this.setActive(false);
         });
+
+        this.isTimeSeriesAnalyseShow = typeof this.$store.state.configJson.Portalconfig.menu.tools.children.timeSeriesAnalyse !== "undefined";
     },
     async mounted () {
         // initally set the facilities mapping based on the config.json
@@ -271,6 +290,7 @@ export default {
         ...mapMutations("Tools/FeaturesList", Object.keys(mutations)),
         ...mapActions("Tools/FeaturesList", Object.keys(actions)),
         ...mapActions("Tools/DistanceScoreService", ["getDistanceScore", "getFeatureValues"]),
+        ...mapActions("Tools", ["setToolActive"]),
         ...mapActions("Maps", ["removeHighlightFeature", "addNewLayerIfNotExists"]),
         ...mapActions("Tools/ChartGenerator", ["channelGraphData"]),
         ...chartMethods,
@@ -295,7 +315,7 @@ export default {
                 numCols[numCols.length - 1].divider = true;
             }
 
-            if (this.items.length && typeof this.items[0].distanceScore !== "undefined") {
+            if (this.items.length && typeof this.items[0]?.score?.value !== "undefined") {
                 numCols.push({
                     text: this.$t("additional:modules.tools.cosi.featuresList.distanceScore"),
                     value: "distanceScore",
@@ -329,18 +349,23 @@ export default {
             if (this.groupActiveLayer.length > 0) {
                 this.items = this.activeVectorLayerList.reduce((list, vectorLayer) => {
 
-                    const features = getLayerSource(vectorLayer).getFeatures(),
+                    const features = getLayerSource(vectorLayer)?.getFeatures() || [],
                         // only features that can be seen on the map
                         visibleFeatures = features.filter(this.isFeatureActive),
                         layerMap = this.layerMapById(vectorLayer.get("id")),
-                        layerStyleFunction = vectorLayer.getStyleFunction();
+                        layerStyleFunction = vectorLayer.getStyleFunction?.();
 
                     list.push(...this.checkDisabledFeatures(vectorLayer));
                     return [...list, ...visibleFeatures.map((feature) => {
+                        /**
+                         * Set area attributes for polygons, where they are not set in the dataset
+                         * @todo should go somewhere else...
+                         */
+                        setGeomAttributes(feature, this.geomAttributes);
                         return {
                             key: feature.getId(),
                             name: feature.get(layerMap.keyOfAttrName),
-                            style: feature.getStyle() || layerStyleFunction(feature),
+                            style: getFeatureStyle(feature, layerStyleFunction),
                             district: getContainingDistrictForFeature(this.selectedDistrictLevel, feature, false),
                             group: layerMap.group,
                             layerName: layerMap.id,
@@ -471,12 +496,12 @@ export default {
         /**
          * Export the table as XLSX
          * Either the simple view or incl. details
-         * @param {Boolean} exportDetails - whether to include the detailed feature data
+         * @param {Boolean} withDetails - whether to include the detailed feature data
          * @returns {void}
          */
-        exportTable () {
+        exportTable (withDetails) {
             const data = this.getActiveItems(),
-                exportData = this.exportDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
+                exportData = withDetails ? prepareDetailsExport(data, this.filterProps) : prepareTableExport(data),
                 filename = composeFilename(this.$t("additional:modules.tools.cosi.featuresList.exportFilename"));
 
             exportXlsx(exportData, filename, {exclude: this.excludedPropsForExport});
@@ -596,15 +621,18 @@ export default {
             if (this.distScoreLayer === null || this.selected.length === 0) {
                 return;
             }
+            if (!this.selected[0].score) {
+                return;
+            }
 
-            const test = Object.keys(this.selected[0].weightedDistanceScores),
+            const test = Object.keys(this.selected[0].score.distance),
                 colorMap = test.reduce((acc, layerId, index) => (
                     {...acc, [layerId]: getColorFromNumber(index, test.length)}), {});
 
             this.distScoreLayer.getSource().clear();
             this.selected.forEach(item => {
-                if (item.weightedDistanceScores) {
-                    for (const [layerId, entry] of Object.entries(item.weightedDistanceScores)) {
+                if (item.score.distance) {
+                    for (const [layerId, entry] of Object.entries(item.score.distance)) {
                         if (entry.feature) {
                             const feature = new Feature({geometry: entry.feature.getGeometry()});
 
@@ -641,7 +669,25 @@ export default {
             // set the selected items on the updated list
             this.selected = this.selected.map(sel => this.items.find(item => item.key === sel.key));
         },
-        highlightVectorFeature
+        highlightVectorFeature,
+        openTimeSeriesAnalyse () {
+            this.setToolActive({id: "TimeSeriesAnalyse", active: true});
+            this.setShow(false);
+        },
+        /**
+         * To show or hide the featureList tool
+         * @return {void}
+         */
+        toggleTool () {
+            this.setShow(!this.show);
+        },
+
+        setLayerFilter (value) {
+            this.layerFilter = value;
+        },
+        setSearch (value) {
+            this.search = value;
+        }
     }
 };
 </script>
@@ -649,7 +695,7 @@ export default {
 <template lang="html">
     <Tool
         ref="tool"
-        class=""
+        :class="show ? 'show' : 'hide'"
         :title="$t('additional:modules.tools.cosi.featuresList.title')"
         :icon="icon"
         :active="active"
@@ -661,92 +707,43 @@ export default {
             v-if="active"
             #toolBody
         >
+            <div v-if="isTimeSeriesAnalyseShow">
+                <v-btn
+                    class="ma-2 time-series"
+                    color="success"
+                    :title="$t('additional:modules.tools.cosi.timeSeriesAnalyse.title')"
+                    @click="openTimeSeriesAnalyse"
+                    @keydown="openTimeSeriesAnalyse"
+                >
+                    {{ $t('additional:modules.tools.cosi.timeSeriesAnalyse.title') }}
+                </v-btn>
+            </div>
+            <div
+                v-if="isTimeSeriesAnalyseShow"
+                class="toggle"
+                @click="toggleTool"
+                @keydown="toggleTool"
+            >
+                <span
+                    :class="show ? 'bi bi-chevron-double-right': 'bi bi-chevron-double-left'"
+                    :title="show ? $t('additional:modules.tools.cosi.featuresList.hide') : $t('additional:modules.tools.cosi.featuresList.show')"
+                />
+            </div>
             <ToolInfo
                 :url="readmeUrl"
                 :locale="currentLocale"
             />
             <v-app id="features-list-wrapper">
-                <div class="mb-4">
-                    <div class="selection">
-                        <v-select
-                            v-if="groupActiveLayer.length > 0"
-                            v-model="layerFilter"
-                            class="layer_selection"
-                            :items="groupActiveLayer"
-                            multiple
-                            dense
-                            outlined
-                            small-chips
-                            deletable-chips
-                            hide-details
-                            :menu-props="{ closeOnContentClick: true }"
-                            :placeholder="$t('additional:modules.tools.cosi.featuresList.layerFilter')"
-                        />
-                    </div>
-                    <div class="selection">
-                        <v-text-field
-                            v-model="search"
-                            :placeholder="$t('additional:modules.tools.cosi.featuresList.search')"
-                            dense
-                            outlined
-                            hide-details
-                        />
-                    </div>
-                    <v-btn
-                        id="create-charts"
-                        dense
-                        small
-                        tile
-                        color="grey lighten-1"
-                        class="mb-2 ml-2"
-                        :title="$t('additional:modules.tools.cosi.featuresList.createCharts')"
-                        @click="createCharts"
-                    >
-                        <v-icon>mdi-poll</v-icon>
-                    </v-btn>
-                    <v-btn
-                        v-if="dipasInFeaturesList"
-                        id="create-dipas-charts"
-                        dense
-                        small
-                        tile
-                        color="grey lighten-1"
-                        class="mb-2 ml-2"
-                        :title="$t('additional:modules.tools.cosi.featuresList.dipas.createCharts')"
-                        @click="createDipasCharts"
-                    >
-                        <v-icon>mdi-thumbs-up-down</v-icon>
-                    </v-btn>
-                    <v-checkbox
-                        id="export-details"
-                        v-model="sumUpLayers"
-                        dense
-                        hide-details
-                        :label="$t('additional:modules.tools.cosi.featuresList.sumUpLayers')"
-                        :title="$t('additional:modules.tools.cosi.featuresList.sumUpLayersTooltip')"
-                    />
-                    <v-btn
-                        id="export-table"
-                        dense
-                        small
-                        tile
-                        color="grey lighten-1"
-                        class="mb-2 ml-2 float-right"
-                        :title="$t('additional:modules.tools.cosi.featuresList.exportTable')"
-                        @click="exportTable"
-                    >
-                        {{ $t('additional:modules.tools.cosi.featuresList.exportTable') }}
-                    </v-btn>
-                    <v-checkbox
-                        id="export-details"
-                        v-model="exportDetails"
-                        class="float-right"
-                        dense
-                        hide-details
-                        :label="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
-                        :title="$t('additional:modules.tools.cosi.featuresList.exportDetails')"
-                    />
-                </div>
+                <FeaturesListToolbar
+                    :filter-items="groupActiveLayer"
+                    :show-dipas-button="dipasInFeaturesList"
+                    @setLayerFilter="setLayerFilter"
+                    @setSearch="setSearch"
+                    @createCharts="createCharts"
+                    @createDipasCharts="createDipasCharts"
+                    @exportTable="exportTable"
+                />
+                <v-divider />
                 <div id="features-list">
                     <form class="features-list-table-wrapper">
                         <div class="features-list-table">
@@ -827,6 +824,7 @@ export default {
                                         >
                                             <div>
                                                 {{ parseFloat(item[col.value]).toLocaleString(currentLocale) }}
+                                                {{ item[col] }}
                                             </div>
                                             <div>
                                                 <v-chip
@@ -843,40 +841,44 @@ export default {
                         </div>
                     </form>
                 </div>
-                <LocationScore
+                <FeaturesScore
                     v-if="distanceScoreEnabled"
                     :grouped-layer="mapping"
-                    :facilities="items"
+                    :feature-list="items"
                     @showDistanceScoreHistogram="showDistanceScoreHistogram"
                     @showDistanceScoresForSelected="showDistanceScoresForSelected"
                     @updateItems="updateItems"
                 />
             </v-app>
+            <div class="mini-sidebar" />
         </template>
     </Tool>
 </template>
 
 <style lang="scss">
     @import "../../utils/variables.scss";
+    @import "~variables";
 
     #features-list-wrapper {
+        font-family: $font_family_default;
         // height: 100%;
         position: relative;
 
-        .selection {
-            display: inline-block;
-            width: 20%;
-        }
-        .v-text-field {
-            input {
-                font-size: 12px;
-            }
-            label {
-               font-size: 12px;
+        .v-input {
+            border-radius: $border-radius-base;
+            font-size: 14px;
+            .v-label {
+                font-size: 14px;
             }
         }
+
+        .v-divider {
+            border-color: $light_grey;
+        }
+
         button {
             text-transform: inherit;
+            font-family: $font_family_accent;
         }
     }
     #features-list {
@@ -893,7 +895,8 @@ export default {
                    .v-data-table__wrapper {
                     overflow-x: auto;
                     overflow-y: auto;
-                    height: 100%;
+                    max-height: 70vh;
+                    background-color: white;
                    }
                    td.detail-view {
                        .v-data-table__wrapper {
@@ -911,6 +914,47 @@ export default {
         }
         .number-action{
             cursor: pointer;
+        }
+    }
+</style>
+
+<style lang="scss" scoped>
+    @import "../../utils/variables.scss";
+    .show {
+        .mini-sidebar {
+            display: none;
+        }
+    }
+    .hide {
+        .mini-sidebar {
+            position: absolute;
+            width: 80px;
+            height: 100%;
+            background-color: $green;
+            left: 0;
+            top: 0;
+            z-index: 10;
+        }
+        .toggle {
+            z-index: 11;
+            right: 0px;
+        }
+    }
+    .theme--light.v-btn.v-btn--has-bg.time-series {
+        background-color: $green;
+        color: #000000;
+        position: absolute;
+        height: 30px;
+        top: 12px;
+    }
+    .toggle {
+        position: absolute;
+        right: 15px;
+        top: 11px;
+        padding: 0 10px;
+        cursor: pointer;
+        span {
+            font-size: 30px;
         }
     }
 </style>
