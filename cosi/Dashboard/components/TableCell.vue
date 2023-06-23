@@ -26,7 +26,7 @@ export default {
         },
         currentLocale: {
             type: String,
-            default: "en-US"
+            default: "de-DE"
         },
         tooltipOffset: {
             type: Number,

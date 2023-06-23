@@ -49,10 +49,10 @@
             <div
                 class="styling_helper"
             >
-                {{ result.paramA_val.toLocaleString(currentLocale) }}
+                {{ result.paramA_val.toLocaleString("de-DE") }}
                 <span v-if="result.data.incompleteDataSets_A > 0">*</span>
                 <div class="hover_helper" v-if="result.data.incompleteDataSets_A > 0">
-                    {{ result.data.incompleteDataSets_A.toLocaleString(currentLocale) }} / {{ result.data.dataSets_A.toLocaleString(currentLocale) }}
+                    {{ result.data.incompleteDataSets_A.toLocaleString("de-DE") }} / {{ result.data.dataSets_A.toLocaleString("de-DE") }}
                 </div>
             </div>
         </td>
@@ -60,31 +60,31 @@
             <div
                 class="styling_helper"
             >
-                {{ result.paramB_val.toLocaleString(currentLocale) }}
+                {{ result.paramB_val.toLocaleString("de-DE") }}
                 <span v-if="result.data.incompleteDataSets_B > 0">*</span>
                 <div class="hover_helper" v-if="result.data.incompleteDataSets_B > 0">
-                    {{ result.data.incompleteDataSets_B.toLocaleString(currentLocale) }} / {{ result.data.dataSets_B.toLocaleString(currentLocale) }}
+                    {{ result.data.incompleteDataSets_B.toLocaleString("de-DE") }} / {{ result.data.dataSets_B.toLocaleString("de-DE") }}
                 </div>
             </div>
         </td>
         <td v-if="fActive_A || fActive_B">
             <div class="styling_helper">
-                {{ result.capacity.toLocaleString(currentLocale) }}
+                {{ result.capacity.toLocaleString("de-DE") }}
             </div>
         </td>
         <td v-if="fActive_A || fActive_B">
             <div class="styling_helper">
-                {{ result.need.toLocaleString(currentLocale) }}
+                {{ result.need.toLocaleString("de-DE") }}
             </div>
         </td>
         <td>
             <div class="styling_helper">
-                {{ result.relation.toLocaleString(currentLocale) }}
+                {{ result.relation.toLocaleString("de-DE") }}
             </div>
         </td>
         <td>
             <div class="styling_helper">
-                {{ result.coverage.toLocaleString(currentLocale) }}
+                {{ result.coverage.toLocaleString("de-DE") }}
             </div>
         </td>
     </tr>
