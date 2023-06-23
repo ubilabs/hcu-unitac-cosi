@@ -89,12 +89,12 @@ export default {
         formatData () {
             return this.dataset.map(scope => ({
                 ...scope,
-                paramA_val: scope.paramA_val === undefined || scope.paramA_val === null || scope.paramA_val === "NaN" ? i18next.t("additional:modules.tools.cosi.calculateRatio.noData") : scope.paramA_val.toLocaleString("de-DE"),
-                paramB_val: scope.paramB_val === undefined || scope.paramB_val === null || scope.paramB_val === "NaN" ? i18next.t("additional:modules.tools.cosi.calculateRatio.noData") : scope.paramB_val.toLocaleString("de-DE"),
-                relation: scope.relation.toLocaleString("de-DE"),
-                coverage: scope.coverage.toLocaleString("de-DE") + "%",
-                capacity: scope.capacity.toLocaleString("de-DE"),
-                need: scope.need.toLocaleString("de-DE")
+                paramA_val: scope.paramA_val === undefined || scope.paramA_val === null || scope.paramA_val === "NaN" ? i18next.t("additional:modules.tools.cosi.calculateRatio.noData") : scope.paramA_val.toLocaleString('de-DE'),
+                paramB_val: scope.paramB_val === undefined || scope.paramB_val === null || scope.paramB_val === "NaN" ? i18next.t("additional:modules.tools.cosi.calculateRatio.noData") : scope.paramB_val.toLocaleString('de-DE'),
+                relation: scope.relation.toLocaleString('de-DE'),
+                coverage: scope.coverage.toLocaleString('de-DE') + "%",
+                capacity: scope.capacity.toLocaleString('de-DE'),
+                need: scope.need.toLocaleString('de-DE')
             }));
         }
     }
@@ -154,7 +154,7 @@ export default {
                         v-if="item.data.incompleteDatasets_A > 0"
                         class="hover_helper"
                     >
-                        <h2><strong>{{ item.data.incompleteDatasets_A.toLocaleString("de-DE") }} / {{ item.data.datasets_A }}</strong> {{ $t("additional:modules.tools.cosi.calculateRatio.incompleteDataset") }}</h2>
+                        <h2><strong>{{ item.data.incompleteDatasets_A.toLocaleString('de-DE') }} / {{ item.data.datasets_A }}</strong> {{ $t("additional:modules.tools.cosi.calculateRatio.incompleteDataset") }}</h2>
                         <p>{{ $t("additional:modules.tools.cosi.calculateRatio.incompleteDatasetExplanation") }}</p>
                     </div>
                 </div>
@@ -169,7 +169,7 @@ export default {
                         v-if="item.data.incompleteDatasets_B > 0"
                         class="hover_helper"
                     >
-                        <h2><strong>{{ item.data.incompleteDatasets_B.toLocaleString("de-DE") }} / {{ item.data.datasets_B }}</strong> {{ $t("additional:modules.tools.cosi.calculateRatio.incompleteDataset") }}</h2>
+                        <h2><strong>{{ item.data.incompleteDatasets_B.toLocaleString('de-DE') }} / {{ item.data.datasets_B }}</strong> {{ $t("additional:modules.tools.cosi.calculateRatio.incompleteDataset") }}</h2>
                         <p>{{ $t("additional:modules.tools.cosi.calculateRatio.incompleteDatasetExplanation") }}</p>
                     </div>
                 </div>
