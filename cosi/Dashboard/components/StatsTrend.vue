@@ -22,7 +22,7 @@ export default {
         },
         currentLocale: {
             type: String,
-            default: "en-US"
+            default: "de-DE"
         },
         tooltipOffset: {
             type: Number,
@@ -61,7 +61,7 @@ export default {
             </v-icon>
         </template>
         <span>
-            <small>{{ ((dy - 1) * 100).toLocaleString('de-DE') }}%</small>
+            <small>{{ ((dy - 1) * 100).toLocaleString(currentLocale) }}%</small>
         </span>
     </v-tooltip>
 </template>

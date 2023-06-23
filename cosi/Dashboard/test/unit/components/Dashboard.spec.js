@@ -344,9 +344,6 @@ describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
 
             await wrapper.findAll(".open-burger-menu").at(1).trigger("click");
 
-            // TODO: here we get an error displayed in the logs (although test is green)
-            // TypeError: Function has non-object prototype 'undefined' in instanceof check
-            // The menu for Dashboard on the page also only has 2 items??
             await wrapper.findAll(".activator").at(3).trigger("click");
             await wrapper.findAll("#set-field-A").at(1).trigger("click");
 

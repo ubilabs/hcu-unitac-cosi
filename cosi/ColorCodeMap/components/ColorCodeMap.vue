@@ -262,7 +262,7 @@ export default {
                                 width: 3
                             }),
                             text: match_props !== undefined
-                                ? parseFloat(match_props).toLocaleString('de-DE') + "\n(" + this.selectedYear + ")"
+                                ? parseFloat(match_props).toLocaleString(this.currentLocale) + "\n(" + this.selectedYear + ")"
                                 : this.$t("additional:modules.tools.colorCodeMap.noData"),
                             overflow: true
                         });

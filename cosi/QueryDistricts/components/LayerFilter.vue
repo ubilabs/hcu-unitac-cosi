@@ -69,7 +69,7 @@ export default {
         },
         locale: {
             type: String,
-            default: "en-US"
+            default: "de-DE"
         }
     },
     computed: {
