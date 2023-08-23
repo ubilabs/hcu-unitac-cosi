@@ -17,7 +17,7 @@
                     "valueTypeAbsolute": "absolute",
                     "valueTypeRelative": "relative",
                     "add": "Add filter",
-                    "year": "jear",
+                    "year": "year",
                     "referenceValue": "reference value",
                     "referenceValueType": "type",
                     "tolerance": "tolerance",
@@ -36,7 +36,21 @@
                     "paginationRemove": "Remove this analysis set",
                     "paginationRemoveAll": "Remove all analysis sets",
                     "paginationPrev": "Select the previous analysis set",
-                    "paginationNext": "Select the next analysis set"
+                    "paginationNext": "Select the next analysis set",
+                    "headers": {
+                        "referenceDistrict": "Reference district",
+                        "filterNumber": "Filter number",
+                        "name": "Name",
+                        "attribute": "Attribute",
+                        "quotient": "Quotient",
+                        "field": "Field",
+                        "minimum": "Min.",
+                        "maximum": "Max.",
+                        "referenceValue": "Ref. value",
+                        "minusTolerance": "- Tolerance",
+                        "plusTolerance": "+ Tolerance"
+                    },
+                    "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

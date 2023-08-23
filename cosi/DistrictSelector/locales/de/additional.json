@@ -14,7 +14,22 @@
                     "buttonReset": "Auswahl zurücksetzen",
                     "help": "Vor Beginn der Analyse/Planung können Sie hier ein Planungsgebiet auswählen. Die empirischen Daten werden für diese Gebiete geladen. Alternativ können Sie über das Werkzeug <strong>&quot;Vergleichbare Gebiete ermitteln&quot;</strong> Gebiete nach bestimmten Parametern auswählen. Mit dem <strong>Puffer</strong> können Sie wählen in welchem Radius um das gewählte Gebiet ausgewählte Einrichtungen angezeigt werden. Die Analysefunktionen werden davon nicht beeinflusst.",
                     "warning": "<strong>Sie haben noch keine Gebiete ausgewählt. Es werden keine Datensätze geladen.</strong> Sie können trotzdem Fachdaten-Ebenen für die gesamte Stadt anzeigen lassen und Gebiete nach Parametern ermitteln.",
-                    "additionalInfoLayersHelp": "Mithilfe der Checkbox können Sie zusätzliche Layer zur Orientierung einblenden. Die Layer können ebenfalls über den Themenbaum ein- und ausgeschaltet werden."
+                    "additionalInfoLayersHelp": "Mithilfe der Checkbox können Sie zusätzliche Layer zur Orientierung einblenden. Die Layer können ebenfalls über den Themenbaum ein- und ausgeschaltet werden.",
+                    "selectState": "Gebiet auswählen",
+                    "dataLoading": "Datensätze werden geladen",
+                    "errors": {
+                        "dataNotLoaded": "Es konnten nicht alle Datensätze vollständig geladen werden! Bitte versuchen Sie es später erneut. Sollte der Fehler weiterhin bestehen nutzen Sie bitte das Kontaktformular."
+                    },
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)",
+                    "districtLevels": {
+                        "statisticalAreas": "Statistische Gebiete",
+                        "cityDistricts": "Stadtteile",
+                        "districts": "Bezirke",
+                        "wholeCity": "Hamburg",
+                        "socialAreas": "Sozialräume",
+                        "administrations": "FHH",
+                        "basicMapsColored": "Geobasiskarten (farbig)"
+                    }
                 }
             }
         }

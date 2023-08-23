@@ -291,6 +291,7 @@ export default {
             >
                 <ToolInfo
                     :url="readmeUrl"
+                    :title="$t('additional:modules.tools.cosi.chartGenerator.infoTooltip')"
                     :locale="currentLocale"
                 />
                 <div
@@ -308,7 +309,7 @@ export default {
                         >
                             <div class="graph_head">
                                 <span><h3>{{ beautifyKey(graph.name) }}</h3></span>
-                                <span><p>Quelle: <strong>{{ graph.source }}</strong></p></span>
+                                <span><p>{{ $t("additional:modules.tools.cosi.chartGenerator.source") }}: <strong>{{ graph.source }}</strong></p></span>
                                 <div
                                     class="btn_grp"
                                 >

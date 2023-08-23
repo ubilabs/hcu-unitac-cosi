@@ -12,7 +12,7 @@ import testStandardChartDataset from "./test.chartDataset.0";
 import testScatterChartDataset from "./test.chartDataset.1";
 import testMultiChartDataset from "./test.chartDataset.2";
 
-config.mocks.$t = key => key;
+config.mocks.$t = key => key; // expect translation keys and not translated values
 Vue.use(Vuetify);
 
 const localVue = createLocalVue();
@@ -343,6 +343,7 @@ describe("addons/cosi/Dashboard/components/Dashboard.vue", () => {
             await wrapper.find("#set-field-B").trigger("click");
 
             await wrapper.findAll(".open-burger-menu").at(1).trigger("click");
+
             await wrapper.findAll(".activator").at(3).trigger("click");
             await wrapper.findAll("#set-field-A").at(1).trigger("click");
 

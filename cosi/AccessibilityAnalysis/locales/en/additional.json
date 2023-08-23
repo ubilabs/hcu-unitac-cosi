@@ -10,7 +10,8 @@
                       "point": "Accessibility from a reference point",
                       "facility": "Accessibility from a selected facility",
                       "region": "Accessibility of the selected facilities",
-                      "path": "Accessibility along a route"
+                      "path": "Accessibility along a route",
+                      "area": "Accessibility within an area"
                     },
                     "pointOfReference": "Point of reference: click on the map",
                     "setByFeature": "Select facilities as location (use perimeter of polygons)",
@@ -40,6 +41,7 @@
                     "legend": "Legend:",
                     "requestInhabitants": "Request inhabitants",
                     "inputReminder": "Please fill out all input fields.",
+                    "error": "Error",
                     "showError": "The request could not be executed correctly. Please verify all inputs.",
                     "askUpdate": "Do you want to update the current accessibility analysis?",
                     "showErrorInvalidInput": "The request could not be executed correctly: One parameter has wrong format or is invalid.",
@@ -57,7 +59,9 @@
                     "paginationRemoveAll": "Remove all results in this tool",
                     "paginationDownloadAll": "Download all results as GeoJSON",
                     "paginationPrev": "Select previous result",
-                    "paginationNext": "Select next result"
+                    "paginationNext": "Select next result",
+                    "noChoicePlaceholder": "No choices",
+                    "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

@@ -52,7 +52,7 @@ describe("Dashboard/utils/chart", () => {
 
         it("should return chart attributes", () => {
             expect(generateGraphObj(graphData, districtLevelLabel, category, timestamps).name).to.be.equal("Statistische Gebiete - Bevölkerung insgesamt");
-            expect(generateGraphObj(graphData, districtLevelLabel, category, timestamps).scaleLabels).to.be.deep.equal(["Bevölkerung insgesamt", "Jahre"]);
+            expect(generateGraphObj(graphData, districtLevelLabel, category, timestamps).scaleLabels).to.be.deep.equal(["Bevölkerung insgesamt", "$t('additional:modules.tools.cosi.dashboard.years')"]);
             expect(generateGraphObj(graphData, districtLevelLabel, category, timestamps).data.datasets).to.be.deep.equal(graphData);
             expect(generateGraphObj(graphData, districtLevelLabel, category, timestamps).data.labels).to.be.deep.equal([2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]);
         });
@@ -114,7 +114,7 @@ describe("Dashboard/utils/chart", () => {
 
         it("should return chart attributes", () => {
             expect(generateChartForDistricts(data, districtCols, districtLevelLabel, timestampPrefix).name).to.be.equal("Statistische Gebiete - Bevölkerung insgesamt");
-            expect(generateChartForDistricts(data, districtCols, districtLevelLabel, timestampPrefix).scaleLabels).to.be.deep.equal(["Bevölkerung insgesamt", "Jahre"]);
+            expect(generateChartForDistricts(data, districtCols, districtLevelLabel, timestampPrefix).scaleLabels).to.be.deep.equal(["Bevölkerung insgesamt", "$t('additional:modules.tools.cosi.dashboard.years')"]);
             expect(generateChartForDistricts(data, districtCols, districtLevelLabel, timestampPrefix).data.datasets).to.be.deep.equal(graphData);
         });
     });
@@ -381,7 +381,7 @@ describe("Dashboard/utils/chart", () => {
         it("should return trend value", () => {
             expect(generateChartsForItems(data, districtCols, districtLevelLabel, timestampPrefix)).to.have.lengthOf(2);
             expect(generateChartsForItems(data, districtCols, districtLevelLabel, timestampPrefix)[0].name).to.be.equal("Statistische Gebiete - 39003");
-            expect(generateChartsForItems(data, districtCols, districtLevelLabel, timestampPrefix)[0].scaleLabels).to.be.deep.equal(["", "Jahre"]);
+            expect(generateChartsForItems(data, districtCols, districtLevelLabel, timestampPrefix)[0].scaleLabels).to.be.deep.equal(["", "$t('additional:modules.tools.cosi.dashboard.years')"]);
             expect(generateChartsForItems(data, districtCols, districtLevelLabel, timestampPrefix)[0].data.datasets[0].data).to.be.deep.equal([2252, 2292, 2321, 2362, 2523, 2378, 2370, 2390]);
         });
     });

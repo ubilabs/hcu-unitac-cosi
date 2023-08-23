@@ -81,7 +81,7 @@ export default {
                 datasets: this.getActiveItems().map(item => ({
                     label: item.name,
                     data: selectedFeatureLayers.map(l => item.score.distance.facilities[l.layerId].value),
-                    tooltip: `Gewichteter Durchschnitt: ${item.score.distance.average.toLocaleString("de-DE")}`
+                    tooltip: `${this.$t("additional:modules.tools.cosi.featuresList.weightedAverage")}: ${item.score.distance.average.toLocaleString("de-DE")}`
                 }))
             },
             chartDataset = new ChartDataset({
@@ -171,7 +171,7 @@ export default {
     createChartsForLayers () {
         const
             activeItems = this.getActiveItems(),
-            numCols = [...this.numericalColumns, {value: "count", text: "Anzahl"}],
+            numCols = [...this.numericalColumns, {value: "count", text: this.$t("additional:modules.tools.cosi.featuresList.count")}],
             charts = numCols.map(col => {
                 const
                     layerMaps = col.value === "count" ? this.getActiveLayers() : this.getActiveLayersWithNumValue(col.value),
@@ -219,8 +219,8 @@ export default {
             layerCharts = activeLayerMapping.reduce((res, layerMap) => {
                 const
                     numVals = this.distanceScoreEnabled ?
-                        [...layerMap.numericalValues, {id: "distanceScore", name: "Anbindng"}, {id: "count", name: "Anzahl"}] :
-                        [...layerMap.numericalValues, {id: "count", name: "Anzahl"}],
+                        [...layerMap.numericalValues, {id: "distanceScore", name: this.$t("additional:modules.tools.cosi.featuresList.connection")}, {id: "count", name: this.$t("additional:modules.tools.cosi.featuresList.count")}] :
+                        [...layerMap.numericalValues, {id: "count", name: this.$t("additional:modules.tools.cosi.featuresList.count")}],
                     charts = numVals.map(numVal => {
                         const
                             layerItems = activeItems.filter(item => item.layerId === layerMap.layerId),

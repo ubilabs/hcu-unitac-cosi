@@ -696,6 +696,7 @@ export default {
                 <v-app class="clamp-600px">
                     <ToolInfo
                         :url="readmeUrl"
+                        :title="$t('additional:modules.tools.cosi.dipas.infoTooltip')"
                         :locale="currentLocale"
                         :summary="$t('additional:modules.tools.cosi.dipas.summary')"
                     />

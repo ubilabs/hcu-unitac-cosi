@@ -10,7 +10,8 @@
                       "point": "Erreichbarkeit ab einem Referenzpunkt",
                       "facility": "Erreichbarkeit ab einer ausgewählten Einrichtung",
                       "region": "Erreichbarkeit der ausgewählten Einrichtungen",
-                      "path": "Erreichbarkeit entlang einer Route"
+                      "path": "Erreichbarkeit entlang einer Route",
+                      "area": "Erreichbarkeit im Gebiet"
                     },
                     "pointOfReference": "Referenzpunkt: Klicken Sie auf die Karte",
                     "setByFeature": "Von Flächenaußengrenzen ermitteln",
@@ -40,6 +41,7 @@
                     "legend": "Legende:",
                     "requestInhabitants": "Einwohnerabfrage",
                     "inputReminder": "Bitte füllen Sie alle Felder aus.",
+                    "error": "Fehler",
                     "showError": "Die Anfrage konnte nicht korrekt ausgeführt werden. Bitte überprüfen Sie Ihre Eingaben.",
                     "askUpdate": "Möchten Sie die aktive Erreichbarkeitsanalyse aktualisieren?",
                     "showErrorInvalidInput": "Die Anfrage konnte nicht korrekt ausgeführt werden. Eine Eingabe ist im falschen Format oder ungültig",
@@ -57,7 +59,9 @@
                     "paginationRemoveAll": "Alle Ergebnisse in der Erreichbarkeitsanalyse löschen",
                     "paginationDownloadAll": "Alle Ergebnisse in der Erreichbarkeitsanalyse als Geodaten (GeoJSON) herunterladen",
                     "paginationPrev": "Das vorherige Ergebnis anzeigen",
-                    "paginationNext": "Das nächste Ergebnis anzeigen"
+                    "paginationNext": "Das nächste Ergebnis anzeigen",
+                    "noChoicePlaceholder": "Keine Auswahl",
+                    "infoTooltip": "Werkzeuginformationen (Link öffnen)"
                 }
             }
         }

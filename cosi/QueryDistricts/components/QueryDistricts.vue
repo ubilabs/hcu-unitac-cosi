@@ -31,6 +31,9 @@ export default {
         LayerFilter,
         AnalysisPagination
     },
+    i18nOptions: {
+        keyPrefix: "additional:modules.tools.cosi.queryDistricts"
+    },
     data () {
         return {
             selectedDistrict: null,
@@ -195,7 +198,7 @@ export default {
                 this.allLayerOptions.push({
                     name: facilityLayer.name,
                     id: facilityLayer.id,
-                    group: this.$t("additional:modules.tools.cosi.queryDistricts.funcData"),
+                    group: this.$t("funcData"),
                     valueType: "absolute",
                     facilityLayerName: facilityLayer.name
                 });
@@ -391,7 +394,7 @@ export default {
                     const value = Number(Number(parseFloat(feature[model.field])).toFixed(3));
 
                     if (!isFinite(value)) {
-                        model.error = this.$t("additional:modules.tools.cosi.queryDistricts.selectedDistrictNotAvailable");
+                        model.error = this.$t("selectedDistrictNotAvailable");
                         model.value = NaN;
                     }
                     else {
@@ -645,7 +648,7 @@ export default {
         exportTable: function (index) {
             const
                 date = new Date().toLocaleDateString("de-DE", {year: "numeric", month: "numeric", day: "numeric"}),
-                filename = `${this.$t("additional:modules.tools.cosi.queryDistricts.exportFilename")}_${date}`,
+                filename = `${this.$t("exportFilename")}_${date}`,
                 data = [
                     // this.resultTableHeaders.map(header => header.text),
                     this.dataSets[index].inputs.resultTableHeaders.map(header => header.text),
@@ -656,7 +659,19 @@ export default {
                         return [_row[_row.length - 1], ..._row.slice(0, _row.length - 1)];
                     })
                 ],
-                headers = ["Referenzgebiet", "Filter-Nr.", "Name", "Attribut", "Quotient", "Feld", "Min.", "Max.", "Ref.-Wert", "- Toleranz", "+ Toleranz"],
+                headers = [
+                    "$t('headers.referenceDistrict')",
+                    "$t('headers.filterNumber')",
+                    "$t('headers.name')",
+                    "$t('headers.attribute')",
+                    "$t('headers.quotient')",
+                    "$t('headers.field')",
+                    "$t('headers.minimum')",
+                    "$t('headers.maximum')",
+                    "$t('headers.referenceValue')",
+                    "$t('headers.minusTolerance')",
+                    "$t('headers.plusTolerance')"
+                ],
                 // filters = this.layerFilterModels.map((filter, i) => [
                 filters = this.dataSets[index].inputs.layerFilterModels.map((filter, i) => [
                     // this.selectedDistrict,
@@ -709,7 +724,7 @@ export default {
 
 <template lang="html">
     <Tool
-        :title="$t('additional:modules.tools.cosi.queryDistricts.title')"
+        :title="$t('title')"
         :icon="icon"
         :active="active"
         :render-to-window="renderToWindow"
@@ -719,6 +734,7 @@ export default {
         <template #toolBody>
             <ToolInfo
                 :url="readmeUrl"
+                :title="$t('infoTooltip')"
                 :locale="currentLocale"
             />
             <v-app>
@@ -729,14 +745,14 @@ export default {
                 >
                     <div class="d-flex">
                         <div class="mb-5 overline">
-                            {{ $t('additional:modules.tools.cosi.queryDistricts.subTitle') }}
+                            {{ $t('subTitle') }}
                         </div>
                     </div>
                     <v-autocomplete
                         id="layerfilter-selector-container"
                         v-model="selectedLayer"
-                        :label="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabel')"
-                        :title="$t('additional:modules.tools.cosi.queryDistricts.layerDropdownLabeltooltip')"
+                        :label="$t('layerDropdownLabel')"
+                        :title="$t('layerDropdownLabeltooltip')"
                         item-text="name"
                         item-value="id"
                         :items="layerOptions"
@@ -749,7 +765,7 @@ export default {
                     <v-autocomplete
                         id="district-selector-container"
                         v-model="selectedDistrict"
-                        :label="$t('additional:modules.tools.cosi.queryDistricts.districtDropdownLabel')"
+                        :label="$t('districtDropdownLabel')"
                         :items="districtNames"
                         :clearable="true"
                         outlined
@@ -767,7 +783,7 @@ export default {
                         @click="addLayerFilter()"
                     >
                         <span>
-                            {{ $t('additional:modules.tools.cosi.queryDistricts.add') }}
+                            {{ $t('add') }}
                         </span>
                     </v-btn>
                     <v-btn
@@ -779,7 +795,7 @@ export default {
                         :disabled="layerFilterModels.length === 0"
                         @click="resetDistrictSelection()"
                     >
-                        {{ $t('additional:modules.tools.cosi.queryDistricts.resetSelection') }}
+                        {{ $t('resetSelection') }}
                     </v-btn>
                     <v-divider />
                     <AnalysisPagination
@@ -791,11 +807,11 @@ export default {
                         :download-condition="layerFilterModels.length ? true : false"
                         :remove-condition="dataSets.length > 1 ? true : false"
                         :titles="{
-                            add: [$t('additional:modules.tools.cosi.queryDistricts.paginationAdd')],
-                            downloads: [$t('additional:modules.tools.cosi.queryDistricts.exportTable')],
-                            downloadAll: $t('additional:modules.tools.cosi.queryDistricts.paginationDownloadAll'),
-                            remove: $t('additional:modules.tools.cosi.queryDistricts.paginationRemove'),
-                            removeAll: $t('additional:modules.tools.cosi.queryDistricts.paginationRemoveAll')
+                            add: [$t('paginationAdd')],
+                            downloads: [$t('exportTable')],
+                            downloadAll: $t('paginationDownloadAll'),
+                            remove: $t('paginationRemove'),
+                            prev: $t('paginationPrev')
                         }"
                         @setActiveSet="(n) => setActiveSet(n)"
                         @removeSingle="(n) => removeSet(n)"
@@ -819,7 +835,7 @@ export default {
                             <div
                                 class="mb-5"
                             >
-                                {{ $t('additional:modules.tools.cosi.queryDistricts.setParams') }}
+                                {{ $t('setParams') }}
                             </div>
                             <div
                                 v-if="selectedDistrict"
@@ -827,7 +843,7 @@ export default {
                                 class="ml-auto"
                             >
                                 <span>
-                                    {{ $t('additional:modules.tools.cosi.queryDistricts.referenceDistrict') }}:
+                                    {{ $t('referenceDistrict') }}:
                                 </span>
                                 <span
                                     id="reference-district-button"
@@ -857,7 +873,7 @@ export default {
                                     v-if="layerFilterModels.length > 0"
                                     class="mb-5"
                                 >
-                                    {{ $t('additional:modules.tools.cosi.queryDistricts.comparableResults') }}
+                                    {{ $t('comparableResults') }}
                                 </div>
                                 <div
                                     v-if="selectedDistrict"
@@ -865,7 +881,7 @@ export default {
                                     class="ml-auto"
                                 >
                                     <span>
-                                        {{ $t('additional:modules.tools.cosi.queryDistricts.referenceDistrict') }}:
+                                        {{ $t('referenceDistrict') }}:
                                     </span>
                                     <span
                                         id="reference-district-button"
@@ -884,8 +900,8 @@ export default {
                                 item-key="name"
                                 class="elevation-1"
                                 :footer-props="{
-                                    'items-per-page-text': $t('additional:modules.tools.cosi.queryDistricts.rowsPerPage'),
-                                    'items-per-page-all-text': $t('additional:modules.tools.cosi.queryDistricts.rowsPerPageAll'),
+                                    'items-per-page-text': $t('rowsPerPage'),
+                                    'items-per-page-all-text': $t('rowsPerPageAll'),
                                 }"
                                 @click:row="zoomToDistrict"
                             >
@@ -907,7 +923,7 @@ export default {
                                 class="mr-2"
                                 @click="changeDistrictSelection()"
                             >
-                                {{ $t('additional:modules.tools.cosi.queryDistricts.resultAsSelection') }}
+                                {{ $t('resultAsSelection') }}
                             </v-btn>
                             <v-btn
                                 v-if="resultNames && resultNames.length"
@@ -915,10 +931,10 @@ export default {
                                 small
                                 tile
                                 color="grey lighten-1"
-                                :title="$t('additional:modules.tools.cosi.queryDistricts.exportTable')"
+                                :title="$t('exportTable')"
                                 @click="exportTable()"
                             >
-                                {{ $t('additional:modules.tools.cosi.queryDistricts.exportTable') }}
+                                {{ $t('exportTable') }}
                             </v-btn>
                         </div>
                     </div>

@@ -45,7 +45,7 @@ export default function residentialLayerStyle (feature) {
                     color: "#fff",
                     width: 1
                 }),
-                text: getResidents(feature).toLocaleString("de-DE") + " EW",
+                text: getResidents(feature).toLocaleString('de-DE') + " EW",
                 offsetY: 20
             })
         }),
@@ -67,7 +67,7 @@ export default function residentialLayerStyle (feature) {
                     color: "#fff",
                     width: 1
                 }),
-                text: Math.round(feature.get("area")).toLocaleString("de-DE") + " m²",
+                text: Math.round(feature.get("area")).toLocaleString('de-DE') + " m²",
                 offsetY: 4
             })
         }),

@@ -7,32 +7,32 @@
         </th>
         <th>
             <div class="styling_helper">
-                {{ Array.isArray(selectedFieldA.id) ? "Aufsummierte Auswahl" : selectedFieldA.id }}
+                {{ Array.isArray(selectedFieldA.id) ? $t("additional:modules.tools.cosi.calculateRatio.availableColumns.addedSelection") : selectedFieldA.id }}
             </div>
         </th>
         <th>
             <div class="styling_helper">
-                {{ Array.isArray(selectedFieldB.id) ? "Aufsummierte Auswahl" : selectedFieldB.id }}
+                {{ Array.isArray(selectedFieldB.id) ? $t("additional:modules.tools.cosi.calculateRatio.availableColumns.addedSelection") : selectedFieldB.id }}
             </div>
         </th>
         <th v-if="fActive_A || fActive_B">
             <div class="styling_helper">
-                Kapazität
+                {{ $t("additional:modules.tools.cosi.calculateRatio.availableColumns.capacity") }}
             </div>
         </th>
         <th v-if="fActive_A || fActive_B">
             <div class="styling_helper">
-                Bedarf
+                {{ $t("additional:modules.tools.cosi.calculateRatio.availableColumns.need") }}
             </div>
         </th>
         <th>
             <div class="styling_helper">
-                {{ Array.isArray(selectedFieldA.id) ? "Aufsummierte Auswahl" : selectedFieldA.id }} / {{ Array.isArray(selectedFieldB.id) ? "Aufsummierte Auswahl" : selectedFieldB.id }}
+                {{ Array.isArray(selectedFieldA.id) ? $t("additional:modules.tools.cosi.calculateRatio.availableColumns.addedSelection") : selectedFieldA.id }} / {{ Array.isArray(selectedFieldB.id) ? $t("additional:modules.tools.cosi.calculateRatio.availableColumns.addedSelection") : selectedFieldB.id }}
             </div>
         </th>
         <th>
             <div class="styling_helper">
-                Bedarfsdeckung (1,0 ~ 100%)
+                {{ $t("additional:modules.tools.cosi.calculateRatio.availableColumns.coverageOld") }}
             </div>
         </th>
     </tr>

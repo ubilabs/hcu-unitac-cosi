@@ -79,7 +79,7 @@ export default {
             // Clone of the results array for helping updating the displayed table live
             resultsClone: [],
             // Selected column to render in CCM
-            columnSelector: {name: "Verhältnis", key: "relation"}
+            columnSelector: {name: this.$t("additional:modules.tools.cosi.calculateRatio.availableColumns.ratio"), key: "relation"}
         };
     },
     computed: {
@@ -91,17 +91,17 @@ export default {
         ...mapGetters("Tools/ColorCodeMap", ["visualizationState"]),
         availableColumns () {
             const options = [
-                {name: "Verhältnis", key: "relation"},
-                {name: "Bedarfsdeckung (%)", key: "coverage"}
+                {name: this.$t("additional:modules.tools.cosi.calculateRatio.availableColumns.ratio"), key: "relation"},
+                {name: this.$t("additional:modules.tools.cosi.calculateRatio.availableColumns.coverage"), key: "coverage"}
             ];
 
             if (this.fActive_A || this.fActive_B) {
                 const capacity = {
-                        name: "Kapazität",
+                        name: this.$t("additional:modules.tools.cosi.calculateRatio.availableColumns.capacity"),
                         key: "capacity"
                     },
                     need = {
-                        name: "Bedarf",
+                        name: this.$t("additional:modules.tools.cosi.calculateRatio.availableColumns.need"),
                         key: "need"
                     };
 
@@ -141,7 +141,7 @@ export default {
         },
         resultsClone (newClone) {
             newClone.forEach((result, index) => {
-                if (result.scope === "Gesamt" || result.scope === "Durchschnitt") {
+                if (result.scope === this.$t("additional:modules.tools.cosi.calculateRatio.results.all") || result.scope === this.$t("additional:modules.tools.cosi.calculateRatio.results.mean")) {
                     newClone.splice(index, 1);
                 }
             });
@@ -270,7 +270,7 @@ export default {
 
                     if (attr.summable) {
                         if (this.subFeaturesList.length === 0) {
-                            this.subFeaturesList.push({header: "Aufsummierbar"});
+                            this.subFeaturesList.push({header: this.$t("additional:modules.tools.cosi.features.summable")});
                             this.subFeaturesList.push({value: attr.value, text: attr.value});
                         }
                         else {
@@ -311,7 +311,7 @@ export default {
                 this["sumUpSwitch" + letter] = false;
             }
         },
-        showAlert (content, category = "Warnung", cssClass = "warning") {
+        showAlert (content, category = this.$t("additional:modules.tools.cosi.calculateRatio.warning"), cssClass = "warning") {
             this.addSingleAlert({
                 category: category,
                 content: content,
@@ -361,7 +361,7 @@ export default {
         getFacilityData (letter) {
             if (this[letter + "Switch"]) {
                 this["facilityPropertyList_" + letter] = [{
-                    name: "Anzahl",
+                    name: this.$t("additional:modules.tools.cosi.calculateRatio.results.count"),
                     id: "count"
                 }];
                 this["selectedField" + letter].numericalValues.forEach(value => {
@@ -531,7 +531,7 @@ export default {
                             const layerGeometry = getCenter(feature.getGeometry().getExtent());
 
                             if (geometry.intersectsCoordinate(layerGeometry)) {
-                                if (this["paramField" + letter].name !== "Anzahl") {
+                                if (this["paramField" + letter].name !== this.$t("additional:modules.tools.cosi.calculateRatio.results.count")) {
                                     if (
                                         typeof feature.getProperties()[this["paramField" + letter].id] !== "number" ||
                                         typeof feature.getProperties()[this["paramField" + letter].id] !== "string"
@@ -557,7 +557,7 @@ export default {
                     const checkForLackingData = utils.compensateLackingData(this.featureVals);
 
                     if (checkForLackingData === "error") {
-                        this.showAlert("Warnung für das Gebiet: " + district + this.$t("additional:modules.tools.cosi.calculateRatio.noData"));
+                        this.showAlert(this.$t("additional:modules.tools.cosi.calculateRatio.warningForThisArea") + ": " + district + this.$t("additional:modules.tools.cosi.calculateRatio.noDataInSearch"));
                         return;
                     }
 
@@ -565,7 +565,7 @@ export default {
                     this.calcHelper["param" + letter + "_val"] = checkForLackingData.data.reduce((total, val) => total + parseFloat(val), 0);
                     this.calcHelper["incompleteDatasets_" + letter] = checkForLackingData.incompleteDatasets;
                     this.calcHelper["datasets_" + letter] = checkForLackingData.totalDatasets;
-                    if (this["paramField" + letter].name === "Anzahl") {
+                    if (this["paramField" + letter].name === this.$t("additional:modules.tools.cosi.calculateRatio.results.count")) {
                         this.calcHelper["param" + letter + "_calc"] = this.calcHelper["param" + letter + "_count"];
                     }
                     else {
@@ -682,7 +682,7 @@ export default {
             return json;
         },
         exportAsXlsx (index) {
-            exportXlsx(this.resultData(index), this.selectedYear + "_versorgungsanalyse.xls", {exclude: this.excludedPropsForExport});
+            exportXlsx(this.resultData(index), this.selectedYear + "_" + i18next.t("additional:modules.tools.cosi.calculateRatio.filenameBase"), {exclude: this.excludedPropsForExport});
         },
         /**
          * @description Push data that is to be visualized on the map to ColorCodeMap Component.
@@ -711,7 +711,7 @@ export default {
             const prepareData = [];
 
             this.dataSets[this.activeSet].results.forEach(result => {
-                if (result.scope !== "Gesamt" || result.scope !== "Durschnitt") {
+                if (result.scope !== this.$t("additional:modules.tools.cosi.calculateRatio.results.all") || result.scope !== this.$t("additional:modules.tools.cosi.calculateRatio.results.mean")) {
                     const data = {
                         name: result.scope,
                         data: Math.round(1000 * result[this.columnSelector.key]) / 1000
@@ -733,11 +733,11 @@ export default {
                     id: "calcratio-" + this.selectedFeatures.map(district => {
                         return district.id_;
                     }).join("-") + "-" + this.selectedFieldA.id + "-" + this.paramFieldA.name + "-" + this.selectedFieldB.id + "-" + this.paramFieldB.name,
-                    name: "Versorgungsanalyse - Visualisierung " + this.columnSelector.name + " (" + this.$t("additional:modules.tools.cosi.calculateRatio.title") + ")",
+                    name: this.$t("additional:modules.tools.cosi.calculateRatio.title") + " - " + this.$t("additional:modules.tools.cosi.calculateRatio.visualization") + " " + this.columnSelector.name + " (" + this.$t("additional:modules.tools.cosi.calculateRatio.title") + ")",
                     type: ["LineChart", "BarChart"],
                     color: "rainbow",
                     source: this.$t("additional:modules.tools.cosi.calculateRatio.title"),
-                    scaleLabels: [this.columnSelector.name, "Jahre"],
+                    scaleLabels: [this.columnSelector.name, this.$t("additional:modules.tools.cosi.calculateRatio.chart.labels.years")],
                     data: {
                         labels: [...this.availableYears],
                         datasets: []
@@ -829,6 +829,7 @@ export default {
                     <div class="addon_wrapper">
                         <ToolInfo
                             :url="readmeUrl"
+                            :title="$t('additional:modules.tools.cosi.calculateRatio.infoTooltip')"
                             :locale="currentLocale"
                             :summary="$t('additional:modules.tools.cosi.calculateRatio.description')"
                         />

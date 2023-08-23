@@ -4,7 +4,6 @@
             "cosi": {
                 "selectionManager": {
                     "title": "Auswahlverwaltung",
-                    "infoTooltip": "Werkzeuginformationen",
                     "noData": "Keine Daten vorhanden",
                     "mergedSelections": "Kombinierte Auswahl",
                     "allSelections": "Alle aktiven ausgewählt",
@@ -25,7 +24,8 @@
                     "title_connect_selections": "Alle aktiven Auswahlen mit Polygon verbinden",
                     "title_slider": "Buffer (m) einstellen",
                     "title_toggle_buffer": "Bufferauswahl aktivieren",
-                    "title_buffer_selection": "Buffer als Auswahl festlegen"
+                    "title_buffer_selection": "Buffer als Auswahl festlegen",
+                    "infoTooltip": "Werkzeuginformationen"
                 }
             }
         }

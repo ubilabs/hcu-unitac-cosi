@@ -280,7 +280,7 @@ export default {
                                         width: 2
                                     }),
                                     text: matchResults.get(this.yearSelector + this.lastYear) !== undefined
-                                        ? this.lastYear + ": " + parseFloat(matchResults.get(this.yearSelector + this.lastYear)).toLocaleString("de-DE") + "  (" + parseFloat(Math.round((matchResults.get(this.yearSelector + this.lastYear) / match_props) * 100)) + "%)"
+                                        ? this.lastYear + ": " + parseFloat(matchResults.get(this.yearSelector + this.lastYear)).toLocaleString(this.currentLocale) + "  (" + parseFloat(Math.round((matchResults.get(this.yearSelector + this.lastYear) / match_props) * 100)) + "%)"
                                         : this.$t("additional:modules.tools.colorCodeMap.noData"),
                                     offsetY: 25,
                                     overflow: true

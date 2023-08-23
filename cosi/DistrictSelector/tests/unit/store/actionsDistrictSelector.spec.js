@@ -3,6 +3,13 @@ import {expect} from "chai";
 import actions from "../../../store/actionsDistrictSelector.js";
 import crs from "@masterportal/masterportalapi/src/crs";
 
+before(() => {
+    i18next.init({
+        lng: "cimode",
+        debug: false 
+    });
+});
+
 describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
     const fs = require("fs"),
         rootGetters = {
@@ -47,7 +54,7 @@ describe("addons/DistrictSelector/store/actionsDistrictSelector.js", () => {
             await actions.loadStatFeatures({commit, dispatch, rootGetters}, payload);
 
             expect(dispatch.args).to.deep.equal([
-                ["Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true}],
+                ["Alerting/addSingleAlert", {content: i18next.t("additional:modules.tools.cosi.districtSelector.dataLoading")}, {root: true}],
                 ["fetchMetaData"],
                 ["updateDistricts"],
                 ["Alerting/cleanup", null, {root: true}]

@@ -3,7 +3,27 @@
         "tools": {
             "cosi": {
                 "reportTemplates": {
-                    "title": "Report Template"
+                    "title": "Report Template",
+                    "titleHeader": "Title",
+                    "description": "Description",
+                    "chooseTool": "Choose Tool",
+                    "dataSelection": "Data Selection",
+                    "toolSettings": "Tool Settings",
+                    "adoptDataSelection": "Adopt data selection",
+                    "results": "Ergebnisse",
+                    "exportFormat": "Export format",
+                    "export": "Export",
+                    "import": "Import",
+                    "edit": "Edit",
+                    "apply": "Apply",
+                    "importableTemplateJson": "TODO en: Importierbares Template (json)",
+                    "noValidReportTemplate": "TODO en: Datei ist kein valides Report Template.",
+                    "notReadableOrNoValidJson": "TODO en: Datei nicht lesbar oder kein valides JSON",
+                    "error": "Error",
+                    "noToolSettingsAvailable": "TODO en: Keine Tool Einstellungen verfügbar",
+                    "sourceInfoMissing": "TODO en: Quelleninformation fehlt.",
+                    "tips": "TODO en: <span style='color:orange;'>Weiterverarbeitung in Word: <ul><li>Neues Word Dokument öffnen</li><li>In Word Querformat einstellen</li><li>Inhalt dieser seite markieren (Strg+A) und in Word kopieren</li><li>Alles markieren und Schriftgröße verkleinern</li><li>Zeilenumbrüche in Kopfzeilen von Tabellen einfügen</li><li>Sollten Tabellen nach wie vor zu breit sein, Anzahl der Spalten bzw. ausgewählten Gebiete begrenzen</li><li>Spaltenbreite anpassen</li></ul></span>",
+                    "savedDataSelectionEmpty": "TODO en: Gespeicherte Datenauswahl ist leer"
                 }
             }
         }

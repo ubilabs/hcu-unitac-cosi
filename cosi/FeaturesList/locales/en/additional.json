@@ -20,6 +20,13 @@
                     "inactiveFeature": "The selected facility ist currently set to 'inactive'.",
                     "exportTable": "Export overview",
                     "exportDetails": "include details",
+                    "exportFilename": "TODO en: CoSI_Einrichtungsübersicht",
+                    "distanceScoreChartTooltip": "TODO en: Standortbewertung für ausgewählte visualisieren",
+                    "distanceScoreHistogramTooltip": "TODO en: Verteilung der Standortbewertungen visualisieren",
+                    "distanceScore": "Anbindung (Ø in m)",
+                    "distanceScoreDescription": "TODO en: Die Entfernung (Fußweg) zur nächstgelegenen ausgewählten Einrichtung wird berechnet. Werden mehrere Einrichtungen ausgewählt, wird die Entfernung gemittelt.",
+                    "distanceScoreStartCalculation": "TODO en: Berechnung starten",
+                    "connection": "Anbindung",
                     "weighting": "Weighting of the layer",
                     "distanceScoreLayerLabel": "Layers for distance scoreing (SB)",
                     "distanceScoreChartYLabel": "distance / m",
@@ -27,12 +34,16 @@
                     "warning": "WARNING: ",
                     "warningIsModified": "Was modified in CoSI",
                     "warningIsSimulated": "Was simulated in CoSI",
-                    "scoresDialogHistogramTitle": "Distribution of scores",
                     "scoresDialogTitle": "Zusammensetzung",
+                    "scoresDialogHistogramTitle": "Distribution of scores",
                     "itemsPerPage": "Rows per Page",
                     "itemsPerPageAll": "All",
                     "count": "count",
                     "createCharts": "create charts",
+                    "sumUpLayers": "TODO en: Layer zusammenziehen",
+                    "sumUpLayersTooltip": "TODO en: Layer mit gleichen Attributen (z.B. Fläche in m²) in einem gemeinsamen Diagramm betrachten",
+                    "weightedAverage": "Weighted average",
+                    "locationStudy": "TODO en: Standortanalyse",
                     "dipas": {
                         "warningWrongGeometry": "Initially no point geometry: ",
                         "warningNoGeometry": "Didn't have a geometry. Was centered in the projects extent.",
@@ -52,7 +63,8 @@
                 },
                 "timeSeriesAnalyse": {
                   "title": "Time Series analyse"
-                }
+                },
+                "infoTooltip": "TODO en: Werkzeuginformationen (Link öffnen)"
             }
         }
     }

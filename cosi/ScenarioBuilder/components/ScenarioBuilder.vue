@@ -411,6 +411,7 @@ export default {
             >
                 <ToolInfo
                     :url="readmeUrl"
+                    :title="$t('additional:modules.tools.cosi.scenarioBuilder.infoTooltip')"
                     :locale="currentLocale"
                 />
                 <v-app id="scenario-builder-wrapper">
@@ -422,7 +423,7 @@ export default {
                         </span>
                     </div>
                     <div class="mb-2">
-                        Für die ausgewählten Fachdaten Themen können neue fiktive Einrichtungen angelegt werden. Diese können für alle CoSI Analysefunktionen verwendet werden. Sie werden außerhalb CoSI's nicht gespeichert.
+                        {{ $t('additional:modules.tools.cosi.scenarioBuilder.description') }}
                     </div>
                     <div
                         v-if="groupActiveLayer.length === 0"

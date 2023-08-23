@@ -22,7 +22,7 @@ const actions = {
      * @returns {void}
      */
     async loadStatFeatures ({dispatch, rootGetters}, {districtLevel, districts, getStatFeatures = wfsGetFeature, recursive = true}) {
-        dispatch("Alerting/addSingleAlert", {content: "Datensätze werden geladen"}, {root: true});
+        dispatch("Alerting/addSingleAlert", {content: i18next.t("additional:modules.tools.cosi.districtSelector.dataLoading")}, {root: true});
         LoaderOverlay.show();
 
         const wfsFormat = new WFS(),
@@ -46,7 +46,7 @@ const actions = {
                     }
                     else {
                         dispatch("Alerting/addSingleAlert", {
-                            content: "Es konnten nicht alle Datensätze vollständig geladen werden! Bitte versuchen Sie es später erneut. Sollte der Fehler weiterhin bestehen nutzen Sie bitte das Kontaktformular.",
+                            content: i18next.t("additional:modules.tools.cosi.districtSelector.errors.dataNotLoaded"),
                             category: "Warning",
                             cssClass: "warning"
                         }, {root: true});

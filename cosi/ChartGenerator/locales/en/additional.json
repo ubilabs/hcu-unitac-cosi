@@ -5,13 +5,12 @@
                 "chartGenerator": {
                     "title": "Chart Generator",
                     "description": "Creates chars to visualize data.",
-                    "infoTooltip": "Tool Information",
                     "LineChart": "Line Chart",
                     "BarChart": "Bar Chart",
                     "PieChart": "Pie Chart",
                     "ScatterChart": "Scatterplot",
                     "RadarChart": "Radar Chart",
-                    "switchChartType": "Switch chart type for dataset",
+                    "switchChartType": " - switch chart type for dataset",
                     "removeChart": "Remove this chart",
                     "deleteAll": "Remove all charts",
                     "downloadChart": "Download this chart as PNG",
@@ -21,7 +20,9 @@
                     "prevChart": "Previous chart",
                     "yToZero": "Scale Y-Axis",
                     "yToZeroTooltip": "Start Y-Axis at 0 or resp. at the lowest possible value",
-                    "yStacked": "Stack Y-Axis"
+                    "yStacked": "Stack Y-Axis",
+                    "source": "Source",
+                    "infoTooltip": "Tool Information"
                 }
             }
         }

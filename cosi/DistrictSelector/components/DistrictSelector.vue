@@ -67,7 +67,7 @@ export default {
     watch: {
         /**
          * If the tool is active, activate the select interaction and add overlay to the districtLayers if necessary
-         * If the tool is not actvie, deactivate the interactions (select, drag box) and remove overlay if no districts are selected
+         * If the tool is not active, deactivate the interactions (select, drag box) and remove overlay if no districts are selected
          * and update the extent of the selected features (districts).
          * @param {boolean} newActive - Defines if the tool is active.
          * @returns {void}
@@ -503,6 +503,7 @@ export default {
             <v-app id="district-selector">
                 <ToolInfo
                     :url="readmeUrl"
+                    :title="$t('additional:modules.tools.cosi.districtSelector.infoTooltip')"
                     :locale="currentLocale"
                     :summary="$t('additional:modules.tools.cosi.districtSelector.description')"
                 />
